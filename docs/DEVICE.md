@@ -101,6 +101,31 @@ forced edge-to-edge layout and predictive back — real UI consequences, not a
 version-number change. Chasing an SDK bump before there are screens to lay out
 is backwards.
 
+### Installing: the toggle resets, and fresh installs are gated harder
+
+`INSTALL_FAILED_USER_RESTRICTED: Install canceled by user` means Xiaomi's
+**Install via USB** toggle is off — Settings → Additional settings → Developer
+options. Observed 2026-09-06: **it turns itself back off**, so expect to
+re-enable it periodically rather than once.
+
+Two behaviours worth knowing:
+
+- **Updating an installed package is far easier than a fresh install.** Repeated
+  `adb install -r` over an existing app succeeded all afternoon; the first
+  install after an `adb uninstall` was refused outright with **no dialog shown
+  at all** — focus stayed on the launcher. Avoid `adb uninstall` unless a schema
+  change genuinely requires it.
+- When it refuses *without* prompting, the toggle is off. When a prompt does
+  appear, it has a short timeout — miss it and you get the same error, which
+  reads identically.
+
+**Fallback that always works:** push the APK to `/sdcard/Download/` and install
+it by tapping the file in the Files app.
+
+```bash
+"$WADB" push <apk> /sdcard/Download/thirsttrap-debug.apk
+```
+
 ### HyperOS still kills background work
 
 OS3.0 is newer than the Note 12 Pro's HyperOS, but it is the same lineage:
