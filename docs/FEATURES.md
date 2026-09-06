@@ -21,8 +21,8 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 
 *Fake data, no database, no architecture. Output is a decision, not code.*
 
-- [ ] **P1** One-tap dashboard log with undo snackbar — *UI-SPEC §2*
-- [ ] **P2** Reminder notification with three actions + "Still wet" confirmation — *UI-SPEC §7*
+- [x] **P1** One-tap dashboard log with undo snackbar — *UI-SPEC §2*
+- [x] **P2** Reminder notification with three actions + "Still wet" confirmation — *UI-SPEC §7*
 
 ---
 
@@ -37,8 +37,8 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [ ] **F1.6** ⊕ Hard delete — typed confirmation, offers export first, cascades to photo files — *DATA-MODEL §Deletion*
 
 ### F2 — Care event logging *(req. item 2 — ≤3 taps)*
-- [ ] **F2.1** One-tap water from the dashboard card + 5s undo snackbar — *UI-SPEC §2*
-- [ ] **F2.2** Quick-log bottom sheet: Watered / Checked / Photo / More (64dp targets)
+- [x] **F2.1** One-tap water from the dashboard card + 5s undo snackbar — *UI-SPEC §2*
+- [~] **F2.2** Quick-log bottom sheet: Watered / Checked / Photo / More (64dp targets) — **only Watered / Still wet; Photo and More not built**
 - [ ] **F2.3** Full event-type picker — 14 types — *DATA-MODEL `care_events`*
 - [ ] **F2.4** Type-specific fields: amount + method, check result, fertilizer + dilution, medium from/to, milestone kind, cause of death
 - [ ] **F2.5** Long-press droplet → detailed watering entry (amount, bottom-soak)
@@ -70,23 +70,23 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [ ] **F6.1** Per-plant check reminder with interval — *NOTIFICATIONS §5*
 - [ ] **F6.2** One-off task reminders with a title
 - [ ] **F6.3** WorkManager daily scheduler at the user's chosen hour (default 09:00 IST)
-- [ ] **F6.4** Three notification channels: watering checks, tasks, health alerts
-- [ ] **F6.5** Shade quick actions: **Watered** / **Still wet** / **Snooze 1 day**
-- [ ] **F6.6** Collapse — one notification per plant, maximum, ever (stable ID)
+- [x] **F6.4** Three notification channels: watering checks, tasks, health alerts
+- [x] **F6.5** Shade quick actions: **Watered** / **Still wet** / **Snooze 1 day**
+- [~] **F6.6** Collapse — one notification per plant, maximum, ever (stable ID) — **implemented (stable id per plant); not verified with several plants overdue**
 - [ ] **F6.7** Bulk-clear overdue, undoable via snackbar
 - [ ] **F6.8** In-app **Due** list (bottom-bar destination)
-- [ ] **F6.9** Graceful degradation when `POST_NOTIFICATIONS` is denied — app stays fully usable
-- [ ] **F6.10** Reminder-tone copy pass — wording table + response parity — *UI-SPEC §7*
+- [~] **F6.9** Graceful degradation when `POST_NOTIFICATIONS` is denied — app stays fully usable — **code path exists; not tested with the permission denied**
+- [x] **F6.10** Reminder-tone copy pass — wording table + response parity — *UI-SPEC §7*
 
 ### F7 — Dashboard *(req. item 7)*
-- [ ] **F7.1** Plant cards: thumbnail, name, location · medium, days since watered
-- [ ] **F7.2** Attention sorting — 5-level priority — *UI-SPEC §3*
+- [~] **F7.1** Plant cards: thumbnail, name, location · medium, days since watered — **letter avatar stands in for the photo thumbnail**
+- [x] **F7.2** Attention sorting — 5-level priority — *UI-SPEC §3*
 - [ ] **F7.3** Due badges (never red, never a failure count)
 - [ ] **F7.4** Filter chips to reveal archived / dead plants
-- [ ] **F7.5** No loading spinner on first frame — Room Flow straight to the list
+- [x] **F7.5** No loading spinner on first frame — Room Flow straight to the list
 
 ### F8 — Watering cadence *(req. item 8)*
-- [ ] **F8.1** Computed average interval from the log — "waters roughly every 8 days"
+- [~] **F8.1** Computed average interval from the log — "waters roughly every 8 days" — **`averageWateringIntervalDays` exists in domain; not surfaced in the UI**
 
 ### F9 — Offline *(req. item 9)*
 - [ ] **F9.1** Verify: airplane mode, every M1 feature exercised, zero degradation
@@ -101,11 +101,11 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 
 ### X — Cross-cutting (M1)
 - [ ] **X1** ⊕ Settings screen — theme, reminder hour, default trigger, API keys, export, storage
-- [ ] **X2** Material 3 theme — dynamic colour, full dark theme, muted green fallback
+- [~] **X2** Material 3 theme — dynamic colour, full dark theme, muted green fallback — **built, but HyperOS dynamic colour currently overrides the palette**
 - [ ] **X3** ⊕ Empty & error states — 7 defined cases — *UI-SPEC §9*
 - [ ] **X4** ⊕ Accessibility pass — content descriptions, 48dp targets, 200% font scale, no colour-only meaning, reduce-motion
 - [ ] **X5** ⊕ Storage screen — usage, photo count, "clean up now" (orphan files + orphan rows) — *DATA-MODEL §Maintenance*
-- [ ] **X6** ⊕ Debug menu (debug builds only) — fire reminder now / in 10s, fast-forward due date, dump WorkManager queue
+- [~] **X6** ⊕ Debug menu (debug builds only) — fire reminder now / in 10s, fast-forward due date, dump WorkManager queue — **only the 10-second test-reminder button**
 - [ ] **X7** ⊕ "Reminders not arriving?" help — per-OEM instructions, battery-optimisation suggestion, test-fire button. **M1, not M2** — the target device is a Redmi on HyperOS, where reminders appear broken without it — *NOTIFICATIONS §6*
 
 ---
@@ -117,23 +117,23 @@ complete before any UI is written.*
 
 ### Domain
 - [ ] **F17.1** `weight_readings` + `drying_segments` tables and migration
-- [ ] **F17.2** Wet anchor capture + re-capture on every `post_water` reading — *§2*
-- [ ] **F17.3** Provisional dry anchor (`W × 0.60`) + adaptive running minimum with the `0.30 × W` implausibility guard — *§2*
-- [ ] **F17.4** Segmentation — 8%-of-range jump, `watered` event, repot, 21-day gap — *§3*
-- [ ] **F17.5** Theil–Sen fit over the last ≤5 readings; two-point fallback — *§4*
-- [ ] **F17.6** Slope sanity gate (dead band ε) — *§4*
-- [ ] **F17.7** EWMA prior across closed segments, α = 0.3 — *§5*
-- [ ] **F17.8** ETA calculation with clamp (0) and cap (14 days) — *§6*
-- [ ] **F17.9** Suppression rules — all six conditions — *§6*
-- [ ] **F17.10** Confidence tiers (high / medium / low) driving UI wording — *§6*
-- [ ] **F17.11** Diagnostic: drying much faster than usual (>1.8× baseline) — *§7*
-- [ ] **F17.12** Diagnostic: pot staying heavy (<0.4× baseline) — *§7*
-- [ ] **F17.13** Full §9 test plan passing — correctness, robustness, segmentation, anchors, suppression, EWMA, properties
+- [x] **F17.2** Wet anchor capture + re-capture on every `post_water` reading — *§2*
+- [x] **F17.3** Provisional dry anchor (`W × 0.60`) + adaptive running minimum with the `0.30 × W` implausibility guard — *§2*
+- [x] **F17.4** Segmentation — 8%-of-range jump, `watered` event, repot, 21-day gap — *§3*
+- [x] **F17.5** Theil–Sen fit over the last ≤5 readings; two-point fallback — *§4*
+- [x] **F17.6** Slope sanity gate (dead band ε) — *§4*
+- [x] **F17.7** EWMA prior across closed segments, α = 0.3 — *§5*
+- [x] **F17.8** ETA calculation with clamp (0) and cap (14 days) — *§6*
+- [x] **F17.9** Suppression rules — all six conditions — *§6*
+- [x] **F17.10** Confidence tiers (high / medium / low) driving UI wording — *§6*
+- [x] **F17.11** Diagnostic: drying much faster than usual (>1.8× baseline) — *§7*
+- [x] **F17.12** Diagnostic: pot staying heavy (<0.4× baseline) — *§7*
+- [x] **F17.13** Full §9 test plan passing — correctness, robustness, segmentation, anchors, suppression, EWMA, properties
 
 ### UI
 - [ ] **F17.14** Calibration wizard — 4 steps, drain timer with notification — *UI-SPEC §6*
 - [ ] **F17.15** Weight entry — large one-handed keypad, smart context default
-- [ ] **F17.16** Depletion bar on the dashboard card (percentage-labelled, threshold marked, hidden when uncalibrated)
+- [x] **F17.16** Depletion bar on the dashboard card (percentage-labelled, threshold marked, hidden when uncalibrated)
 - [ ] **F17.17** Weight history chart — anchors, trigger line, segment markers, dashed forward projection
 - [ ] **F17.18** Recalibration prompt on repot / medium change / container edit
 - [ ] **F17.19** Mark a reading as excluded (bad weigh-in)
@@ -227,3 +227,31 @@ backup, it is an archive.
 M3 and M4 items are single-line because they are not specified in detail yet —
 they will expand into sub-items when their milestone is planned. Do not treat
 "7 items" as "7 units of work".
+
+---
+
+## Progress — 2026-09-06
+
+Counted from the code, not from memory.
+
+| Milestone | Done | In progress | Not started |
+|---|---|---|---|
+| M0 prototypes | 2 | 0 | 0 |
+| M1 MVP | 6 | 7 | 45 |
+| M2 weight | 13 | 0 | 9 |
+| M3 depth | 0 | 0 | 7 |
+| M4 phase 2 | 0 | 0 | 9 |
+| **Total** | **21** | **7** | **70** |
+
+**The M2 domain is essentially complete** — the entire drying model, under 57
+passing JVM tests that need no device. What remains in M2 is persistence
+(`F17.1`) and the weight UI.
+
+**M1 is barely started**, and everything that exists runs on in-memory fake
+data that does not survive the process dying. Absent from the codebase
+entirely: Room, WorkManager, Hilt, DataStore, Coil, the Photo Picker,
+navigation, and the export zip.
+
+One thing to be honest about: **`F6.3` is not done.** M0 fires its reminder with
+`Handler.postDelayed`, not WorkManager — adequate for a 10-second test button,
+useless as a real reminder, and it dies with the process.
