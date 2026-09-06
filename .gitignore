@@ -1,0 +1,38 @@
+# Build output
+build/
+*/build/
+*/*/build/
+.gradle/
+.kotlin/
+local.properties
+
+# The app's own data and anything pulled off a device while debugging.
+# A plant diary is not sensitive the way health data is, but photos carry
+# location EXIF and the database holds free-text notes. Keep both out.
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+*.sqlite
+*.sqlite3
+thirsttrap-export-*.zip
+
+# Signing credentials. The keystore *is* the app's identity — anyone holding it
+# can publish an update Android accepts as genuine. Losing it is equally bad:
+# a differently-signed APK cannot install over an existing one without an
+# uninstall, which deletes the database. Back these up outside the repository.
+keystore/
+*.jks
+*.keystore
+keystore.properties
+
+# Debug artefacts
+*.png.device
+ui.xml
+s.png
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*~
