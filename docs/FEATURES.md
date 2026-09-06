@@ -261,9 +261,9 @@ help screen all ship. Recount below.
 
 | | Count |
 |---|---|
-| Done | 33 |
-| In progress | 3 |
-| Not started | 62 |
+| Done | 34 |
+| In progress | 6 |
+| Not started | 58 |
 
 Verified on the phone: real plants survived the v1→v2 auto-migration; the
 daily sweep is registered with the system JobScheduler; a notification action
