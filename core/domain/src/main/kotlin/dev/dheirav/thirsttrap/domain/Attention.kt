@@ -11,6 +11,8 @@ data class PlantAttention(
     val reminderDueMillis: Long?,
     val depletion: Double?,
     val prediction: Prediction,
+    /** Requirements item 8: "waters roughly every 8 days". Null until measurable. */
+    val averageIntervalDays: Double? = null,
 )
 
 /**

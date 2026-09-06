@@ -11,6 +11,7 @@ import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.PlantStatus
 import dev.dheirav.thirsttrap.domain.Prediction
 import dev.dheirav.thirsttrap.domain.SuppressionReason
+import dev.dheirav.thirsttrap.domain.averageWateringIntervalDays
 import dev.dheirav.thirsttrap.domain.sortByAttention
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -71,6 +72,10 @@ class PlantRepositoryImpl @Inject constructor(
                     prediction = Prediction.NeedAnotherReading(
                         if (plant.anchors == null) SuppressionReason.NOT_CALIBRATED
                         else SuppressionReason.NO_READINGS,
+                    ),
+                    averageIntervalDays = averageWateringIntervalDays(
+                        events.filter { it.type == CareEventType.WATERED.name }
+                            .map { it.timestamp },
                     ),
                 )
             }

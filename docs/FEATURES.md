@@ -45,10 +45,10 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] **F2.6** Edit / delete an existing event
 
 ### F3 — Per-plant timeline *(req. item 3)*
-- [ ] **F3.1** Reverse-chronological list with sticky day headers
-- [ ] **F3.2** Per-type icons
-- [ ] **F3.3** Expand-in-place on tap
-- [ ] **F3.4** Life events (`repotted`, `medium_changed`, `died`) render as full-width heavy dividers — *UI-SPEC §4*
+- [x] **F3.1** Reverse-chronological list with sticky day headers
+- [x] **F3.2** Per-type icons
+- [x] **F3.3** Expand-in-place on tap
+- [x] **F3.4** Life events (`repotted`, `medium_changed`, `died`) render as full-width heavy dividers — *UI-SPEC §4*
 - [ ] **F3.5** Inline photo thumbnail strip on events that have photos
 
 ### F4 — Photos *(req. item 4)*
@@ -86,7 +86,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] **F7.5** No loading spinner on first frame — Room Flow straight to the list
 
 ### F8 — Watering cadence *(req. item 8)*
-- [~] **F8.1** Computed average interval from the log — "waters roughly every 8 days" — **`averageWateringIntervalDays` exists in domain; not surfaced in the UI**
+- [x] **F8.1** Computed average interval from the log — "waters roughly every 8 days"
 
 ### F9 — Offline *(req. item 9)*
 - [x] **F9.1** Verify: airplane mode, every M1 feature exercised, zero degradation
@@ -270,3 +270,15 @@ daily sweep is registered with the system JobScheduler; a notification action
 tapped from the shade writes a real `care_event` and the card reflects it.
 
 Still open: step 5 (timeline, `F3.1`), and the whole M2 weight UI.
+
+## Progress — 2026-09-06, M0.5 complete
+
+| | Count |
+|---|---|
+| Done | 39 |
+| In progress | 5 |
+| Not started | 54 |
+
+M0.5 steps 1-5 all shipped and were verified on the target phone. The M2
+domain remains complete-but-headless: the drying model is built and tested,
+with no persistence or UI in front of it.

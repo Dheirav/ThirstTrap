@@ -30,6 +30,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import dev.dheirav.thirsttrap.feature.dashboard.DashboardScreen
 import dev.dheirav.thirsttrap.feature.due.DueScreen
 import dev.dheirav.thirsttrap.feature.help.RemindersHelpScreen
+import dev.dheirav.thirsttrap.feature.plantdetail.PlantDetailScreen
 import dev.dheirav.thirsttrap.feature.plantedit.PlantEditScreen
 import dev.dheirav.thirsttrap.navigation.Routes
 import dev.dheirav.thirsttrap.ui.ThirstTrapTheme
@@ -78,6 +79,7 @@ class MainActivity : ComponentActivity() {
                             DashboardScreen(
                                 onAddPlant = { nav.navigate(Routes.plantEdit()) },
                                 onEditPlant = { id -> nav.navigate(Routes.plantEdit(id)) },
+                                onOpenPlant = { id -> nav.navigate(Routes.plantDetail(id)) },
                             )
                         }
                         composable(Routes.DUE) {
@@ -85,6 +87,15 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Routes.HELP_REMINDERS) {
                             RemindersHelpScreen(onBack = { nav.popBackStack() })
+                        }
+                        composable(
+                            route = "${Routes.PLANT_DETAIL}/{id}",
+                            arguments = listOf(navArgument("id") { type = NavType.StringType }),
+                        ) {
+                            PlantDetailScreen(
+                                onBack = { nav.popBackStack() },
+                                onEdit = { id -> nav.navigate(Routes.plantEdit(id)) },
+                            )
                         }
                         composable(
                             route = "${Routes.PLANT_EDIT}?id={id}",

@@ -77,6 +77,7 @@ import kotlinx.coroutines.launch
 fun DashboardScreen(
     onAddPlant: () -> Unit,
     onEditPlant: (String) -> Unit,
+    onOpenPlant: (String) -> Unit,
     viewModel: DashboardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -142,7 +143,7 @@ fun DashboardScreen(
                             }
                         },
                         onOpenSheet = { sheetFor = item },
-                        onLongPress = { onEditPlant(item.plant.id) },
+                        onLongPress = { onOpenPlant(item.plant.id) },
                     )
                 }
             }
@@ -168,6 +169,7 @@ fun DashboardScreen(
                         announce(e, "Good call - checked, not thirsty yet")
                     }
                 },
+                onHistory = { sheetFor = null; onOpenPlant(item.plant.id) },
                 onEdit = { sheetFor = null; onEditPlant(item.plant.id) },
             )
         }
@@ -263,6 +265,15 @@ private fun PlantCard(
                 }
 
                 PredictionLine(item.prediction)
+
+                // Requirements item 8. Needs two waterings to measure between.
+                item.averageIntervalDays?.let { avg ->
+                    Text(
+                        "Waters roughly every ${avg.toInt()} days",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
 
             IconButton(
@@ -337,6 +348,7 @@ private fun QuickLogSheet(
     plantName: String,
     onWatered: () -> Unit,
     onStillWet: () -> Unit,
+    onHistory: () -> Unit,
     onEdit: () -> Unit,
 ) {
     Column(Modifier.padding(start = 24.dp, end = 24.dp, bottom = 40.dp)) {
@@ -356,6 +368,9 @@ private fun QuickLogSheet(
                 Text("Still wet")
             }
         }
-        TextButton(onClick = onEdit, modifier = Modifier.padding(top = 8.dp)) { Text("Edit plant") }
+        Row {
+            TextButton(onClick = onHistory, modifier = Modifier.padding(top = 8.dp)) { Text("History") }
+            TextButton(onClick = onEdit, modifier = Modifier.padding(top = 8.dp)) { Text("Edit plant") }
+        }
     }
 }
