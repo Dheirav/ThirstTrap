@@ -10,10 +10,41 @@ Last updated: 2026-09-06
 
 ## Status
 
-**Phase: documentation complete, no code written yet.**
+**Phase: M0 prototype built, installed and driven on the target phone.**
 
-The repository contains requirements and design docs only. No Gradle project,
-no git repository, no source files.
+Repo: https://github.com/Dheirav/ThirstTrap (branch `main`).
+
+- `:core:domain` carries the complete watering model under **57 JVM tests, all
+  passing** in ~1s with no device.
+- The M0 app runs on the Redmi Note 15 Pro. One-tap logging, undo, the quick-log
+  sheet, and the reminder with its three shade actions are all verified working
+  on device.
+- **M0's actual question is still open**: does this beat a paper note, and does
+  "Still wet" feel as good to tap as "Watered"? That needs three days of real
+  use with real plants, and only the user can answer it.
+
+### What running it on the phone found
+
+Five defects, none visible at the desk:
+
+1. **Undo did not undo** - the log row was removed but the derived
+   `lastWatered` was never restored, so the card still read "Watered today".
+2. **The list re-sorted on log**, moving cards out from under the finger.
+   Reproduced live: logging one plant and reaching for UNDO hit a different
+   plant's droplet. The order is now frozen until the undo window closes.
+3. **Receiver writes were invisible to the UI** - the screen used a local tick
+   instead of collecting the shared flow, so "Still wet" from the shade never
+   reached the dashboard.
+4. **A check was recorded as a watering** - "Still wet" made the card say
+   "Watered today", the exact conflation this app exists to prevent.
+5. Display faults: "Watered 1 days ago"; a water-propagation cutting told to
+   "weigh once more"; a past-trigger plant showing "40% toward watering" beside
+   "Needs water now"; content clipped under the navigation bar.
+
+Two of the 57 domain tests also failed on their first run - one a real bug (a
+provisional dry anchor was never replaced by a higher real observation), one a
+worthless test (its outlier sat mid-series, where it has no leverage on a
+least-squares slope, so both estimators passed and it proved nothing).
 
 ## What exists
 
