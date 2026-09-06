@@ -7,6 +7,9 @@ import dev.dheirav.thirsttrap.domain.CareEvent
 import dev.dheirav.thirsttrap.domain.CareEventType
 import dev.dheirav.thirsttrap.domain.CheckResult
 import dev.dheirav.thirsttrap.domain.PlantAttention
+import android.net.Uri
+import dev.dheirav.thirsttrap.data.PhotoRepositoryImpl
+import dev.dheirav.thirsttrap.domain.PhotoRepository
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.averageWateringIntervalDays
 import dev.dheirav.thirsttrap.domain.newId
@@ -28,7 +31,12 @@ data class DashboardUiState(
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val repository: PlantRepository,
+    private val photos: PhotoRepository,
 ) : ViewModel() {
+
+    fun addPhoto(plantId: String, uri: Uri) {
+        viewModelScope.launch { (photos as? PhotoRepositoryImpl)?.importPhoto(plantId, uri) }
+    }
 
     val uiState: StateFlow<DashboardUiState> =
         repository.observeDashboard { System.currentTimeMillis() }

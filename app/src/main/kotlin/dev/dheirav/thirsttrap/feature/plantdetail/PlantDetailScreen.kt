@@ -16,10 +16,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,13 +40,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.domain.CareEvent
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import dev.dheirav.thirsttrap.domain.CareEventType
+import dev.dheirav.thirsttrap.domain.Photo
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -63,6 +73,8 @@ fun PlantDetailScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val plant = state.plant
+    val capture = dev.dheirav.thirsttrap.photo.rememberPhotoCapture { viewModel.addPhoto(it) }
+    var captionFor by remember { mutableStateOf<Photo?>(null) }
 
     Scaffold(
         topBar = {
@@ -74,6 +86,12 @@ fun PlantDetailScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = capture.pickFromGallery) {
+                        Icon(Icons.Filled.PhotoLibrary, contentDescription = "Add from gallery")
+                    }
+                    IconButton(onClick = capture.takePhoto) {
+                        Icon(Icons.Filled.AddAPhoto, contentDescription = "Take a photo")
+                    }
                     plant?.let { p ->
                         IconButton(onClick = { onEdit(p.id) }) {
                             Icon(Icons.Filled.Edit, contentDescription = "Edit plant")
@@ -121,6 +139,23 @@ fun PlantDetailScreen(
                 }
             }
 
+            if (state.photos.isNotEmpty()) {
+                item {
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.padding(bottom = 16.dp),
+                    ) {
+                        items(state.photos, key = { it.id }) { photo ->
+                            PhotoThumb(
+                                path = viewModel.pathOf(photo),
+                                caption = photo.caption,
+                                onLongPress = { captionFor = photo },
+                            )
+                        }
+                    }
+                }
+            }
+
             if (state.loaded && state.days.isEmpty()) {
                 item {
                     Column(
@@ -156,6 +191,40 @@ fun PlantDetailScreen(
                     EventRow(event = event, onDelete = { viewModel.deleteEvent(event) })
                 }
             }
+        }
+    }
+
+    captionFor?.let { photo ->
+        CaptionDialog(
+            photo = photo,
+            initial = photo.caption.orEmpty(),
+            onDismiss = { captionFor = null },
+            onSave = { viewModel.setCaption(photo.id, it) },
+            onDelete = { viewModel.deletePhoto(photo.id) },
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun PhotoThumb(path: String, caption: String?, onLongPress: () -> Unit) {
+    Column {
+        AsyncImage(
+            model = path,
+            contentDescription = caption ?: "Plant photo",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(120.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .combinedClickable(onClick = {}, onLongClick = onLongPress),
+        )
+        caption?.takeIf { it.isNotBlank() }?.let {
+            Text(
+                it,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp).size(width = 120.dp, height = 16.dp),
+            )
         }
     }
 }
@@ -216,6 +285,35 @@ private fun EventRow(event: CareEvent, onDelete: () -> Unit) {
             }
         }
     }
+}
+
+@Composable
+private fun CaptionDialog(
+    photo: Photo,
+    initial: String,
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit,
+    onDelete: () -> Unit,
+) {
+    var text by remember { mutableStateOf(initial) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Photo") },
+        text = {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                label = { Text("Caption") },
+                placeholder = { Text("brown spot on the lower leaf") },
+            )
+        },
+        confirmButton = { TextButton(onClick = { onSave(text); onDismiss() }) { Text("Save") } },
+        dismissButton = {
+            TextButton(onClick = { onDelete(); onDismiss() }) {
+                Text("Delete", color = MaterialTheme.colorScheme.error)
+            }
+        },
+    )
 }
 
 private fun label(event: CareEvent): String = when (event.type) {

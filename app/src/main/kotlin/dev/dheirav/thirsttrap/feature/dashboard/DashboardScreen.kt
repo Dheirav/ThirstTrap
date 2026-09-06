@@ -59,6 +59,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import dev.dheirav.thirsttrap.domain.CareEvent
 import dev.dheirav.thirsttrap.domain.PlantAttention
 import dev.dheirav.thirsttrap.domain.Prediction
@@ -92,6 +94,12 @@ fun DashboardScreen(
     // The sort order is frozen while an undo is pending. Re-sorting on the log
     // itself yanks the card out from under the finger - found on device, where
     // logging one plant and reaching for UNDO hit a different plant's droplet.
+    var photoFor by remember { mutableStateOf<String?>(null) }
+    val capture = dev.dheirav.thirsttrap.photo.rememberPhotoCapture { uri ->
+        photoFor?.let { viewModel.addPhoto(it, uri) }
+        photoFor = null
+    }
+
     var frozenOrder by remember { mutableStateOf<List<String>?>(null) }
     val items = remember(state.items, frozenOrder) {
         val order = frozenOrder ?: return@remember state.items
@@ -170,6 +178,11 @@ fun DashboardScreen(
                         announce(e, "Good call - checked, not thirsty yet")
                     }
                 },
+                onPhoto = {
+                    photoFor = item.plant.id
+                    sheetFor = null
+                    capture.takePhoto()
+                },
                 onMore = { sheetFor = null; onLogMore(item.plant.id) },
                 onHistory = { sheetFor = null; onOpenPlant(item.plant.id) },
                 onEdit = { sheetFor = null; onEditPlant(item.plant.id) },
@@ -216,6 +229,9 @@ private fun PlantCard(
             .combinedClickable(onClick = onOpenSheet, onLongClick = onLongPress),
     ) {
         Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            // The most recent photo, falling back to an initial. A broken or
+            // missing file must never crash the list - see docs/UI-SPEC.md
+            // section 9 - so the placeholder stays behind the image.
             Box(
                 modifier = Modifier
                     .size(56.dp)
@@ -228,6 +244,14 @@ private fun PlantCard(
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
+                item.coverPhotoPath?.let { path ->
+                    AsyncImage(
+                        model = path,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.size(56.dp).clip(RoundedCornerShape(10.dp)),
+                    )
+                }
             }
 
             Spacer(Modifier.size(12.dp))
@@ -350,6 +374,7 @@ private fun QuickLogSheet(
     plantName: String,
     onWatered: () -> Unit,
     onStillWet: () -> Unit,
+    onPhoto: () -> Unit,
     onMore: () -> Unit,
     onHistory: () -> Unit,
     onEdit: () -> Unit,
@@ -371,7 +396,10 @@ private fun QuickLogSheet(
                 Text("Still wet")
             }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(top = 12.dp)) {
+            FilledTonalButton(onClick = onPhoto, modifier = Modifier.weight(1f).height(64.dp)) {
+                Text("Photo")
+            }
             FilledTonalButton(onClick = onMore, modifier = Modifier.weight(1f).height(64.dp)) {
                 Text("More…")
             }

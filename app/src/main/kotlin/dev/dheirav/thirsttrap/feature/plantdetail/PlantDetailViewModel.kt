@@ -7,6 +7,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.dheirav.thirsttrap.domain.CareEvent
 import dev.dheirav.thirsttrap.domain.CareEventType
 import dev.dheirav.thirsttrap.domain.Plant
+import android.net.Uri
+import dev.dheirav.thirsttrap.data.PhotoRepositoryImpl
+import dev.dheirav.thirsttrap.domain.Photo
+import dev.dheirav.thirsttrap.domain.PhotoRepository
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.averageWateringIntervalDays
 import kotlinx.coroutines.flow.SharingStarted
@@ -23,6 +27,7 @@ data class PlantDetailUiState(
     val plant: Plant? = null,
     val days: List<TimelineDay> = emptyList(),
     val totalEvents: Int = 0,
+    val photos: List<Photo> = emptyList(),
     val averageIntervalDays: Double? = null,
     val loaded: Boolean = false,
 )
@@ -30,6 +35,7 @@ data class PlantDetailUiState(
 @HiltViewModel
 class PlantDetailViewModel @Inject constructor(
     private val repository: PlantRepository,
+    private val photos: PhotoRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -39,11 +45,13 @@ class PlantDetailViewModel @Inject constructor(
         combine(
             repository.observePlant(plantId),
             repository.observeEvents(plantId),
-        ) { plant, events ->
+            photos.observeForPlant(plantId),
+        ) { plant, events, plantPhotos ->
             PlantDetailUiState(
                 plant = plant,
                 days = groupByLocalDay(events),
                 totalEvents = events.size,
+                photos = plantPhotos,
                 averageIntervalDays = averageWateringIntervalDays(
                     events.filter { it.type == CareEventType.WATERED }.map { it.timestampMillis },
                 ),
@@ -54,6 +62,22 @@ class PlantDetailViewModel @Inject constructor(
     fun deleteEvent(event: CareEvent) {
         viewModelScope.launch { repository.deleteEvent(event.id) }
     }
+
+    fun addPhoto(uri: Uri) {
+        viewModelScope.launch {
+            (photos as? PhotoRepositoryImpl)?.importPhoto(plantId, uri)
+        }
+    }
+
+    fun deletePhoto(photoId: String) {
+        viewModelScope.launch { photos.delete(photoId) }
+    }
+
+    fun setCaption(photoId: String, caption: String) {
+        viewModelScope.launch { photos.setCaption(photoId, caption) }
+    }
+
+    fun pathOf(photo: Photo): String = photos.absolutePath(photo)
 
     /**
      * Grouped by the **local** civil day the event happened on, reconstructed

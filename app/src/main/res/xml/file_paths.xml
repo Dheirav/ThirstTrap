@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!--
+      Only the camera scratch directory is shared, and only so the camera app
+      can write its capture into it. The photo library itself is never exposed;
+      outbound sharing goes through an explicit export.
+    -->
+    <cache-path name="captures" path="." />
+</paths>

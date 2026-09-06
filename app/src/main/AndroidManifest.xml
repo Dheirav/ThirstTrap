@@ -30,6 +30,20 @@
         </activity>
 
         <!--
+          Grants the camera app temporary write access to one cache file, so a
+          capture can be handed back without any storage permission.
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <!--
           WorkManager's default initializer is removed: the app supplies its own
           Configuration through Hilt so workers can be injected.
         -->

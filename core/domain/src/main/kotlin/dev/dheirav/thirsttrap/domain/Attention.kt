@@ -13,6 +13,8 @@ data class PlantAttention(
     val prediction: Prediction,
     /** Requirements item 8: "waters roughly every 8 days". Null until measurable. */
     val averageIntervalDays: Double? = null,
+    /** Absolute path to the most recent photo, if there is one. */
+    val coverPhotoPath: String? = null,
 )
 
 /**

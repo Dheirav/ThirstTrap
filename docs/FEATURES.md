@@ -38,7 +38,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 
 ### F2 — Care event logging *(req. item 2 — ≤3 taps)*
 - [x] **F2.1** One-tap water from the dashboard card + 5s undo snackbar — *UI-SPEC §2*
-- [~] **F2.2** Quick-log bottom sheet: Watered / Checked / Photo / More (64dp targets) — **More built; Photo blocked on F4**
+- [x] **F2.2** Quick-log bottom sheet: Watered / Checked / Photo / More (64dp targets)
 - [x] **F2.3** Full event-type picker — 14 types — *DATA-MODEL `care_events`*
 - [x] **F2.4** Type-specific fields: amount + method, check result, fertilizer + dilution, medium from/to, milestone kind, cause of death
 - [ ] **F2.5** Long-press droplet → detailed watering entry (amount, bottom-soak)
@@ -52,12 +52,12 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [ ] **F3.5** Inline photo thumbnail strip on events that have photos
 
 ### F4 — Photos *(req. item 4)*
-- [ ] **F4.1** In-app camera capture, auto-attached to plant + date
-- [ ] **F4.2** Gallery import via Photo Picker — preserves original `taken_at`, no storage permission
-- [ ] **F4.3** Compress on write — longest edge ~1600px, JPEG q80, 200–500 KB — *ARCHITECTURE §5*
-- [ ] **F4.4** EXIF strip (location metadata must not leak into an export)
-- [ ] **F4.5** Photo grid per plant, 3 columns, reverse-chronological
-- [ ] **F4.6** Per-photo caption
+- [x] **F4.1** In-app camera capture, auto-attached to plant + date
+- [x] **F4.2** Gallery import via Photo Picker — preserves original `taken_at`, no storage permission
+- [x] **F4.3** Compress on write — longest edge ~1600px, JPEG q80, 200–500 KB — *ARCHITECTURE §5*
+- [x] **F4.4** EXIF strip (location metadata must not leak into an export)
+- [x] **F4.5** Photo grid per plant, 3 columns, reverse-chronological
+- [x] **F4.6** Per-photo caption
 
 ### F5 — Photo compare *(req. item 5)*
 - [ ] **F5.1** Two-pane side-by-side (portrait, never stacked)
@@ -79,7 +79,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] **F6.10** Reminder-tone copy pass — wording table + response parity — *UI-SPEC §7*
 
 ### F7 — Dashboard *(req. item 7)*
-- [~] **F7.1** Plant cards: thumbnail, name, location · medium, days since watered — **letter avatar stands in for the photo thumbnail**
+- [x] **F7.1** Plant cards: thumbnail, name, location · medium, days since watered
 - [x] **F7.2** Attention sorting — 5-level priority — *UI-SPEC §3*
 - [ ] **F7.3** Due badges (never red, never a failure count)
 - [x] **F7.4** Filter chips to reveal archived / dead plants

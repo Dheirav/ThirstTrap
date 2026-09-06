@@ -1,6 +1,7 @@
 package dev.dheirav.thirsttrap.data
 
 import dev.dheirav.thirsttrap.data.dao.CareEventDao
+import dev.dheirav.thirsttrap.data.dao.PhotoDao
 import dev.dheirav.thirsttrap.data.dao.PlantDao
 import dev.dheirav.thirsttrap.data.dao.ReminderDao
 import dev.dheirav.thirsttrap.domain.CareEvent
@@ -24,6 +25,8 @@ class PlantRepositoryImpl @Inject constructor(
     private val plantDao: PlantDao,
     private val eventDao: CareEventDao,
     private val reminderDao: ReminderDao,
+    private val photoDao: PhotoDao,
+    private val photoStore: PhotoStore,
 ) : PlantRepository {
 
     override fun observePlants(includeArchived: Boolean): Flow<List<Plant>> =
@@ -45,9 +48,14 @@ class PlantRepositoryImpl @Inject constructor(
             plantDao.observePlants(includeArchived = false),
             eventDao.observeAll(),
             reminderDao.observeAll(),
-        ) { plantRows, eventRows, reminderRows ->
+            photoDao.observeAll(),
+        ) { plantRows, eventRows, reminderRows, photoRows ->
             val now = nowMillis()
             val eventsByPlant = eventRows.groupBy { it.plantId }
+            // Most recent photo per plant, for the card thumbnail.
+            val coverByPlant = photoRows
+                .groupBy { it.plantId }
+                .mapValues { (_, ps) -> ps.maxByOrNull { it.takenAt } }
             val dueByPlant = reminderRows
                 .filter { it.enabled }
                 .groupBy { it.plantId }
@@ -73,6 +81,8 @@ class PlantRepositoryImpl @Inject constructor(
                         if (plant.anchors == null) SuppressionReason.NOT_CALIBRATED
                         else SuppressionReason.NO_READINGS,
                     ),
+                    coverPhotoPath = coverByPlant[row.id]
+                        ?.let { photoStore.absoluteFile(it.relativePath).absolutePath },
                     averageIntervalDays = averageWateringIntervalDays(
                         events.filter { it.type == CareEventType.WATERED.name }
                             .map { it.timestamp },
