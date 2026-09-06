@@ -1,0 +1,163 @@
+package dev.dheirav.thirsttrap.feature.plantedit
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.dheirav.thirsttrap.domain.Medium
+import dev.dheirav.thirsttrap.domain.PlantSource
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
+fun PlantEditScreen(
+    onDone: () -> Unit,
+    viewModel: PlantEditViewModel = hiltViewModel(),
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    var confirmDelete by remember { mutableStateOf(false) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(if (state.isNew) "Add plant" else "Edit plant") },
+                navigationIcon = {
+                    IconButton(onClick = onDone) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+            )
+        },
+    ) { padding ->
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            OutlinedTextField(
+                value = state.name,
+                onValueChange = viewModel::onName,
+                label = { Text("Name") },
+                placeholder = { Text("marbled pothos") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            OutlinedTextField(
+                value = state.species,
+                onValueChange = viewModel::onSpecies,
+                label = { Text("Species (optional)") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            OutlinedTextField(
+                value = state.location,
+                onValueChange = viewModel::onLocation,
+                label = { Text("Location") },
+                placeholder = { Text("desk, windowsill, balcony") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            OutlinedTextField(
+                value = state.containerDesc,
+                onValueChange = viewModel::onContainer,
+                label = { Text("Container (optional)") },
+                placeholder = { Text("6-inch terracotta") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            Text("Growing medium", style = MaterialTheme.typography.labelLarge)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Medium.entries.filter { it != Medium.UNKNOWN }.forEach { m ->
+                    FilterChip(
+                        selected = state.medium == m,
+                        onClick = { viewModel.onMedium(m) },
+                        label = { Text(m.name.lowercase().replace('_', ' ')) },
+                    )
+                }
+            }
+
+            Text("Where it came from", style = MaterialTheme.typography.labelLarge)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                PlantSource.entries.filter { it != PlantSource.UNKNOWN }.forEach { s ->
+                    FilterChip(
+                        selected = state.source == s,
+                        onClick = { viewModel.onSource(s) },
+                        label = { Text(s.name.lowercase()) },
+                    )
+                }
+            }
+
+            Button(
+                onClick = { viewModel.save(onDone) },
+                enabled = state.canSave,
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text(if (state.isNew) "Add plant" else "Save") }
+
+            if (!state.isNew) {
+                TextButton(
+                    onClick = { viewModel.archive(onDone) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text("Archive (keeps its history)") }
+
+                TextButton(
+                    onClick = { confirmDelete = true },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Delete permanently", color = MaterialTheme.colorScheme.error)
+                }
+            }
+        }
+    }
+
+    if (confirmDelete) {
+        AlertDialog(
+            onDismissRequest = { confirmDelete = false },
+            title = { Text("Delete ${state.name}?") },
+            // Archiving is the reversible option and is offered first, because
+            // a plant's history is the thing that is expensive to lose.
+            text = {
+                Text(
+                    "This removes the plant and every event logged against it. " +
+                        "Archiving keeps the history instead.",
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { confirmDelete = false; viewModel.delete(onDone) }) {
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text("Cancel") } },
+        )
+    }
+}

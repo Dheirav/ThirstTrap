@@ -22,6 +22,9 @@ kotlin {
 }
 
 dependencies {
+    // api, not implementation: PlantRepository exposes Flow in its signatures,
+    // so every consumer needs it on their compile classpath too.
+    api(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.datetime)
     implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit)
