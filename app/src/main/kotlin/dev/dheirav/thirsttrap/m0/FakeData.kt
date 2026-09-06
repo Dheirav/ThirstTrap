@@ -26,7 +26,16 @@ object FakeData {
 
     private const val DAY = 86_400_000L
 
-    data class LogEntry(val id: Long, val plantId: String, val label: String, val atMillis: Long)
+    data class LogEntry(
+        val id: Long,
+        val plantId: String,
+        val label: String,
+        val atMillis: Long,
+        /** What lastWatered held before this entry, so undo can put it back. */
+        val previousLastWatered: Long?,
+        val previousLastChecked: Long?,
+        val wasWatering: Boolean,
+    )
 
     private var nextId = 1L
     private val _log = MutableStateFlow<List<LogEntry>>(emptyList())
@@ -85,6 +94,8 @@ object FakeData {
         "snake" to now - 26 * DAY,
     )
 
+    private val lastChecked = lastWatered.toMutableMap()
+
     /** One plant is deliberately overdue, so the attention sort has something to do. */
     private val remindersDue = mapOf("fern" to now - 2 * DAY)
 
@@ -98,7 +109,7 @@ object FakeData {
             PlantAttention(
                 plant = plant,
                 lastWateredMillis = lastWatered[plant.id],
-                lastCheckedMillis = lastWatered[plant.id],
+                lastCheckedMillis = lastChecked[plant.id],
                 reminderDueMillis = remindersDue[plant.id],
                 depletion = plant.anchors?.let { a ->
                     readings[plant.id]?.lastOrNull()?.let { a.depletionAt(it.grams) }
@@ -109,15 +120,34 @@ object FakeData {
         return sortByAttention(items, nowMillis)
     }
 
-    fun logWatered(plantId: String): LogEntry = record(plantId, "Watered")
+    fun logWatered(plantId: String): LogEntry = record(plantId, "Watered", watering = true)
 
+    /**
+     * A check is not a watering. Conflating them would make "still wet" show up
+     * on the card as "Watered today", which is the precise confusion this app
+     * exists to avoid - and it would corrupt the interval the reminder derives.
+     */
     fun logChecked(plantId: String, stillWet: Boolean): LogEntry =
-        record(plantId, if (stillWet) "Checked - still wet" else "Checked - watered")
+        record(
+            plantId,
+            if (stillWet) "Checked - still wet" else "Checked - watered",
+            watering = !stillWet,
+        )
 
-    private fun record(plantId: String, label: String): LogEntry {
-        val entry = LogEntry(nextId++, plantId, label, System.currentTimeMillis())
+    private fun record(plantId: String, label: String, watering: Boolean): LogEntry {
+        val entry = LogEntry(
+            id = nextId++,
+            plantId = plantId,
+            label = label,
+            atMillis = System.currentTimeMillis(),
+            previousLastWatered = lastWatered[plantId],
+            previousLastChecked = lastChecked[plantId],
+            wasWatering = watering,
+        )
         _log.value = listOf(entry) + _log.value
-        lastWatered[plantId] = entry.atMillis
+        // Every log is a check - you assessed the plant. Only some are waterings.
+        lastChecked[plantId] = entry.atMillis
+        if (watering) lastWatered[plantId] = entry.atMillis
         _version.value += 1
         return entry
     }
@@ -125,11 +155,18 @@ object FakeData {
     /** Undo is a real removal, not a tombstone — see docs/UI-SPEC.md section 2. */
     fun undo(entry: LogEntry) {
         _log.value = _log.value.filterNot { it.id == entry.id }
+        // Restore the derived state too. Dropping the log row alone left the
+        // card reading "Watered today", which made undo look like a no-op.
+        entry.previousLastWatered?.let { lastWatered[entry.plantId] = it }
+            ?: lastWatered.remove(entry.plantId)
+        entry.previousLastChecked?.let { lastChecked[entry.plantId] = it }
+            ?: lastChecked.remove(entry.plantId)
         _version.value += 1
     }
 
     fun nameOf(plantId: String): String = plants.first { it.id == plantId }.name
 
+    /** Null means "show nothing at all", not "show a placeholder". */
     fun predictionLabel(prediction: Prediction): String? = when (prediction) {
         is Prediction.WaterNow -> "Needs water now"
         is Prediction.Eta -> when {

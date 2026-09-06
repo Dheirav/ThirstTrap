@@ -3,6 +3,7 @@ package dev.dheirav.thirsttrap.m0
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 
 /**
@@ -16,6 +17,7 @@ import android.widget.Toast
 class ReminderActionReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
+        Log.i(TAG, "onReceive action=${intent.action} plant=${intent.getStringExtra(EXTRA_PLANT_ID)}")
         val plantId = intent.getStringExtra(EXTRA_PLANT_ID) ?: return
         val name = FakeData.nameOf(plantId)
 
@@ -36,11 +38,13 @@ class ReminderActionReceiver : BroadcastReceiver() {
             else -> return
         }
 
+        Log.i(TAG, "handled: $message")
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         ReminderNotifier.dismiss(context, plantId)
     }
 
     companion object {
+        private const val TAG = "TTReminder"
         const val ACTION_WATERED = "dev.dheirav.thirsttrap.WATERED"
         const val ACTION_STILL_WET = "dev.dheirav.thirsttrap.STILL_WET"
         const val ACTION_SNOOZE = "dev.dheirav.thirsttrap.SNOOZE"
