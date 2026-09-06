@@ -10,12 +10,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.dheirav.thirsttrap.data.PlantRepositoryImpl
 import dev.dheirav.thirsttrap.data.ReminderRepositoryImpl
+import dev.dheirav.thirsttrap.data.SettingsRepositoryImpl
 import dev.dheirav.thirsttrap.data.ThirstTrapDatabase
 import dev.dheirav.thirsttrap.data.dao.CareEventDao
 import dev.dheirav.thirsttrap.data.dao.PlantDao
 import dev.dheirav.thirsttrap.data.dao.ReminderDao
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.ReminderRepository
+import dev.dheirav.thirsttrap.domain.SettingsRepository
 import javax.inject.Singleton
 
 @Module
@@ -35,6 +37,11 @@ object DatabaseModule {
     @Provides fun provideCareEventDao(db: ThirstTrapDatabase): CareEventDao = db.careEventDao()
 
     @Provides fun provideReminderDao(db: ThirstTrapDatabase): ReminderDao = db.reminderDao()
+
+    @Provides
+    @Singleton
+    fun provideSettingsRepository(@ApplicationContext context: Context): SettingsRepository =
+        SettingsRepositoryImpl(context)
 }
 
 @Module

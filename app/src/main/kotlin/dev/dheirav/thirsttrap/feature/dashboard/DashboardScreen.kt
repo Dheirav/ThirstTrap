@@ -78,6 +78,7 @@ fun DashboardScreen(
     onAddPlant: () -> Unit,
     onEditPlant: (String) -> Unit,
     onOpenPlant: (String) -> Unit,
+    onLogMore: (String) -> Unit,
     viewModel: DashboardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -169,6 +170,7 @@ fun DashboardScreen(
                         announce(e, "Good call - checked, not thirsty yet")
                     }
                 },
+                onMore = { sheetFor = null; onLogMore(item.plant.id) },
                 onHistory = { sheetFor = null; onOpenPlant(item.plant.id) },
                 onEdit = { sheetFor = null; onEditPlant(item.plant.id) },
             )
@@ -348,6 +350,7 @@ private fun QuickLogSheet(
     plantName: String,
     onWatered: () -> Unit,
     onStillWet: () -> Unit,
+    onMore: () -> Unit,
     onHistory: () -> Unit,
     onEdit: () -> Unit,
 ) {
@@ -366,6 +369,11 @@ private fun QuickLogSheet(
             }
             FilledTonalButton(onClick = onStillWet, modifier = Modifier.weight(1f).height(64.dp)) {
                 Text("Still wet")
+            }
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            FilledTonalButton(onClick = onMore, modifier = Modifier.weight(1f).height(64.dp)) {
+                Text("More…")
             }
         }
         Row {

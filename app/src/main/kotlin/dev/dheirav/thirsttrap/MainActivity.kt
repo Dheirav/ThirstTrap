@@ -30,6 +30,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import dev.dheirav.thirsttrap.feature.dashboard.DashboardScreen
 import dev.dheirav.thirsttrap.feature.due.DueScreen
 import dev.dheirav.thirsttrap.feature.help.RemindersHelpScreen
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.dheirav.thirsttrap.feature.debug.DebugScreen
+import dev.dheirav.thirsttrap.feature.logevent.LogEventScreen
 import dev.dheirav.thirsttrap.feature.plantdetail.PlantDetailScreen
 import dev.dheirav.thirsttrap.feature.plantedit.PlantEditScreen
 import dev.dheirav.thirsttrap.navigation.Routes
@@ -44,7 +48,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ThirstTrapTheme {
+            val mainViewModel: MainViewModel = hiltViewModel()
+            val settings by mainViewModel.settings.collectAsStateWithLifecycle()
+
+            ThirstTrapTheme(dynamicColor = settings.dynamicColor) {
                 val nav = rememberNavController()
                 val backStack by nav.currentBackStackEntryAsState()
                 val route = backStack?.destination?.route
@@ -80,13 +87,26 @@ class MainActivity : ComponentActivity() {
                                 onAddPlant = { nav.navigate(Routes.plantEdit()) },
                                 onEditPlant = { id -> nav.navigate(Routes.plantEdit(id)) },
                                 onOpenPlant = { id -> nav.navigate(Routes.plantDetail(id)) },
+                                onLogMore = { id -> nav.navigate(Routes.logEvent(id)) },
                             )
                         }
                         composable(Routes.DUE) {
-                            DueScreen(onOpenHelp = { nav.navigate(Routes.HELP_REMINDERS) })
+                            DueScreen(
+                                onOpenHelp = { nav.navigate(Routes.HELP_REMINDERS) },
+                                onOpenDebug = { nav.navigate(Routes.DEBUG) },
+                            )
                         }
                         composable(Routes.HELP_REMINDERS) {
                             RemindersHelpScreen(onBack = { nav.popBackStack() })
+                        }
+                        composable(
+                            route = "${Routes.LOG_EVENT}/{id}",
+                            arguments = listOf(navArgument("id") { type = NavType.StringType }),
+                        ) {
+                            LogEventScreen(onDone = { nav.popBackStack() })
+                        }
+                        composable(Routes.DEBUG) {
+                            DebugScreen(onBack = { nav.popBackStack() })
                         }
                         composable(
                             route = "${Routes.PLANT_DETAIL}/{id}",

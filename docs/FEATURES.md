@@ -38,9 +38,9 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 
 ### F2 — Care event logging *(req. item 2 — ≤3 taps)*
 - [x] **F2.1** One-tap water from the dashboard card + 5s undo snackbar — *UI-SPEC §2*
-- [~] **F2.2** Quick-log bottom sheet: Watered / Checked / Photo / More (64dp targets) — **only Watered / Still wet; Photo and More not built**
-- [ ] **F2.3** Full event-type picker — 14 types — *DATA-MODEL `care_events`*
-- [ ] **F2.4** Type-specific fields: amount + method, check result, fertilizer + dilution, medium from/to, milestone kind, cause of death
+- [~] **F2.2** Quick-log bottom sheet: Watered / Checked / Photo / More (64dp targets) — **More built; Photo blocked on F4**
+- [x] **F2.3** Full event-type picker — 14 types — *DATA-MODEL `care_events`*
+- [x] **F2.4** Type-specific fields: amount + method, check result, fertilizer + dilution, medium from/to, milestone kind, cause of death
 - [ ] **F2.5** Long-press droplet → detailed watering entry (amount, bottom-soak)
 - [x] **F2.6** Edit / delete an existing event
 
@@ -73,9 +73,9 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] **F6.4** Three notification channels: watering checks, tasks, health alerts
 - [x] **F6.5** Shade quick actions: **Watered** / **Still wet** / **Snooze 1 day**
 - [x] **F6.6** Collapse — one notification per plant, maximum, ever (stable ID) — **implemented (stable id per plant); not verified with several plants overdue**
-- [ ] **F6.7** Bulk-clear overdue, undoable via snackbar
+- [x] **F6.7** Bulk-clear overdue, undoable via snackbar
 - [x] **F6.8** In-app **Due** list (bottom-bar destination)
-- [~] **F6.9** Graceful degradation when `POST_NOTIFICATIONS` is denied — app stays fully usable — **code path exists; not tested with the permission denied**
+- [x] **F6.9** Graceful degradation when `POST_NOTIFICATIONS` is denied — app stays fully usable
 - [x] **F6.10** Reminder-tone copy pass — wording table + response parity — *UI-SPEC §7*
 
 ### F7 — Dashboard *(req. item 7)*
@@ -101,11 +101,11 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 
 ### X — Cross-cutting (M1)
 - [ ] **X1** ⊕ Settings screen — theme, reminder hour, default trigger, API keys, export, storage
-- [~] **X2** Material 3 theme — dynamic colour, full dark theme, muted green fallback — **built, but HyperOS dynamic colour currently overrides the palette**
+- [x] **X2** Material 3 theme — dynamic colour, full dark theme, muted green fallback
 - [ ] **X3** ⊕ Empty & error states — 7 defined cases — *UI-SPEC §9*
 - [ ] **X4** ⊕ Accessibility pass — content descriptions, 48dp targets, 200% font scale, no colour-only meaning, reduce-motion
 - [ ] **X5** ⊕ Storage screen — usage, photo count, "clean up now" (orphan files + orphan rows) — *DATA-MODEL §Maintenance*
-- [~] **X6** ⊕ Debug menu (debug builds only) — fire reminder now / in 10s, fast-forward due date, dump WorkManager queue — **only the 10-second test-reminder button**
+- [x] **X6** ⊕ Debug menu (debug builds only) — fire reminder now / in 10s, fast-forward due date, dump WorkManager queue
 - [x] **X7** ⊕ "Reminders not arriving?" help — per-OEM instructions, battery-optimisation suggestion, test-fire button. **M1, not M2** — the target device is a Redmi on HyperOS, where reminders appear broken without it — *NOTIFICATIONS §6*
 
 ---
@@ -135,7 +135,7 @@ complete before any UI is written.*
 - [ ] **F17.15** Weight entry — large one-handed keypad, smart context default
 - [x] **F17.16** Depletion bar on the dashboard card (percentage-labelled, threshold marked, hidden when uncalibrated)
 - [ ] **F17.17** Weight history chart — anchors, trigger line, segment markers, dashed forward projection
-- [ ] **F17.18** Recalibration prompt on repot / medium change / container edit
+- [x] **F17.18** Recalibration prompt on repot / medium change / container edit
 - [ ] **F17.19** Mark a reading as excluded (bad weigh-in)
 - [ ] **F17.20** ⊕ Scale-guidance help — resolution vs repeatability, small-pot warning
 

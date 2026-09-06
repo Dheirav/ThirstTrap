@@ -45,7 +45,11 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions { jvmTarget = "17" }
-    buildFeatures { compose = true }
+    buildFeatures {
+        compose = true
+        // AGP 8 turns this off by default; the debug menu is gated on it.
+        buildConfig = true
+    }
 }
 
 dependencies {
