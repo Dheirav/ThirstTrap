@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.help
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
@@ -71,14 +73,27 @@ fun RemindersHelpScreen(
             ) {
                 Section(
                     "1. Turn on Autostart",
-                    "Settings → Apps → Manage apps → ThirstTrap → Autostart.\n\n" +
-                        "On Xiaomi phones this is off by default, and without it the daily " +
-                        "check never runs.",
+                    "Autostart is NOT on the app's own info page - it is a separate list:\n" +
+                        "Settings → Apps → Permissions → Autostart → ThirstTrap.\n\n" +
+                        "It is off by default on Xiaomi phones, and without it the daily " +
+                        "check never runs. The button below goes straight there.",
+                )
+                FilledTonalButton(
+                    onClick = { openXiaomiAutostart(context) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text("Open the Autostart list") }
+                Spacer(Modifier.height(20.dp))
+
+                Section(
+                    "2. Turn OFF \"Pause app activity if unused\"",
+                    "On the app's info page. Android turns this on by default; it stops " +
+                        "notifications and revokes permissions when an app has not been " +
+                        "opened for a while - which is exactly what a reminder app must not " +
+                        "have done to it.",
                 )
                 Section(
-                    "2. Remove the battery restriction",
-                    "Settings → Apps → Manage apps → ThirstTrap → Battery saver → " +
-                        "No restrictions.",
+                    "3. Remove the battery restriction",
+                    "App info → Battery saver → No restrictions.",
                 )
             } else {
                 Section(
@@ -112,7 +127,7 @@ fun RemindersHelpScreen(
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
-            ) { Text("Open this app's settings") }
+            ) { Text("Open this app's info page") }
 
             Spacer(Modifier.height(24.dp))
             Text(
@@ -123,6 +138,37 @@ fun RemindersHelpScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+    }
+}
+
+/**
+ * Deep-links to MIUI's Autostart list.
+ *
+ * The standard ACTION_APPLICATION_DETAILS_SETTINGS page does NOT carry the
+ * Autostart toggle on HyperOS - confirmed on a Note 15 Pro - so sending the
+ * user there and telling them to find it is sending them somewhere it is not.
+ * Falls back to the app info page if the component is missing on some build.
+ */
+private fun openXiaomiAutostart(context: Context) {
+    val candidates = listOf(
+        Intent().setComponent(
+            ComponentName(
+                "com.miui.securitycenter",
+                "com.miui.permcenter.autostart.AutoStartManagementActivity",
+            ),
+        ),
+        Intent("miui.intent.action.OP_AUTO_START")
+            .addCategory(Intent.CATEGORY_DEFAULT),
+    )
+    for (intent in candidates) {
+        if (runCatching { context.startActivity(intent) }.isSuccess) return
+    }
+    runCatching {
+        context.startActivity(
+            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = android.net.Uri.parse("package:${context.packageName}")
+            },
+        )
     }
 }
 

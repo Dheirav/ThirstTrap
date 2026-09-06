@@ -133,9 +133,24 @@ OS3.0 is newer than the Note 12 Pro's HyperOS, but it is the same lineage:
 whichever scheduling approach the app uses. Reminders on a default-configured
 device will not arrive.
 
-Settings → Apps → Manage apps → ThirstTrap → **Autostart** on, and
-**Battery saver → No restrictions**. Verify the path on the device; it moves
-between HyperOS versions.
+**Autostart is NOT on the app's own info page.** Confirmed on the Note 15 Pro
+(HyperOS OS3.0): `ACTION_APPLICATION_DETAILS_SETTINGS` opens MIUI's *App info*
+screen, which has Storage, Power, permissions and "Pause app activity if
+unused" — but **no Autostart toggle at all**. Sending a user there and telling
+them to find it sends them somewhere it is not.
+
+The Autostart list is a separate screen:
+
+- Settings → Apps → Permissions → **Autostart**, or
+- deep-link `com.miui.securitycenter/com.miui.permcenter.autostart.AutoStartManagementActivity`,
+  which resolves on this ROM and is what the in-app X7 button now uses.
+
+Also turn **off** "Pause app activity if unused" on the App info page. Android
+enables it by default and it stops notifications and revokes permissions for an
+app left unopened — precisely wrong for a reminder app, and easy to miss because
+it sits under "Permissions" rather than anything battery-related.
+
+Then **Battery saver → No restrictions**, which *is* on the App info page.
 
 This is why feature `X7` ("Reminders not arriving?" help screen) is an **M1**
 deliverable, not later polish. Run the NOTIFICATIONS §7 matrix on this phone
