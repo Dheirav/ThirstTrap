@@ -101,26 +101,27 @@ forced edge-to-edge layout and predictive back — real UI consequences, not a
 version-number change. Chasing an SDK bump before there are screens to lay out
 is backwards.
 
-### Installing: the toggle resets, and fresh installs are gated harder
+### Installing: the prompt has a short timeout
 
-`INSTALL_FAILED_USER_RESTRICTED: Install canceled by user` means Xiaomi's
-**Install via USB** toggle is off — Settings → Additional settings → Developer
-options. Observed 2026-09-06: **it turns itself back off**, so expect to
-re-enable it periodically rather than once.
+`INSTALL_FAILED_USER_RESTRICTED: Install canceled by user` from `adb install`
+almost always means **the on-device confirmation prompt was not accepted in
+time** — not that anything is misconfigured. Xiaomi's *Install via USB* toggle
+(Settings → Additional settings → Developer options) must be on, but once it
+is, every install still raises a prompt on the phone that has to be tapped
+within a few seconds.
 
-Two behaviours worth knowing:
+**Be looking at the phone before running `adb install`.** Announce it, then run
+it. Several failures on 2026-09-06 were logged here as OS refusals; the user
+corrected that — the prompt was appearing, nobody was watching it.
 
-- **Updating an installed package is far easier than a fresh install.** Repeated
-  `adb install -r` over an existing app succeeded all afternoon; the first
-  install after an `adb uninstall` was refused outright with **no dialog shown
-  at all** — focus stayed on the launcher. Avoid `adb uninstall` unless a schema
-  change genuinely requires it.
-- When it refuses *without* prompting, the toggle is off. When a prompt does
-  appear, it has a short timeout — miss it and you get the same error, which
-  reads identically.
+Two earlier claims in this file were **wrong and have been removed**: that the
+toggle turns itself back off, and that a fresh install is gated harder than an
+update. Both were inferred from failures that had the simpler explanation
+above. The "no dialog shown at all" observation came from a screenshot taken
+three seconds in, which is not long enough to conclude a dialog never appeared.
 
-**Fallback that always works:** push the APK to `/sdcard/Download/` and install
-it by tapping the file in the Files app.
+**Fallback if the timing is awkward:** push the APK to `/sdcard/Download/` and
+install it by tapping the file in the Files app.
 
 ```bash
 "$WADB" push <apk> /sdcard/Download/thirsttrap-debug.apk
