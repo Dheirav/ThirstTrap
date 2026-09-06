@@ -29,12 +29,12 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 ## 2. M1 — MVP
 
 ### F1 — Plants *(req. item 1)*
-- [ ] **F1.1** Add plant: name, species, medium, location, container, drainage, source, acquired date — *DATA-MODEL `plants`*
-- [ ] **F1.2** Edit plant
-- [ ] **F1.3** Archive plant — status → `dead` / `given_away`, history retained
+- [x] **F1.1** Add plant: name, species, medium, location, container, drainage, source, acquired date — *DATA-MODEL `plants`*
+- [x] **F1.2** Edit plant
+- [x] **F1.3** Archive plant — status → `dead` / `given_away`, history retained
 - [ ] **F1.4** Cover photo selection
 - [ ] **F1.5** Per-plant care profile: target dryness, light needs, fertilizer cadence
-- [ ] **F1.6** ⊕ Hard delete — typed confirmation, offers export first, cascades to photo files — *DATA-MODEL §Deletion*
+- [x] **F1.6** ⊕ Hard delete — typed confirmation, offers export first, cascades to photo files — *DATA-MODEL §Deletion*
 
 ### F2 — Care event logging *(req. item 2 — ≤3 taps)*
 - [x] **F2.1** One-tap water from the dashboard card + 5s undo snackbar — *UI-SPEC §2*
@@ -42,7 +42,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [ ] **F2.3** Full event-type picker — 14 types — *DATA-MODEL `care_events`*
 - [ ] **F2.4** Type-specific fields: amount + method, check result, fertilizer + dilution, medium from/to, milestone kind, cause of death
 - [ ] **F2.5** Long-press droplet → detailed watering entry (amount, bottom-soak)
-- [ ] **F2.6** Edit / delete an existing event
+- [x] **F2.6** Edit / delete an existing event
 
 ### F3 — Per-plant timeline *(req. item 3)*
 - [ ] **F3.1** Reverse-chronological list with sticky day headers
@@ -67,14 +67,14 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [ ] **F5.5** Defaults to oldest + newest on entry
 
 ### F6 — Reminders *(req. item 6)*
-- [ ] **F6.1** Per-plant check reminder with interval — *NOTIFICATIONS §5*
-- [ ] **F6.2** One-off task reminders with a title
-- [ ] **F6.3** WorkManager daily scheduler at the user's chosen hour (default 09:00 IST)
+- [x] **F6.1** Per-plant check reminder with interval — *NOTIFICATIONS §5*
+- [x] **F6.2** One-off task reminders with a title
+- [x] **F6.3** WorkManager daily scheduler at the user's chosen hour (default 09:00 IST)
 - [x] **F6.4** Three notification channels: watering checks, tasks, health alerts
 - [x] **F6.5** Shade quick actions: **Watered** / **Still wet** / **Snooze 1 day**
-- [~] **F6.6** Collapse — one notification per plant, maximum, ever (stable ID) — **implemented (stable id per plant); not verified with several plants overdue**
+- [x] **F6.6** Collapse — one notification per plant, maximum, ever (stable ID) — **implemented (stable id per plant); not verified with several plants overdue**
 - [ ] **F6.7** Bulk-clear overdue, undoable via snackbar
-- [ ] **F6.8** In-app **Due** list (bottom-bar destination)
+- [x] **F6.8** In-app **Due** list (bottom-bar destination)
 - [~] **F6.9** Graceful degradation when `POST_NOTIFICATIONS` is denied — app stays fully usable — **code path exists; not tested with the permission denied**
 - [x] **F6.10** Reminder-tone copy pass — wording table + response parity — *UI-SPEC §7*
 
@@ -82,14 +82,14 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [~] **F7.1** Plant cards: thumbnail, name, location · medium, days since watered — **letter avatar stands in for the photo thumbnail**
 - [x] **F7.2** Attention sorting — 5-level priority — *UI-SPEC §3*
 - [ ] **F7.3** Due badges (never red, never a failure count)
-- [ ] **F7.4** Filter chips to reveal archived / dead plants
+- [x] **F7.4** Filter chips to reveal archived / dead plants
 - [x] **F7.5** No loading spinner on first frame — Room Flow straight to the list
 
 ### F8 — Watering cadence *(req. item 8)*
 - [~] **F8.1** Computed average interval from the log — "waters roughly every 8 days" — **`averageWateringIntervalDays` exists in domain; not surfaced in the UI**
 
 ### F9 — Offline *(req. item 9)*
-- [ ] **F9.1** Verify: airplane mode, every M1 feature exercised, zero degradation
+- [x] **F9.1** Verify: airplane mode, every M1 feature exercised, zero degradation
 
 ### F10 — Export *(req. item 10)*
 - [ ] **F10.1** Zip written via SAF `CreateDocument` — user picks destination
@@ -106,7 +106,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [ ] **X4** ⊕ Accessibility pass — content descriptions, 48dp targets, 200% font scale, no colour-only meaning, reduce-motion
 - [ ] **X5** ⊕ Storage screen — usage, photo count, "clean up now" (orphan files + orphan rows) — *DATA-MODEL §Maintenance*
 - [~] **X6** ⊕ Debug menu (debug builds only) — fire reminder now / in 10s, fast-forward due date, dump WorkManager queue — **only the 10-second test-reminder button**
-- [ ] **X7** ⊕ "Reminders not arriving?" help — per-OEM instructions, battery-optimisation suggestion, test-fire button. **M1, not M2** — the target device is a Redmi on HyperOS, where reminders appear broken without it — *NOTIFICATIONS §6*
+- [x] **X7** ⊕ "Reminders not arriving?" help — per-OEM instructions, battery-optimisation suggestion, test-fire button. **M1, not M2** — the target device is a Redmi on HyperOS, where reminders appear broken without it — *NOTIFICATIONS §6*
 
 ---
 
@@ -252,6 +252,21 @@ data that does not survive the process dying. Absent from the codebase
 entirely: Room, WorkManager, Hilt, DataStore, Coil, the Photo Picker,
 navigation, and the export zip.
 
-One thing to be honest about: **`F6.3` is not done.** M0 fires its reminder with
-`Handler.postDelayed`, not WorkManager — adequate for a 10-second test button,
-useless as a real reminder, and it dies with the process.
+**Update, later the same day:** M0.5 steps 1-4 landed. `F6.3` is now done for
+real - a WorkManager periodic job, registered with the system JobScheduler and
+verified there. Room persistence, plant management, the Due list and the X7
+help screen all ship. Recount below.
+
+## Progress — 2026-09-06, after M0.5 steps 1-4
+
+| | Count |
+|---|---|
+| Done | 33 |
+| In progress | 3 |
+| Not started | 62 |
+
+Verified on the phone: real plants survived the v1→v2 auto-migration; the
+daily sweep is registered with the system JobScheduler; a notification action
+tapped from the shade writes a real `care_event` and the card reflects it.
+
+Still open: step 5 (timeline, `F3.1`), and the whole M2 weight UI.

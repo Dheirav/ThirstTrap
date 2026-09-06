@@ -118,6 +118,25 @@ fun PlantEditScreen(
                 }
             }
 
+            if (state.isNew) {
+                Text("When did you last water it?", style = MaterialTheme.typography.labelLarge)
+                Text(
+                    "A plant you add today already has a history. This starts its first " +
+                        "reminder from the right day.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    LastWatered.entries.forEach { w ->
+                        FilterChip(
+                            selected = state.lastWatered == w,
+                            onClick = { viewModel.onLastWatered(w) },
+                            label = { Text(w.label) },
+                        )
+                    }
+                }
+            }
+
             Button(
                 onClick = { viewModel.save(onDone) },
                 enabled = state.canSave,

@@ -2,6 +2,7 @@ package dev.dheirav.thirsttrap.data
 
 import dev.dheirav.thirsttrap.data.dao.CareEventDao
 import dev.dheirav.thirsttrap.data.dao.PlantDao
+import dev.dheirav.thirsttrap.data.dao.ReminderDao
 import dev.dheirav.thirsttrap.domain.CareEvent
 import dev.dheirav.thirsttrap.domain.CareEventType
 import dev.dheirav.thirsttrap.domain.Plant
@@ -21,6 +22,7 @@ import javax.inject.Singleton
 class PlantRepositoryImpl @Inject constructor(
     private val plantDao: PlantDao,
     private val eventDao: CareEventDao,
+    private val reminderDao: ReminderDao,
 ) : PlantRepository {
 
     override fun observePlants(includeArchived: Boolean): Flow<List<Plant>> =
@@ -41,9 +43,14 @@ class PlantRepositoryImpl @Inject constructor(
         combine(
             plantDao.observePlants(includeArchived = false),
             eventDao.observeAll(),
-        ) { plantRows, eventRows ->
+            reminderDao.observeAll(),
+        ) { plantRows, eventRows, reminderRows ->
             val now = nowMillis()
             val eventsByPlant = eventRows.groupBy { it.plantId }
+            val dueByPlant = reminderRows
+                .filter { it.enabled }
+                .groupBy { it.plantId }
+                .mapValues { (_, rs) -> rs.minOf { it.nextDueAt } }
 
             val items = plantRows.map { row ->
                 val plant = row.toDomain()
@@ -59,7 +66,7 @@ class PlantRepositoryImpl @Inject constructor(
                     plant = plant,
                     lastWateredMillis = lastWatered,
                     lastCheckedMillis = lastChecked,
-                    reminderDueMillis = null, // reminders land in M0.5 step 4
+                    reminderDueMillis = dueByPlant[row.id],
                     depletion = null,
                     prediction = Prediction.NeedAnotherReading(
                         if (plant.anchors == null) SuppressionReason.NOT_CALIBRATED

@@ -2,6 +2,8 @@ package dev.dheirav.thirsttrap.navigation
 
 object Routes {
     const val DASHBOARD = "dashboard"
+    const val DUE = "due"
+    const val HELP_REMINDERS = "help/reminders"
     const val PLANT_EDIT = "plant/edit"
     /** Empty id means "new plant". */
     fun plantEdit(plantId: String? = null) =

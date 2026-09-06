@@ -4,18 +4,43 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.dheirav.thirsttrap.domain.CareEvent
+import dev.dheirav.thirsttrap.domain.CareEventType
 import dev.dheirav.thirsttrap.domain.Medium
 import dev.dheirav.thirsttrap.domain.Plant
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.PlantSource
 import dev.dheirav.thirsttrap.domain.PlantStatus
+import dev.dheirav.thirsttrap.domain.Reminder
+import dev.dheirav.thirsttrap.domain.ReminderKind
+import dev.dheirav.thirsttrap.domain.ReminderRepository
+import dev.dheirav.thirsttrap.domain.computeNextDue
 import dev.dheirav.thirsttrap.domain.newId
+import dev.dheirav.thirsttrap.domain.resolveIntervalDays
+import dev.dheirav.thirsttrap.domain.tzOffsetMinutesAt
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+/**
+ * When did you last water it?
+ *
+ * A plant you add today already has a history - you did not acquire it this
+ * morning. Without this the app records "never watered", which sorts the plant
+ * wrongly on the dashboard and starts its first reminder from the wrong day.
+ * Answering it writes a backdated watering event, so the log stays the single
+ * source of truth rather than adding a column.
+ */
+enum class LastWatered(val label: String, val daysAgo: Int?) {
+    TODAY("Today", 0),
+    YESTERDAY("Yesterday", 1),
+    THREE_DAYS("3 days ago", 3),
+    A_WEEK("A week ago", 7),
+    UNKNOWN("Not sure", null),
+}
 
 data class PlantEditUiState(
     val id: String? = null,
@@ -27,6 +52,7 @@ data class PlantEditUiState(
     val source: PlantSource = PlantSource.UNKNOWN,
     val status: PlantStatus = PlantStatus.ACTIVE,
     val archived: Boolean = false,
+    val lastWatered: LastWatered = LastWatered.UNKNOWN,
     val loading: Boolean = true,
 ) {
     val isNew: Boolean get() = id == null
@@ -36,6 +62,7 @@ data class PlantEditUiState(
 @HiltViewModel
 class PlantEditViewModel @Inject constructor(
     private val repository: PlantRepository,
+    private val reminders: ReminderRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -71,14 +98,17 @@ class PlantEditViewModel @Inject constructor(
     fun onContainer(v: String) { _state.value = _state.value.copy(containerDesc = v) }
     fun onMedium(v: Medium) { _state.value = _state.value.copy(medium = v) }
     fun onSource(v: PlantSource) { _state.value = _state.value.copy(source = v) }
+    fun onLastWatered(v: LastWatered) { _state.value = _state.value.copy(lastWatered = v) }
 
     fun save(onDone: () -> Unit) {
         val s = _state.value
         if (!s.canSave) return
+        val plantId = s.id ?: newId()
+        val isNew = s.isNew
         viewModelScope.launch {
             repository.upsertPlant(
                 Plant(
-                    id = s.id ?: newId(),
+                    id = plantId,
                     name = s.name.trim(),
                     species = s.species.trim().takeIf { it.isNotEmpty() },
                     medium = s.medium,
@@ -89,6 +119,41 @@ class PlantEditViewModel @Inject constructor(
                     archived = s.archived,
                 ),
             )
+
+            if (isNew) {
+                // Seed the log with what the user told us, so the plant does not
+                // read as "never watered" and the first reminder counts from the
+                // right day.
+                val now = System.currentTimeMillis()
+                val daysAgo = s.lastWatered.daysAgo
+                val lastAssessed = daysAgo?.let { now - it * 86_400_000L }
+
+                if (lastAssessed != null) {
+                    repository.logEvent(
+                        CareEvent(
+                            id = newId(),
+                            plantId = plantId,
+                            timestampMillis = lastAssessed,
+                            tzOffsetMinutes = tzOffsetMinutesAt(lastAssessed),
+                            type = CareEventType.WATERED,
+                            note = "Recorded when the plant was added",
+                        ),
+                    )
+                }
+
+                // Every new plant gets a check reminder. Without one it is
+                // invisible until the user happens to open the app.
+                val interval = resolveIntervalDays(null, null, null)
+                reminders.upsert(
+                    Reminder(
+                        id = newId(),
+                        plantId = plantId,
+                        kind = ReminderKind.CHECK,
+                        intervalDays = null,
+                        nextDueAtMillis = computeNextDue(lastAssessed, interval, now),
+                    ),
+                )
+            }
             onDone()
         }
     }

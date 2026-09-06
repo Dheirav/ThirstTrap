@@ -15,7 +15,21 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Yard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.navigation.compose.currentBackStackEntryAsState
 import dev.dheirav.thirsttrap.feature.dashboard.DashboardScreen
+import dev.dheirav.thirsttrap.feature.due.DueScreen
+import dev.dheirav.thirsttrap.feature.help.RemindersHelpScreen
 import dev.dheirav.thirsttrap.feature.plantedit.PlantEditScreen
 import dev.dheirav.thirsttrap.navigation.Routes
 import dev.dheirav.thirsttrap.ui.ThirstTrapTheme
@@ -31,20 +45,55 @@ class MainActivity : ComponentActivity() {
         setContent {
             ThirstTrapTheme {
                 val nav = rememberNavController()
-                NavHost(navController = nav, startDestination = Routes.DASHBOARD) {
-                    composable(Routes.DASHBOARD) {
-                        DashboardScreen(
-                            onAddPlant = { nav.navigate(Routes.plantEdit()) },
-                            onEditPlant = { id -> nav.navigate(Routes.plantEdit(id)) },
-                        )
-                    }
-                    composable(
-                        route = "${Routes.PLANT_EDIT}?id={id}",
-                        arguments = listOf(
-                            navArgument("id") { type = NavType.StringType; defaultValue = "" },
-                        ),
+                val backStack by nav.currentBackStackEntryAsState()
+                val route = backStack?.destination?.route
+                val showBar = route == Routes.DASHBOARD || route == Routes.DUE
+
+                Scaffold(
+                    bottomBar = {
+                        if (showBar) {
+                            NavigationBar {
+                                NavigationBarItem(
+                                    selected = route == Routes.DASHBOARD,
+                                    onClick = { nav.navigate(Routes.DASHBOARD) { popUpTo(Routes.DASHBOARD) { inclusive = true } } },
+                                    icon = { Icon(Icons.Filled.Yard, contentDescription = null) },
+                                    label = { Text("Plants") },
+                                )
+                                NavigationBarItem(
+                                    selected = route == Routes.DUE,
+                                    onClick = { nav.navigate(Routes.DUE) { launchSingleTop = true } },
+                                    icon = { Icon(Icons.Filled.Notifications, contentDescription = null) },
+                                    label = { Text("Due") },
+                                )
+                            }
+                        }
+                    },
+                ) { barPadding ->
+                    NavHost(
+                        navController = nav,
+                        startDestination = Routes.DASHBOARD,
+                        modifier = Modifier.padding(barPadding),
                     ) {
-                        PlantEditScreen(onDone = { nav.popBackStack() })
+                        composable(Routes.DASHBOARD) {
+                            DashboardScreen(
+                                onAddPlant = { nav.navigate(Routes.plantEdit()) },
+                                onEditPlant = { id -> nav.navigate(Routes.plantEdit(id)) },
+                            )
+                        }
+                        composable(Routes.DUE) {
+                            DueScreen(onOpenHelp = { nav.navigate(Routes.HELP_REMINDERS) })
+                        }
+                        composable(Routes.HELP_REMINDERS) {
+                            RemindersHelpScreen(onBack = { nav.popBackStack() })
+                        }
+                        composable(
+                            route = "${Routes.PLANT_EDIT}?id={id}",
+                            arguments = listOf(
+                                navArgument("id") { type = NavType.StringType; defaultValue = "" },
+                            ),
+                        ) {
+                            PlantEditScreen(onDone = { nav.popBackStack() })
+                        }
                     }
                 }
                 LaunchedEffect(Unit) { ensureNotificationPermission() }
