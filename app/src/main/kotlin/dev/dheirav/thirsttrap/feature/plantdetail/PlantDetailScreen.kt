@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Compare
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Scale
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PhotoLibrary
@@ -74,6 +75,7 @@ fun PlantDetailScreen(
     onEdit: (String) -> Unit,
     onCompare: (String) -> Unit,
     onWeigh: (String) -> Unit,
+    onMeasureLight: (String) -> Unit,
     viewModel: PlantDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -91,6 +93,11 @@ fun PlantDetailScreen(
                     }
                 },
                 actions = {
+                    plant?.let { p ->
+                        IconButton(onClick = { onMeasureLight(p.id) }) {
+                            Icon(Icons.Filled.LightMode, contentDescription = "Measure the light here")
+                        }
+                    }
                     plant?.let { p ->
                         if (p.isWeightTrackable) {
                             IconButton(onClick = { onWeigh(p.id) }) {

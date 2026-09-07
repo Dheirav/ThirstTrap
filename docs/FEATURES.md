@@ -153,7 +153,7 @@ complete before any UI is written.*
 - [ ] **F24** Post-mortem template *(req. 24)* — on marking dead: timeline recap, suspected cause, "what I'd do differently", auto-linked photo history
 - [ ] **F21** QR stickers on pots *(req. 21)* — ML Kit Code Scanner (no camera permission) → deep-link to that plant's quick-log
 - [ ] **F19** Diagnosis checklists *(req. 19)* — guided trees: fuzz (dunk test: root hairs vs mould), browning (firm vs mushy), cut-face reading (clean vs brown ring), leaf-drop triage
-- [ ] **F22** Light meter *(req. 22)* — `SensorManager` + `TYPE_LIGHT`, lux per location, rated against the plant's needs
+- [x] **F22** Light meter *(req. 22)* — `SensorManager` + `TYPE_LIGHT`, lux per location, rated against the plant's needs
 - [ ] **F23** Ambient context *(req. 23)* — room temp/humidity per location, manual or free weather API, explains seasonal drying-rate change
 - [ ] **F18** Timelapse builder *(req. 18)* — scrubbable assembly of a plant's photo history
 

@@ -35,6 +35,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.feature.debug.DebugScreen
 import androidx.compose.material.icons.filled.Settings
 import dev.dheirav.thirsttrap.feature.backup.BackupScreen
+import dev.dheirav.thirsttrap.feature.light.LightMeterScreen
 import dev.dheirav.thirsttrap.feature.settings.SettingsScreen
 import dev.dheirav.thirsttrap.feature.weight.ScaleHelpScreen
 import dev.dheirav.thirsttrap.feature.weight.WeightScreen
@@ -143,6 +144,12 @@ class MainActivity : ComponentActivity() {
                                 onOpenScaleHelp = { nav.navigate(Routes.SCALE_HELP) },
                             )
                         }
+                        composable(
+                            route = "${Routes.LIGHT}/{id}",
+                            arguments = listOf(navArgument("id") { type = NavType.StringType }),
+                        ) {
+                            LightMeterScreen(onBack = { nav.popBackStack() })
+                        }
                         composable(Routes.SCALE_HELP) {
                             ScaleHelpScreen(onBack = { nav.popBackStack() })
                         }
@@ -158,6 +165,7 @@ class MainActivity : ComponentActivity() {
                                 onEdit = { id -> nav.navigate(Routes.plantEdit(id)) },
                                 onCompare = { id -> nav.navigate(Routes.compare(id)) },
                                 onWeigh = { id -> nav.navigate(Routes.weight(id)) },
+                                onMeasureLight = { id -> nav.navigate(Routes.light(id)) },
                             )
                         }
                         composable(
