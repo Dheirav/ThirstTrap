@@ -29,6 +29,9 @@ interface PhotoRepository {
 
     suspend fun setCaption(photoId: String, caption: String?)
 
+    /** Photos for one event, so the timeline can show them inline. */
+    fun observeForEvent(eventId: String): Flow<List<Photo>>
+
     /** Deletes the row and the file behind it. */
     suspend fun delete(photoId: String)
 }

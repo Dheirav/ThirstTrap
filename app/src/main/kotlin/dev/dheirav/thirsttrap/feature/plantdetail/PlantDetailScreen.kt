@@ -21,11 +21,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddAPhoto
+import androidx.compose.material.icons.filled.Compare
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -69,6 +71,7 @@ import java.time.format.DateTimeFormatter
 fun PlantDetailScreen(
     onBack: () -> Unit,
     onEdit: (String) -> Unit,
+    onCompare: (String) -> Unit,
     viewModel: PlantDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -86,6 +89,13 @@ fun PlantDetailScreen(
                     }
                 },
                 actions = {
+                    if (state.photos.size >= 2) {
+                        plant?.let { p ->
+                            IconButton(onClick = { onCompare(p.id) }) {
+                                Icon(Icons.Filled.Compare, contentDescription = "Compare photos")
+                            }
+                        }
+                    }
                     IconButton(onClick = capture.pickFromGallery) {
                         Icon(Icons.Filled.PhotoLibrary, contentDescription = "Add from gallery")
                     }
@@ -188,7 +198,12 @@ fun PlantDetailScreen(
                     }
                 }
                 items(day.events, key = { it.id }) { event ->
-                    EventRow(event = event, onDelete = { viewModel.deleteEvent(event) })
+                    EventRow(
+                        event = event,
+                        photos = state.photosByEvent[event.id].orEmpty(),
+                        pathOf = viewModel::pathOf,
+                        onDelete = { viewModel.deleteEvent(event) },
+                    )
                 }
             }
         }
@@ -200,6 +215,7 @@ fun PlantDetailScreen(
             initial = photo.caption.orEmpty(),
             onDismiss = { captionFor = null },
             onSave = { viewModel.setCaption(photo.id, it) },
+            onCover = { viewModel.setCover(photo.id) },
             onDelete = { viewModel.deletePhoto(photo.id) },
         )
     }
@@ -231,7 +247,12 @@ private fun PhotoThumb(path: String, caption: String?, onLongPress: () -> Unit) 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun EventRow(event: CareEvent, onDelete: () -> Unit) {
+private fun EventRow(
+    event: CareEvent,
+    photos: List<Photo>,
+    pathOf: (Photo) -> String,
+    onDelete: () -> Unit,
+) {
     var menu by remember { mutableStateOf(false) }
 
     // Events that changed the plant's nature get a heavier treatment, so they
@@ -270,6 +291,21 @@ private fun EventRow(event: CareEvent, onDelete: () -> Unit) {
                 event.note?.takeIf { it.isNotBlank() }?.let {
                     Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
+                if (photos.isNotEmpty()) {
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.padding(top = 6.dp),
+                    ) {
+                        items(photos, key = { it.id }) { photo ->
+                            AsyncImage(
+                                model = pathOf(photo),
+                                contentDescription = photo.caption ?: "Photo",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(8.dp)),
+                            )
+                        }
+                    }
+                }
             }
             Text(
                 timeOf(event),
@@ -293,6 +329,7 @@ private fun CaptionDialog(
     initial: String,
     onDismiss: () -> Unit,
     onSave: (String) -> Unit,
+    onCover: () -> Unit,
     onDelete: () -> Unit,
 ) {
     var text by remember { mutableStateOf(initial) }
@@ -307,7 +344,12 @@ private fun CaptionDialog(
                 placeholder = { Text("brown spot on the lower leaf") },
             )
         },
-        confirmButton = { TextButton(onClick = { onSave(text); onDismiss() }) { Text("Save") } },
+        confirmButton = {
+            Row {
+                TextButton(onClick = { onCover(); onDismiss() }) { Text("Set as cover") }
+                TextButton(onClick = { onSave(text); onDismiss() }) { Text("Save") }
+            }
+        },
         dismissButton = {
             TextButton(onClick = { onDelete(); onDismiss() }) {
                 Text("Delete", color = MaterialTheme.colorScheme.error)

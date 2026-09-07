@@ -57,6 +57,8 @@ data class Plant(
     val slopeEwmaGramsPerDay: Double? = null,
     val needsRecalibration: Boolean = false,
     val archived: Boolean = false,
+    /** Explicitly chosen cover. Null means "use the most recent photo". */
+    val coverPhotoId: String? = null,
 ) {
     val isWeightTrackable: Boolean
         get() = medium != Medium.WATER

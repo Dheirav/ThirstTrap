@@ -52,10 +52,15 @@ class PlantRepositoryImpl @Inject constructor(
         ) { plantRows, eventRows, reminderRows, photoRows ->
             val now = nowMillis()
             val eventsByPlant = eventRows.groupBy { it.plantId }
-            // Most recent photo per plant, for the card thumbnail.
+            // An explicitly chosen cover wins; otherwise the most recent photo.
+            // A plant's best photo is not always its newest.
+            val photosById = photoRows.associateBy { it.id }
             val coverByPlant = photoRows
                 .groupBy { it.plantId }
-                .mapValues { (_, ps) -> ps.maxByOrNull { it.takenAt } }
+                .mapValues { (plantId, ps) ->
+                    val chosen = plantRows.firstOrNull { it.id == plantId }?.coverPhotoId
+                    chosen?.let { photosById[it] } ?: ps.maxByOrNull { it.takenAt }
+                }
             val dueByPlant = reminderRows
                 .filter { it.enabled }
                 .groupBy { it.plantId }
@@ -98,6 +103,7 @@ class PlantRepositoryImpl @Inject constructor(
     override suspend fun upsertPlant(plant: Plant) {
         val now = System.currentTimeMillis()
         plantDao.upsert(plant.toEntity(createdAt = now, updatedAt = now))
+        TTLog.i(TTLog.DATA) { "upsert plant ${plant.id} '${plant.name}'" }
     }
 
     override suspend fun archivePlant(plantId: String, archived: Boolean) =
@@ -106,15 +112,22 @@ class PlantRepositoryImpl @Inject constructor(
     override suspend fun setStatus(plantId: String, status: PlantStatus) =
         plantDao.setStatus(plantId, status.name, System.currentTimeMillis())
 
-    override suspend fun deletePlant(plantId: String) = plantDao.delete(plantId)
+    override suspend fun deletePlant(plantId: String) {
+        TTLog.i(TTLog.DATA) { "DELETE plant $plantId (cascades to its events and photos)" }
+        plantDao.delete(plantId)
+    }
 
     override suspend fun logEvent(event: CareEvent): String {
         val now = System.currentTimeMillis()
         eventDao.insert(event.toEntity(createdAt = now, updatedAt = now))
+        TTLog.i(TTLog.DATA) { "log ${event.type} for ${event.plantId} (${event.id})" }
         return event.id
     }
 
-    override suspend fun deleteEvent(eventId: String) = eventDao.delete(eventId)
+    override suspend fun deleteEvent(eventId: String) {
+        TTLog.i(TTLog.DATA) { "delete event $eventId" }
+        eventDao.delete(eventId)
+    }
 
     override suspend fun updateEvent(event: CareEvent) {
         val now = System.currentTimeMillis()

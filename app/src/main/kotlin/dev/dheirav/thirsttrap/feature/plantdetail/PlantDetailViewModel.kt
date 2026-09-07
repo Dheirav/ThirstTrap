@@ -16,6 +16,7 @@ import dev.dheirav.thirsttrap.domain.averageWateringIntervalDays
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -28,6 +29,8 @@ data class PlantDetailUiState(
     val days: List<TimelineDay> = emptyList(),
     val totalEvents: Int = 0,
     val photos: List<Photo> = emptyList(),
+    /** Keyed by care event id, so a timeline row can show its own photos. */
+    val photosByEvent: Map<String, List<Photo>> = emptyMap(),
     val averageIntervalDays: Double? = null,
     val loaded: Boolean = false,
 )
@@ -52,6 +55,8 @@ class PlantDetailViewModel @Inject constructor(
                 days = groupByLocalDay(events),
                 totalEvents = events.size,
                 photos = plantPhotos,
+                photosByEvent = plantPhotos.groupBy { it.careEventId.orEmpty() }
+                    .filterKeys { it.isNotEmpty() },
                 averageIntervalDays = averageWateringIntervalDays(
                     events.filter { it.type == CareEventType.WATERED }.map { it.timestampMillis },
                 ),
@@ -78,6 +83,18 @@ class PlantDetailViewModel @Inject constructor(
     }
 
     fun pathOf(photo: Photo): String = photos.absolutePath(photo)
+
+    /**
+     * An explicit cover, rather than "whatever is newest". A plant's best
+     * photo is not always its most recent one.
+     */
+    fun setCover(photoId: String) {
+        viewModelScope.launch {
+            repository.observePlant(plantId).first()?.let {
+                repository.upsertPlant(it.copy(coverPhotoId = photoId))
+            }
+        }
+    }
 
     /**
      * Grouped by the **local** civil day the event happened on, reconstructed

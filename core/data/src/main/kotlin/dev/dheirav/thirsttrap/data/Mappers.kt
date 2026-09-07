@@ -52,6 +52,7 @@ fun PlantEntity.toDomain(): Plant = Plant(
     slopeEwmaGramsPerDay = slopeEwmaGPerDay,
     needsRecalibration = needsRecalibration,
     archived = archived,
+    coverPhotoId = coverPhotoId,
 )
 
 fun Plant.toEntity(createdAt: Long, updatedAt: Long): PlantEntity = PlantEntity(
@@ -74,6 +75,7 @@ fun Plant.toEntity(createdAt: Long, updatedAt: Long): PlantEntity = PlantEntity(
     slopeEwmaGPerDay = slopeEwmaGramsPerDay,
     needsRecalibration = needsRecalibration,
     archived = archived,
+    coverPhotoId = coverPhotoId,
     createdAt = createdAt,
     updatedAt = updatedAt,
 )

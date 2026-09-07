@@ -33,6 +33,7 @@ import dev.dheirav.thirsttrap.feature.help.RemindersHelpScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.feature.debug.DebugScreen
+import dev.dheirav.thirsttrap.feature.compare.CompareScreen
 import dev.dheirav.thirsttrap.feature.logevent.LogEventScreen
 import dev.dheirav.thirsttrap.feature.plantdetail.PlantDetailScreen
 import dev.dheirav.thirsttrap.feature.plantedit.PlantEditScreen
@@ -105,6 +106,12 @@ class MainActivity : ComponentActivity() {
                         ) {
                             LogEventScreen(onDone = { nav.popBackStack() })
                         }
+                        composable(
+                            route = "${Routes.COMPARE}/{id}",
+                            arguments = listOf(navArgument("id") { type = NavType.StringType }),
+                        ) {
+                            CompareScreen(onBack = { nav.popBackStack() })
+                        }
                         composable(Routes.DEBUG) {
                             DebugScreen(onBack = { nav.popBackStack() })
                         }
@@ -115,6 +122,7 @@ class MainActivity : ComponentActivity() {
                             PlantDetailScreen(
                                 onBack = { nav.popBackStack() },
                                 onEdit = { id -> nav.navigate(Routes.plantEdit(id)) },
+                                onCompare = { id -> nav.navigate(Routes.compare(id)) },
                             )
                         }
                         composable(

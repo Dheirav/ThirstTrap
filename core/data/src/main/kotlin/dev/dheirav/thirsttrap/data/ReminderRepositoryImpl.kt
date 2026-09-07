@@ -50,19 +50,27 @@ class ReminderRepositoryImpl @Inject constructor(
     override suspend fun dueNow(nowMillis: Long): List<Reminder> =
         dao.dueNow(nowMillis).map { it.toDomain() }
 
-    override suspend fun upsert(reminder: Reminder) =
+    override suspend fun upsert(reminder: Reminder) {
+        TTLog.i(TTLog.REMINDER) {
+            "upsert reminder ${reminder.id} plant=${reminder.plantId} due=${reminder.nextDueAtMillis}"
+        }
         dao.upsert(reminder.toEntity(System.currentTimeMillis()))
+    }
 
     override suspend fun delete(reminderId: String) = dao.delete(reminderId)
 
-    override suspend fun snooze(reminderId: String, untilMillis: Long) =
+    override suspend fun snooze(reminderId: String, untilMillis: Long) {
+        TTLog.i(TTLog.REMINDER) { "snooze $reminderId until $untilMillis" }
         dao.snooze(reminderId, untilMillis)
+    }
 
     override suspend fun markFired(reminderId: String, atMillis: Long) =
         dao.markFired(reminderId, atMillis)
 
-    override suspend fun reschedule(plantId: String, nextDueAtMillis: Long) =
+    override suspend fun reschedule(plantId: String, nextDueAtMillis: Long) {
+        TTLog.i(TTLog.REMINDER) { "reschedule plant=$plantId to $nextDueAtMillis" }
         dao.reschedule(plantId, nextDueAtMillis)
+    }
 
     /**
      * Bulk-clear. Pushes everything overdue out by one default interval rather

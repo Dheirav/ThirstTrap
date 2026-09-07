@@ -32,7 +32,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] **F1.1** Add plant: name, species, medium, location, container, drainage, source, acquired date — *DATA-MODEL `plants`*
 - [x] **F1.2** Edit plant
 - [x] **F1.3** Archive plant — status → `dead` / `given_away`, history retained
-- [ ] **F1.4** Cover photo selection
+- [x] **F1.4** Cover photo selection
 - [ ] **F1.5** Per-plant care profile: target dryness, light needs, fertilizer cadence
 - [x] **F1.6** ⊕ Hard delete — typed confirmation, offers export first, cascades to photo files — *DATA-MODEL §Deletion*
 
@@ -49,7 +49,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] **F3.2** Per-type icons
 - [x] **F3.3** Expand-in-place on tap
 - [x] **F3.4** Life events (`repotted`, `medium_changed`, `died`) render as full-width heavy dividers — *UI-SPEC §4*
-- [ ] **F3.5** Inline photo thumbnail strip on events that have photos
+- [x] **F3.5** Inline photo thumbnail strip on events that have photos
 
 ### F4 — Photos *(req. item 4)*
 - [x] **F4.1** In-app camera capture, auto-attached to plant + date
@@ -60,11 +60,11 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] **F4.6** Per-photo caption
 
 ### F5 — Photo compare *(req. item 5)*
-- [ ] **F5.1** Two-pane side-by-side (portrait, never stacked)
-- [ ] **F5.2** Independent filmstrip per pane
-- [ ] **F5.3** Elapsed time between the two, shown prominently
-- [ ] **F5.4** Pinch-zoom per pane + sync lock toggle
-- [ ] **F5.5** Defaults to oldest + newest on entry
+- [x] **F5.1** Two-pane side-by-side (portrait, never stacked)
+- [x] **F5.2** Independent filmstrip per pane
+- [x] **F5.3** Elapsed time between the two, shown prominently
+- [x] **F5.4** Pinch-zoom per pane + sync lock toggle
+- [x] **F5.5** Defaults to oldest + newest on entry
 
 ### F6 — Reminders *(req. item 6)*
 - [x] **F6.1** Per-plant check reminder with interval — *NOTIFICATIONS §5*
