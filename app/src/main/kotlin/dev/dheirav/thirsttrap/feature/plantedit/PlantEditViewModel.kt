@@ -48,6 +48,7 @@ data class PlantEditUiState(
     val species: String = "",
     val location: String = "",
     val containerDesc: String = "",
+    val defaultWaterMl: String = "",
     val medium: Medium = Medium.SOIL,
     val source: PlantSource = PlantSource.UNKNOWN,
     val status: PlantStatus = PlantStatus.ACTIVE,
@@ -81,6 +82,7 @@ class PlantEditViewModel @Inject constructor(
                         species = p.species.orEmpty(),
                         location = p.location.orEmpty(),
                         containerDesc = p.containerDesc.orEmpty(),
+                        defaultWaterMl = p.defaultWaterMl?.toInt()?.toString().orEmpty(),
                         medium = p.medium,
                         source = p.source,
                         status = p.status,
@@ -99,6 +101,9 @@ class PlantEditViewModel @Inject constructor(
     fun onMedium(v: Medium) { _state.value = _state.value.copy(medium = v) }
     fun onSource(v: PlantSource) { _state.value = _state.value.copy(source = v) }
     fun onLastWatered(v: LastWatered) { _state.value = _state.value.copy(lastWatered = v) }
+    fun onDefaultWater(v: String) {
+        _state.value = _state.value.copy(defaultWaterMl = v.filter { it.isDigit() }.take(5))
+    }
 
     fun save(onDone: () -> Unit) {
         val s = _state.value
@@ -115,6 +120,7 @@ class PlantEditViewModel @Inject constructor(
                     location = s.location.trim().takeIf { it.isNotEmpty() },
                     status = s.status,
                     containerDesc = s.containerDesc.trim().takeIf { it.isNotEmpty() },
+                    defaultWaterMl = s.defaultWaterMl.toDoubleOrNull(),
                     source = s.source,
                     archived = s.archived,
                 ),

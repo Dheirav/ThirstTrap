@@ -41,7 +41,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] **F2.2** Quick-log bottom sheet: Watered / Checked / Photo / More (64dp targets)
 - [x] **F2.3** Full event-type picker — 14 types — *DATA-MODEL `care_events`*
 - [x] **F2.4** Type-specific fields: amount + method, check result, fertilizer + dilution, medium from/to, milestone kind, cause of death
-- [ ] **F2.5** Long-press droplet → detailed watering entry (amount, bottom-soak)
+- [x] **F2.5** Long-press droplet → detailed watering entry (amount, bottom-soak)
 - [x] **F2.6** Edit / delete an existing event
 
 ### F3 — Per-plant timeline *(req. item 3)*

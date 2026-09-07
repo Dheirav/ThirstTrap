@@ -28,6 +28,11 @@ data class PlantEntity(
     @ColumnInfo(name = "target_dryness") val targetDryness: String? = null,
     @ColumnInfo(name = "light_needs") val lightNeeds: String? = null,
     @ColumnInfo(name = "fertilizer_cadence_days") val fertilizerCadenceDays: Int? = null,
+    /**
+     * How much this plant normally gets. Null means "no standard set", in which
+     * case the last amount actually logged is used instead.
+     */
+    @ColumnInfo(name = "default_water_ml") val defaultWaterMl: Double? = null,
     @ColumnInfo(name = "depletion_trigger") val depletionTrigger: Double,
     @ColumnInfo(name = "wet_anchor_g") val wetAnchorG: Double? = null,
     @ColumnInfo(name = "dry_anchor_g") val dryAnchorG: Double? = null,

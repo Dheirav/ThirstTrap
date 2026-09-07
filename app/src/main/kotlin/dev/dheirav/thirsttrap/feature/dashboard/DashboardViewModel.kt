@@ -53,8 +53,8 @@ class DashboardViewModel @Inject constructor(
     private val _lastLogged = MutableStateFlow<CareEvent?>(null)
     val lastLogged: StateFlow<CareEvent?> = _lastLogged.asStateFlow()
 
-    fun logWatered(plantId: String, onLogged: (CareEvent) -> Unit) =
-        log(plantId, CareEventType.WATERED, null, onLogged)
+    fun logWatered(plantId: String, amountMl: Double?, onLogged: (CareEvent) -> Unit) =
+        log(plantId, CareEventType.WATERED, null, amountMl, onLogged)
 
     /**
      * A check is not a watering. Recording it as one would make the card read
@@ -62,12 +62,13 @@ class DashboardViewModel @Inject constructor(
      * the interval any reminder derives from the log.
      */
     fun logStillWet(plantId: String, onLogged: (CareEvent) -> Unit) =
-        log(plantId, CareEventType.CHECKED, CheckResult.STILL_HEAVY, onLogged)
+        log(plantId, CareEventType.CHECKED, CheckResult.STILL_HEAVY, null, onLogged)
 
     private fun log(
         plantId: String,
         type: CareEventType,
         checkResult: CheckResult?,
+        amountMl: Double?,
         onLogged: (CareEvent) -> Unit,
     ) {
         val now = System.currentTimeMillis()
@@ -78,6 +79,7 @@ class DashboardViewModel @Inject constructor(
             tzOffsetMinutes = tzOffsetMinutesAt(now),
             type = type,
             checkResult = checkResult,
+            amountMl = amountMl,
         )
         viewModelScope.launch {
             repository.logEvent(event)

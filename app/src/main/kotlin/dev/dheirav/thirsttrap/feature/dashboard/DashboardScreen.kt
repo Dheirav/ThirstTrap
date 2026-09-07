@@ -150,10 +150,11 @@ fun DashboardScreen(
                         item = item,
                         nowMillis = System.currentTimeMillis(),
                         onQuickWater = {
-                            viewModel.logWatered(item.plant.id) { event ->
-                                announce(event, "Logged - ${item.plant.name} watered")
+                            viewModel.logWatered(item.plant.id, item.suggestedWaterMl) { event ->
+                                announce(event, wateredMessage(item.plant.name, item.suggestedWaterMl))
                             }
                         },
+                        onDetailedWater = { onLogMore(item.plant.id) },
                         onOpenSheet = { sheetFor = item },
                         onLongPress = { onOpenPlant(item.plant.id) },
                     )
@@ -166,10 +167,11 @@ fun DashboardScreen(
         ModalBottomSheet(onDismissRequest = { sheetFor = null }, sheetState = sheetState) {
             QuickLogSheet(
                 plantName = item.plant.name,
+                suggestedWaterMl = item.suggestedWaterMl,
                 onWatered = {
                     sheetFor = null
-                    viewModel.logWatered(item.plant.id) { e ->
-                        announce(e, "Logged - ${item.plant.name} watered")
+                    viewModel.logWatered(item.plant.id, item.suggestedWaterMl) { e ->
+                        announce(e, wateredMessage(item.plant.name, item.suggestedWaterMl))
                     }
                 },
                 onStillWet = {
@@ -220,6 +222,7 @@ private fun PlantCard(
     item: PlantAttention,
     nowMillis: Long,
     onQuickWater: () -> Unit,
+    onDetailedWater: () -> Unit,
     onOpenSheet: () -> Unit,
     onLongPress: () -> Unit,
 ) {
@@ -305,17 +308,31 @@ private fun PlantCard(
                 }
             }
 
-            IconButton(
-                onClick = onQuickWater,
+            // Tap logs immediately; long-press opens the detailed entry, for
+            // the times you want to record something other than the usual.
+            Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .semantics { contentDescription = "Log watering for ${plant.name}" },
+                    .clip(RoundedCornerShape(24.dp))
+                    .combinedClickable(
+                        onClick = onQuickWater,
+                        onLongClick = onDetailedWater,
+                    )
+                    .semantics {
+                        contentDescription = "Log watering for ${plant.name}. " +
+                            "Long press for amount and method."
+                    },
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(Icons.Filled.WaterDrop, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             }
         }
     }
 }
+
+/** Says the amount back, so a one-tap log is never a surprise. */
+private fun wateredMessage(name: String, ml: Double?): String =
+    if (ml != null) "Logged - $name watered ${ml.toInt()} ml" else "Logged - $name watered"
 
 private fun relativeDays(now: Long, then: Long, verb: String): String =
     when (val d = ((now - then) / 86_400_000L).toInt()) {
@@ -375,6 +392,7 @@ private fun DepletionBar(depletion: Double, trigger: Double, pastTrigger: Boolea
 @Composable
 private fun QuickLogSheet(
     plantName: String,
+    suggestedWaterMl: Double?,
     onWatered: () -> Unit,
     onStillWet: () -> Unit,
     onPhoto: () -> Unit,
@@ -393,7 +411,10 @@ private fun QuickLogSheet(
         // Both answers, same size and weight. Neither is the primary one.
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             FilledTonalButton(onClick = onWatered, modifier = Modifier.weight(1f).height(64.dp)) {
-                Text("Watered")
+                Text(
+                    if (suggestedWaterMl != null) "Watered\n${suggestedWaterMl.toInt()} ml" else "Watered",
+                    textAlign = TextAlign.Center,
+                )
             }
             FilledTonalButton(onClick = onStillWet, modifier = Modifier.weight(1f).height(64.dp)) {
                 Text("Still wet")

@@ -43,6 +43,7 @@ fun PlantEntity.toDomain(): Plant = Plant(
     source = decode(source, PlantSource.UNKNOWN),
     acquiredEpochDay = acquiredDate,
     targetDryness = targetDryness,
+    defaultWaterMl = defaultWaterMl,
     depletionTrigger = depletionTrigger,
     anchors = if (wetAnchorG != null && dryAnchorG != null) {
         Anchors(wetAnchorG, dryAnchorG, dryAnchorProvisional)
@@ -68,6 +69,7 @@ fun Plant.toEntity(createdAt: Long, updatedAt: Long): PlantEntity = PlantEntity(
     potDiameterCm = potDiameterCm,
     hasDrainage = hasDrainage,
     targetDryness = targetDryness,
+    defaultWaterMl = defaultWaterMl,
     depletionTrigger = depletionTrigger,
     wetAnchorG = anchors?.wetGrams,
     dryAnchorG = anchors?.dryGrams,

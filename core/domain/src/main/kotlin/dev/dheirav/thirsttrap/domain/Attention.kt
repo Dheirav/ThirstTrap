@@ -15,6 +15,8 @@ data class PlantAttention(
     val averageIntervalDays: Double? = null,
     /** Absolute path to the most recent photo, if there is one. */
     val coverPhotoPath: String? = null,
+    /** The plant's set standard, or the last amount logged. Null if neither. */
+    val suggestedWaterMl: Double? = null,
 )
 
 /**

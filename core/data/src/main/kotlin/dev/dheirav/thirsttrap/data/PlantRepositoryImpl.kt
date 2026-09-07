@@ -88,6 +88,13 @@ class PlantRepositoryImpl @Inject constructor(
                     ),
                     coverPhotoPath = coverByPlant[row.id]
                         ?.let { photoStore.absoluteFile(it.relativePath).absolutePath },
+                    // An explicit standard wins; otherwise the last amount
+                    // actually poured, so a habit becomes the default without
+                    // anyone configuring anything.
+                    suggestedWaterMl = plant.defaultWaterMl
+                        ?: events.firstOrNull {
+                            it.type == CareEventType.WATERED.name && it.amountMl != null
+                        }?.amountMl,
                     averageIntervalDays = averageWateringIntervalDays(
                         events.filter { it.type == CareEventType.WATERED.name }
                             .map { it.timestamp },

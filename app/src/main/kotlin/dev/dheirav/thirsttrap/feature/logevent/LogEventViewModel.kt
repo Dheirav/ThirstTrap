@@ -52,9 +52,17 @@ class LogEventViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            repository.observePlant(plantId).first()?.let {
-                _state.value = _state.value.copy(plantName = it.name)
-            }
+            val plant = repository.observePlant(plantId).first() ?: return@launch
+            // Pre-fill from the plant's standard, falling back to the last
+            // amount actually poured. Retyping the same number every time is
+            // exactly the friction that sends people back to paper.
+            val lastAmount = repository.observeEvents(plantId).first()
+                .firstOrNull { it.type == CareEventType.WATERED && it.amountMl != null }?.amountMl
+            val suggested = plant.defaultWaterMl ?: lastAmount
+            _state.value = _state.value.copy(
+                plantName = plant.name,
+                amountMl = suggested?.toInt()?.toString().orEmpty(),
+            )
         }
     }
 

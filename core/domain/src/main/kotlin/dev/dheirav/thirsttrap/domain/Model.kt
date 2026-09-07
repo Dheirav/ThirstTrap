@@ -50,6 +50,12 @@ data class Plant(
     val source: PlantSource = PlantSource.UNKNOWN,
     val acquiredEpochDay: Long? = null,
     val targetDryness: String? = null,
+    /**
+     * The plant's usual watering amount in ml. Null means none has been set,
+     * and the last amount actually logged stands in - so a standard emerges
+     * from use even if it is never configured.
+     */
+    val defaultWaterMl: Double? = null,
     /** Fraction of the wet-dry range to deplete before watering. 0.5 is the commercial MAD default. */
     val depletionTrigger: Double = DEFAULT_DEPLETION_TRIGGER,
     val anchors: Anchors? = null,
