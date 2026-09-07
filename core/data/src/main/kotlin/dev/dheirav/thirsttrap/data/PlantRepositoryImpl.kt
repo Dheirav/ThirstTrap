@@ -2,6 +2,7 @@ package dev.dheirav.thirsttrap.data
 
 import dev.dheirav.thirsttrap.data.dao.CareEventDao
 import dev.dheirav.thirsttrap.data.dao.PhotoDao
+import dev.dheirav.thirsttrap.data.dao.WeightDao
 import dev.dheirav.thirsttrap.data.dao.PlantDao
 import dev.dheirav.thirsttrap.data.dao.ReminderDao
 import dev.dheirav.thirsttrap.domain.CareEvent
@@ -11,7 +12,7 @@ import dev.dheirav.thirsttrap.domain.PlantAttention
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.PlantStatus
 import dev.dheirav.thirsttrap.domain.Prediction
-import dev.dheirav.thirsttrap.domain.SuppressionReason
+import dev.dheirav.thirsttrap.domain.assembleWeightState
 import dev.dheirav.thirsttrap.domain.averageWateringIntervalDays
 import dev.dheirav.thirsttrap.domain.sortByAttention
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +28,7 @@ class PlantRepositoryImpl @Inject constructor(
     private val reminderDao: ReminderDao,
     private val photoDao: PhotoDao,
     private val photoStore: PhotoStore,
+    private val weightDao: WeightDao,
 ) : PlantRepository {
 
     override fun observePlants(includeArchived: Boolean): Flow<List<Plant>> =
@@ -49,7 +51,8 @@ class PlantRepositoryImpl @Inject constructor(
             eventDao.observeAll(),
             reminderDao.observeAll(),
             photoDao.observeAll(),
-        ) { plantRows, eventRows, reminderRows, photoRows ->
+            weightDao.observeAll(),
+        ) { plantRows, eventRows, reminderRows, photoRows, weightRows ->
             val now = nowMillis()
             val eventsByPlant = eventRows.groupBy { it.plantId }
             // An explicitly chosen cover wins; otherwise the most recent photo.
@@ -66,9 +69,26 @@ class PlantRepositoryImpl @Inject constructor(
                 .groupBy { it.plantId }
                 .mapValues { (_, rs) -> rs.minOf { it.nextDueAt } }
 
+            val readingsByPlant = weightRows.groupBy { it.plantId }
+
             val items = plantRows.map { row ->
                 val plant = row.toDomain()
                 val events = eventsByPlant[row.id].orEmpty()
+
+                // The whole drying model, run for this plant. Until there are
+                // readings this returns the honest "not calibrated" refusal
+                // rather than a number nobody should trust.
+                val weight = assembleWeightState(
+                    plant = plant,
+                    readings = readingsByPlant[row.id].orEmpty().map { it.toDomainReading() },
+                    wateringEventsMillis = events
+                        .filter { it.type == CareEventType.WATERED.name }.map { it.timestamp },
+                    repotEventsMillis = events.filter {
+                        it.type == CareEventType.REPOTTED.name ||
+                            it.type == CareEventType.MEDIUM_CHANGED.name
+                    }.map { it.timestamp },
+                    nowMillis = now,
+                )
 
                 val lastWatered = events
                     .firstOrNull { it.type == CareEventType.WATERED.name }?.timestamp
@@ -81,11 +101,8 @@ class PlantRepositoryImpl @Inject constructor(
                     lastWateredMillis = lastWatered,
                     lastCheckedMillis = lastChecked,
                     reminderDueMillis = dueByPlant[row.id],
-                    depletion = null,
-                    prediction = Prediction.NeedAnotherReading(
-                        if (plant.anchors == null) SuppressionReason.NOT_CALIBRATED
-                        else SuppressionReason.NO_READINGS,
-                    ),
+                    depletion = weight.depletion,
+                    prediction = weight.prediction,
                     coverPhotoPath = coverByPlant[row.id]
                         ?.let { photoStore.absoluteFile(it.relativePath).absolutePath },
                     // An explicit standard wins; otherwise the last amount

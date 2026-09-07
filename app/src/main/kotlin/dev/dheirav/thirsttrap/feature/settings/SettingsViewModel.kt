@@ -49,6 +49,46 @@ class SettingsViewModel @Inject constructor(
         scheduler.scheduleDailySweep(context, hour, replaceExisting = true)
     }
 
+    /**
+     * Re-checked every time rather than remembered: the OS can revoke this, and
+     * a stale "yes" would mean reminders silently stopping.
+     */
+    fun canScheduleExact(): Boolean =
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) {
+            true
+        } else {
+            context.getSystemService(android.app.AlarmManager::class.java)
+                ?.canScheduleExactAlarms() == true
+        }
+
+    fun setUseExactAlarms(enabled: Boolean) {
+        viewModelScope.launch {
+            if (enabled && !canScheduleExact()) {
+                // Explain first, then send them to the settings page - never
+                // bounce someone to a system screen with no context.
+                _needsExactPermission.value = true
+                return@launch
+            }
+            settings.setUseExactAlarms(enabled)
+        }
+    }
+
+    private val _needsExactPermission = MutableStateFlow(false)
+    val needsExactPermission: StateFlow<Boolean> = _needsExactPermission.asStateFlow()
+
+    fun dismissExactPermissionPrompt() { _needsExactPermission.value = false }
+
+    fun openExactAlarmSettings() {
+        _needsExactPermission.value = false
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.S) return
+        runCatching {
+            context.startActivity(
+                android.content.Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                    .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK),
+            )
+        }
+    }
+
     fun setDefaultTrigger(fraction: Double) =
         viewModelScope.launch { settings.setDefaultDepletionTrigger(fraction) }
 

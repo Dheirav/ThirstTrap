@@ -7,9 +7,11 @@ import dev.dheirav.thirsttrap.data.dao.CareEventDao
 import dev.dheirav.thirsttrap.data.dao.PlantDao
 import dev.dheirav.thirsttrap.data.entity.CareEventEntity
 import dev.dheirav.thirsttrap.data.dao.PhotoDao
+import dev.dheirav.thirsttrap.data.dao.WeightDao
 import dev.dheirav.thirsttrap.data.dao.ReminderDao
 import dev.dheirav.thirsttrap.data.entity.PlantEntity
 import dev.dheirav.thirsttrap.data.entity.PhotoEntity
+import dev.dheirav.thirsttrap.data.entity.WeightReadingEntity
 import dev.dheirav.thirsttrap.data.entity.ReminderEntity
 
 /**
@@ -21,8 +23,8 @@ import dev.dheirav.thirsttrap.data.entity.ReminderEntity
  * the project could ship.
  */
 @Database(
-    entities = [PlantEntity::class, CareEventEntity::class, ReminderEntity::class, PhotoEntity::class],
-    version = 4,
+    entities = [PlantEntity::class, CareEventEntity::class, ReminderEntity::class, PhotoEntity::class, WeightReadingEntity::class],
+    version = 5,
     exportSchema = true,
     // v2 only adds the reminders table, so Room can generate the migration.
     // Anything that alters or drops a column must be written by hand and
@@ -31,6 +33,7 @@ import dev.dheirav.thirsttrap.data.entity.ReminderEntity
         AutoMigration(from = 1, to = 2),
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 3, to = 4),
+        AutoMigration(from = 4, to = 5),
     ],
 )
 abstract class ThirstTrapDatabase : RoomDatabase() {
@@ -38,6 +41,7 @@ abstract class ThirstTrapDatabase : RoomDatabase() {
     abstract fun careEventDao(): CareEventDao
     abstract fun reminderDao(): ReminderDao
     abstract fun photoDao(): PhotoDao
+    abstract fun weightDao(): WeightDao
 
     companion object {
         const val NAME = "thirsttrap.db"

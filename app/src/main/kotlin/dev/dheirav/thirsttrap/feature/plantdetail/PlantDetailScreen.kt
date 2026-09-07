@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Compare
+import androidx.compose.material.icons.filled.Scale
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material3.DropdownMenu
@@ -72,6 +73,7 @@ fun PlantDetailScreen(
     onBack: () -> Unit,
     onEdit: (String) -> Unit,
     onCompare: (String) -> Unit,
+    onWeigh: (String) -> Unit,
     viewModel: PlantDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -89,6 +91,13 @@ fun PlantDetailScreen(
                     }
                 },
                 actions = {
+                    plant?.let { p ->
+                        if (p.isWeightTrackable) {
+                            IconButton(onClick = { onWeigh(p.id) }) {
+                                Icon(Icons.Filled.Scale, contentDescription = "Weight and watering prediction")
+                            }
+                        }
+                    }
                     if (state.photos.size >= 2) {
                         plant?.let { p ->
                             IconButton(onClick = { onCompare(p.id) }) {

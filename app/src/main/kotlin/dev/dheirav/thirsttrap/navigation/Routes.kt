@@ -9,6 +9,8 @@ object Routes {
     const val SETTINGS = "settings"
     const val LOG_EVENT = "plant/log"
     const val COMPARE = "plant/compare"
+    const val WEIGHT = "plant/weight"
+    const val SCALE_HELP = "help/scale"
     const val PLANT_EDIT = "plant/edit"
     const val PLANT_DETAIL = "plant/detail"
     /** Empty id means "new plant". */
@@ -17,6 +19,8 @@ object Routes {
     fun logEvent(plantId: String) = "$LOG_EVENT/$plantId"
 
     fun compare(plantId: String) = "$COMPARE/$plantId"
+
+    fun weight(plantId: String) = "$WEIGHT/$plantId"
 
     fun plantEdit(plantId: String? = null) =
         if (plantId == null) "$PLANT_EDIT?id=" else "$PLANT_EDIT?id=$plantId"

@@ -116,7 +116,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 complete before any UI is written.*
 
 ### Domain
-- [ ] **F17.1** `weight_readings` + `drying_segments` tables and migration
+- [x] **F17.1** `weight_readings` + `drying_segments` tables and migration
 - [x] **F17.2** Wet anchor capture + re-capture on every `post_water` reading — *§2*
 - [x] **F17.3** Provisional dry anchor (`W × 0.60`) + adaptive running minimum with the `0.30 × W` implausibility guard — *§2*
 - [x] **F17.4** Segmentation — 8%-of-range jump, `watered` event, repot, 21-day gap — *§3*
@@ -131,17 +131,17 @@ complete before any UI is written.*
 - [x] **F17.13** Full §9 test plan passing — correctness, robustness, segmentation, anchors, suppression, EWMA, properties
 
 ### UI
-- [ ] **F17.14** Calibration wizard — 4 steps, drain timer with notification — *UI-SPEC §6*
-- [ ] **F17.15** Weight entry — large one-handed keypad, smart context default
+- [x] **F17.14** Calibration wizard — 4 steps, drain timer with notification — *UI-SPEC §6*
+- [x] **F17.15** Weight entry — large one-handed keypad, smart context default
 - [x] **F17.16** Depletion bar on the dashboard card (percentage-labelled, threshold marked, hidden when uncalibrated)
-- [ ] **F17.17** Weight history chart — anchors, trigger line, segment markers, dashed forward projection
+- [x] **F17.17** Weight history chart — anchors, trigger line, segment markers, dashed forward projection
 - [x] **F17.18** Recalibration prompt on repot / medium change / container edit
-- [ ] **F17.19** Mark a reading as excluded (bad weigh-in)
-- [ ] **F17.20** ⊕ Scale-guidance help — resolution vs repeatability, small-pot warning
+- [x] **F17.19** Mark a reading as excluded (bad weigh-in)
+- [x] **F17.20** ⊕ Scale-guidance help — resolution vs repeatability, small-pot warning
 
 ### Reminders (M2 additions)
-- [ ] **F17.21** Prediction-driven reminder intervals, rescheduled on each new reading — *NOTIFICATIONS §5*
-- [ ] **F17.22** Exact-alarm opt-in toggle + in-app explainer + capability re-check with silent fallback — *NOTIFICATIONS §1*
+- [x] **F17.21** Prediction-driven reminder intervals, rescheduled on each new reading — *NOTIFICATIONS §5*
+- [x] **F17.22** Exact-alarm opt-in toggle + in-app explainer + capability re-check with silent fallback — *NOTIFICATIONS §1*
 
 ---
 

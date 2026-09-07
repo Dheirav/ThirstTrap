@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -42,6 +43,28 @@ fun SettingsScreen(
     val settings by viewModel.state.collectAsStateWithLifecycle()
     val storage by viewModel.storage.collectAsStateWithLifecycle()
     val cleanup by viewModel.cleanupMessage.collectAsStateWithLifecycle()
+    val needsExact by viewModel.needsExactPermission.collectAsStateWithLifecycle()
+
+    if (needsExact) {
+        AlertDialog(
+            onDismissRequest = viewModel::dismissExactPermissionPrompt,
+            title = { Text("Android has to allow this") },
+            text = {
+                Text(
+                    "Precise reminders need the \"Alarms & reminders\" permission. Android " +
+                        "withholds it by default, and can take it back later - if that " +
+                        "happens the app quietly falls back to loose scheduling rather than " +
+                        "going silent.",
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = viewModel::openExactAlarmSettings) { Text("Open settings") }
+            },
+            dismissButton = {
+                TextButton(onClick = viewModel::dismissExactPermissionPrompt) { Text("Not now") }
+            },
+        )
+    }
 
     Scaffold(topBar = { TopAppBar(title = { Text("Settings") }) }) { padding ->
         Column(
@@ -85,6 +108,23 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            SettingRow(
+                title = "Remind me at a precise time",
+                subtitle = if (viewModel.canScheduleExact()) {
+                    "Off keeps reminders loose and battery-cheap. On makes them land on " +
+                        "the minute."
+                } else {
+                    "Needs the \"Alarms & reminders\" permission, which Android withholds " +
+                        "by default. Turning this on will ask for it."
+                },
+            ) {
+                Switch(
+                    checked = settings.useExactAlarms,
+                    onCheckedChange = viewModel::setUseExactAlarms,
+                    modifier = Modifier.semantics { contentDescription = "Remind me at a precise time" },
+                )
+            }
+
             TextButton(onClick = onOpenHelp) { Text("Reminders not arriving?") }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))

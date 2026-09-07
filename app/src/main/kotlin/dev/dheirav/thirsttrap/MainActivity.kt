@@ -36,6 +36,8 @@ import dev.dheirav.thirsttrap.feature.debug.DebugScreen
 import androidx.compose.material.icons.filled.Settings
 import dev.dheirav.thirsttrap.feature.backup.BackupScreen
 import dev.dheirav.thirsttrap.feature.settings.SettingsScreen
+import dev.dheirav.thirsttrap.feature.weight.ScaleHelpScreen
+import dev.dheirav.thirsttrap.feature.weight.WeightScreen
 import dev.dheirav.thirsttrap.feature.compare.CompareScreen
 import dev.dheirav.thirsttrap.feature.logevent.LogEventScreen
 import dev.dheirav.thirsttrap.feature.plantdetail.PlantDetailScreen
@@ -132,6 +134,18 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.BACKUP) {
                             BackupScreen(onBack = { nav.popBackStack() })
                         }
+                        composable(
+                            route = "${Routes.WEIGHT}/{id}",
+                            arguments = listOf(navArgument("id") { type = NavType.StringType }),
+                        ) {
+                            WeightScreen(
+                                onBack = { nav.popBackStack() },
+                                onOpenScaleHelp = { nav.navigate(Routes.SCALE_HELP) },
+                            )
+                        }
+                        composable(Routes.SCALE_HELP) {
+                            ScaleHelpScreen(onBack = { nav.popBackStack() })
+                        }
                         composable(Routes.DEBUG) {
                             DebugScreen(onBack = { nav.popBackStack() })
                         }
@@ -143,6 +157,7 @@ class MainActivity : ComponentActivity() {
                                 onBack = { nav.popBackStack() },
                                 onEdit = { id -> nav.navigate(Routes.plantEdit(id)) },
                                 onCompare = { id -> nav.navigate(Routes.compare(id)) },
+                                onWeigh = { id -> nav.navigate(Routes.weight(id)) },
                             )
                         }
                         composable(

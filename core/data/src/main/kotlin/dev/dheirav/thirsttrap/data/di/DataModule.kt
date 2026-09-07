@@ -11,6 +11,7 @@ import dagger.hilt.components.SingletonComponent
 import dev.dheirav.thirsttrap.data.ExportRepositoryImpl
 import dev.dheirav.thirsttrap.data.MaintenanceRepository
 import dev.dheirav.thirsttrap.data.PhotoRepositoryImpl
+import dev.dheirav.thirsttrap.data.WeightRepositoryImpl
 import dev.dheirav.thirsttrap.data.PhotoStore
 import dev.dheirav.thirsttrap.data.PlantRepositoryImpl
 import dev.dheirav.thirsttrap.data.ReminderRepositoryImpl
@@ -19,8 +20,10 @@ import dev.dheirav.thirsttrap.data.ThirstTrapDatabase
 import dev.dheirav.thirsttrap.data.dao.CareEventDao
 import dev.dheirav.thirsttrap.data.dao.ReminderDao
 import dev.dheirav.thirsttrap.data.dao.PhotoDao
+import dev.dheirav.thirsttrap.data.dao.WeightDao
 import dev.dheirav.thirsttrap.data.dao.PlantDao
 import dev.dheirav.thirsttrap.domain.PhotoRepository
+import dev.dheirav.thirsttrap.domain.WeightRepository
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.ReminderRepository
 import dev.dheirav.thirsttrap.domain.SettingsRepository
@@ -45,6 +48,8 @@ object DatabaseModule {
     @Provides fun provideReminderDao(db: ThirstTrapDatabase): ReminderDao = db.reminderDao()
 
     @Provides fun providePhotoDao(db: ThirstTrapDatabase): PhotoDao = db.photoDao()
+
+    @Provides fun provideWeightDao(db: ThirstTrapDatabase): WeightDao = db.weightDao()
 
     @Provides
     @Singleton
@@ -87,4 +92,7 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun bindPhotoRepository(impl: PhotoRepositoryImpl): PhotoRepository
+
+    @Binds
+    abstract fun bindWeightRepository(impl: WeightRepositoryImpl): WeightRepository
 }

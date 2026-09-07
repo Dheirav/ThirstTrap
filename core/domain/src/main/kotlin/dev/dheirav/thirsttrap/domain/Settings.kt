@@ -16,6 +16,11 @@ data class AppSettings(
     val reminderHour: Int = 9,
     /** Starting depletion trigger for newly added plants. */
     val defaultDepletionTrigger: Double = DEFAULT_DEPLETION_TRIGGER,
+    /**
+     * Off by default - handover D4. SCHEDULE_EXACT_ALARM is denied by default
+     * on Android 13+, and a watering check does not need to land at 09:00:00.
+     */
+    val useExactAlarms: Boolean = false,
 )
 
 interface SettingsRepository {
@@ -23,4 +28,5 @@ interface SettingsRepository {
     suspend fun setDynamicColor(enabled: Boolean)
     suspend fun setReminderHour(hour: Int)
     suspend fun setDefaultDepletionTrigger(fraction: Double)
+    suspend fun setUseExactAlarms(enabled: Boolean)
 }

@@ -183,3 +183,15 @@ fun dev.dheirav.thirsttrap.domain.Photo.toPhotoEntity(createdAt: Long): dev.dhei
         caption = caption,
         createdAt = createdAt,
     )
+
+fun dev.dheirav.thirsttrap.data.entity.WeightReadingEntity.toDomainReading(): dev.dheirav.thirsttrap.domain.WeightReading =
+    dev.dheirav.thirsttrap.domain.WeightReading(
+        id = id,
+        plantId = plantId,
+        timestampMillis = timestamp,
+        grams = grams,
+        context = runCatching {
+            dev.dheirav.thirsttrap.domain.ReadingContext.valueOf(context.uppercase())
+        }.getOrDefault(dev.dheirav.thirsttrap.domain.ReadingContext.ROUTINE),
+        excluded = excluded,
+    )

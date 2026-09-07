@@ -25,12 +25,14 @@ class SettingsRepositoryImpl @Inject constructor(
     private val dynamicColorKey = booleanPreferencesKey("dynamic_color")
     private val reminderHourKey = intPreferencesKey("reminder_hour")
     private val triggerKey = doublePreferencesKey("default_depletion_trigger")
+    private val exactAlarmsKey = booleanPreferencesKey("use_exact_alarms")
 
     override val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
         AppSettings(
             dynamicColor = prefs[dynamicColorKey] ?: false,
             reminderHour = prefs[reminderHourKey] ?: 9,
             defaultDepletionTrigger = prefs[triggerKey] ?: DEFAULT_DEPLETION_TRIGGER,
+            useExactAlarms = prefs[exactAlarmsKey] ?: false,
         )
     }
 
@@ -40,6 +42,10 @@ class SettingsRepositoryImpl @Inject constructor(
 
     override suspend fun setReminderHour(hour: Int) {
         context.dataStore.edit { it[reminderHourKey] = hour.coerceIn(0, 23) }
+    }
+
+    override suspend fun setUseExactAlarms(enabled: Boolean) {
+        context.dataStore.edit { it[exactAlarmsKey] = enabled }
     }
 
     override suspend fun setDefaultDepletionTrigger(fraction: Double) {
