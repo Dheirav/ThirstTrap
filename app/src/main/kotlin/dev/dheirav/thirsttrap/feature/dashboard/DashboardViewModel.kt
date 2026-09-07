@@ -34,9 +34,19 @@ class DashboardViewModel @Inject constructor(
     private val photos: PhotoRepository,
 ) : ViewModel() {
 
+    private val _photoError = MutableStateFlow<String?>(null)
+    val photoError: StateFlow<String?> = _photoError.asStateFlow()
+
     fun addPhoto(plantId: String, uri: Uri) {
-        viewModelScope.launch { (photos as? PhotoRepositoryImpl)?.importPhoto(plantId, uri) }
+        viewModelScope.launch {
+            val saved = (photos as? PhotoRepositoryImpl)?.importPhoto(plantId, uri)
+            // A photo that silently fails to save is how two bugs stayed hidden
+            // for a whole afternoon. Say so.
+            if (saved == null) _photoError.value = "That photo could not be saved."
+        }
     }
+
+    fun clearPhotoError() { _photoError.value = null }
 
     val uiState: StateFlow<DashboardUiState> =
         repository.observeDashboard { System.currentTimeMillis() }

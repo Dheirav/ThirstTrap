@@ -46,7 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
+import dev.dheirav.thirsttrap.ui.PlantPhoto
 import dev.dheirav.thirsttrap.domain.Photo
 import java.time.Instant
 import java.time.ZoneOffset
@@ -201,8 +201,8 @@ private fun ZoomPane(
         if (path == null) {
             Text("—", color = MaterialTheme.colorScheme.onSurfaceVariant)
         } else {
-            AsyncImage(
-                model = path,
+            PlantPhoto(
+                path = path,
                 contentDescription = "Plant photo",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxSize().graphicsLayer(
@@ -232,10 +232,9 @@ private fun Filmstrip(
     ) {
         items(photos, key = { it.id }) { photo ->
             val selected = photo.id == selectedId
-            AsyncImage(
-                model = pathOf(photo),
+            PlantPhoto(
+                path = pathOf(photo),
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(60.dp)
                     .clip(RoundedCornerShape(8.dp))

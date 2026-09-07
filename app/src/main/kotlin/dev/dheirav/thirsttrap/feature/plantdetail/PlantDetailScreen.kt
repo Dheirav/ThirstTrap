@@ -53,7 +53,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
+import dev.dheirav.thirsttrap.ui.PlantPhoto
 import dev.dheirav.thirsttrap.domain.CareEventType
 import dev.dheirav.thirsttrap.domain.Photo
 import java.time.Instant
@@ -149,6 +149,18 @@ fun PlantDetailScreen(
                 }
             }
 
+            if (state.loaded && state.photos.isEmpty()) {
+                item {
+                    Text(
+                        "No photos yet. The camera button above starts a record you can " +
+                            "compare against later.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(bottom = 16.dp),
+                    )
+                }
+            }
+
             if (state.photos.isNotEmpty()) {
                 item {
                     LazyRow(
@@ -225,10 +237,9 @@ fun PlantDetailScreen(
 @Composable
 private fun PhotoThumb(path: String, caption: String?, onLongPress: () -> Unit) {
     Column {
-        AsyncImage(
-            model = path,
+        PlantPhoto(
+            path = path,
             contentDescription = caption ?: "Plant photo",
-            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(120.dp)
                 .clip(RoundedCornerShape(10.dp))
@@ -297,10 +308,9 @@ private fun EventRow(
                         modifier = Modifier.padding(top = 6.dp),
                     ) {
                         items(photos, key = { it.id }) { photo ->
-                            AsyncImage(
-                                model = pathOf(photo),
+                            PlantPhoto(
+                                path = pathOf(photo),
                                 contentDescription = photo.caption ?: "Photo",
-                                contentScale = ContentScale.Crop,
                                 modifier = Modifier.size(64.dp).clip(RoundedCornerShape(8.dp)),
                             )
                         }

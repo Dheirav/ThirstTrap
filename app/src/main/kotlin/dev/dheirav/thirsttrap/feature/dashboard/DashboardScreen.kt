@@ -42,6 +42,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,7 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.layout.ContentScale
-import coil.compose.AsyncImage
+import dev.dheirav.thirsttrap.ui.PlantPhoto
 import dev.dheirav.thirsttrap.domain.CareEvent
 import dev.dheirav.thirsttrap.domain.PlantAttention
 import dev.dheirav.thirsttrap.domain.Prediction
@@ -85,6 +86,7 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val photoError by viewModel.photoError.collectAsStateWithLifecycle()
     val snackbarHost = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val haptics = LocalHapticFeedback.current
@@ -117,6 +119,13 @@ fun DashboardScreen(
             val result = snackbarHost.showSnackbar(message, "UNDO", duration = SnackbarDuration.Short)
             if (result == SnackbarResult.ActionPerformed) viewModel.undo(event)
             frozenOrder = null
+        }
+    }
+
+    LaunchedEffect(photoError) {
+        photoError?.let {
+            snackbarHost.showSnackbar(it)
+            viewModel.clearPhotoError()
         }
     }
 
@@ -251,10 +260,9 @@ private fun PlantCard(
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
                 item.coverPhotoPath?.let { path ->
-                    AsyncImage(
-                        model = path,
+                    PlantPhoto(
+                        path = path,
                         contentDescription = null,
-                        contentScale = ContentScale.Crop,
                         modifier = Modifier.size(56.dp).clip(RoundedCornerShape(10.dp)),
                     )
                 }

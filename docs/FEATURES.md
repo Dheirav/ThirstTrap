@@ -102,7 +102,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 ### X — Cross-cutting (M1)
 - [x] **X1** ⊕ Settings screen — theme, reminder hour, default trigger, API keys, export, storage
 - [x] **X2** Material 3 theme — dynamic colour, full dark theme, muted green fallback
-- [ ] **X3** ⊕ Empty & error states — 7 defined cases — *UI-SPEC §9*
+- [x] **X3** ⊕ Empty & error states — 7 defined cases — *UI-SPEC §9*
 - [x] **X4** ⊕ Accessibility pass — content descriptions, 48dp targets, 200% font scale, no colour-only meaning, reduce-motion
 - [x] **X5** ⊕ Storage screen — usage, photo count, "clean up now" (orphan files + orphan rows) — *DATA-MODEL §Maintenance*
 - [x] **X6** ⊕ Debug menu (debug builds only) — fire reminder now / in 10s, fast-forward due date, dump WorkManager queue
