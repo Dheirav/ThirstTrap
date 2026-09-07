@@ -92,12 +92,12 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] **F9.1** Verify: airplane mode, every M1 feature exercised, zero degradation
 
 ### F10 — Export *(req. item 10)*
-- [ ] **F10.1** Zip written via SAF `CreateDocument` — user picks destination
-- [ ] **F10.2** `thirsttrap.json` — domain entities, not Room rows
-- [ ] **F10.3** `manifest.json` — schema version, app version, timestamp, row counts
-- [ ] **F10.4** Photos included at their relative paths
-- [ ] **F10.5** Streaming write — never build the archive in memory
-- [ ] **F10.6** ⊕ **Import** — idempotent upsert by UUID; re-importing changes nothing — *DATA-MODEL §Export format*
+- [~] **F10.1** Zip written via SAF `CreateDocument` — user picks destination — **code path built; the SAF picker itself is the one thing not yet exercised**
+- [x] **F10.2** `thirsttrap.json` — domain entities, not Room rows
+- [x] **F10.3** `manifest.json` — schema version, app version, timestamp, row counts
+- [x] **F10.4** Photos included at their relative paths
+- [x] **F10.5** Streaming write — never build the archive in memory
+- [x] **F10.6** ⊕ **Import** — idempotent upsert by UUID; re-importing changes nothing — *DATA-MODEL §Export format*
 
 ### X — Cross-cutting (M1)
 - [x] **X1** ⊕ Settings screen — theme, reminder hour, default trigger, API keys, export, storage

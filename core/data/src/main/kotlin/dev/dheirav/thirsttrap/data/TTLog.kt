@@ -25,6 +25,7 @@ object TTLog {
     const val REMINDER = "TTReminder"
     const val DATA = "TTData"
     const val UI = "TTUi"
+    const val DEBUG = "TTDebug"
 
     fun i(tag: String, message: () -> String) {
         if (BuildConfig.DEBUG) Log.i(tag, message())
