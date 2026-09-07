@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -83,6 +84,7 @@ fun DashboardScreen(
     onEditPlant: (String) -> Unit,
     onOpenPlant: (String) -> Unit,
     onLogMore: (String) -> Unit,
+    onOpenPropagation: () -> Unit,
     viewModel: DashboardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -130,7 +132,16 @@ fun DashboardScreen(
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Plants") }) },
+        topBar = {
+            TopAppBar(
+                title = { Text("Plants") },
+                actions = {
+                    IconButton(onClick = onOpenPropagation) {
+                        Icon(Icons.Filled.Spa, contentDescription = "Propagation board")
+                    }
+                },
+            )
+        },
         snackbarHost = { SnackbarHost(snackbarHost) },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddPlant) {

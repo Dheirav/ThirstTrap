@@ -35,4 +35,7 @@ interface PlantRepository {
     suspend fun deleteEvent(eventId: String)
 
     suspend fun updateEvent(event: CareEvent)
+
+    /** Moves a cutting along the board, recording the move as a milestone. */
+    suspend fun setPropagationStage(plantId: String, stage: PropagationStage)
 }

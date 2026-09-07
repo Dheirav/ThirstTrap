@@ -40,6 +40,13 @@ data class PlantEntity(
     @ColumnInfo(name = "slope_ewma_g_per_day") val slopeEwmaGPerDay: Double? = null,
     @ColumnInfo(name = "needs_recalibration") val needsRecalibration: Boolean = false,
     @ColumnInfo(name = "cover_photo_id") val coverPhotoId: String? = null,
+    /**
+     * Where a cutting has got to, or null for a plant that was never one.
+     * Kept on the plant rather than derived, because a stage is a state the
+     * user sets, not something inferrable from the log.
+     */
+    @ColumnInfo(name = "propagation_stage") val propagationStage: String? = null,
+    @ColumnInfo(name = "propagation_stage_since") val propagationStageSince: Long? = null,
     val archived: Boolean = false,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "updated_at") val updatedAt: Long,

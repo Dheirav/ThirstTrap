@@ -11,12 +11,16 @@ import dev.dheirav.thirsttrap.domain.Plant
 import dev.dheirav.thirsttrap.domain.PlantAttention
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.PlantStatus
+import dev.dheirav.thirsttrap.domain.PropagationStage
+import dev.dheirav.thirsttrap.domain.newId
+import dev.dheirav.thirsttrap.domain.tzOffsetMinutesAt
 import dev.dheirav.thirsttrap.domain.Prediction
 import dev.dheirav.thirsttrap.domain.assembleWeightState
 import dev.dheirav.thirsttrap.domain.averageWateringIntervalDays
 import dev.dheirav.thirsttrap.domain.sortByAttention
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -151,6 +155,31 @@ class PlantRepositoryImpl @Inject constructor(
     override suspend fun deleteEvent(eventId: String) {
         TTLog.i(TTLog.DATA) { "delete event $eventId" }
         eventDao.delete(eventId)
+    }
+
+    override suspend fun setPropagationStage(plantId: String, stage: PropagationStage) {
+        val row = plantDao.observePlant(plantId).first() ?: return
+        val now = System.currentTimeMillis()
+        plantDao.upsert(
+            row.copy(
+                propagationStage = stage.name,
+                propagationStageSince = now,
+                updatedAt = now,
+            ),
+        )
+        // The move goes in the timeline too - "rooted on the 12th" is the kind
+        // of thing worth having next time.
+        eventDao.insert(
+            CareEvent(
+                id = newId(),
+                plantId = plantId,
+                timestampMillis = now,
+                tzOffsetMinutes = tzOffsetMinutesAt(now),
+                type = CareEventType.MILESTONE,
+                note = "Moved to ${stage.label.lowercase()}",
+            ).toEntity(now, now),
+        )
+        TTLog.i(TTLog.DATA) { "propagation $plantId -> $stage" }
     }
 
     override suspend fun updateEvent(event: CareEvent) {

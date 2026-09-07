@@ -149,7 +149,7 @@ complete before any UI is written.*
 
 *In value order. Timelapse is deliberately last.*
 
-- [ ] **F20** Propagation pipeline board *(req. 20)* — kanban: cutting → callusing → rooting → potted → established, with days-in-stage
+- [x] **F20** Propagation pipeline board *(req. 20)* — kanban: cutting → callusing → rooting → potted → established, with days-in-stage
 - [ ] **F24** Post-mortem template *(req. 24)* — on marking dead: timeline recap, suspected cause, "what I'd do differently", auto-linked photo history
 - [ ] **F21** QR stickers on pots *(req. 21)* — ML Kit Code Scanner (no camera permission) → deep-link to that plant's quick-log
 - [ ] **F19** Diagnosis checklists *(req. 19)* — guided trees: fuzz (dunk test: root hairs vs mould), browning (firm vs mushy), cut-face reading (clean vs brown ring), leaf-drop triage

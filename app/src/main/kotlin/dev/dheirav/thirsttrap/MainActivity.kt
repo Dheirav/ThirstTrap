@@ -36,6 +36,7 @@ import dev.dheirav.thirsttrap.feature.debug.DebugScreen
 import androidx.compose.material.icons.filled.Settings
 import dev.dheirav.thirsttrap.feature.backup.BackupScreen
 import dev.dheirav.thirsttrap.feature.light.LightMeterScreen
+import dev.dheirav.thirsttrap.feature.propagation.PropagationScreen
 import dev.dheirav.thirsttrap.feature.settings.SettingsScreen
 import dev.dheirav.thirsttrap.feature.weight.ScaleHelpScreen
 import dev.dheirav.thirsttrap.feature.weight.WeightScreen
@@ -102,6 +103,7 @@ class MainActivity : ComponentActivity() {
                                 onEditPlant = { id -> nav.navigate(Routes.plantEdit(id)) },
                                 onOpenPlant = { id -> nav.navigate(Routes.plantDetail(id)) },
                                 onLogMore = { id -> nav.navigate(Routes.logEvent(id)) },
+                                onOpenPropagation = { nav.navigate(Routes.PROPAGATION) },
                             )
                         }
                         composable(Routes.DUE) {
@@ -149,6 +151,12 @@ class MainActivity : ComponentActivity() {
                             arguments = listOf(navArgument("id") { type = NavType.StringType }),
                         ) {
                             LightMeterScreen(onBack = { nav.popBackStack() })
+                        }
+                        composable(Routes.PROPAGATION) {
+                            PropagationScreen(
+                                onBack = { nav.popBackStack() },
+                                onOpenPlant = { id -> nav.navigate(Routes.plantDetail(id)) },
+                            )
                         }
                         composable(Routes.SCALE_HELP) {
                             ScaleHelpScreen(onBack = { nav.popBackStack() })

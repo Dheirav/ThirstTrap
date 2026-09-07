@@ -24,7 +24,7 @@ import dev.dheirav.thirsttrap.data.entity.ReminderEntity
  */
 @Database(
     entities = [PlantEntity::class, CareEventEntity::class, ReminderEntity::class, PhotoEntity::class, WeightReadingEntity::class],
-    version = 5,
+    version = 6,
     exportSchema = true,
     // v2 only adds the reminders table, so Room can generate the migration.
     // Anything that alters or drops a column must be written by hand and
@@ -34,6 +34,7 @@ import dev.dheirav.thirsttrap.data.entity.ReminderEntity
         AutoMigration(from = 2, to = 3),
         AutoMigration(from = 3, to = 4),
         AutoMigration(from = 4, to = 5),
+        AutoMigration(from = 5, to = 6),
     ],
 )
 abstract class ThirstTrapDatabase : RoomDatabase() {

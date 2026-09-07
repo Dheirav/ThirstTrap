@@ -12,6 +12,7 @@ object Routes {
     const val WEIGHT = "plant/weight"
     const val SCALE_HELP = "help/scale"
     const val LIGHT = "plant/light"
+    const val PROPAGATION = "propagation"
     const val PLANT_EDIT = "plant/edit"
     const val PLANT_DETAIL = "plant/detail"
     /** Empty id means "new plant". */

@@ -77,7 +77,21 @@ data class Plant(
     val archived: Boolean = false,
     /** Explicitly chosen cover. Null means "use the most recent photo". */
     val coverPhotoId: String? = null,
+    val propagationStage: PropagationStage? = null,
+    val propagationStageSinceMillis: Long? = null,
 ) {
+    /**
+     * On the propagation board if it has a stage, or if it arrived as a cutting
+     * and has not been given one yet - so taking a cutting is enough to make it
+     * appear, with no extra step to forget.
+     */
+    val isPropagating: Boolean
+        get() = propagationStage != null ||
+            (source == PlantSource.CUTTING && status == PlantStatus.ACTIVE)
+
+    val effectiveStage: PropagationStage?
+        get() = propagationStage ?: if (isPropagating) PropagationStage.CUTTING else null
+
     val isWeightTrackable: Boolean
         get() = medium != Medium.WATER
 }

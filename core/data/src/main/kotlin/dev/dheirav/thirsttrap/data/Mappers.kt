@@ -56,6 +56,10 @@ fun PlantEntity.toDomain(): Plant = Plant(
     needsRecalibration = needsRecalibration,
     archived = archived,
     coverPhotoId = coverPhotoId,
+    propagationStage = propagationStage?.let {
+        runCatching { dev.dheirav.thirsttrap.domain.PropagationStage.valueOf(it.uppercase()) }.getOrNull()
+    },
+    propagationStageSinceMillis = propagationStageSince,
 )
 
 fun Plant.toEntity(createdAt: Long, updatedAt: Long): PlantEntity = PlantEntity(
@@ -82,6 +86,8 @@ fun Plant.toEntity(createdAt: Long, updatedAt: Long): PlantEntity = PlantEntity(
     needsRecalibration = needsRecalibration,
     archived = archived,
     coverPhotoId = coverPhotoId,
+    propagationStage = propagationStage?.name,
+    propagationStageSince = propagationStageSinceMillis,
     createdAt = createdAt,
     updatedAt = updatedAt,
 )
