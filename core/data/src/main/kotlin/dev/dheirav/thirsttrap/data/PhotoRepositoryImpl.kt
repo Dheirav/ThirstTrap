@@ -17,19 +17,6 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private fun PhotoEntity.toDomain() = Photo(
-    id = id,
-    plantId = plantId,
-    careEventId = careEventId,
-    relativePath = relativePath,
-    takenAtMillis = takenAt,
-    tzOffsetMinutes = tzOffsetMinutes,
-    widthPx = widthPx,
-    heightPx = heightPx,
-    bytes = bytes,
-    caption = caption,
-)
-
 @Singleton
 class PhotoRepositoryImpl @Inject constructor(
     private val dao: PhotoDao,
@@ -51,6 +38,32 @@ class PhotoRepositoryImpl @Inject constructor(
 
     override fun absolutePath(photo: Photo): String =
         store.absoluteFile(photo.relativePath).absolutePath
+
+    /**
+     * Gives an observation entry to any photo that has none.
+     *
+     * Photos taken before photo-to-event linking existed have a null
+     * careEventId, which means they never appear in the timeline - the export
+     * showed three of them. Idempotent, so it is safe on every launch.
+     */
+    suspend fun backfillPhotoEvents() {
+        val orphans = dao.all().filter { it.careEventId == null }
+        if (orphans.isEmpty()) return
+        TTLog.i(TTLog.PHOTO) { "backfilling entries for ${orphans.size} photo(s)" }
+        for (row in orphans) {
+            val eventId = newId()
+            plants.get().logEvent(
+                CareEvent(
+                    id = eventId,
+                    plantId = row.plantId,
+                    timestampMillis = row.takenAt,
+                    tzOffsetMinutes = row.tzOffsetMinutes,
+                    type = CareEventType.OBSERVATION,
+                ),
+            )
+            dao.upsert(row.copy(careEventId = eventId))
+        }
+    }
 
     override suspend fun setCaption(photoId: String, caption: String?) =
         dao.setCaption(photoId, caption?.trim()?.takeIf { it.isNotEmpty() })

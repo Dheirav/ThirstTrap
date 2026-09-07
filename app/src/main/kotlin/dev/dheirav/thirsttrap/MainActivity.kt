@@ -33,6 +33,7 @@ import dev.dheirav.thirsttrap.feature.help.RemindersHelpScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.feature.debug.DebugScreen
+import dev.dheirav.thirsttrap.feature.backup.BackupScreen
 import dev.dheirav.thirsttrap.feature.compare.CompareScreen
 import dev.dheirav.thirsttrap.feature.logevent.LogEventScreen
 import dev.dheirav.thirsttrap.feature.plantdetail.PlantDetailScreen
@@ -94,6 +95,7 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.DUE) {
                             DueScreen(
                                 onOpenHelp = { nav.navigate(Routes.HELP_REMINDERS) },
+                                onOpenBackup = { nav.navigate(Routes.BACKUP) },
                                 onOpenDebug = { nav.navigate(Routes.DEBUG) },
                             )
                         }
@@ -111,6 +113,9 @@ class MainActivity : ComponentActivity() {
                             arguments = listOf(navArgument("id") { type = NavType.StringType }),
                         ) {
                             CompareScreen(onBack = { nav.popBackStack() })
+                        }
+                        composable(Routes.BACKUP) {
+                            BackupScreen(onBack = { nav.popBackStack() })
                         }
                         composable(Routes.DEBUG) {
                             DebugScreen(onBack = { nav.popBackStack() })

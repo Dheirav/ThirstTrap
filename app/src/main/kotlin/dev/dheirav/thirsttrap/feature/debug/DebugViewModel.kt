@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.dheirav.thirsttrap.BuildConfig
+import dev.dheirav.thirsttrap.data.ExportRepositoryImpl
 import dev.dheirav.thirsttrap.domain.AppSettings
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.ReminderRepository
@@ -33,7 +35,26 @@ class DebugViewModel @Inject constructor(
     private val reminders: ReminderRepository,
     private val settings: SettingsRepository,
     private val scheduler: ReminderScheduler,
+    private val exporter: ExportRepositoryImpl,
 ) : ViewModel() {
+
+    /** Re-imports the debug archive, to prove importing twice changes nothing. */
+    fun importFromCache() {
+        viewModelScope.launch {
+            exporter.importFromCacheForDebug()
+                .onSuccess { _status.value = "Imported: $it" }
+                .onFailure { _status.value = "Failed: ${it.message}" }
+        }
+    }
+
+    /** Writes an export to a fixed path so the archive can be checked directly. */
+    fun exportToCache() {
+        viewModelScope.launch {
+            exporter.exportToFileForDebug(BuildConfig.VERSION_NAME)
+                .onSuccess { _status.value = "Wrote ${it.absolutePath} (${it.length()} bytes)" }
+                .onFailure { _status.value = "Failed: ${it.message}" }
+        }
+    }
 
     val appSettings: StateFlow<AppSettings> =
         settings.settings.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AppSettings())

@@ -117,3 +117,65 @@ fun CareEvent.toEntity(createdAt: Long, updatedAt: Long): CareEventEntity = Care
     createdAt = createdAt,
     updatedAt = updatedAt,
 )
+
+// ---- export / import ----
+
+fun dev.dheirav.thirsttrap.data.entity.ReminderEntity.toDomainReminder(): dev.dheirav.thirsttrap.domain.Reminder =
+    dev.dheirav.thirsttrap.domain.Reminder(
+        id = id,
+        plantId = plantId,
+        kind = if (kind.equals("TASK", true)) {
+            dev.dheirav.thirsttrap.domain.ReminderKind.TASK
+        } else {
+            dev.dheirav.thirsttrap.domain.ReminderKind.CHECK
+        },
+        title = title,
+        intervalDays = intervalDays,
+        nextDueAtMillis = nextDueAt,
+        enabled = enabled,
+        snoozedUntilMillis = snoozedUntil,
+        lastFiredAtMillis = lastFiredAt,
+    )
+
+fun dev.dheirav.thirsttrap.domain.Reminder.toReminderEntity(createdAt: Long): dev.dheirav.thirsttrap.data.entity.ReminderEntity =
+    dev.dheirav.thirsttrap.data.entity.ReminderEntity(
+        id = id,
+        plantId = plantId,
+        kind = kind.name,
+        title = title,
+        intervalDays = intervalDays,
+        nextDueAt = nextDueAtMillis,
+        enabled = enabled,
+        snoozedUntil = snoozedUntilMillis,
+        lastFiredAt = lastFiredAtMillis,
+        createdAt = createdAt,
+    )
+
+fun dev.dheirav.thirsttrap.data.entity.PhotoEntity.toDomain(): dev.dheirav.thirsttrap.domain.Photo =
+    dev.dheirav.thirsttrap.domain.Photo(
+        id = id,
+        plantId = plantId,
+        careEventId = careEventId,
+        relativePath = relativePath,
+        takenAtMillis = takenAt,
+        tzOffsetMinutes = tzOffsetMinutes,
+        widthPx = widthPx,
+        heightPx = heightPx,
+        bytes = bytes,
+        caption = caption,
+    )
+
+fun dev.dheirav.thirsttrap.domain.Photo.toPhotoEntity(createdAt: Long): dev.dheirav.thirsttrap.data.entity.PhotoEntity =
+    dev.dheirav.thirsttrap.data.entity.PhotoEntity(
+        id = id,
+        plantId = plantId,
+        careEventId = careEventId,
+        relativePath = relativePath,
+        takenAt = takenAtMillis,
+        tzOffsetMinutes = tzOffsetMinutes,
+        widthPx = widthPx,
+        heightPx = heightPx,
+        bytes = bytes,
+        caption = caption,
+        createdAt = createdAt,
+    )

@@ -11,50 +11,25 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private fun ReminderEntity.toDomain() = Reminder(
-    id = id,
-    plantId = plantId,
-    kind = if (kind.equals("TASK", true)) ReminderKind.TASK else ReminderKind.CHECK,
-    title = title,
-    intervalDays = intervalDays,
-    nextDueAtMillis = nextDueAt,
-    enabled = enabled,
-    snoozedUntilMillis = snoozedUntil,
-    lastFiredAtMillis = lastFiredAt,
-)
-
-private fun Reminder.toEntity(createdAt: Long) = ReminderEntity(
-    id = id,
-    plantId = plantId,
-    kind = kind.name,
-    title = title,
-    intervalDays = intervalDays,
-    nextDueAt = nextDueAtMillis,
-    enabled = enabled,
-    snoozedUntil = snoozedUntilMillis,
-    lastFiredAt = lastFiredAtMillis,
-    createdAt = createdAt,
-)
-
 @Singleton
 class ReminderRepositoryImpl @Inject constructor(
     private val dao: ReminderDao,
 ) : ReminderRepository {
 
     override fun observeReminders(): Flow<List<Reminder>> =
-        dao.observeAll().map { rows -> rows.map { it.toDomain() } }
+        dao.observeAll().map { rows -> rows.map { it.toDomainReminder() } }
 
     override fun observeForPlant(plantId: String): Flow<List<Reminder>> =
-        dao.observeForPlant(plantId).map { rows -> rows.map { it.toDomain() } }
+        dao.observeForPlant(plantId).map { rows -> rows.map { it.toDomainReminder() } }
 
     override suspend fun dueNow(nowMillis: Long): List<Reminder> =
-        dao.dueNow(nowMillis).map { it.toDomain() }
+        dao.dueNow(nowMillis).map { it.toDomainReminder() }
 
     override suspend fun upsert(reminder: Reminder) {
         TTLog.i(TTLog.REMINDER) {
             "upsert reminder ${reminder.id} plant=${reminder.plantId} due=${reminder.nextDueAtMillis}"
         }
-        dao.upsert(reminder.toEntity(System.currentTimeMillis()))
+        dao.upsert(reminder.toReminderEntity(System.currentTimeMillis()))
     }
 
     override suspend fun delete(reminderId: String) = dao.delete(reminderId)

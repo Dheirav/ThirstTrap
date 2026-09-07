@@ -99,6 +99,16 @@ fun DebugScreen(onBack: () -> Unit, viewModel: DebugViewModel = hiltViewModel())
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
             FilledTonalButton(
+                onClick = { viewModel.exportToCache() },
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text("Export to cache (no picker)") }
+
+            FilledTonalButton(
+                onClick = { viewModel.importFromCache() },
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text("Re-import that export (idempotency check)") }
+
+            FilledTonalButton(
                 onClick = { viewModel.dumpWorkQueue(context) },
                 modifier = Modifier.fillMaxWidth(),
             ) { Text("Dump the work queue") }

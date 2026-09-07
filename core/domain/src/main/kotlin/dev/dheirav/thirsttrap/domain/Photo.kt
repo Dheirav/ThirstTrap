@@ -1,7 +1,9 @@
 package dev.dheirav.thirsttrap.domain
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Photo(
     val id: String,
     val plantId: String,

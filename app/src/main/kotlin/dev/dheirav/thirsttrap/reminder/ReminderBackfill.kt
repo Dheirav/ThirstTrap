@@ -2,6 +2,8 @@ package dev.dheirav.thirsttrap.reminder
 
 import android.util.Log
 import dev.dheirav.thirsttrap.domain.CareEventType
+import dev.dheirav.thirsttrap.data.PhotoRepositoryImpl
+import dev.dheirav.thirsttrap.domain.PhotoRepository
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.Reminder
 import dev.dheirav.thirsttrap.domain.ReminderKind
@@ -25,8 +27,11 @@ import javax.inject.Singleton
 class ReminderBackfill @Inject constructor(
     private val plants: PlantRepository,
     private val reminders: ReminderRepository,
+    private val photos: PhotoRepository,
 ) {
     suspend fun run() {
+        (photos as? PhotoRepositoryImpl)?.backfillPhotoEvents()
+
         val allPlants = plants.observePlants().first()
         val covered = reminders.observeReminders().first().map { it.plantId }.toSet()
         val now = System.currentTimeMillis()

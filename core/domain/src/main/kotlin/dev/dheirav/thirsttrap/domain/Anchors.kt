@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.domain
 
+import kotlinx.serialization.Serializable
 import kotlin.math.max
 
 /**
@@ -10,6 +11,7 @@ import kotlin.math.max
  * starts as an estimate and is replaced adaptively — no plant is ever dried out
  * on purpose to calibrate a convenience feature. docs/WATERING-MODEL.md §2.
  */
+@Serializable
 data class Anchors(
     val wetGrams: Double,
     val dryGrams: Double,

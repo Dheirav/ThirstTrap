@@ -1,9 +1,12 @@
 package dev.dheirav.thirsttrap.domain
 
+import kotlinx.serialization.Serializable
+
 /**
  * A prompt to *assess*, never an instruction to water blindly.
  * docs/NOTIFICATIONS.md section 5.
  */
+@Serializable
 data class Reminder(
     val id: String,
     val plantId: String,
@@ -23,6 +26,7 @@ data class Reminder(
             (snoozedUntilMillis == null || snoozedUntilMillis <= nowMillis)
 }
 
+@Serializable
 enum class ReminderKind { CHECK, TASK }
 
 /** Fallback for a brand-new plant with no history at all. */

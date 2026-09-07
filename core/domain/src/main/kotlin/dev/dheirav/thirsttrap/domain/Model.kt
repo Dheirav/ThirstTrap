@@ -1,21 +1,29 @@
 package dev.dheirav.thirsttrap.domain
 
+import kotlinx.serialization.Serializable
+
 /**
  * Domain entities. Plain Kotlin: no Room annotations, no Android types.
  * The data layer keeps its own persistence entities and maps to these.
  */
 
+@Serializable
 enum class Medium { SOIL, WATER, SPHAGNUM, SEMI_HYDRO, UNKNOWN }
 
+@Serializable
 enum class PlantStatus { ACTIVE, DORMANT, DEAD, GIVEN_AWAY, UNKNOWN }
 
+@Serializable
 enum class PlantSource { BOUGHT, CUTTING, GIFT, VOLUNTEER, UNKNOWN }
 
+@Serializable
 enum class WateringMethod { TOP, BOTTOM_SOAK, UNKNOWN }
 
 /** The result of lifting the pot. A check that ends in *not* watering is worth logging. */
+@Serializable
 enum class CheckResult { STILL_HEAVY, GETTING_LIGHT, DRY_WATERED, UNKNOWN }
 
+@Serializable
 enum class CareEventType {
     WATERED, CHECKED, FERTILIZED, WATER_CHANGED, REPOTTED, MEDIUM_CHANGED,
     PRUNED, TREATED, PEST_OR_DISEASE, WEEDED, OBSERVATION, MILESTONE, MOVED, DIED,
@@ -23,6 +31,7 @@ enum class CareEventType {
 }
 
 /** Where a weight reading sits in the watering cycle. */
+@Serializable
 enum class ReadingContext {
     /** A mid-cycle weigh. These are what sharpen the prediction. */
     ROUTINE,
@@ -37,6 +46,7 @@ enum class ReadingContext {
     CALIBRATION,
 }
 
+@Serializable
 data class Plant(
     val id: String,
     val name: String,
@@ -70,6 +80,7 @@ data class Plant(
         get() = medium != Medium.WATER
 }
 
+@Serializable
 data class CareEvent(
     val id: String,
     val plantId: String,
@@ -87,6 +98,7 @@ data class CareEvent(
     val cause: String? = null,
 )
 
+@Serializable
 data class WeightReading(
     val id: String,
     val plantId: String,

@@ -8,6 +8,7 @@ import dagger.Binds
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dev.dheirav.thirsttrap.data.ExportRepositoryImpl
 import dev.dheirav.thirsttrap.data.PhotoRepositoryImpl
 import dev.dheirav.thirsttrap.data.PhotoStore
 import dev.dheirav.thirsttrap.data.PlantRepositoryImpl
@@ -15,9 +16,9 @@ import dev.dheirav.thirsttrap.data.ReminderRepositoryImpl
 import dev.dheirav.thirsttrap.data.SettingsRepositoryImpl
 import dev.dheirav.thirsttrap.data.ThirstTrapDatabase
 import dev.dheirav.thirsttrap.data.dao.CareEventDao
+import dev.dheirav.thirsttrap.data.dao.ReminderDao
 import dev.dheirav.thirsttrap.data.dao.PhotoDao
 import dev.dheirav.thirsttrap.data.dao.PlantDao
-import dev.dheirav.thirsttrap.data.dao.ReminderDao
 import dev.dheirav.thirsttrap.domain.PhotoRepository
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.ReminderRepository
@@ -47,6 +48,17 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providePhotoStore(@ApplicationContext context: Context): PhotoStore = PhotoStore(context)
+
+    @Provides
+    @Singleton
+    fun provideExportRepository(
+        @ApplicationContext context: Context,
+        plantDao: PlantDao,
+        eventDao: CareEventDao,
+        photoDao: PhotoDao,
+        reminderDao: ReminderDao,
+        store: PhotoStore,
+    ): ExportRepositoryImpl = ExportRepositoryImpl(context, plantDao, eventDao, photoDao, reminderDao, store)
 
     @Provides
     @Singleton
