@@ -51,10 +51,16 @@ class PhotoStore @Inject constructor(
     fun saveFrom(source: Uri, plantId: String, photoId: String): Saved? {
         val takenAt = readExifTimestamp(source)
 
+        // Read the dimensions without allocating a bitmap.
+        //
+        // The null check is on the STREAM, not on decodeStream's result: with
+        // inJustDecodeBounds set, decodeStream always returns null by design,
+        // so `openInputStream(...)?.use { decodeStream(...) } ?: return null`
+        // bails out on every single image no matter how valid it is. That cost
+        // two real captures before it was spotted.
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-        context.contentResolver.openInputStream(source)?.use {
-            BitmapFactory.decodeStream(it, null, bounds)
-        } ?: return null
+        val boundsStream = context.contentResolver.openInputStream(source) ?: return null
+        boundsStream.use { BitmapFactory.decodeStream(it, null, bounds) }
         if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
 
         val decodeOptions = BitmapFactory.Options().apply {
@@ -84,6 +90,23 @@ class PhotoStore @Inject constructor(
         if (oriented !== decoded) oriented.recycle()
         decoded.recycle()
         return result
+    }
+
+    /**
+     * Removes camera scratch files.
+     *
+     * A capture that is imported has served its purpose, and one that is not -
+     * cancelled, or interrupted by the Activity being destroyed - would
+     * otherwise sit in the cache forever at full camera resolution. Two such
+     * files accumulated during development before this existed.
+     */
+    fun clearStaleCaptures(exceptUri: String? = null, olderThanMillis: Long = 0L) {
+        val cutoff = System.currentTimeMillis() - olderThanMillis
+        context.cacheDir.listFiles()
+            ?.filter { it.isFile && it.name.startsWith("capture_") }
+            ?.filterNot { exceptUri != null && exceptUri.endsWith(it.name) }
+            ?.filter { it.lastModified() <= cutoff }
+            ?.forEach { runCatching { it.delete() } }
     }
 
     fun delete(relativePath: String) {

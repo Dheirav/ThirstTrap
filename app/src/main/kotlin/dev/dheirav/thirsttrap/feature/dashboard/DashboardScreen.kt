@@ -45,6 +45,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -94,7 +95,9 @@ fun DashboardScreen(
     // The sort order is frozen while an undo is pending. Re-sorting on the log
     // itself yanks the card out from under the finger - found on device, where
     // logging one plant and reaching for UNDO hit a different plant's droplet.
-    var photoFor by remember { mutableStateOf<String?>(null) }
+    // rememberSaveable, not remember: the camera app can take this Activity
+    // down with it, and a lost plant id means the photo lands nowhere.
+    var photoFor by rememberSaveable { mutableStateOf<String?>(null) }
     val capture = dev.dheirav.thirsttrap.photo.rememberPhotoCapture { uri ->
         photoFor?.let { viewModel.addPhoto(it, uri) }
         photoFor = null

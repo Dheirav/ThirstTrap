@@ -1,6 +1,7 @@
 package dev.dheirav.thirsttrap.data
 
 import android.net.Uri
+import android.util.Log
 import dev.dheirav.thirsttrap.data.dao.PhotoDao
 import dev.dheirav.thirsttrap.data.entity.PhotoEntity
 import dev.dheirav.thirsttrap.domain.Photo
@@ -65,7 +66,12 @@ class PhotoRepositoryImpl @Inject constructor(
         careEventId: String? = null,
     ): Photo? = withContext(Dispatchers.IO) {
         val photoId = newId()
-        val saved = store.saveFrom(source, plantId, photoId) ?: return@withContext null
+        val saved = store.saveFrom(source, plantId, photoId)
+        if (saved == null) {
+            Log.w("TTPhoto", "could not read image from $source")
+            return@withContext null
+        }
+        Log.i("TTPhoto", "saved ${saved.relativePath} ${saved.bytes}B ${saved.width}x${saved.height}")
         val now = System.currentTimeMillis()
         // A gallery import keeps its original capture time; a fresh camera shot
         // has none, so it falls back to now.
@@ -84,6 +90,9 @@ class PhotoRepositoryImpl @Inject constructor(
             createdAt = now,
         )
         dao.upsert(entity)
+        // The scratch capture has served its purpose; leaving it would keep a
+        // full-resolution duplicate in the cache.
+        store.clearStaleCaptures()
         entity.toDomain()
     }
 }
