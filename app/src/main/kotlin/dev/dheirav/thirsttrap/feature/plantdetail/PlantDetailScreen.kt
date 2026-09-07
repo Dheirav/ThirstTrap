@@ -134,7 +134,7 @@ fun PlantDetailScreen(
                     // waterings to measure between - one is not a cadence.
                     state.averageIntervalDays?.let { avg ->
                         Text(
-                            "Waters roughly every ${avg.toInt()} days",
+                            cadenceLabel(avg),
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.Medium,
                             modifier = Modifier.padding(top = 8.dp),
@@ -384,4 +384,11 @@ private fun timeOf(event: CareEvent): String {
     val zone = ZoneOffset.ofTotalSeconds(event.tzOffsetMinutes * 60)
     return Instant.ofEpochMilli(event.timestampMillis).atZone(zone)
         .format(DateTimeFormatter.ofPattern("HH:mm"))
+}
+
+/** "every 1 days" is the kind of thing that makes an app feel unfinished. */
+private fun cadenceLabel(avgDays: Double): String = when (val d = avgDays.toInt()) {
+    0 -> "Waters more than once a day"
+    1 -> "Waters roughly every day"
+    else -> "Waters roughly every $d days"
 }

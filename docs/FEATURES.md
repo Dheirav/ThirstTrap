@@ -33,7 +33,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] **F1.2** Edit plant
 - [x] **F1.3** Archive plant — status → `dead` / `given_away`, history retained
 - [x] **F1.4** Cover photo selection
-- [ ] **F1.5** Per-plant care profile: target dryness, light needs, fertilizer cadence
+- [x] **F1.5** Per-plant care profile: target dryness, light needs, fertilizer cadence
 - [x] **F1.6** ⊕ Hard delete — typed confirmation, offers export first, cascades to photo files — *DATA-MODEL §Deletion*
 
 ### F2 — Care event logging *(req. item 2 — ≤3 taps)*
@@ -81,7 +81,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 ### F7 — Dashboard *(req. item 7)*
 - [x] **F7.1** Plant cards: thumbnail, name, location · medium, days since watered
 - [x] **F7.2** Attention sorting — 5-level priority — *UI-SPEC §3*
-- [ ] **F7.3** Due badges (never red, never a failure count)
+- [x] **F7.3** Due badges (never red, never a failure count)
 - [x] **F7.4** Filter chips to reveal archived / dead plants
 - [x] **F7.5** No loading spinner on first frame — Room Flow straight to the list
 
@@ -100,11 +100,11 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [ ] **F10.6** ⊕ **Import** — idempotent upsert by UUID; re-importing changes nothing — *DATA-MODEL §Export format*
 
 ### X — Cross-cutting (M1)
-- [ ] **X1** ⊕ Settings screen — theme, reminder hour, default trigger, API keys, export, storage
+- [x] **X1** ⊕ Settings screen — theme, reminder hour, default trigger, API keys, export, storage
 - [x] **X2** Material 3 theme — dynamic colour, full dark theme, muted green fallback
 - [ ] **X3** ⊕ Empty & error states — 7 defined cases — *UI-SPEC §9*
-- [ ] **X4** ⊕ Accessibility pass — content descriptions, 48dp targets, 200% font scale, no colour-only meaning, reduce-motion
-- [ ] **X5** ⊕ Storage screen — usage, photo count, "clean up now" (orphan files + orphan rows) — *DATA-MODEL §Maintenance*
+- [x] **X4** ⊕ Accessibility pass — content descriptions, 48dp targets, 200% font scale, no colour-only meaning, reduce-motion
+- [x] **X5** ⊕ Storage screen — usage, photo count, "clean up now" (orphan files + orphan rows) — *DATA-MODEL §Maintenance*
 - [x] **X6** ⊕ Debug menu (debug builds only) — fire reminder now / in 10s, fast-forward due date, dump WorkManager queue
 - [x] **X7** ⊕ "Reminders not arriving?" help — per-OEM instructions, battery-optimisation suggestion, test-fire button. **M1, not M2** — the target device is a Redmi on HyperOS, where reminders appear broken without it — *NOTIFICATIONS §6*
 

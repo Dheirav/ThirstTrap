@@ -66,6 +66,8 @@ data class Plant(
      * from use even if it is never configured.
      */
     val defaultWaterMl: Double? = null,
+    val lightNeeds: String? = null,
+    val fertilizerCadenceDays: Int? = null,
     /** Fraction of the wet-dry range to deplete before watering. 0.5 is the commercial MAD default. */
     val depletionTrigger: Double = DEFAULT_DEPLETION_TRIGGER,
     val anchors: Anchors? = null,

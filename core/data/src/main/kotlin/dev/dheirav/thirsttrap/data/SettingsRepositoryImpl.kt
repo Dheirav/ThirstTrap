@@ -3,9 +3,11 @@ package dev.dheirav.thirsttrap.data
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dev.dheirav.thirsttrap.domain.AppSettings
+import dev.dheirav.thirsttrap.domain.DEFAULT_DEPLETION_TRIGGER
 import dev.dheirav.thirsttrap.domain.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -22,11 +24,13 @@ class SettingsRepositoryImpl @Inject constructor(
 
     private val dynamicColorKey = booleanPreferencesKey("dynamic_color")
     private val reminderHourKey = intPreferencesKey("reminder_hour")
+    private val triggerKey = doublePreferencesKey("default_depletion_trigger")
 
     override val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
         AppSettings(
             dynamicColor = prefs[dynamicColorKey] ?: false,
             reminderHour = prefs[reminderHourKey] ?: 9,
+            defaultDepletionTrigger = prefs[triggerKey] ?: DEFAULT_DEPLETION_TRIGGER,
         )
     }
 
@@ -36,5 +40,9 @@ class SettingsRepositoryImpl @Inject constructor(
 
     override suspend fun setReminderHour(hour: Int) {
         context.dataStore.edit { it[reminderHourKey] = hour.coerceIn(0, 23) }
+    }
+
+    override suspend fun setDefaultDepletionTrigger(fraction: Double) {
+        context.dataStore.edit { it[triggerKey] = fraction.coerceIn(0.1, 0.9) }
     }
 }

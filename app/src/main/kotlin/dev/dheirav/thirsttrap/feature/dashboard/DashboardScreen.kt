@@ -263,7 +263,31 @@ private fun PlantCard(
             Spacer(Modifier.size(12.dp))
 
             Column(Modifier.weight(1f)) {
-                Text(plant.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        plant.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    // Informational, never a tally of failures, and never red -
+                    // overdue is not an error state. docs/UI-SPEC.md section 3.
+                    val due = item.reminderDueMillis
+                    if (due != null && due <= nowMillis) {
+                        Box(
+                            Modifier
+                                .padding(start = 8.dp)
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(MaterialTheme.colorScheme.primaryContainer)
+                                .padding(horizontal = 6.dp, vertical = 2.dp),
+                        ) {
+                            Text(
+                                "check",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            )
+                        }
+                    }
+                }
                 Text(
                     listOfNotNull(
                         plant.location?.takeIf { it.isNotBlank() },
@@ -301,7 +325,7 @@ private fun PlantCard(
                 // Requirements item 8. Needs two waterings to measure between.
                 item.averageIntervalDays?.let { avg ->
                     Text(
-                        "Waters roughly every ${avg.toInt()} days",
+                        cadenceLabel(avg),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -433,4 +457,11 @@ private fun QuickLogSheet(
             TextButton(onClick = onEdit, modifier = Modifier.padding(top = 8.dp)) { Text("Edit plant") }
         }
     }
+}
+
+/** "every 1 days" is the kind of thing that makes an app feel unfinished. */
+private fun cadenceLabel(avgDays: Double): String = when (val d = avgDays.toInt()) {
+    0 -> "Waters more than once a day"
+    1 -> "Waters roughly every day"
+    else -> "Waters roughly every $d days"
 }

@@ -33,7 +33,9 @@ import dev.dheirav.thirsttrap.feature.help.RemindersHelpScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.feature.debug.DebugScreen
+import androidx.compose.material.icons.filled.Settings
 import dev.dheirav.thirsttrap.feature.backup.BackupScreen
+import dev.dheirav.thirsttrap.feature.settings.SettingsScreen
 import dev.dheirav.thirsttrap.feature.compare.CompareScreen
 import dev.dheirav.thirsttrap.feature.logevent.LogEventScreen
 import dev.dheirav.thirsttrap.feature.plantdetail.PlantDetailScreen
@@ -57,7 +59,8 @@ class MainActivity : ComponentActivity() {
                 val nav = rememberNavController()
                 val backStack by nav.currentBackStackEntryAsState()
                 val route = backStack?.destination?.route
-                val showBar = route == Routes.DASHBOARD || route == Routes.DUE
+                val showBar = route == Routes.DASHBOARD || route == Routes.DUE ||
+                    route == Routes.SETTINGS
 
                 Scaffold(
                     bottomBar = {
@@ -74,6 +77,12 @@ class MainActivity : ComponentActivity() {
                                     onClick = { nav.navigate(Routes.DUE) { launchSingleTop = true } },
                                     icon = { Icon(Icons.Filled.Notifications, contentDescription = null) },
                                     label = { Text("Due") },
+                                )
+                                NavigationBarItem(
+                                    selected = route == Routes.SETTINGS,
+                                    onClick = { nav.navigate(Routes.SETTINGS) { launchSingleTop = true } },
+                                    icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
+                                    label = { Text("Settings") },
                                 )
                             }
                         }
@@ -95,7 +104,6 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.DUE) {
                             DueScreen(
                                 onOpenHelp = { nav.navigate(Routes.HELP_REMINDERS) },
-                                onOpenBackup = { nav.navigate(Routes.BACKUP) },
                                 onOpenDebug = { nav.navigate(Routes.DEBUG) },
                             )
                         }
@@ -113,6 +121,13 @@ class MainActivity : ComponentActivity() {
                             arguments = listOf(navArgument("id") { type = NavType.StringType }),
                         ) {
                             CompareScreen(onBack = { nav.popBackStack() })
+                        }
+                        composable(Routes.SETTINGS) {
+                            SettingsScreen(
+                                onOpenBackup = { nav.navigate(Routes.BACKUP) },
+                                onOpenHelp = { nav.navigate(Routes.HELP_REMINDERS) },
+                                onOpenDebug = { nav.navigate(Routes.DEBUG) },
+                            )
                         }
                         composable(Routes.BACKUP) {
                             BackupScreen(onBack = { nav.popBackStack() })

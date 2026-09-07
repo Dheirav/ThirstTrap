@@ -6,6 +6,7 @@ object Routes {
     const val HELP_REMINDERS = "help/reminders"
     const val DEBUG = "debug"
     const val BACKUP = "backup"
+    const val SETTINGS = "settings"
     const val LOG_EVENT = "plant/log"
     const val COMPARE = "plant/compare"
     const val PLANT_EDIT = "plant/edit"

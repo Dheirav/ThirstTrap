@@ -29,7 +29,17 @@ import javax.inject.Singleton
 @Singleton
 class ReminderScheduler @Inject constructor() {
 
-    fun scheduleDailySweep(context: Context, hourOfDay: Int = DEFAULT_HOUR) {
+    /**
+     * @param replaceExisting true when the user has just changed the hour.
+     *        KEEP is right on launch - re-enqueuing would reset the period
+     *        every time and the sweep might never run - but it would also make
+     *        the hour setting silently do nothing.
+     */
+    fun scheduleDailySweep(
+        context: Context,
+        hourOfDay: Int = DEFAULT_HOUR,
+        replaceExisting: Boolean = false,
+    ) {
         val request = PeriodicWorkRequestBuilder<ReminderWorker>(1, TimeUnit.DAYS)
             .setInitialDelay(millisUntilNext(hourOfDay), TimeUnit.MILLISECONDS)
             .setConstraints(Constraints.Builder().build())
@@ -38,9 +48,11 @@ class ReminderScheduler @Inject constructor() {
 
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             WORK_NAME,
-            // KEEP, not UPDATE: re-enqueuing on every app start would reset the
-            // period each time and the sweep might never actually run.
-            ExistingPeriodicWorkPolicy.KEEP,
+            if (replaceExisting) {
+                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE
+            } else {
+                ExistingPeriodicWorkPolicy.KEEP
+            },
             request,
         )
     }

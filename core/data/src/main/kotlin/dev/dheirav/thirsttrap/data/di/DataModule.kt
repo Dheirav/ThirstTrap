@@ -9,6 +9,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.dheirav.thirsttrap.data.ExportRepositoryImpl
+import dev.dheirav.thirsttrap.data.MaintenanceRepository
 import dev.dheirav.thirsttrap.data.PhotoRepositoryImpl
 import dev.dheirav.thirsttrap.data.PhotoStore
 import dev.dheirav.thirsttrap.data.PlantRepositoryImpl
@@ -59,6 +60,15 @@ object DatabaseModule {
         reminderDao: ReminderDao,
         store: PhotoStore,
     ): ExportRepositoryImpl = ExportRepositoryImpl(context, plantDao, eventDao, photoDao, reminderDao, store)
+
+    @Provides
+    @Singleton
+    fun provideMaintenanceRepository(
+        photoDao: PhotoDao,
+        store: PhotoStore,
+        db: ThirstTrapDatabase,
+        @ApplicationContext context: Context,
+    ): MaintenanceRepository = MaintenanceRepository(photoDao, store, db, context)
 
     @Provides
     @Singleton

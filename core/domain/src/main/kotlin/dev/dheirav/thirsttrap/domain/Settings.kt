@@ -14,10 +14,13 @@ data class AppSettings(
     val dynamicColor: Boolean = false,
     /** Local hour the daily reminder sweep runs. */
     val reminderHour: Int = 9,
+    /** Starting depletion trigger for newly added plants. */
+    val defaultDepletionTrigger: Double = DEFAULT_DEPLETION_TRIGGER,
 )
 
 interface SettingsRepository {
     val settings: Flow<AppSettings>
     suspend fun setDynamicColor(enabled: Boolean)
     suspend fun setReminderHour(hour: Int)
+    suspend fun setDefaultDepletionTrigger(fraction: Double)
 }

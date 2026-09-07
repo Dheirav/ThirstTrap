@@ -111,6 +111,32 @@ fun PlantEditScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
 
+            OutlinedTextField(
+                value = state.targetDryness,
+                onValueChange = viewModel::onTargetDryness,
+                label = { Text("How dry before watering (optional)") },
+                placeholder = { Text("top 2-3 cm dry, nearly weightless, keep damp") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            OutlinedTextField(
+                value = state.lightNeeds,
+                onValueChange = viewModel::onLightNeeds,
+                label = { Text("Light (optional)") },
+                placeholder = { Text("bright indirect, shade") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+            OutlinedTextField(
+                value = state.fertilizerCadenceDays,
+                onValueChange = viewModel::onFertilizerCadence,
+                label = { Text("Feed every N days (optional)") },
+                placeholder = { Text("30") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
             Text("Growing medium", style = MaterialTheme.typography.labelLarge)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Medium.entries.filter { it != Medium.UNKNOWN }.forEach { m ->

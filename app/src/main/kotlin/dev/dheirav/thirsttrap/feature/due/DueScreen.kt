@@ -42,7 +42,6 @@ import dev.dheirav.thirsttrap.BuildConfig
 @Composable
 fun DueScreen(
     onOpenHelp: () -> Unit,
-    onOpenBackup: () -> Unit,
     onOpenDebug: () -> Unit,
     viewModel: DueViewModel = hiltViewModel(),
 ) {
@@ -65,7 +64,6 @@ fun DueScreen(
                 )
                 Spacer(Modifier.height(24.dp))
                 TextButton(onClick = onOpenHelp) { Text("Reminders not arriving?") }
-                TextButton(onClick = onOpenBackup) { Text("Backup") }
                 if (BuildConfig.DEBUG) {
                     TextButton(onClick = onOpenDebug) { Text("Debug") }
                 }
@@ -120,7 +118,6 @@ fun DueScreen(
             }
             item {
                 TextButton(onClick = onOpenHelp) { Text("Reminders not arriving?") }
-                TextButton(onClick = onOpenBackup) { Text("Backup") }
                 if (BuildConfig.DEBUG) {
                     TextButton(onClick = onOpenDebug) { Text("Debug") }
                 }

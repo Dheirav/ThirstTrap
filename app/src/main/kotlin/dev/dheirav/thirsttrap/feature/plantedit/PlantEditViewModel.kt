@@ -49,6 +49,9 @@ data class PlantEditUiState(
     val location: String = "",
     val containerDesc: String = "",
     val defaultWaterMl: String = "",
+    val targetDryness: String = "",
+    val lightNeeds: String = "",
+    val fertilizerCadenceDays: String = "",
     val medium: Medium = Medium.SOIL,
     val source: PlantSource = PlantSource.UNKNOWN,
     val status: PlantStatus = PlantStatus.ACTIVE,
@@ -83,6 +86,9 @@ class PlantEditViewModel @Inject constructor(
                         location = p.location.orEmpty(),
                         containerDesc = p.containerDesc.orEmpty(),
                         defaultWaterMl = p.defaultWaterMl?.toInt()?.toString().orEmpty(),
+                        targetDryness = p.targetDryness.orEmpty(),
+                        lightNeeds = p.lightNeeds.orEmpty(),
+                        fertilizerCadenceDays = p.fertilizerCadenceDays?.toString().orEmpty(),
                         medium = p.medium,
                         source = p.source,
                         status = p.status,
@@ -101,6 +107,11 @@ class PlantEditViewModel @Inject constructor(
     fun onMedium(v: Medium) { _state.value = _state.value.copy(medium = v) }
     fun onSource(v: PlantSource) { _state.value = _state.value.copy(source = v) }
     fun onLastWatered(v: LastWatered) { _state.value = _state.value.copy(lastWatered = v) }
+    fun onTargetDryness(v: String) { _state.value = _state.value.copy(targetDryness = v) }
+    fun onLightNeeds(v: String) { _state.value = _state.value.copy(lightNeeds = v) }
+    fun onFertilizerCadence(v: String) {
+        _state.value = _state.value.copy(fertilizerCadenceDays = v.filter { it.isDigit() }.take(3))
+    }
     fun onDefaultWater(v: String) {
         _state.value = _state.value.copy(defaultWaterMl = v.filter { it.isDigit() }.take(5))
     }
@@ -121,6 +132,9 @@ class PlantEditViewModel @Inject constructor(
                     status = s.status,
                     containerDesc = s.containerDesc.trim().takeIf { it.isNotEmpty() },
                     defaultWaterMl = s.defaultWaterMl.toDoubleOrNull(),
+                    targetDryness = s.targetDryness.trim().takeIf { it.isNotEmpty() },
+                    lightNeeds = s.lightNeeds.trim().takeIf { it.isNotEmpty() },
+                    fertilizerCadenceDays = s.fertilizerCadenceDays.toIntOrNull(),
                     source = s.source,
                     archived = s.archived,
                 ),
