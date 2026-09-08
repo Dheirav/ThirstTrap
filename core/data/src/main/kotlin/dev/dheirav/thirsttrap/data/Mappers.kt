@@ -195,6 +195,7 @@ fun dev.dheirav.thirsttrap.data.entity.WeightReadingEntity.toDomainReading(): de
         id = id,
         plantId = plantId,
         timestampMillis = timestamp,
+        tzOffsetMinutes = tzOffsetMinutes,
         grams = grams,
         context = runCatching {
             dev.dheirav.thirsttrap.domain.ReadingContext.valueOf(context.uppercase())

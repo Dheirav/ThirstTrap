@@ -154,7 +154,7 @@ fun PlantEditScreen(
                     FilterChip(
                         selected = state.medium == m,
                         onClick = { viewModel.onMedium(m) },
-                        label = { Text(m.name.lowercase().replace('_', ' ')) },
+                        label = { Text(m.label) },
                     )
                 }
             }
@@ -165,7 +165,14 @@ fun PlantEditScreen(
                     FilterChip(
                         selected = state.source == s,
                         onClick = { viewModel.onSource(s) },
-                        label = { Text(s.name.lowercase()) },
+                        label = {
+                            Column {
+                                Text(s.label)
+                                s.hint?.let {
+                                    Text(it, style = MaterialTheme.typography.labelSmall)
+                                }
+                            }
+                        },
                     )
                 }
             }

@@ -47,6 +47,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -136,7 +140,22 @@ fun WeightScreen(
                         onHelp = onOpenScaleHelp,
                     )
                 }
-                WeightChart(s, Modifier.fillMaxWidth().height(200.dp))
+                if (s.readings.count { !it.excluded } < 2) {
+                    Text(
+                        "One reading so far. Weigh it again in a day or two and the curve " +
+                            "starts here.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                } else {
+                    WeightChart(
+                        s,
+                        Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .semantics { contentDescription = chartSummary(s) },
+                    )
+                }
                 Spacer(Modifier.height(16.dp))
             }
 
@@ -195,24 +214,48 @@ fun WeightScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 8.dp),
                 )
-                s.readings.sortedByDescending { it.timestampMillis }.take(20).forEach { r ->
+                val shown = s.readings.sortedByDescending { it.timestampMillis }.take(20)
+                shown.forEach { r ->
                     Row(
-                        Modifier.fillMaxWidth()
-                            .clickable { viewModel.setExcluded(r.id, !r.excluded) }
+                        Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 48.dp)
+                            .clickable(
+                                onClickLabel = if (r.excluded) {
+                                    "Include this reading again"
+                                } else {
+                                    "Exclude this reading from the curve"
+                                },
+                            ) { viewModel.setExcluded(r.id, !r.excluded) }
                             .padding(vertical = 8.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             "${r.grams.toInt()} g",
+                            // Strikethrough as well as tone: excluded must not
+                            // be signalled by colour alone.
+                            textDecoration = if (r.excluded) TextDecoration.LineThrough else null,
                             color = if (r.excluded) MaterialTheme.colorScheme.onSurfaceVariant
                             else MaterialTheme.colorScheme.onSurface,
                         )
                         Text(
-                            if (r.excluded) "excluded" else r.context.name.lowercase().replace('_', ' '),
+                            buildString {
+                                append(readingDate(r.timestampMillis, r.tzOffsetMinutes))
+                                append(" · ")
+                                append(if (r.excluded) "excluded" else r.context.label)
+                            },
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
+                }
+                if (s.readings.size > shown.size) {
+                    Text(
+                        "Showing the most recent ${shown.size} of ${s.readings.size}.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
             }
         }
@@ -422,7 +465,7 @@ private fun CalibrationDialog(
                             FilterChip(
                                 selected = kotlin.math.abs(trigger - v) < 0.01,
                                 onClick = { trigger = v },
-                                label = { Text("${(v * 100).toInt()}%\n$label", textAlign = TextAlign.Center) },
+                                label = { Text("${(v * 100).toInt()}% · $label") },
                             )
                         }
                     }
@@ -533,5 +576,23 @@ private fun WeightChart(s: WeightState, modifier: Modifier = Modifier) {
         points.forEach {
             drawCircle(primary, radius = 3.dp.toPx(), center = Offset(x(it.timestampMillis), y(it.grams)))
         }
+    }
+}
+
+private fun readingDate(millis: Long, offsetMinutes: Int): String {
+    val zone = java.time.ZoneOffset.ofTotalSeconds(offsetMinutes * 60)
+    return java.time.Instant.ofEpochMilli(millis).atZone(zone)
+        .format(java.time.format.DateTimeFormatter.ofPattern("d MMM, HH:mm"))
+}
+
+/** The chart is a void for a screen reader without this. */
+private fun chartSummary(s: WeightState): String = buildString {
+    val n = s.readings.count { !it.excluded }
+    append("$n readings")
+    s.slopeGramsPerDay?.let { append(", falling about ${-it.toInt()} grams a day") }
+    when (val p = s.prediction) {
+        is Prediction.WaterNow -> append(", needs water now")
+        is Prediction.Eta -> append(", water in about ${p.days.toInt()} days")
+        else -> Unit
     }
 }

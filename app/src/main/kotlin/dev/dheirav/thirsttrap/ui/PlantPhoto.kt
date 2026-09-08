@@ -41,7 +41,9 @@ fun PlantPhoto(
             ) {
                 Icon(
                     Icons.Filled.BrokenImage,
-                    contentDescription = "Photo file is missing",
+                    // Silent when the caller wanted a decorative image, or every
+                    // dashboard card would announce a lost file.
+                    contentDescription = contentDescription?.let { "$it - file is missing" },
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }

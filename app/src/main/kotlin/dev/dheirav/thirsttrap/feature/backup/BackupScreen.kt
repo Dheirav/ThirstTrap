@@ -27,6 +27,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -97,12 +100,15 @@ fun BackupScreen(onBack: () -> Unit, viewModel: BackupViewModel = hiltViewModel(
 
             Spacer(Modifier.height(8.dp))
 
+            val announce = Modifier.semantics { liveRegion = LiveRegionMode.Polite }
+
             when (val s = status) {
                 BackupStatus.Idle -> Unit
                 BackupStatus.Working -> CircularProgressIndicator()
 
                 is BackupStatus.Exported -> Text(
-                    "Backup written, including ${s.photoCount} " +
+                    modifier = announce,
+                    text = "Backup written, including ${s.photoCount} " +
                         if (s.photoCount == 1) "photo." else "photos.",
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Medium,
@@ -125,7 +131,8 @@ fun BackupScreen(onBack: () -> Unit, viewModel: BackupViewModel = hiltViewModel(
                 // would be the worst possible silence in this app.
                 is BackupStatus.Failed -> Column {
                     Text(
-                        "${s.what} failed: ${s.reason}",
+                        modifier = announce,
+                        text = "${s.what} failed: ${s.reason}",
                         color = MaterialTheme.colorScheme.error,
                         fontWeight = FontWeight.Medium,
                     )

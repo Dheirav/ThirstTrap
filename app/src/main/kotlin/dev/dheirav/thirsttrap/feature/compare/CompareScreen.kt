@@ -44,6 +44,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -91,7 +94,10 @@ fun CompareScreen(onBack: () -> Unit, viewModel: CompareViewModel = hiltViewMode
                     IconButton(onClick = viewModel::toggleSync) {
                         Icon(
                             if (sync) Icons.Filled.Lock else Icons.Filled.LockOpen,
-                            contentDescription = if (sync) "Zoom locked together" else "Zoom independent",
+                            contentDescription = "Zoom both panes together",
+                            modifier = Modifier.semantics {
+                                stateDescription = if (sync) "On" else "Off"
+                            },
                         )
                     }
                 },
@@ -163,6 +169,7 @@ fun CompareScreen(onBack: () -> Unit, viewModel: CompareViewModel = hiltViewMode
                     selectedId = leftId,
                     pathOf = viewModel::pathOf,
                     onSelect = viewModel::selectLeft,
+                    side = "left",
                     modifier = Modifier.weight(1f),
                 )
                 Filmstrip(
@@ -170,6 +177,7 @@ fun CompareScreen(onBack: () -> Unit, viewModel: CompareViewModel = hiltViewMode
                     selectedId = rightId,
                     pathOf = viewModel::pathOf,
                     onSelect = viewModel::selectRight,
+                    side = "right",
                     modifier = Modifier.weight(1f),
                 )
             }
@@ -251,6 +259,7 @@ private fun ZoomPane(
 private fun Filmstrip(
     photos: List<Photo>,
     selectedId: String?,
+    side: String,
     pathOf: (Photo) -> String,
     onSelect: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -264,8 +273,9 @@ private fun Filmstrip(
             val selected = photo.id == selectedId
             PlantPhoto(
                 path = pathOf(photo),
-                contentDescription = null,
+                contentDescription = "${dateOf(photo)}, show in the $side pane",
                 modifier = Modifier
+                    .semantics { this.selected = selected }
                     .size(60.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .border(

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -63,7 +64,12 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
         },
     ) { padding ->
         Column(
-            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
+            Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .imePadding()
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text("When?", style = MaterialTheme.typography.labelLarge)
@@ -101,7 +107,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
                     FilterChip(
                         selected = state.type == t,
                         onClick = { viewModel.onType(t) },
-                        label = { Text(labelFor(t)) },
+                        label = { Text(t.label) },
                     )
                 }
             }
@@ -130,14 +136,14 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
                 Text("How did it feel?", style = MaterialTheme.typography.labelLarge)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     listOf(
-                        CheckResult.STILL_HEAVY to "still heavy",
-                        CheckResult.GETTING_LIGHT to "getting light",
-                        CheckResult.DRY_WATERED to "dry, so I watered",
-                    ).forEach { (r, label) ->
+                        CheckResult.STILL_HEAVY,
+                        CheckResult.GETTING_LIGHT,
+                        CheckResult.DRY_WATERED,
+                    ).forEach { r ->
                         FilterChip(
                             selected = state.checkResult == r,
                             onClick = { viewModel.onCheckResult(r) },
-                            label = { Text(label) },
+                            label = { Text(r.label) },
                         )
                     }
                 }
@@ -175,7 +181,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
                         FilterChip(
                             selected = state.toMedium == m,
                             onClick = { viewModel.onToMedium(m) },
-                            label = { Text(m.name.lowercase().replace('_', ' ')) },
+                            label = { Text(m.label) },
                         )
                     }
                 }
@@ -228,23 +234,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
     }
 }
 
-private fun labelFor(type: CareEventType): String = when (type) {
-    CareEventType.WATERED -> "watered"
-    CareEventType.CHECKED -> "checked"
-    CareEventType.FERTILIZED -> "fertilised"
-    CareEventType.WATER_CHANGED -> "water changed"
-    CareEventType.REPOTTED -> "repotted"
-    CareEventType.MEDIUM_CHANGED -> "medium changed"
-    CareEventType.PRUNED -> "pruned"
-    CareEventType.TREATED -> "treated"
-    CareEventType.PEST_OR_DISEASE -> "pest / disease"
-    CareEventType.WEEDED -> "weeded"
-    CareEventType.OBSERVATION -> "observation"
-    CareEventType.MILESTONE -> "milestone"
-    CareEventType.MOVED -> "moved"
-    CareEventType.DIED -> "died"
-    CareEventType.UNKNOWN -> "other"
-}
+
 
 private fun formatDate(millis: Long): String =
     java.time.Instant.ofEpochMilli(millis)

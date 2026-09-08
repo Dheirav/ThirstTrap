@@ -8,42 +8,81 @@ import kotlinx.serialization.Serializable
  */
 
 @Serializable
-enum class Medium { SOIL, WATER, SPHAGNUM, SEMI_HYDRO, UNKNOWN }
+enum class Medium(val label: String) {
+    SOIL("Soil"),
+    WATER("Water"),
+    SPHAGNUM("Sphagnum"),
+    SEMI_HYDRO("Semi-hydro"),
+    UNKNOWN("Unknown"),
+}
 
 @Serializable
-enum class PlantStatus { ACTIVE, DORMANT, DEAD, GIVEN_AWAY, UNKNOWN }
+enum class PlantStatus(val label: String) {
+    ACTIVE("Active"),
+    DORMANT("Dormant"),
+    DEAD("Died"),
+    GIVEN_AWAY("Given away"),
+    UNKNOWN("Unknown"),
+}
 
 @Serializable
-enum class PlantSource { BOUGHT, CUTTING, GIFT, VOLUNTEER, UNKNOWN }
+enum class PlantSource(val label: String, val hint: String?) {
+    BOUGHT("Bought", null),
+    CUTTING("Cutting", "tracked on the propagation board"),
+    GIFT("Gift", null),
+    VOLUNTEER("Volunteer", "turned up on its own"),
+    UNKNOWN("Not sure", null),
+}
 
 @Serializable
-enum class WateringMethod { TOP, BOTTOM_SOAK, UNKNOWN }
+enum class WateringMethod(val label: String) {
+    TOP("From the top"),
+    BOTTOM_SOAK("Bottom soak"),
+    UNKNOWN("Unknown"),
+}
 
 /** The result of lifting the pot. A check that ends in *not* watering is worth logging. */
 @Serializable
-enum class CheckResult { STILL_HEAVY, GETTING_LIGHT, DRY_WATERED, UNKNOWN }
+enum class CheckResult(val label: String) {
+    STILL_HEAVY("Still heavy"),
+    GETTING_LIGHT("Getting light"),
+    DRY_WATERED("Dry, so I watered"),
+    UNKNOWN("Unknown"),
+}
 
 @Serializable
-enum class CareEventType {
-    WATERED, CHECKED, FERTILIZED, WATER_CHANGED, REPOTTED, MEDIUM_CHANGED,
-    PRUNED, TREATED, PEST_OR_DISEASE, WEEDED, OBSERVATION, MILESTONE, MOVED, DIED,
-    UNKNOWN,
+enum class CareEventType(val label: String) {
+    WATERED("Watered"),
+    CHECKED("Checked"),
+    FERTILIZED("Fertilised"),
+    WATER_CHANGED("Water changed"),
+    REPOTTED("Repotted"),
+    MEDIUM_CHANGED("Medium changed"),
+    PRUNED("Pruned"),
+    TREATED("Treated"),
+    PEST_OR_DISEASE("Pest or disease"),
+    WEEDED("Weeded"),
+    OBSERVATION("Observation"),
+    MILESTONE("Milestone"),
+    MOVED("Moved"),
+    DIED("Died"),
+    UNKNOWN("Other"),
 }
 
 /** Where a weight reading sits in the watering cycle. */
 @Serializable
-enum class ReadingContext {
+enum class ReadingContext(val label: String) {
     /** A mid-cycle weigh. These are what sharpen the prediction. */
-    ROUTINE,
+    ROUTINE("routine"),
 
     /** Immediately before watering. Evidence about where "dry enough" really is. */
-    PRE_WATER,
+    PRE_WATER("before watering"),
 
     /** After watering and draining. Re-anchors the wet anchor. */
-    POST_WATER,
+    POST_WATER("after watering"),
 
     /** The initial wet-anchor capture during calibration. */
-    CALIBRATION,
+    CALIBRATION("calibration"),
 }
 
 @Serializable
@@ -119,6 +158,8 @@ data class WeightReading(
     val id: String,
     val plantId: String,
     val timestampMillis: Long,
+    /** Paired with the timestamp, as care events are - see docs/DATA-MODEL.md. */
+    val tzOffsetMinutes: Int = 0,
     val grams: Double,
     val context: ReadingContext,
     val excluded: Boolean = false,

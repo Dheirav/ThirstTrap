@@ -26,6 +26,8 @@ import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Scale
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -57,6 +59,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.ui.layout.ContentScale
 import dev.dheirav.thirsttrap.ui.PlantPhoto
 import dev.dheirav.thirsttrap.domain.CareEventType
+import dev.dheirav.thirsttrap.domain.CheckResult
 import dev.dheirav.thirsttrap.domain.Photo
 import java.time.Instant
 import java.time.ZoneOffset
@@ -82,6 +85,7 @@ fun PlantDetailScreen(
     val plant = state.plant
     val capture = dev.dheirav.thirsttrap.photo.rememberPhotoCapture { viewModel.addPhoto(it) }
     var captionFor by remember { mutableStateOf<Photo?>(null) }
+    var menuOpen by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -93,39 +97,57 @@ fun PlantDetailScreen(
                     }
                 },
                 actions = {
-                    plant?.let { p ->
-                        IconButton(onClick = { onMeasureLight(p.id) }) {
-                            Icon(Icons.Filled.LightMode, contentDescription = "Measure the light here")
-                        }
-                    }
-                    plant?.let { p ->
-                        if (p.isWeightTrackable) {
-                            IconButton(onClick = { onWeigh(p.id) }) {
-                                Icon(Icons.Filled.Scale, contentDescription = "Weight and watering prediction")
-                            }
-                        }
-                    }
-                    if (state.photos.size >= 2) {
-                        plant?.let { p ->
-                            IconButton(onClick = { onCompare(p.id) }) {
-                                Icon(Icons.Filled.Compare, contentDescription = "Compare photos")
-                            }
-                        }
-                    }
-                    // Guarded like the rest: without this you could still shoot
-                    // a photo on a screen whose plant had just been deleted, and
-                    // it would be filed against a plantId that no longer exists.
+                    // Two inline, the rest behind an overflow. Six icons plus a
+                    // back arrow is 336dp of chrome on a 360dp phone, which left
+                    // the plant's name - the screen's only identifier - with a
+                    // few dp, and nothing at all at large font sizes.
                     if (plant != null) {
-                        IconButton(onClick = capture.pickFromGallery) {
-                            Icon(Icons.Filled.PhotoLibrary, contentDescription = "Add from gallery")
-                        }
                         IconButton(onClick = capture.takePhoto) {
                             Icon(Icons.Filled.AddAPhoto, contentDescription = "Take a photo")
                         }
                     }
-                    plant?.let { p ->
-                        IconButton(onClick = { onEdit(p.id) }) {
-                            Icon(Icons.Filled.Edit, contentDescription = "Edit plant")
+                    Box {
+                        IconButton(onClick = { menuOpen = true }) {
+                            Icon(Icons.Filled.MoreVert, contentDescription = "More actions")
+                        }
+                        DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                            plant?.let { p ->
+                                DropdownMenuItem(
+                                    text = { Text("Add from gallery") },
+                                    onClick = { menuOpen = false; capture.pickFromGallery() },
+                                )
+                                // Shown always, disabled with a reason. Hiding it
+                                // meant the feature vanished exactly when someone
+                                // would go looking for it.
+                                DropdownMenuItem(
+                                    text = { Text("Compare photos") },
+                                    enabled = state.photos.size >= 2,
+                                    trailingIcon = {
+                                        if (state.photos.size < 2) {
+                                            Text(
+                                                "needs 2",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            )
+                                        }
+                                    },
+                                    onClick = { menuOpen = false; onCompare(p.id) },
+                                )
+                                if (p.isWeightTrackable) {
+                                    DropdownMenuItem(
+                                        text = { Text("Weight and prediction") },
+                                        onClick = { menuOpen = false; onWeigh(p.id) },
+                                    )
+                                }
+                                DropdownMenuItem(
+                                    text = { Text("Measure the light here") },
+                                    onClick = { menuOpen = false; onMeasureLight(p.id) },
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("Edit plant") },
+                                    onClick = { menuOpen = false; onEdit(p.id) },
+                                )
+                            }
                         }
                     }
                 },
@@ -144,7 +166,7 @@ fun PlantDetailScreen(
                     Text(
                         listOfNotNull(
                             plant?.location?.takeIf { it.isNotBlank() },
-                            plant?.medium?.name?.lowercase()?.replace('_', ' '),
+                            plant?.medium?.label?.lowercase(),
                             plant?.containerDesc?.takeIf { it.isNotBlank() },
                         ).joinToString(" · "),
                         style = MaterialTheme.typography.bodySmall,
@@ -264,14 +286,19 @@ private fun PhotoThumb(path: String, caption: String?, onLongPress: () -> Unit) 
             modifier = Modifier
                 .size(120.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .combinedClickable(onClick = {}, onLongClick = onLongPress),
+                .combinedClickable(
+                    onClick = onLongPress,
+                    onClickLabel = "Caption or delete this photo",
+                    onLongClick = onLongPress,
+                ),
         )
         caption?.takeIf { it.isNotBlank() }?.let {
             Text(
                 it,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 4.dp).size(width = 120.dp, height = 16.dp),
+                maxLines = 2,
+                modifier = Modifier.padding(top = 4.dp).width(120.dp),
             )
         }
     }
@@ -299,7 +326,11 @@ private fun EventRow(
         Row(
             Modifier
                 .fillMaxWidth()
-                .combinedClickable(onClick = {}, onLongClick = { menu = true })
+                .combinedClickable(
+                    onClick = { menu = true },
+                    onClickLabel = "Options for this entry",
+                    onLongClick = { menu = true },
+                )
                 .padding(vertical = 10.dp),
             verticalAlignment = Alignment.Top,
         ) {
@@ -389,25 +420,13 @@ private fun CaptionDialog(
     )
 }
 
-private fun label(event: CareEvent): String = when (event.type) {
-    CareEventType.WATERED -> buildString {
-        append("Watered")
-        event.amountMl?.let { append(" · ${it.toInt()} ml") }
+private fun label(event: CareEvent): String = buildString {
+    append(event.type.label)
+    // The one place a check earns a suffix, and only when it says something.
+    if (event.type == CareEventType.CHECKED && event.checkResult == CheckResult.STILL_HEAVY) {
+        append(" - still wet")
     }
-    CareEventType.CHECKED -> "Checked - still wet"
-    CareEventType.FERTILIZED -> "Fertilised"
-    CareEventType.WATER_CHANGED -> "Water changed"
-    CareEventType.REPOTTED -> "Repotted"
-    CareEventType.MEDIUM_CHANGED -> "Medium changed"
-    CareEventType.PRUNED -> "Pruned"
-    CareEventType.TREATED -> "Treated"
-    CareEventType.PEST_OR_DISEASE -> "Pest or disease"
-    CareEventType.WEEDED -> "Weeded"
-    CareEventType.OBSERVATION -> "Observation"
-    CareEventType.MILESTONE -> "Milestone"
-    CareEventType.MOVED -> "Moved"
-    CareEventType.DIED -> "Died"
-    CareEventType.UNKNOWN -> "Logged"
+    event.amountMl?.let { append(" · ${it.toInt()} ml") }
 }
 
 /** Rendered in the offset the event was recorded in, not the device's current one. */

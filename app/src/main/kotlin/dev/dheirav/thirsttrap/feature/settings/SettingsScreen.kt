@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -223,12 +224,19 @@ private fun SectionHeader(text: String) {
 @Composable
 private fun SettingRow(title: String, subtitle: String, control: @Composable () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().padding(vertical = 4.dp),
+        Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .padding(vertical = 4.dp)
+            // One node for the whole row carrying title AND the sentence that
+            // explains it. Clearing the column's semantics stopped the double
+            // reading but also deleted the explanation.
+            .semantics(mergeDescendants = true) {
+                contentDescription = "$title. $subtitle"
+            },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // The control carries the description; the text is decorative for a
-        // screen reader, which would otherwise read the whole row twice.
         Column(Modifier.weight(1f).clearAndSetSemantics { }) {
             Text(title)
             Text(

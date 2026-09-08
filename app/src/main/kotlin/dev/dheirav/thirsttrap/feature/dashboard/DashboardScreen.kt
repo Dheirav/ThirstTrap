@@ -61,6 +61,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -317,7 +318,12 @@ private fun PlantCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .combinedClickable(onClick = onOpenSheet, onLongClick = onLongPress),
+            .combinedClickable(
+                onClick = onOpenSheet,
+                onClickLabel = "Quick log for ${plant.name}",
+                onLongClick = onLongPress,
+                onLongClickLabel = "Open ${plant.name}",
+            ),
     ) {
         Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
             // The most recent photo, falling back to an initial. A broken or
@@ -334,6 +340,8 @@ private fun PlantCard(
                     plant.name.take(1).uppercase(),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    // Decorative: the card already announces the plant's name.
+                    modifier = Modifier.clearAndSetSemantics { },
                 )
                 item.coverPhotoPath?.let { path ->
                     PlantPhoto(
@@ -375,7 +383,7 @@ private fun PlantCard(
                 Text(
                     listOfNotNull(
                         plant.location?.takeIf { it.isNotBlank() },
-                        plant.medium.name.lowercase().replace('_', ' '),
+                        plant.medium.label.lowercase(),
                     ).joinToString(" · "),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
