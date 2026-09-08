@@ -35,6 +35,17 @@ interface WeightRepository {
 
     suspend fun setExcluded(readingId: String, excluded: Boolean)
 
+    /**
+     * Corrects a reading that was typed wrong.
+     *
+     * Excluding is not the same thing: it says "this weigh-in happened but is
+     * not trustworthy", which is the right record for a pot half off the scale.
+     * A fat-fingered 8520 where 852 was meant is not a bad measurement, it is a
+     * typo, and leaving it in the record struck through would be keeping a fact
+     * that never happened.
+     */
+    suspend fun updateReading(reading: WeightReading)
+
     suspend fun deleteReading(readingId: String)
 
     /** Records the wet anchor and starts the plant's first drying cycle. */

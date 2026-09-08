@@ -146,6 +146,11 @@ class WeightViewModel @Inject constructor(
         }
     }
 
+    fun updateReading(reading: dev.dheirav.thirsttrap.domain.WeightReading) =
+        viewModelScope.launch { repository.updateReading(reading) }
+
+    fun deleteReading(id: String) = viewModelScope.launch { repository.deleteReading(id) }
+
     fun setExcluded(readingId: String, excluded: Boolean) {
         viewModelScope.launch {
             repository.setExcluded(readingId, excluded)

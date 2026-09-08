@@ -76,7 +76,22 @@ class WeightRepositoryImpl @Inject constructor(
         weightDao.setExcluded(readingId, excluded)
     }
 
-    override suspend fun deleteReading(readingId: String) = weightDao.delete(readingId)
+    override suspend fun updateReading(reading: WeightReading) {
+        val existing = weightDao.all().firstOrNull { it.id == reading.id } ?: return
+        TTLog.i(TTLog.DATA) { "edit reading ${reading.id} -> ${reading.grams}g ${reading.context}" }
+        weightDao.upsert(
+            existing.copy(
+                grams = reading.grams,
+                context = reading.context.name,
+                excluded = reading.excluded,
+            ),
+        )
+    }
+
+    override suspend fun deleteReading(readingId: String) {
+        TTLog.i(TTLog.DATA) { "delete reading $readingId" }
+        weightDao.delete(readingId)
+    }
 
     override suspend fun calibrate(plantId: String, wetGrams: Double, depletionTrigger: Double) {
         val plant = plantDao.observePlant(plantId).first() ?: return

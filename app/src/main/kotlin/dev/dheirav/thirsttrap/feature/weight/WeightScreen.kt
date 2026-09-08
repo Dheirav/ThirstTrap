@@ -38,6 +38,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.material3.Switch
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -72,6 +76,7 @@ import dev.dheirav.thirsttrap.domain.DryingDiagnostic
 import dev.dheirav.thirsttrap.domain.Prediction
 import dev.dheirav.thirsttrap.domain.ReadingContext
 import dev.dheirav.thirsttrap.domain.SuppressionReason
+import dev.dheirav.thirsttrap.domain.WeightReading
 import dev.dheirav.thirsttrap.domain.WeightState
 import kotlin.math.max
 import kotlin.math.min
@@ -91,6 +96,7 @@ fun WeightScreen(
     val dismissed by viewModel.dismissed.collectAsStateWithLifecycle()
     var showCalibration by remember { mutableStateOf(false) }
     var showKeypad by remember { mutableStateOf(false) }
+    var editingReading by remember { mutableStateOf<WeightReading?>(null) }
     // Skips the half-height stop: this sheet is a keypad, and a keypad you
     // have to drag open before you can use it is worse than no sheet.
     val keypadState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -237,12 +243,8 @@ fun WeightScreen(
                             .fillMaxWidth()
                             .heightIn(min = 48.dp)
                             .clickable(
-                                onClickLabel = if (r.excluded) {
-                                    "Include this reading again"
-                                } else {
-                                    "Exclude this reading from the curve"
-                                },
-                            ) { viewModel.setExcluded(r.id, !r.excluded) }
+                                onClickLabel = "Edit this reading",
+                            ) { editingReading = r }
                             .padding(vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -272,11 +274,12 @@ fun WeightScreen(
                 }
                 Text(
                     if (s.readings.size > shown.size) {
-                        "Most recent ${shown.size} of ${s.readings.size}. Tap a row to exclude " +
-                            "a bad weigh-in."
+                        "Most recent ${shown.size} of ${s.readings.size}. Tap a row to correct " +
+                            "or remove it."
                     } else {
-                        "Tap a row to exclude a bad weigh-in - a pot half off the scale, or a " +
-                            "wet saucer. It stays in the record but stops skewing the curve."
+                        "Tap a row to correct a weight, mark it as not trustworthy, or remove " +
+                            "it. Excluding keeps the weigh-in in the record but out of the " +
+                            "curve; deleting is for something that never happened."
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline,
@@ -381,6 +384,15 @@ fun WeightScreen(
                 }
             }
         }
+    }
+
+    editingReading?.let { reading ->
+        ReadingEditor(
+            reading = reading,
+            onDismiss = { editingReading = null },
+            onSave = { viewModel.updateReading(it); editingReading = null },
+            onDelete = { viewModel.deleteReading(reading.id); editingReading = null },
+        )
     }
 
     if (showCalibration) {
@@ -813,4 +825,125 @@ private fun AmbientCard(e: AmbientExplanation) {
             }
         }
     }
+}
+
+/**
+ * Correct a weigh-in, mark it untrustworthy, or remove it.
+ *
+ * Three different statements, deliberately kept distinct. **Excluding** says the
+ * weigh-in happened and is not to be trusted - a pot half off the scale, a wet
+ * saucer - and the reading stays in the record struck through. **Editing** is
+ * for a typo: 8520 where 852 was meant is not a bad measurement, it is a number
+ * that was never true, and keeping it would be keeping a fact that never
+ * happened. **Deleting** is for a reading that should not exist at all.
+ *
+ * Delete asks twice, because it destroys the one kind of data in this app that
+ * cannot be reconstructed from memory.
+ */
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@Composable
+private fun ReadingEditor(
+    reading: WeightReading,
+    onDismiss: () -> Unit,
+    onSave: (WeightReading) -> Unit,
+    onDelete: () -> Unit,
+) {
+    var grams by remember(reading.id) {
+        mutableStateOf(reading.grams.let { if (it % 1.0 == 0.0) it.toInt().toString() else it.toString() })
+    }
+    var context by remember(reading.id) { mutableStateOf(reading.context) }
+    var excluded by remember(reading.id) { mutableStateOf(reading.excluded) }
+    var confirmingDelete by remember(reading.id) { mutableStateOf(false) }
+
+    val parsed = grams.trim().toDoubleOrNull()
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(if (confirmingDelete) "Delete this reading?" else "Edit reading") },
+        text = {
+            if (confirmingDelete) {
+                Text(
+                    "${reading.grams.toInt()} g, ${readingDate(reading.timestampMillis, reading.tzOffsetMinutes)}. " +
+                        "This cannot be undone, and a weight is the one thing here that cannot " +
+                        "be remembered back.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            } else {
+                Column {
+                    OutlinedTextField(
+                        value = grams,
+                        onValueChange = { grams = it },
+                        label = { Text("Grams") },
+                        singleLine = true,
+                        isError = parsed == null || parsed <= 0,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Text(
+                        readingDate(reading.timestampMillis, reading.tzOffsetMinutes),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.outline,
+                        modifier = Modifier.padding(top = 6.dp),
+                    )
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(top = 14.dp),
+                    ) {
+                        listOf(
+                            ReadingContext.ROUTINE,
+                            ReadingContext.PRE_WATER,
+                            ReadingContext.POST_WATER,
+                        ).forEach { c ->
+                            FilterChip(
+                                selected = context == c,
+                                onClick = { context = c },
+                                label = { Text(c.label) },
+                            )
+                        }
+                    }
+                    Row(
+                        Modifier.fillMaxWidth().padding(top = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Column(Modifier.weight(1f)) {
+                            Text("Leave out of the curve", style = MaterialTheme.typography.bodyMedium)
+                            Text(
+                                "It stays in the record, struck through.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.outline,
+                            )
+                        }
+                        Switch(checked = excluded, onCheckedChange = { excluded = it })
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            if (confirmingDelete) {
+                TextButton(onClick = onDelete) { Text("Delete") }
+            } else {
+                TextButton(
+                    enabled = parsed != null && parsed > 0,
+                    onClick = {
+                        onSave(
+                            reading.copy(
+                                grams = parsed ?: reading.grams,
+                                context = context,
+                                excluded = excluded,
+                            ),
+                        )
+                    },
+                ) { Text("Save") }
+            }
+        },
+        dismissButton = {
+            if (confirmingDelete) {
+                TextButton(onClick = { confirmingDelete = false }) { Text("Keep it") }
+            } else {
+                TextButton(onClick = { confirmingDelete = true }) { Text("Delete") }
+            }
+        },
+    )
 }
