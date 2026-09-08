@@ -17,6 +17,7 @@ object Routes {
     const val STICKER = "plant/sticker"
     const val DIAGNOSE = "diagnose"
     const val AMBIENT = "ambient"
+    const val TIMELAPSE = "plant/timelapse"
     const val CARE = "plant/care"
     const val PLANT_EDIT = "plant/edit"
     const val PLANT_DETAIL = "plant/detail"
@@ -28,6 +29,8 @@ object Routes {
     fun compare(plantId: String) = "$COMPARE/$plantId"
 
     fun weight(plantId: String) = "$WEIGHT/$plantId"
+
+    fun timelapse(plantId: String) = "$TIMELAPSE/$plantId"
 
     fun light(plantId: String) = "$LIGHT/$plantId"
 

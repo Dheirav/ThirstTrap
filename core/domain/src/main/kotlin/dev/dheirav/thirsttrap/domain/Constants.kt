@@ -81,3 +81,6 @@ const val AMBIENT_STALE_DAYS = 30.0
 
 /** One reading is an anecdote. Two is the minimum for a period average. */
 const val AMBIENT_MIN_READINGS_PER_PERIOD = 2
+
+/** Two plates is the smallest thing that can be scrubbed through. */
+const val MIN_TIMELAPSE_FRAMES = 2

@@ -1,6 +1,7 @@
 package dev.dheirav.thirsttrap
 
 import dev.dheirav.thirsttrap.feature.ambient.AmbientScreen
+import dev.dheirav.thirsttrap.feature.timelapse.TimelapseScreen
 import dev.dheirav.thirsttrap.ui.AppIcons
 import android.Manifest
 import android.content.pm.PackageManager
@@ -222,6 +223,12 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.DIAGNOSE) {
                             DiagnoseScreen(onBack = { nav.popBackStack() })
                         }
+                        composable(
+                            "${Routes.TIMELAPSE}/{id}",
+                            arguments = listOf(navArgument("id") { type = NavType.StringType }),
+                        ) {
+                            TimelapseScreen(onBack = { nav.popBackStack() })
+                        }
                         composable(Routes.AMBIENT) {
                             AmbientScreen(onBack = { nav.popBackStack() })
                         }
@@ -247,6 +254,7 @@ class MainActivity : ComponentActivity() {
                                 onBack = { nav.popBackStack() },
                                 onEdit = { id -> nav.navigate(Routes.plantEdit(id)) },
                                 onCompare = { id -> nav.navigate(Routes.compare(id)) },
+                                onTimelapse = { id -> nav.navigate(Routes.timelapse(id)) },
                                 onWeigh = { id -> nav.navigate(Routes.weight(id)) },
                                 onMeasureLight = { id -> nav.navigate(Routes.light(id)) },
                                 onSticker = { id -> nav.navigate(Routes.sticker(id)) },

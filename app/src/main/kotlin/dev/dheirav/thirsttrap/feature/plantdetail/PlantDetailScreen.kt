@@ -79,6 +79,7 @@ fun PlantDetailScreen(
     onBack: () -> Unit,
     onEdit: (String) -> Unit,
     onCompare: (String) -> Unit,
+    onTimelapse: (String) -> Unit,
     onWeigh: (String) -> Unit,
     onMeasureLight: (String) -> Unit,
     onSticker: (String) -> Unit,
@@ -153,6 +154,24 @@ fun PlantDetailScreen(
                                         }
                                     },
                                     onClick = { menuOpen = false; onCompare(p.id) },
+                                )
+                                // Same gating as Compare, and for the same
+                                // reason: shown always, disabled with a stated
+                                // cause, because hiding it makes the feature
+                                // vanish exactly when somebody goes looking.
+                                DropdownMenuItem(
+                                    text = { Text("Timelapse") },
+                                    enabled = state.photos.size >= 2,
+                                    trailingIcon = {
+                                        if (state.photos.size < 2) {
+                                            Text(
+                                                "needs 2",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            )
+                                        }
+                                    },
+                                    onClick = { menuOpen = false; onTimelapse(p.id) },
                                 )
                                 if (p.isWeightTrackable) {
                                     DropdownMenuItem(

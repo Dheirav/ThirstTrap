@@ -155,7 +155,7 @@ complete before any UI is written.*
 - [x] **F19** Diagnosis checklists *(req. 19)* — guided trees: fuzz (dunk test: root hairs vs mould), browning (firm vs mushy), cut-face reading (clean vs brown ring), leaf-drop triage
 - [x] **F22** Light meter *(req. 22)* — `SensorManager` + `TYPE_LIGHT`, lux per location, rated against the plant's needs
 - [x] **F23** Ambient context *(req. 23)* — room temp/humidity **per location** (not per plant), manual entry. Feeds `explainDryingChange`, which sits beside the drying diagnostic and says whether the room accounts for a change. Explains a drying rate; never predicts one. The free-weather-API half of the requirement's "or" is not built — see handover D18
-- [ ] **F18** Timelapse builder *(req. 18)* — scrubbable assembly of a plant's photo history
+- [x] **F18** Timelapse builder *(req. 18)* — a plate series with a scrubber and a play control. Renders no video and writes no file: the requirement asks for *scrubbable*, and an encoder would be the first thing in the app that could fail silently on a device. Captions count days, not frames
 - [x] **F26** Species care notes — two tiers, 49 hand-written + 115 generated from `biologiste95/plant-dataset` (Unlicense) and the ASPCA toxicity list, 497 aliases. Curated always wins; the tiers are marked differently in the UI. *`docs/SPECIES-CATALOGUE.md`*
 - [x] **F26.1** Build-time GBIF name resolution — 62 outdated botanical names rewritten to accepted ones, so an old plant label still finds the right plant
 - [x] **F26.2** Online name lookup, opt-in and off by default — GBIF + a Wikipedia link when the catalogue has nothing. Resolves *names*, never care advice, so it cannot produce a wrong watering schedule
