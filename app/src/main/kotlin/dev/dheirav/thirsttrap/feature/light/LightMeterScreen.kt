@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -184,7 +183,7 @@ private fun LevelBar(level: LightLevel) {
                 Modifier
                     .weight(1f)
                     .height(10.dp)
-                    .clip(RoundedCornerShape(5.dp))
+                    .clip(MaterialTheme.shapes.extraSmall)
                     .background(
                         if (l == level) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.surfaceVariant,

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -91,7 +90,7 @@ fun PostMortemScreen(onDone: () -> Unit, viewModel: PostMortemViewModel = hiltVi
                         PlantPhoto(
                             path = viewModel.pathOf(photo),
                             contentDescription = photo.caption ?: "Photo from its history",
-                            modifier = Modifier.size(96.dp).clip(RoundedCornerShape(8.dp)),
+                            modifier = Modifier.size(96.dp).clip(MaterialTheme.shapes.small),
                         )
                     }
                 }

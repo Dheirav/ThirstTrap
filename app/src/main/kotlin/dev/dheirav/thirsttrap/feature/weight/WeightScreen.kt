@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -328,7 +327,7 @@ private fun DepletionBar(s: WeightState) {
     val trigger = s.plant.depletionTrigger
     val past = s.prediction is Prediction.WaterNow
     Column {
-        Box(Modifier.fillMaxWidth().height(14.dp).clip(RoundedCornerShape(7.dp))
+        Box(Modifier.fillMaxWidth().height(14.dp).clip(MaterialTheme.shapes.small)
             .background(MaterialTheme.colorScheme.surfaceVariant)) {
             Box(Modifier.fillMaxWidth(d.coerceIn(0.0, 1.0).toFloat()).height(14.dp)
                 .background(MaterialTheme.colorScheme.primary))

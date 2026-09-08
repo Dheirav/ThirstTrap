@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Lock
@@ -277,12 +276,12 @@ private fun Filmstrip(
                 modifier = Modifier
                     .semantics { this.selected = selected }
                     .size(60.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(MaterialTheme.shapes.small)
                     .border(
                         width = if (selected) 3.dp else 0.dp,
                         color = if (selected) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.surfaceVariant,
-                        shape = RoundedCornerShape(8.dp),
+                        shape = MaterialTheme.shapes.small,
                     )
                     .clickable { onSelect(photo.id) },
             )

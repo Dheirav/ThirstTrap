@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AddAPhoto
@@ -328,7 +327,7 @@ private fun PhotoThumb(path: String, caption: String?, onLongPress: () -> Unit) 
             contentDescription = caption ?: "Plant photo",
             modifier = Modifier
                 .size(120.dp)
-                .clip(RoundedCornerShape(10.dp))
+                .clip(MaterialTheme.shapes.small)
                 .combinedClickable(
                     onClick = onLongPress,
                     onClickLabel = "Caption or delete this photo",
@@ -384,7 +383,7 @@ private fun EventRow(
                     .background(
                         if (isLifeEvent) MaterialTheme.colorScheme.tertiary
                         else MaterialTheme.colorScheme.primary,
-                        RoundedCornerShape(4.dp),
+                        MaterialTheme.shapes.extraSmall,
                     ),
             )
             Spacer(Modifier.size(12.dp))
@@ -406,7 +405,7 @@ private fun EventRow(
                             PlantPhoto(
                                 path = pathOf(photo),
                                 contentDescription = photo.caption ?: "Photo",
-                                modifier = Modifier.size(64.dp).clip(RoundedCornerShape(8.dp)),
+                                modifier = Modifier.size(64.dp).clip(MaterialTheme.shapes.small),
                             )
                         }
                     }

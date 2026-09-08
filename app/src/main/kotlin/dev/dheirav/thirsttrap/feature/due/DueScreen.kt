@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -105,7 +104,7 @@ fun DueScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             items(state.items, key = { it.reminder.id }) { item ->
-                Card(shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {
+                Card(shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(16.dp)) {
                         Text(
                             "Time to check the ${item.plant.name}",

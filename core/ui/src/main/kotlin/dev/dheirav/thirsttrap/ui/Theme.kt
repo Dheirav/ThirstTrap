@@ -2,7 +2,9 @@ package dev.dheirav.thirsttrap.ui
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -10,6 +12,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 
 /**
  * Green, and deliberately not the saturated lime every gardening app reaches
@@ -41,8 +44,15 @@ import androidx.compose.ui.platform.LocalContext
  *     surfaceContainerHighest  L 32.9  H 155  1.52:1   <- the filled Card
  *
  * Foreground roles form a real lightness ladder rather than differing only in
- * hue, which was the other half of why a card read as an undifferentiated wall:
- * onSurface L 90, onSurfaceVariant L 76, outline L 66.
+ * hue, which was the other half of why a card read as an undifferentiated wall.
+ * Dark: onSurface L 90.0, onSurfaceVariant L 81.0, outline L 71.4 - gaps of 9.0
+ * and 9.6, evenly spread across the range the card floor allows.
+ *
+ * That floor is the constraint. `outline` carries the plant card's context row,
+ * so it is text, and text has to clear 4.5:1 against the surface it sits on -
+ * which is the card at L 33, not the background at L 19. The first value tried
+ * here measured 5.95:1 on the background and only 3.92:1 on a card, and a
+ * contrast figure quoted against the wrong surface is not a contrast figure.
  */
 private val Leaf = Color(0xFF276B44)
 private val LeafContainer = Color(0xFFB4EFC5)
@@ -82,7 +92,7 @@ internal val LightScheme = lightColorScheme(
     surfaceContainerHighest = Color(0xFFDFE4DC),
     surfaceTint = Leaf,
 
-    outline = Color(0xFF717971),
+    outline = Color(0xFF5E665E),
     outlineVariant = Color(0xFFC1CAC0),
     scrim = Color(0xFF000000),
     inverseSurface = Color(0xFF2E322D),
@@ -116,7 +126,7 @@ internal val DarkScheme = darkColorScheme(
     surface = Color(0xFF0F1511),
     onSurface = Color(0xFFDAE0DA),
     surfaceVariant = Color(0xFF414942),
-    onSurfaceVariant = Color(0xFFACB3AD),
+    onSurfaceVariant = Color(0xFFBCC3BD),
 
     surfaceDim = Color(0xFF0C110E),
     surfaceBright = Color(0xFF343E37),
@@ -127,7 +137,7 @@ internal val DarkScheme = darkColorScheme(
     surfaceContainerHighest = Color(0xFF2E3831),
     surfaceTint = Color(0xFF81C394),
 
-    outline = Color(0xFF8D948E),
+    outline = Color(0xFF9EA59F),
     outlineVariant = Color(0xFF414A44),
     scrim = Color(0xFF000000),
     inverseSurface = Color(0xFFDAE0DA),
@@ -137,6 +147,27 @@ internal val DarkScheme = darkColorScheme(
     onError = Color(0xFF601410),
     errorContainer = Color(0xFF8C1D18),
     onErrorContainer = Color(0xFFF9DEDC),
+)
+
+/**
+ * One shape scale, because eight was not a scale.
+ *
+ * The app had hardcoded radii of 4, 5, 6, 7, 8, 10, 12 and 24dp and zero
+ * references to `MaterialTheme.shapes`. Nothing distinguishes a 5 from a 6 to a
+ * reader; it just means nobody chose. These five are the M3 roles, mapped to
+ * what this app actually contains, so at most three appear on a screen at once.
+ */
+internal val AppShapes = Shapes(
+    // Badges and inline chips - the "check" pill, a legend swatch.
+    extraSmall = RoundedCornerShape(4.dp),
+    // Photo thumbnails and small tiles.
+    small = RoundedCornerShape(8.dp),
+    // The default: cards.
+    medium = RoundedCornerShape(12.dp),
+    // Bottom sheets and dialogs.
+    large = RoundedCornerShape(16.dp),
+    // The FAB, and anything meant to read as fully round at 48-56dp.
+    extraLarge = RoundedCornerShape(28.dp),
 )
 
 @Composable
@@ -154,5 +185,5 @@ fun ThirstTrapTheme(
         darkTheme -> DarkScheme
         else -> LightScheme
     }
-    MaterialTheme(colorScheme = scheme, content = content)
+    MaterialTheme(colorScheme = scheme, shapes = AppShapes, content = content)
 }
