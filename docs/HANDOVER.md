@@ -585,6 +585,44 @@ synthetic taps will eventually write to it**, and the only reason this was
 recoverable was that a backup had been taken before the migration earlier that
 day. Take one before any tap-driven session, and check the counts afterwards.
 
+### D21 — Weighing must not require calibrating first (2026-09-09)
+
+Reported from the phone while trying to actually start M2: "i am only able to
+set the watered weights and not otherwise". That was exactly true, and it made
+the app's central feature unusable.
+
+`assembleWeightState` returned early on `plant.anchors == null`, so with no
+anchor there were no segments, no chart and nothing to show; the weight screen
+therefore offered only "Set the watered weight". A wet anchor is *the pot just
+after watering*, so the only way to begin was to be standing at the plant having
+just watered it, holding a phone. Any other moment, the app refused the reading.
+
+Three changes, in order of how much they matter:
+
+**A post-water reading is the calibration.** `POST_WATER` already re-anchors the
+wet end - that is what the context means. So when there is no anchor, one is
+derived from the first non-excluded post-water reading rather than demanded as
+a separate ceremony. Weigh it after watering, tap "just watered", done.
+
+**Derived on read, not stored.** Same argument the file already makes for the
+EWMA: a stored anchor drifts from the readings it came from. Excluding a bad
+post-water weigh now un-calibrates the plant, which is the correct behaviour and
+would be impossible with a written-back value. Only readings after the last
+repot count, so a repot still invalidates the old anchor and
+`needsRecalibration` clears itself once a new post-water weigh exists rather
+than nagging for something already done.
+
+**Readings without an anchor are still readings.** They are recorded, segmented
+and charted as raw grams. The prediction and the depletion stay suppressed -
+`SuppressionReason.NOT_CALIBRATED` already said so - but the curve is real and
+drawing it is how somebody starts. The chart drops the anchor bands and the
+trigger line rather than inventing reference lines it does not have.
+
+The keypad sheet also grew to 88% of the screen with keys that fill the space,
+and opens fully expanded. It is used standing at a windowsill holding a pot; a
+keypad you have to drag open first is worse than no sheet, and the save button
+had been reachable only by scrolling past twelve keys.
+
 ### D9 — MIT licence (2026-09-06)
 
 `LICENSE` to be added at `git init`. Copyright holder: the repo owner, under

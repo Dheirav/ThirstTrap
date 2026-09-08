@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -59,6 +60,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.em
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -89,7 +91,9 @@ fun WeightScreen(
     val dismissed by viewModel.dismissed.collectAsStateWithLifecycle()
     var showCalibration by remember { mutableStateOf(false) }
     var showKeypad by remember { mutableStateOf(false) }
-    val keypadState = rememberModalBottomSheetState()
+    // Skips the half-height stop: this sheet is a keypad, and a keypad you
+    // have to drag open before you can use it is worse than no sheet.
+    val keypadState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     LaunchedEffect(state?.isCalibrated) { state?.let(viewModel::suggestContext) }
 
@@ -145,11 +149,25 @@ fun WeightScreen(
             if (!s.isCalibrated) {
                 NotCalibratedCard(
                     needsRecalibration = s.plant.needsRecalibration,
-                    // Straight to the keypad: the calibration dialog asks for a
-                    // number, and there was nowhere to type one once the pad
-                    // moved off the page.
                     onStart = { showKeypad = true },
                 )
+                // The curve, even with nothing to measure it against yet.
+                if (s.readings.count { !it.excluded } >= 2) {
+                    Card(Modifier.fillMaxWidth().padding(top = 16.dp)) {
+                        WeightChart(
+                            s,
+                            Modifier.fillMaxWidth().height(200.dp).padding(10.dp)
+                                .semantics { contentDescription = chartSummary(s) },
+                        )
+                    }
+                    Text(
+                        "Grams over time. Once you weigh it just after watering, this becomes " +
+                            "a percentage and a prediction.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.outline,
+                        modifier = Modifier.padding(top = 6.dp),
+                    )
+                }
             } else {
                 PredictionHeadline(s)
                 DepletionLine(s)
@@ -196,15 +214,13 @@ fun WeightScreen(
                 }
             }
 
-            // Only once calibrated. Before that the panel above already carries
-            // the single call to action, and rendering this too put "Set the
-            // watered weight" on the screen twice.
-            if (s.isCalibrated) {
-                FilledTonalButton(
-                    onClick = { showKeypad = true },
-                    modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
-                ) { Text("Weigh it") }
-            }
+            // Always. Weighing a pot must not require having calibrated first -
+            // the whole point is that the readings come before the app can
+            // interpret them. The panel above still explains what is missing.
+            FilledTonalButton(
+                onClick = { showKeypad = true },
+                modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+            ) { Text("Weigh it") }
 
             if (s.readings.isNotEmpty()) {
                 SectionHead("Readings")
@@ -278,15 +294,22 @@ fun WeightScreen(
             shape = MaterialTheme.shapes.large,
             dragHandle = null,
         ) {
+            // The save button is pinned outside the scroll. Everything above it
+            // scrolls; it does not. Making the one action the sheet exists for
+            // reachable only by scrolling past a twelve-key pad is the same
+            // mistake as hiding it under the navigation bar, just less obvious.
             Column(
                 Modifier
-                    // Without this the last keypad row sits under the system
-                    // navigation bar and the save button is off-screen
-                    // entirely - the one control the sheet exists to reach.
+                    // Most of the screen, on purpose. This gets used standing at
+                    // a windowsill holding a pot, and the keys grow to fill
+                    // whatever is left after the head and the button - so the
+                    // targets are as large as the phone allows rather than a
+                    // fixed 52dp with dead space under them.
+                    .fillMaxHeight(0.88f)
                     .navigationBarsPadding()
-                    .verticalScroll(rememberScrollState())
-                    .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 20.dp),
+                    .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 16.dp),
             ) {
+              Column(Modifier.weight(1f)) {
                 Text(
                     "WEIGH IT",
                     style = MaterialTheme.typography.titleMedium,
@@ -333,22 +356,28 @@ fun WeightScreen(
                     }
                 }
 
-                Keypad(onDigit = viewModel::onDigit, onBackspace = viewModel::onBackspace)
+                Keypad(
+                    onDigit = viewModel::onDigit,
+                    onBackspace = viewModel::onBackspace,
+                    modifier = Modifier.weight(1f),
+                )
+              }
 
                 Button(
-                    onClick = {
-                        if (!s.isCalibrated) {
-                            showKeypad = false
-                            showCalibration = true
-                        } else {
-                            viewModel.save {}
-                            showKeypad = false
-                        }
-                    },
+                    onClick = { viewModel.save {}; showKeypad = false },
                     enabled = entry.isNotBlank(),
                     modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-                ) {
-                    Text(if (s.isCalibrated) "Save this weight" else "Use as the watered weight")
+                ) { Text("Save this weight") }
+
+                if (!s.isCalibrated) {
+                    Text(
+                        "Not set up yet: pick \"just watered\" on a weigh taken after " +
+                            "watering and draining, and that reading becomes this pot's full " +
+                            "mark. Anything else is still recorded.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.outline,
+                        modifier = Modifier.padding(top = 10.dp),
+                    )
                 }
             }
         }
@@ -510,16 +539,25 @@ private fun NotCalibratedCard(needsRecalibration: Boolean, onStart: () -> Unit) 
 }
 
 @Composable
-private fun Keypad(onDigit: (Char) -> Unit, onBackspace: () -> Unit) {
-    // Big targets: this gets used standing at a windowsill holding a pot.
+private fun Keypad(
+    onDigit: (Char) -> Unit,
+    onBackspace: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    // Big targets: this gets used standing at a windowsill holding a pot. The
+    // rows share the height they are given rather than each taking a fixed
+    // 52dp, so on a tall phone the keys are genuinely large.
     val rows = listOf("123", "456", "789", ".0<")
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         rows.forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.weight(1f),
+            ) {
                 row.forEach { ch ->
                     FilledTonalButton(
                         onClick = { if (ch == '<') onBackspace() else onDigit(ch) },
-                        modifier = Modifier.weight(1f).height(BlockHeight),
+                        modifier = Modifier.weight(1f).fillMaxHeight(),
                     ) {
                         if (ch == '<') {
                             Icon(AppIcons.backspace, contentDescription = "Delete last digit")
@@ -588,7 +626,10 @@ private fun CalibrationDialog(
  */
 @Composable
 private fun WeightChart(s: WeightState, modifier: Modifier = Modifier) {
-    val anchors = s.plant.anchors ?: return
+    // Null before the first post-water weigh. The curve is still real - it is
+    // grams over time - so it is drawn without the anchor bands and the trigger
+    // line rather than not drawn at all.
+    val anchors = s.plant.anchors
     val points = s.readings.filterNot { it.excluded }.sortedBy { it.timestampMillis }
     if (points.size < 2) return
 
@@ -605,8 +646,9 @@ private fun WeightChart(s: WeightState, modifier: Modifier = Modifier) {
         fun days(t: Long) = (t - originT) / 86_400_000.0
         val spanD = max(1e-6, days(points.last().timestampMillis))
 
-        val lo = min(anchors.dryGrams, points.minOf { it.grams })
-        val hi = max(anchors.wetGrams, points.maxOf { it.grams })
+        // Without anchors the scale is just the readings' own range.
+        val lo = min(anchors?.dryGrams ?: Double.MAX_VALUE, points.minOf { it.grams })
+        val hi = max(anchors?.wetGrams ?: Double.MIN_VALUE, points.maxOf { it.grams })
         val spanG = max(1.0, hi - lo)
 
         // Inset, or the topmost point and the first and last are half-clipped
@@ -619,13 +661,18 @@ private fun WeightChart(s: WeightState, modifier: Modifier = Modifier) {
         fun x(t: Long) = padX + (days(t) / spanD * plotW).toFloat()
         fun y(g: Double) = padY + (plotH - ((g - lo) / spanG * plotH)).toFloat()
 
-        drawLine(outline, Offset(0f, y(anchors.wetGrams)), Offset(size.width, y(anchors.wetGrams)),
-            1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f)))
-        drawLine(outline, Offset(0f, y(anchors.dryGrams)), Offset(size.width, y(anchors.dryGrams)),
-            1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f)))
-        val triggerG = anchors.triggerWeight(s.plant.depletionTrigger)
-        drawLine(tertiary, Offset(0f, y(triggerG)), Offset(size.width, y(triggerG)),
-            1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 8f)))
+        // The anchor bands and the trigger line only mean something once there
+        // is an anchor. Before that the curve is drawn bare rather than against
+        // invented reference lines.
+        anchors?.let { a ->
+            drawLine(outline, Offset(0f, y(a.wetGrams)), Offset(size.width, y(a.wetGrams)),
+                1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f)))
+            drawLine(outline, Offset(0f, y(a.dryGrams)), Offset(size.width, y(a.dryGrams)),
+                1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f)))
+            val triggerG = a.triggerWeight(s.plant.depletionTrigger)
+            drawLine(tertiary, Offset(0f, y(triggerG)), Offset(size.width, y(triggerG)),
+                1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 8f)))
+        }
 
         // One polyline PER SEGMENT. Joining the last reading of one drying
         // cycle to the first of the next would draw exactly the continuous fit
@@ -656,7 +703,9 @@ private fun WeightChart(s: WeightState, modifier: Modifier = Modifier) {
         // trigger - the one element that makes the prediction legible.
         val slope = s.slopeGramsPerDay
         val last = s.segments.lastOrNull()?.readings?.lastOrNull { !it.excluded }
-        if (slope != null && slope < 0 && last != null) {
+        // No anchor means no trigger to project onto, so no projection.
+        val triggerG = anchors?.triggerWeight(s.plant.depletionTrigger)
+        if (slope != null && slope < 0 && last != null && triggerG != null) {
             val daysToTrigger = (last.grams - triggerG) / -slope
             if (daysToTrigger > 0) {
                 val endX = padX + ((days(last.timestampMillis) + daysToTrigger) / spanD * plotW).toFloat()
