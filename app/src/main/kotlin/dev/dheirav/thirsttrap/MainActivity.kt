@@ -37,6 +37,7 @@ import dev.dheirav.thirsttrap.feature.debug.DebugScreen
 import androidx.compose.material.icons.filled.Settings
 import dev.dheirav.thirsttrap.feature.backup.BackupScreen
 import dev.dheirav.thirsttrap.feature.light.LightMeterScreen
+import dev.dheirav.thirsttrap.feature.postmortem.PostMortemScreen
 import dev.dheirav.thirsttrap.feature.propagation.PropagationScreen
 import dev.dheirav.thirsttrap.feature.settings.SettingsScreen
 import dev.dheirav.thirsttrap.feature.weight.ScaleHelpScreen
@@ -153,6 +154,16 @@ class MainActivity : ComponentActivity() {
                         ) {
                             LightMeterScreen(onBack = { nav.popBackStack() })
                         }
+                        composable(
+                            route = "${Routes.POST_MORTEM}/{id}",
+                            arguments = listOf(navArgument("id") { type = NavType.StringType }),
+                        ) {
+                            PostMortemScreen(onDone = {
+                                nav.navigate(Routes.DASHBOARD) {
+                                    popUpTo(Routes.DASHBOARD) { inclusive = true }
+                                }
+                            })
+                        }
                         composable(Routes.PROPAGATION) {
                             PropagationScreen(
                                 onBack = { nav.popBackStack() },
@@ -190,6 +201,7 @@ class MainActivity : ComponentActivity() {
                                 // A deleted or archived plant has no detail
                                 // screen to go back to - popping one step would
                                 // land on a ghost.
+                                onMarkDied = { id -> nav.navigate(Routes.postMortem(id)) },
                                 onPlantGone = {
                                     nav.navigate(Routes.DASHBOARD) {
                                         popUpTo(Routes.DASHBOARD) { inclusive = true }

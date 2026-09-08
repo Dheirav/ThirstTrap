@@ -13,6 +13,7 @@ object Routes {
     const val SCALE_HELP = "help/scale"
     const val LIGHT = "plant/light"
     const val PROPAGATION = "propagation"
+    const val POST_MORTEM = "plant/postmortem"
     const val PLANT_EDIT = "plant/edit"
     const val PLANT_DETAIL = "plant/detail"
     /** Empty id means "new plant". */
@@ -25,6 +26,8 @@ object Routes {
     fun weight(plantId: String) = "$WEIGHT/$plantId"
 
     fun light(plantId: String) = "$LIGHT/$plantId"
+
+    fun postMortem(plantId: String) = "$POST_MORTEM/$plantId"
 
     fun plantEdit(plantId: String? = null) =
         if (plantId == null) "$PLANT_EDIT?id=" else "$PLANT_EDIT?id=$plantId"

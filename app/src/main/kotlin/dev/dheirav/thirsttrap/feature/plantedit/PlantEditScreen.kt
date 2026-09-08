@@ -42,6 +42,7 @@ import dev.dheirav.thirsttrap.domain.PlantSource
 fun PlantEditScreen(
     onDone: () -> Unit,
     onPlantGone: () -> Unit,
+    onMarkDied: (String) -> Unit,
     viewModel: PlantEditViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -203,6 +204,13 @@ fun PlantEditScreen(
             ) { Text(if (state.isNew) "Add plant" else "Save") }
 
             if (!state.isNew) {
+                state.id?.let { id ->
+                    TextButton(
+                        onClick = { onMarkDied(id) },
+                        modifier = Modifier.fillMaxWidth(),
+                    ) { Text("It died") }
+                }
+
                 TextButton(
                     onClick = { viewModel.archive(onPlantGone) },
                     modifier = Modifier.fillMaxWidth(),
