@@ -84,6 +84,24 @@ class SpeciesCareTest {
     }
 
     @Test
+    fun `regionally ambiguous names resolve the way they are used here`() {
+        // "Money plant" means pothos across India, and "money tree" is Pachira
+        // almost everywhere. Crassula is called both in different places, so it
+        // claims neither - a wrong confident match is worse than no match.
+        assertEquals("Pothos", findSpeciesCare("money plant")?.name)
+        assertEquals("Money tree", findSpeciesCare("money tree")?.name)
+        assertEquals("Jade plant", findSpeciesCare("crassula")?.name)
+    }
+
+    @Test
+    fun `the terrarium plants are covered`() {
+        assertEquals("Fittonia", findSpeciesCare("fittonia")?.name)
+        assertEquals("Fittonia", findSpeciesCare("nerve plant")?.name)
+        assertNotNull(findSpeciesCare("polka dot plant"))
+        assertNotNull(findSpeciesCare("baby tears"))
+    }
+
+    @Test
     fun `no two entries claim the same alias`() {
         val seen = mutableMapOf<String, String>()
         speciesCatalogue.forEach { e ->

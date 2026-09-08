@@ -225,7 +225,7 @@ val speciesCatalogue: List<SpeciesCare> = listOf(
     SpeciesCare(
         name = "Jade plant",
         botanical = "Crassula ovata",
-        aliases = listOf("jade plant", "crassula", "crassula ovata", "money tree", "lucky plant"),
+        aliases = listOf("jade plant", "crassula", "crassula ovata", "lucky plant", "jade"),
         light = "Bright, direct sun welcome.",
         water = "Let it dry out completely between waterings.",
         medium = Medium.SOIL,
@@ -440,6 +440,226 @@ val speciesCatalogue: List<SpeciesCare> = listOf(
         depletionTrigger = 0.8,
         toxicity = "Non-toxic.",
         note = "No soil at all, so weight tracking does not apply here.",
+    ),
+
+
+    // --- terrarium plants ---
+    // Added after the first pass skipped them entirely, which was an odd gap
+    // in an app whose author keeps a terrarium.
+
+    SpeciesCare(
+        name = "Fittonia",
+        botanical = "Fittonia albivenis",
+        aliases = listOf("fittonia", "nerve plant", "mosaic plant", "fittonia albivenis"),
+        light = "Medium to bright indirect. Direct sun scorches the thin leaves within hours.",
+        water = "Keep consistently damp - never wet, never dry. It faints dramatically when thirsty and usually recovers within an hour of watering.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.25,
+        humidity = "High. This is why it is a terrarium staple and a windowsill disappointment.",
+        toxicity = "Non-toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Collapsing flat is thirst, not death - water it and wait an hour before doing anything else.",
+            "Crisp brown edges mean the air is too dry rather than the soil.",
+            "Leggy stems with bare gaps: pinch the tips out to keep it bushy.",
+        ),
+        note = "One of the few plants that genuinely tells you when it is thirsty. In a closed terrarium it barely needs watering at all.",
+    ),
+
+    SpeciesCare(
+        name = "Polka dot plant",
+        botanical = "Hypoestes phyllostachya",
+        aliases = listOf("polka dot plant", "hypoestes", "freckle face"),
+        light = "Bright indirect. Colour fades badly in low light.",
+        water = "Keep lightly moist.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.3,
+        humidity = "High. Another terrarium regular.",
+        toxicity = "Non-toxic.",
+        commonProblems = listOf("Flowering means it is about to get leggy and decline - pinch the spikes off."),
+    ),
+
+    SpeciesCare(
+        name = "Baby tears",
+        botanical = "Soleirolia soleirolii",
+        aliases = listOf("baby tears", "soleirolia", "angel tears", "mind your own business"),
+        light = "Medium indirect.",
+        water = "Constantly damp. It browns off within a day of drying out.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.2,
+        humidity = "Very high. Effectively a terrarium-only plant indoors.",
+        toxicity = "Non-toxic.",
+        note = "Spreads into a dense mat and makes good ground cover under taller terrarium plants.",
+    ),
+
+    SpeciesCare(
+        name = "Club moss",
+        botanical = "Selaginella spp.",
+        aliases = listOf("club moss", "selaginella", "spikemoss", "resurrection plant"),
+        light = "Low to medium indirect. Never direct.",
+        water = "Constantly damp.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.2,
+        humidity = "Very high - it will not survive open room air for long.",
+        toxicity = "Non-toxic.",
+    ),
+
+    // --- common houseplants the first pass missed ---
+
+    SpeciesCare(
+        name = "Peace lily",
+        botanical = "Spathiphyllum spp.",
+        aliases = listOf("peace lily", "spathiphyllum"),
+        light = "Low to medium indirect. One of the genuinely low-light-tolerant flowering plants.",
+        water = "Let the top third dry. It wilts theatrically when thirsty and recovers within hours - but repeated wilting shortens its life.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.4,
+        toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf(
+            "No flowers usually means not enough light, despite its low-light reputation.",
+            "Brown tips are usually tap water minerals.",
+        ),
+    ),
+
+    SpeciesCare(
+        name = "Chinese evergreen",
+        botanical = "Aglaonema spp.",
+        aliases = listOf("chinese evergreen", "aglaonema"),
+        light = "Low to medium indirect. Darker varieties tolerate less light than variegated ones.",
+        water = "Let the top half dry.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.55,
+        toxicity = "Toxic to cats and dogs.",
+        note = "Among the most tolerant of neglect and low light of anything with interesting foliage.",
+    ),
+
+    SpeciesCare(
+        name = "Croton",
+        botanical = "Codiaeum variegatum",
+        aliases = listOf("croton", "codiaeum", "josephs coat"),
+        light = "Very bright, some direct sun. Colour is entirely light-dependent.",
+        water = "Keep lightly moist.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.4,
+        humidity = "Moderate to high.",
+        toxicity = "Toxic to cats and dogs; sap irritates skin.",
+        commonProblems = listOf(
+            "Dropping every leaf after being moved or repotted is normal for these, and it usually regrows.",
+            "Green new growth on a colourful variety means too little light.",
+        ),
+    ),
+
+    SpeciesCare(
+        name = "Ivy",
+        botanical = "Hedera helix",
+        aliases = listOf("ivy", "english ivy", "hedera", "hedera helix"),
+        light = "Bright indirect. Variegated forms need more.",
+        water = "Let the top half dry.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.5,
+        toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf("Spider mites are almost inevitable indoors in dry air. Check the undersides regularly."),
+    ),
+
+    SpeciesCare(
+        name = "Kalanchoe",
+        botanical = "Kalanchoe blossfeldiana",
+        aliases = listOf("kalanchoe", "flaming katy"),
+        light = "Bright, direct sun welcome.",
+        water = "Let it dry out well between waterings.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.75,
+        toxicity = "Toxic to cats and dogs.",
+        note = "Reflowering needs genuinely long dark nights for several weeks - about fourteen hours of uninterrupted darkness.",
+    ),
+
+    SpeciesCare(
+        name = "String of hearts",
+        botanical = "Ceropegia woodii",
+        aliases = listOf("string of hearts", "ceropegia", "rosary vine", "chain of hearts"),
+        light = "Bright, including some direct sun.",
+        water = "Let it dry out fully. It stores water in tubers along the vine.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.75,
+        toxicity = "Non-toxic.",
+        note = "The little tubers along the strands root readily - lay one on soil and it becomes a new plant.",
+    ),
+
+    SpeciesCare(
+        name = "Asparagus fern",
+        botanical = "Asparagus setaceus / densiflorus",
+        aliases = listOf("asparagus fern", "asparagus setaceus", "foxtail fern", "sprengeri"),
+        light = "Bright indirect.",
+        water = "Keep lightly moist. Tuberous roots make it more drought-tolerant than a true fern.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.45,
+        toxicity = "Toxic to cats and dogs; the berries especially.",
+        note = "Not actually a fern. It has thorns, which is a surprise the first time.",
+    ),
+
+    SpeciesCare(
+        name = "Oxalis",
+        botanical = "Oxalis triangularis",
+        aliases = listOf("oxalis", "purple shamrock", "false shamrock", "wood sorrel"),
+        light = "Bright indirect to some direct sun.",
+        water = "Let the top half dry.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.5,
+        toxicity = "Toxic to cats and dogs in quantity.",
+        commonProblems = listOf(
+            "Dying back completely is dormancy, not death - stop watering, wait a few weeks, and it returns from the bulbs.",
+        ),
+        note = "Folds its leaves down at night and opens them in the morning.",
+    ),
+
+    SpeciesCare(
+        name = "Coleus",
+        botanical = "Coleus scutellarioides",
+        aliases = listOf("coleus", "painted nettle", "solenostemon"),
+        light = "Bright indirect. Some direct sun deepens the colour, too much bleaches it.",
+        water = "Keep lightly moist. Wilts fast and recovers fast.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.35,
+        toxicity = "Mildly toxic to pets.",
+        note = "Pinch out flower spikes and the growing tips, or it goes leggy and stops making leaves.",
+    ),
+
+    SpeciesCare(
+        name = "Aralia",
+        botanical = "Polyscias spp.",
+        aliases = listOf("aralia", "polyscias", "ming aralia"),
+        light = "Bright indirect.",
+        water = "Let the top half dry.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.5,
+        humidity = "Moderate to high.",
+        toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf("Sudden leaf drop after a move or a draught is characteristic. Keep it steady and wait."),
+    ),
+
+    SpeciesCare(
+        name = "Areca palm",
+        botanical = "Dypsis lutescens",
+        aliases = listOf("areca palm", "dypsis", "butterfly palm", "golden cane palm"),
+        light = "Bright indirect.",
+        water = "Keep lightly moist. Sensitive to fluoride and salts in tap water.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.4,
+        toxicity = "Non-toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Brown tips are usually tap water or dry air.",
+            "Spider mites thrive on these indoors.",
+        ),
+    ),
+
+    SpeciesCare(
+        name = "Money tree",
+        botanical = "Pachira aquatica",
+        aliases = listOf("money tree", "pachira", "pachira aquatica", "guiana chestnut"),
+        light = "Bright indirect.",
+        water = "Let the top half dry. Despite growing in swamps in the wild, it rots readily in a pot.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.55,
+        toxicity = "Non-toxic.",
     ),
 
     SpeciesCare(
