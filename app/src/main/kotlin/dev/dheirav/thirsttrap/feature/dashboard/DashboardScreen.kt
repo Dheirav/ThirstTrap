@@ -1,6 +1,7 @@
 package dev.dheirav.thirsttrap.feature.dashboard
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -21,7 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.QrCodeScanner
@@ -65,6 +66,9 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -326,8 +330,12 @@ private fun PlantCard(
 ) {
     val plant = item.plant
     Card(
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        shape = MaterialTheme.shapes.medium,
+        // A shadow implies a floating object; a hairline implies a page. On a
+        // near-black background the 1.dp shadow this used to draw was invisible
+        // anyway, which is half of why the card had no visible edge.
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         modifier = Modifier
             .fillMaxWidth()
             .combinedClickable(
@@ -344,7 +352,7 @@ private fun PlantCard(
             Box(
                 modifier = Modifier
                     .size(56.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(MaterialTheme.shapes.small)
                     .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center,
             ) {
@@ -359,14 +367,20 @@ private fun PlantCard(
                     PlantPhoto(
                         path = path,
                         contentDescription = null,
-                        modifier = Modifier.size(56.dp).clip(RoundedCornerShape(10.dp)),
+                        modifier = Modifier.size(56.dp).clip(MaterialTheme.shapes.small),
                     )
                 }
             }
 
             Spacer(Modifier.size(12.dp))
 
+            // Four rows, not seven. The card used to stack name, location,
+            // watered, checked, a bar, a prediction and a cadence - five of them
+            // 11-12sp in the same grey, which is a wall rather than a hierarchy.
+            // Row 2 is the one people actually read, so it gets the weight and
+            // everything else moves down a tier or to the detail screen.
             Column(Modifier.weight(1f)) {
+                // 1. Who.
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         plant.name,
@@ -380,7 +394,7 @@ private fun PlantCard(
                         Box(
                             Modifier
                                 .padding(start = 8.dp)
-                                .clip(RoundedCornerShape(6.dp))
+                                .clip(MaterialTheme.shapes.extraSmall)
                                 .background(MaterialTheme.colorScheme.primaryContainer)
                                 .padding(horizontal = 6.dp, vertical = 2.dp),
                         ) {
@@ -392,55 +406,72 @@ private fun PlantCard(
                         }
                     }
                 }
-                Text(
-                    listOfNotNull(
-                        plant.location?.takeIf { it.isNotBlank() },
-                        plant.medium.label.lowercase(),
-                    ).joinToString(" · "),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
 
                 val watered = item.lastWateredMillis
+                val wateredText =
+                    if (watered == null) "Never watered"
+                    else relativeDays(nowMillis, watered, "Watered")
+                val prediction = predictionText(item.prediction)
+
+                // 2. The answer. A prediction when there is one; otherwise the
+                //    most recent fact, which is the best answer available.
                 Text(
-                    if (watered == null) "Never watered" else relativeDays(nowMillis, watered, "Watered"),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    prediction ?: wateredText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.padding(top = 2.dp),
                 )
 
-                // Only when a check is more recent than the last watering:
-                // restraint deserves visible credit, not silence.
-                val checked = item.lastCheckedMillis
-                if (checked != null && checked > (watered ?: 0L)) {
-                    val days = ((nowMillis - checked) / 86_400_000L).toInt()
-                    Text(
-                        if (days == 0) "Checked today - not thirsty"
-                        else relativeDays(nowMillis, checked, "Checked"),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                }
-
+                // 3. The state object.
                 if (plant.isWeightTrackable) {
-                    item.depletion?.let { DepletionBar(it, plant.depletionTrigger, item.prediction is Prediction.WaterNow) }
+                    item.depletion?.let {
+                        DepletionBar(it, plant.depletionTrigger, item.prediction is Prediction.WaterNow)
+                    }
                 }
 
-                PredictionLine(item.prediction)
-
-                // Requirements item 8. Needs two waterings to measure between.
-                item.averageIntervalDays?.let { avg ->
-                    Text(
-                        cadenceLabel(avg),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                // 4. Everything else, one line, in the dim tier - the third step
+                //    of the lightness ladder rather than a fourth thing in grey.
+                //    Cadence is not here: it lives on the detail screen, which is
+                //    where someone goes to ask that question.
+                val checked = item.lastCheckedMillis
+                val context = buildAnnotatedString {
+                    val parts = mutableListOf<Pair<String, Boolean>>()
+                    plant.location?.takeIf { it.isNotBlank() }?.let { parts += it to false }
+                    parts += plant.medium.label.lowercase() to false
+                    // Only repeat the watering line if row 2 did not use it.
+                    if (prediction != null) parts += wateredText to false
+                    // Restraint deserves visible credit, not silence - so this
+                    // one fragment keeps its colour even in the dim row.
+                    if (checked != null && checked > (watered ?: 0L)) {
+                        val days = ((nowMillis - checked) / 86_400_000L).toInt()
+                        parts += (
+                            if (days == 0) "checked today, not thirsty"
+                            else relativeDays(nowMillis, checked, "Checked").lowercase()
+                            ) to true
+                    }
+                    parts.forEachIndexed { i, (text, credit) ->
+                        if (i > 0) append(" · ")
+                        if (credit) {
+                            withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                                append(text)
+                            }
+                        } else {
+                            append(text)
+                        }
+                    }
                 }
+                Text(
+                    context,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.padding(top = 2.dp),
+                )
             }
 
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .clip(RoundedCornerShape(24.dp))
+                    .clip(CircleShape)
                     .clickable(
                         onClickLabel = "Log checked, still wet for ${plant.name}",
                         onClick = onQuickCheck,
@@ -459,7 +490,7 @@ private fun PlantCard(
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .clip(RoundedCornerShape(24.dp))
+                    .clip(CircleShape)
                     .combinedClickable(
                         onClick = onQuickWater,
                         onLongClick = onDetailedWater,
@@ -488,32 +519,23 @@ private fun relativeDays(now: Long, then: Long, verb: String): String =
     }
 
 @Composable
-private fun PredictionLine(prediction: Prediction) {
-    val text = when (prediction) {
-        is Prediction.WaterNow -> "Needs water now"
-        is Prediction.Eta -> when {
-            prediction.capped -> "More than 2 weeks"
-            prediction.days < 1.0 -> "Water today"
-            prediction.days < 2.0 -> "Water tomorrow"
-            else -> "Water in about ${prediction.days.toInt()} days"
-        }
-        is Prediction.NeedAnotherReading -> when (prediction.reason) {
-            // Telling someone to weigh a cutting in a jar is nonsense.
-            SuppressionReason.WEIGHT_MEANINGLESS_FOR_MEDIUM -> null
-            SuppressionReason.NOT_CALIBRATED -> null
-            SuppressionReason.NEEDS_RECALIBRATION -> "Needs recalibrating"
-            SuppressionReason.NO_MEASURABLE_DRYING -> "Not drying measurably yet"
-            SuppressionReason.NO_READINGS,
-            SuppressionReason.ONE_READING_NO_HISTORY -> "Weigh once more to predict"
-        }
-    } ?: return
-
-    Text(
-        text,
-        style = MaterialTheme.typography.bodySmall,
-        fontWeight = FontWeight.Medium,
-        modifier = Modifier.padding(top = 2.dp),
-    )
+private fun predictionText(prediction: Prediction): String? = when (prediction) {
+    is Prediction.WaterNow -> "Needs water now"
+    is Prediction.Eta -> when {
+        prediction.capped -> "More than 2 weeks"
+        prediction.days < 1.0 -> "Water today"
+        prediction.days < 2.0 -> "Water tomorrow"
+        else -> "Water in about ${prediction.days.toInt()} days"
+    }
+    is Prediction.NeedAnotherReading -> when (prediction.reason) {
+        // Telling someone to weigh a cutting in a jar is nonsense.
+        SuppressionReason.WEIGHT_MEANINGLESS_FOR_MEDIUM -> null
+        SuppressionReason.NOT_CALIBRATED -> null
+        SuppressionReason.NEEDS_RECALIBRATION -> "Needs recalibrating"
+        SuppressionReason.NO_MEASURABLE_DRYING -> "Not drying measurably yet"
+        SuppressionReason.NO_READINGS,
+        SuppressionReason.ONE_READING_NO_HISTORY -> "Weigh once more to predict"
+    }
 }
 
 @Composable
@@ -521,7 +543,7 @@ private fun DepletionBar(depletion: Double, trigger: Double, pastTrigger: Boolea
     val pct = (depletion * 100).toInt()
     Column(Modifier.padding(top = 6.dp)) {
         Box(
-            Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(4.dp))
+            Modifier.fillMaxWidth().height(8.dp).clip(MaterialTheme.shapes.extraSmall)
                 .background(MaterialTheme.colorScheme.surfaceVariant),
         ) {
             Box(
