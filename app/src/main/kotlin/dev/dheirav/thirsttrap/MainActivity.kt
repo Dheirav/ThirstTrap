@@ -76,8 +76,19 @@ class MainActivity : ComponentActivity() {
             val view = LocalView.current
             if (!view.isInEditMode) {
                 SideEffect {
-                    WindowCompat.getInsetsController(window, view)
-                        .isAppearanceLightStatusBars = !dark
+                    WindowCompat.getInsetsController(window, view).apply {
+                        isAppearanceLightStatusBars = !dark
+                        isAppearanceLightNavigationBars = !dark
+                    }
+                    // With three-button navigation the system paints its own
+                    // opaque bar and, on API 29+, enforces a contrast scrim over
+                    // anything drawn behind it. Both together made the bottom of
+                    // every screen a light-grey slab that belonged to no theme.
+                    @Suppress("DEPRECATION")
+                    window.navigationBarColor = android.graphics.Color.TRANSPARENT
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        window.isNavigationBarContrastEnforced = false
+                    }
                 }
             }
 
