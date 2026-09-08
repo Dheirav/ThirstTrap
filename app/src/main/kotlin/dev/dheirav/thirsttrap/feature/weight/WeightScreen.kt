@@ -18,8 +18,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -74,7 +74,7 @@ import dev.dheirav.thirsttrap.domain.WeightState
 import kotlin.math.max
 import kotlin.math.min
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun WeightScreen(
     onBack: () -> Unit,
@@ -308,14 +308,15 @@ fun WeightScreen(
                     )
                 }
 
-                // Scrolls rather than squeezing: at three-up "after watering"
-                // wrapped to two lines and made one chip taller than its
-                // neighbours.
-                Row(
+                // Wraps rather than scrolling or squeezing. At three-up "after
+                // watering" broke onto two lines and made one chip taller than
+                // its neighbours; a scrolling row fixed the height but hid an
+                // option off the edge, which is worse - all three need to be
+                // visible to be chosen between.
+                FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier
-                        .horizontalScroll(rememberScrollState())
-                        .padding(bottom = 14.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 14.dp),
                 ) {
                     listOf(
                         ReadingContext.ROUTINE to "just checking",
