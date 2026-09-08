@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.weight
 
+import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,9 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Backspace
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -84,7 +82,7 @@ fun WeightScreen(
                 title = { Text(state?.plant?.name ?: "Weight") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(AppIcons.arrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
@@ -424,7 +422,7 @@ private fun Keypad(onDigit: (Char) -> Unit, onBackspace: () -> Unit) {
                         modifier = Modifier.weight(1f).height(60.dp),
                     ) {
                         if (ch == '<') {
-                            Icon(Icons.Filled.Backspace, contentDescription = "Delete last digit")
+                            Icon(AppIcons.backspace, contentDescription = "Delete last digit")
                         } else {
                             Text(ch.toString(), style = MaterialTheme.typography.titleLarge)
                         }

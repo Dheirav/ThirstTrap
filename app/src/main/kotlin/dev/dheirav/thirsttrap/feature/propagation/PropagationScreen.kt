@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.propagation
 
+import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,9 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -62,7 +60,7 @@ fun PropagationScreen(
                 title = { Text("Propagation") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(AppIcons.arrowBack, contentDescription = "Back")
                     }
                 },
             )
@@ -164,7 +162,7 @@ private fun CuttingCard(
                 if (card.stage.previous != null) {
                     IconButton(onClick = onBack) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
+                            AppIcons.arrowBack,
                             contentDescription = "Move back to ${card.stage.previous!!.label}",
                         )
                     }
@@ -172,7 +170,7 @@ private fun CuttingCard(
                 if (card.stage.next != null) {
                     IconButton(onClick = onForward) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowForward,
+                            AppIcons.arrowForward,
                             contentDescription = "Move on to ${card.stage.next!!.label}",
                         )
                     }

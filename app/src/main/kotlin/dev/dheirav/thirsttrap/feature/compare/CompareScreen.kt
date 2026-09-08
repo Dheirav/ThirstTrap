@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.compare
 
+import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,10 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -86,13 +83,13 @@ fun CompareScreen(onBack: () -> Unit, viewModel: CompareViewModel = hiltViewMode
                 title = { Text("Compare") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(AppIcons.arrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
                     IconButton(onClick = viewModel::toggleSync) {
                         Icon(
-                            if (sync) Icons.Filled.Lock else Icons.Filled.LockOpen,
+                            if (sync) AppIcons.lock else AppIcons.lockOpen,
                             contentDescription = "Zoom both panes together",
                             modifier = Modifier.semantics {
                                 stateDescription = if (sync) "On" else "Off"
