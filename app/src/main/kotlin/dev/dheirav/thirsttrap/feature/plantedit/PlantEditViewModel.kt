@@ -49,6 +49,7 @@ data class PlantEditUiState(
     val location: String = "",
     val containerDesc: String = "",
     val defaultWaterMl: String = "",
+    val checkIntervalDays: String = "",
     val targetDryness: String = "",
     val lightNeeds: String = "",
     val fertilizerCadenceDays: String = "",
@@ -78,6 +79,7 @@ class PlantEditViewModel @Inject constructor(
     init {
         plantId?.let { id ->
             viewModelScope.launch {
+                val existing = reminders.observeForPlant(id).first().firstOrNull()
                 repository.observePlant(id).first()?.let { p ->
                     _state.value = PlantEditUiState(
                         id = p.id,
@@ -93,6 +95,7 @@ class PlantEditViewModel @Inject constructor(
                         source = p.source,
                         status = p.status,
                         archived = p.archived,
+                        checkIntervalDays = existing?.intervalDays?.toString().orEmpty(),
                         loading = false,
                     )
                 }
@@ -111,6 +114,9 @@ class PlantEditViewModel @Inject constructor(
     fun onLightNeeds(v: String) { _state.value = _state.value.copy(lightNeeds = v) }
     fun onFertilizerCadence(v: String) {
         _state.value = _state.value.copy(fertilizerCadenceDays = v.filter { it.isDigit() }.take(3))
+    }
+    fun onCheckInterval(v: String) {
+        _state.value = _state.value.copy(checkIntervalDays = v.filter { it.isDigit() }.take(3))
     }
     fun onDefaultWater(v: String) {
         _state.value = _state.value.copy(defaultWaterMl = v.filter { it.isDigit() }.take(5))
@@ -139,6 +145,14 @@ class PlantEditViewModel @Inject constructor(
                     archived = s.archived,
                 ),
             )
+
+            // An explicit cadence, if the user gave one. Null means "work it
+            // out from the log", which is what resolveIntervalDays does.
+            if (!isNew) {
+                reminders.observeForPlant(plantId).first().firstOrNull()?.let { r ->
+                    reminders.upsert(r.copy(intervalDays = s.checkIntervalDays.toIntOrNull()))
+                }
+            }
 
             if (isNew) {
                 // Seed the log with what the user told us, so the plant does not
@@ -169,7 +183,7 @@ class PlantEditViewModel @Inject constructor(
                         id = newId(),
                         plantId = plantId,
                         kind = ReminderKind.CHECK,
-                        intervalDays = null,
+                        intervalDays = s.checkIntervalDays.toIntOrNull(),
                         nextDueAtMillis = computeNextDue(lastAssessed, interval, now),
                     ),
                 )

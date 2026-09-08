@@ -100,6 +100,16 @@ fun PlantEditScreen(
             )
 
             OutlinedTextField(
+                value = state.checkIntervalDays,
+                onValueChange = viewModel::onCheckInterval,
+                label = { Text("Remind me to check every N days (optional)") },
+                placeholder = { Text("leave empty and it works this out from your log") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            OutlinedTextField(
                 value = state.defaultWaterMl,
                 onValueChange = viewModel::onDefaultWater,
                 label = { Text("Usual amount of water (ml, optional)") },
@@ -131,7 +141,7 @@ fun PlantEditScreen(
             OutlinedTextField(
                 value = state.fertilizerCadenceDays,
                 onValueChange = viewModel::onFertilizerCadence,
-                label = { Text("Feed every N days (optional)") },
+                label = { Text("How often to feed, in days (optional)") },
                 placeholder = { Text("30") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true,

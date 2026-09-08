@@ -20,6 +20,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
+import dev.dheirav.thirsttrap.domain.CareEvent
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -46,8 +57,25 @@ fun DueScreen(
     viewModel: DueViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHost = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val haptics = LocalHapticFeedback.current
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Due") }) }) { padding ->
+    // Identical treatment for both answers - same haptic, same snackbar, same
+    // undo. If watering felt rewarding here and restraint felt like a
+    // dismissal, this screen would be teaching the habit it exists to prevent.
+    fun announce(item: DueItem, event: CareEvent, previousDue: Long, message: String) {
+        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+        scope.launch {
+            val result = snackbarHost.showSnackbar(message, "UNDO", duration = SnackbarDuration.Short)
+            if (result == SnackbarResult.ActionPerformed) viewModel.undo(item, event, previousDue)
+        }
+    }
+
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Due") }) },
+        snackbarHost = { SnackbarHost(snackbarHost) },
+    ) { padding ->
         if (state.loaded && state.items.isEmpty()) {
             Column(
                 Modifier.fillMaxSize().padding(padding).padding(32.dp),
@@ -85,11 +113,7 @@ fun DueScreen(
                             fontWeight = FontWeight.SemiBold,
                         )
                         Text(
-                            if (item.overdueDays > 0) {
-                                "It's been ${item.overdueDays} days. Lift the pot - does it feel light?"
-                            } else {
-                                "Lift the pot - does it feel light?"
-                            },
+                            sinceLabel(item.daysSinceChecked),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp, bottom = 16.dp),
@@ -97,13 +121,30 @@ fun DueScreen(
                         // Equal weight, side by side. Neither is the primary.
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             FilledTonalButton(
-                                onClick = { viewModel.watered(item) },
-                                modifier = Modifier.weight(1f).height(56.dp),
-                            ) { Text("Watered") }
+                                onClick = {
+                                    viewModel.watered(item) { e, due ->
+                                        announce(item, e, due, wateredMessage(item))
+                                    }
+                                },
+                                modifier = Modifier.weight(1f).heightIn(min = 56.dp),
+                            ) {
+                                Text(
+                                    item.suggestedWaterMl
+                                        ?.let { "Watered\n${it.toInt()} ml" } ?: "Watered",
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
                             FilledTonalButton(
-                                onClick = { viewModel.stillWet(item) },
-                                modifier = Modifier.weight(1f).height(56.dp),
-                            ) { Text("Still wet") }
+                                onClick = {
+                                    viewModel.stillWet(item) { e, due ->
+                                        announce(
+                                            item, e, due,
+                                            "Good call - ${item.plant.name} checked, not thirsty yet",
+                                        )
+                                    }
+                                },
+                                modifier = Modifier.weight(1f).heightIn(min = 56.dp),
+                            ) { Text("Still wet\nleave it", textAlign = TextAlign.Center) }
                         }
                         TextButton(onClick = { viewModel.snooze(item) }) { Text("Snooze a day") }
                     }
@@ -112,7 +153,7 @@ fun DueScreen(
             if (state.items.size > 1) {
                 item {
                     TextButton(onClick = { viewModel.clearAllOverdue() }) {
-                        Text("Clear all overdue")
+                        Text("Not now - check these next week")
                     }
                 }
             }
@@ -125,3 +166,15 @@ fun DueScreen(
         }
     }
 }
+
+private fun sinceLabel(daysSinceChecked: Int?): String = when (daysSinceChecked) {
+    null -> "Lift the pot - does it feel light?"
+    0 -> "Checked today already. Lift the pot - does it feel light?"
+    1 -> "It's been a day since you checked. Lift the pot - does it feel light?"
+    else -> "It's been $daysSinceChecked days since you checked. Lift the pot - does it feel light?"
+}
+
+private fun wateredMessage(item: DueItem): String =
+    item.suggestedWaterMl
+        ?.let { "Logged - ${item.plant.name} watered ${it.toInt()} ml" }
+        ?: "Logged - ${item.plant.name} watered"

@@ -19,6 +19,20 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * When it actually happened.
+ *
+ * Every log used to be stamped with the moment you opened the screen, so
+ * recording last night's watering this morning shifted it by half a day - and
+ * both the cadence figure and the drying model are built from those intervals.
+ */
+enum class WhenLogged(val label: String) {
+    NOW("Just now"),
+    EARLIER_TODAY("Earlier today"),
+    YESTERDAY("Yesterday"),
+    PICK("Another day"),
+}
+
 data class LogEventUiState(
     val plantName: String = "",
     val type: CareEventType = CareEventType.WATERED,
@@ -30,13 +44,41 @@ data class LogEventUiState(
     val dilution: String = "",
     val toMedium: Medium? = null,
     val cause: String = "",
+    val whenLogged: WhenLogged = WhenLogged.NOW,
+    /** Set only when whenLogged is PICK. */
+    val pickedDateMillis: Long? = null,
 ) {
+    /**
+     * Backdated entries land at midday rather than midnight, so a watering
+     * recorded for "yesterday" cannot sort before one genuinely logged early
+     * that morning, and cannot drift across a day boundary by timezone.
+     */
+    fun timestamp(nowMillis: Long): Long = when (whenLogged) {
+        WhenLogged.NOW -> nowMillis
+        WhenLogged.EARLIER_TODAY -> middayOf(nowMillis).coerceAtMost(nowMillis)
+        WhenLogged.YESTERDAY -> middayOf(nowMillis - 86_400_000L)
+        WhenLogged.PICK -> pickedDateMillis?.let { middayOf(it) } ?: nowMillis
+    }
+
+    val isBackdated: Boolean get() = whenLogged != WhenLogged.NOW
+
     /** Which extra fields this type actually needs — docs/DATA-MODEL.md. */
     val showAmount get() = type == CareEventType.WATERED
     val showCheckResult get() = type == CareEventType.CHECKED
     val showFertilizer get() = type == CareEventType.FERTILIZED
     val showMedium get() = type == CareEventType.MEDIUM_CHANGED
     val showCause get() = type == CareEventType.DIED
+}
+
+private fun middayOf(millis: Long): Long {
+    val cal = java.util.Calendar.getInstance().apply {
+        timeInMillis = millis
+        set(java.util.Calendar.HOUR_OF_DAY, 12)
+        set(java.util.Calendar.MINUTE, 0)
+        set(java.util.Calendar.SECOND, 0)
+        set(java.util.Calendar.MILLISECOND, 0)
+    }
+    return cal.timeInMillis
 }
 
 @HiltViewModel
@@ -75,10 +117,18 @@ class LogEventViewModel @Inject constructor(
     fun onDilution(v: String) { _state.value = _state.value.copy(dilution = v) }
     fun onToMedium(v: Medium) { _state.value = _state.value.copy(toMedium = v) }
     fun onCause(v: String) { _state.value = _state.value.copy(cause = v) }
+    fun onWhen(v: WhenLogged) { _state.value = _state.value.copy(whenLogged = v) }
+    fun onPickedDate(millis: Long?) {
+        _state.value = _state.value.copy(
+            pickedDateMillis = millis,
+            whenLogged = if (millis != null) WhenLogged.PICK else _state.value.whenLogged,
+        )
+    }
 
     fun save(onDone: () -> Unit) {
         val s = _state.value
         val now = System.currentTimeMillis()
+        val at = s.timestamp(now)
         viewModelScope.launch {
             val plant = repository.observePlant(plantId).first()
 
@@ -86,8 +136,8 @@ class LogEventViewModel @Inject constructor(
                 CareEvent(
                     id = newId(),
                     plantId = plantId,
-                    timestampMillis = now,
-                    tzOffsetMinutes = tzOffsetMinutesAt(now),
+                    timestampMillis = at,
+                    tzOffsetMinutes = tzOffsetMinutesAt(at),
                     type = s.type,
                     note = s.note.trim().takeIf { it.isNotEmpty() },
                     amountMl = s.amountMl.toDoubleOrNull(),

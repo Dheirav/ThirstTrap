@@ -29,4 +29,8 @@ interface SettingsRepository {
     suspend fun setReminderHour(hour: Int)
     suspend fun setDefaultDepletionTrigger(fraction: Double)
     suspend fun setUseExactAlarms(enabled: Boolean)
+
+    /** Dismissals are per drying cycle, so a new cycle can speak up again. */
+    suspend fun dismissDiagnostic(key: String)
+    suspend fun dismissedDiagnostics(): Set<String>
 }

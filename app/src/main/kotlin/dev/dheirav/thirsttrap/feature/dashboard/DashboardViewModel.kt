@@ -48,6 +48,21 @@ class DashboardViewModel @Inject constructor(
 
     fun clearPhotoError() { _photoError.value = null }
 
+    private val _showArchived = MutableStateFlow(false)
+    val showArchived: StateFlow<Boolean> = _showArchived.asStateFlow()
+
+    fun toggleArchived() { _showArchived.value = !_showArchived.value }
+
+    /** Archived plants keep their history; they just need a way back to it. */
+    val archived: StateFlow<List<dev.dheirav.thirsttrap.domain.Plant>> =
+        repository.observePlants(includeArchived = true)
+            .map { all -> all.filter { it.archived } }
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    fun unarchive(plantId: String) {
+        viewModelScope.launch { repository.archivePlant(plantId, archived = false) }
+    }
+
     val uiState: StateFlow<DashboardUiState> =
         repository.observeDashboard { System.currentTimeMillis() }
             .map { DashboardUiState(items = it, loaded = true) }

@@ -25,6 +25,7 @@ import javax.inject.Inject
 class WeightViewModel @Inject constructor(
     private val repository: WeightRepository,
     private val reminders: ReminderRepository,
+    private val settings: dev.dheirav.thirsttrap.domain.SettingsRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -61,6 +62,30 @@ class WeightViewModel @Inject constructor(
             ReadingContext.PRE_WATER
         } else {
             ReadingContext.ROUTINE
+        }
+    }
+
+    private val _dismissed = MutableStateFlow<Set<String>>(emptySet())
+    val dismissed: StateFlow<Set<String>> = _dismissed.asStateFlow()
+
+    init {
+        viewModelScope.launch { _dismissed.value = settings.dismissedDiagnostics() }
+    }
+
+    /**
+     * Keyed by the segment that raised it, so the alert stays quiet for this
+     * drying cycle and can speak again on the next one.
+     */
+    fun diagnosticKey(s: WeightState): String? {
+        val d = s.diagnostic ?: return null
+        val start = s.currentSegment?.first?.timestampMillis ?: return null
+        return "$plantId:$start:${d.name}"
+    }
+
+    fun dismissDiagnostic(key: String) {
+        viewModelScope.launch {
+            settings.dismissDiagnostic(key)
+            _dismissed.value = _dismissed.value + key
         }
     }
 

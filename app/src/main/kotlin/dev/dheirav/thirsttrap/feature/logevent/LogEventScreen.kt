@@ -21,7 +21,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -39,6 +47,7 @@ import dev.dheirav.thirsttrap.domain.WateringMethod
 @Composable
 fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    var showDatePicker by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -56,6 +65,35 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            Text("When?", style = MaterialTheme.typography.labelLarge)
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                WhenLogged.entries.forEach { w ->
+                    FilterChip(
+                        selected = state.whenLogged == w,
+                        onClick = {
+                            if (w == WhenLogged.PICK) showDatePicker = true else viewModel.onWhen(w)
+                        },
+                        label = {
+                            Text(
+                                if (w == WhenLogged.PICK && state.pickedDateMillis != null) {
+                                    formatDate(state.pickedDateMillis!!)
+                                } else {
+                                    w.label
+                                },
+                            )
+                        },
+                    )
+                }
+            }
+            if (state.isBackdated) {
+                Text(
+                    "Backdated entries are filed at midday, so they cannot sort ahead of " +
+                        "something you logged that morning.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
             Text("What happened?", style = MaterialTheme.typography.labelLarge)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 CareEventType.entries.filter { it != CareEventType.UNKNOWN }.forEach { t ->
@@ -164,6 +202,29 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
             }
         }
     }
+
+    if (showDatePicker) {
+        val pickerState = rememberDatePickerState(
+            initialSelectedDateMillis = state.pickedDateMillis ?: System.currentTimeMillis(),
+            // A watering cannot have happened tomorrow.
+            selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long) =
+                    utcTimeMillis <= System.currentTimeMillis() + 86_400_000L
+            },
+        )
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.onPickedDate(pickerState.selectedDateMillis)
+                    showDatePicker = false
+                }) { Text("Use this day") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDatePicker = false }) { Text("Cancel") }
+            },
+        ) { DatePicker(state = pickerState) }
+    }
 }
 
 private fun labelFor(type: CareEventType): String = when (type) {
@@ -183,3 +244,8 @@ private fun labelFor(type: CareEventType): String = when (type) {
     CareEventType.DIED -> "died"
     CareEventType.UNKNOWN -> "other"
 }
+
+private fun formatDate(millis: Long): String =
+    java.time.Instant.ofEpochMilli(millis)
+        .atZone(java.time.ZoneId.systemDefault())
+        .format(java.time.format.DateTimeFormatter.ofPattern("d MMM"))

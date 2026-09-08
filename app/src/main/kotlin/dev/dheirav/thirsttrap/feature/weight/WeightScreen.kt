@@ -24,6 +24,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -69,6 +70,7 @@ fun WeightScreen(
     val entry by viewModel.entry.collectAsStateWithLifecycle()
     val context by viewModel.context.collectAsStateWithLifecycle()
     val hint by viewModel.hint.collectAsStateWithLifecycle()
+    val dismissed by viewModel.dismissed.collectAsStateWithLifecycle()
     var showCalibration by remember { mutableStateOf(false) }
 
     LaunchedEffect(state?.isCalibrated) { state?.let(viewModel::suggestContext) }
@@ -126,7 +128,14 @@ fun WeightScreen(
                 Spacer(Modifier.height(12.dp))
                 DepletionBar(s)
                 Spacer(Modifier.height(16.dp))
-                s.diagnostic?.let { DiagnosticCard(it) }
+                val diagKey = viewModel.diagnosticKey(s)
+                if (s.diagnostic != null && diagKey != null && diagKey !in dismissed) {
+                    DiagnosticCard(
+                        d = s.diagnostic!!,
+                        onDismiss = { viewModel.dismissDiagnostic(diagKey) },
+                        onHelp = onOpenScaleHelp,
+                    )
+                }
                 WeightChart(s, Modifier.fillMaxWidth().height(200.dp))
                 Spacer(Modifier.height(16.dp))
             }
@@ -297,7 +306,11 @@ private fun DepletionBar(s: WeightState) {
 
 /** Phrased as a question. The app has a slope, not a stethoscope. */
 @Composable
-private fun DiagnosticCard(d: DryingDiagnostic) {
+private fun DiagnosticCard(
+    d: DryingDiagnostic,
+    onDismiss: () -> Unit,
+    onHelp: () -> Unit,
+) {
     Card(Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
         Column(Modifier.padding(14.dp)) {
             Text(
@@ -321,6 +334,10 @@ private fun DiagnosticCard(d: DryingDiagnostic) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 4.dp),
             )
+            Row {
+                TextButton(onClick = onHelp) { Text("How to weigh") }
+                TextButton(onClick = onDismiss) { Text("Dismiss") }
+            }
         }
     }
 }

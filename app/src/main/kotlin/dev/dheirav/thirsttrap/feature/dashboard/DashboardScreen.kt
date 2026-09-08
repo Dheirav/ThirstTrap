@@ -2,6 +2,7 @@ package dev.dheirav.thirsttrap.feature.dashboard
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,11 +25,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Spa
+import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -92,6 +96,8 @@ fun DashboardScreen(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val photoError by viewModel.photoError.collectAsStateWithLifecycle()
+    val archived by viewModel.archived.collectAsStateWithLifecycle()
+    val showArchived by viewModel.showArchived.collectAsStateWithLifecycle()
     val snackbarHost = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val haptics = LocalHapticFeedback.current
@@ -184,6 +190,40 @@ fun DashboardScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
+                if (archived.isNotEmpty()) {
+                    item {
+                        FilterChip(
+                            selected = showArchived,
+                            onClick = { viewModel.toggleArchived() },
+                            label = { Text("${archived.size} archived") },
+                            modifier = Modifier.padding(bottom = 8.dp),
+                        )
+                    }
+                }
+
+                if (showArchived) {
+                    items(archived, key = { "archived-" + it.id }) { plant ->
+                        Card(Modifier.fillMaxWidth()) {
+                            Row(
+                                Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Column(Modifier.weight(1f)) {
+                                    Text(plant.name, fontWeight = FontWeight.SemiBold)
+                                    Text(
+                                        "archived - history kept",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    )
+                                }
+                                TextButton(onClick = { viewModel.unarchive(plant.id) }) {
+                                    Text("Restore")
+                                }
+                            }
+                        }
+                    }
+                }
+
                 items(items, key = { it.plant.id }) { item ->
                     PlantCard(
                         item = item,
@@ -191,6 +231,11 @@ fun DashboardScreen(
                         onQuickWater = {
                             viewModel.logWatered(item.plant.id, item.suggestedWaterMl) { event ->
                                 announce(event, wateredMessage(item.plant.name, item.suggestedWaterMl))
+                            }
+                        },
+                        onQuickCheck = {
+                            viewModel.logStillWet(item.plant.id) { event ->
+                                announce(event, "Good call - ${item.plant.name} checked, not thirsty yet")
                             }
                         },
                         onDetailedWater = { onLogMore(item.plant.id) },
@@ -261,6 +306,7 @@ private fun PlantCard(
     item: PlantAttention,
     nowMillis: Long,
     onQuickWater: () -> Unit,
+    onQuickCheck: () -> Unit,
     onDetailedWater: () -> Unit,
     onOpenSheet: () -> Unit,
     onLongPress: () -> Unit,
@@ -348,7 +394,8 @@ private fun PlantCard(
                 if (checked != null && checked > (watered ?: 0L)) {
                     val days = ((nowMillis - checked) / 86_400_000L).toInt()
                     Text(
-                        if (days == 0) "Checked today - not thirsty" else "Checked $days days ago",
+                        if (days == 0) "Checked today - not thirsty"
+                        else relativeDays(nowMillis, checked, "Checked"),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary,
                     )
@@ -368,6 +415,23 @@ private fun PlantCard(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
+            }
+
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .clickable(
+                        onClickLabel = "Log checked, still wet for ${plant.name}",
+                        onClick = onQuickCheck,
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    Icons.Filled.TouchApp,
+                    contentDescription = "Log checked, still wet for ${plant.name}",
+                    tint = MaterialTheme.colorScheme.primary,
+                )
             }
 
             // Tap logs immediately; long-press opens the detailed entry, for
@@ -478,21 +542,21 @@ private fun QuickLogSheet(
         )
         // Both answers, same size and weight. Neither is the primary one.
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            FilledTonalButton(onClick = onWatered, modifier = Modifier.weight(1f).height(64.dp)) {
+            FilledTonalButton(onClick = onWatered, modifier = Modifier.weight(1f).heightIn(min = 64.dp)) {
                 Text(
                     if (suggestedWaterMl != null) "Watered\n${suggestedWaterMl.toInt()} ml" else "Watered",
                     textAlign = TextAlign.Center,
                 )
             }
-            FilledTonalButton(onClick = onStillWet, modifier = Modifier.weight(1f).height(64.dp)) {
+            FilledTonalButton(onClick = onStillWet, modifier = Modifier.weight(1f).heightIn(min = 64.dp)) {
                 Text("Still wet")
             }
         }
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(top = 12.dp)) {
-            FilledTonalButton(onClick = onPhoto, modifier = Modifier.weight(1f).height(64.dp)) {
+            FilledTonalButton(onClick = onPhoto, modifier = Modifier.weight(1f).heightIn(min = 64.dp)) {
                 Text("Photo")
             }
-            FilledTonalButton(onClick = onMore, modifier = Modifier.weight(1f).height(64.dp)) {
+            FilledTonalButton(onClick = onMore, modifier = Modifier.weight(1f).heightIn(min = 64.dp)) {
                 Text("More…")
             }
         }
