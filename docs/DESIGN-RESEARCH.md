@@ -285,39 +285,39 @@ BorderStroke(1.dp, outlineVariant)` — `#414A44` measures 2.03:1 on the
 background. What Vera does, and calmer: shadows imply floating objects,
 hairlines imply a page.
 
-**6. Add the typeface.** Newsreader for `displayLarge`…`titleLarge`, Hanken
+**6. Add the typeface.** **DONE 2026-09-08.** Newsreader for `displayLarge`…`titleLarge`, Hanken
 Grotesk below. Set `letterSpacing = 0.sp` on body/label — M3's +0.4/+0.5sp is
 Roboto-tuned and looks loose on a humanist face. Increase line height: 12/18 and
 14/22.
 
-**7. Add motion — to both log actions simultaneously.** `animateFloatAsState` on
+**7. Add motion — to both log actions simultaneously.** **DONE 2026-09-08**, including actually implementing reduce-motion, which `X4` had claimed in a codebase with no animations. `animateFloatAsState` on
 the depletion fraction (400ms); `AnimatedContent` on the prediction line; **one
 identical 220ms scale-and-fade** on the tapped icon for *both* droplet and check,
 plus the existing haptic; Coil `crossfade(220)`. Gate on reduce-motion, which
 `FEATURES.md` X4 already claims. No overshoot.
 
-**8. Rethink the depletion bar as a state object.** A full-width bar filling to
+**8. Rethink the depletion bar as a state object.** **DONE 2026-09-08** — a ring around the thumbnail, with the trigger as a tick rather than a percentage. A full-width bar filling to
 100% is the grammar of *task completion* — the one grammar this app exists to
 avoid. Prefer a **ring around the plant thumbnail** (Planta and Oura both use
 rings; a ring reads as state, and costs no vertical space in a card that has too
 many rows). If keeping the bar: 40–56dp wide inline, not full-width.
 
-**9. Adopt semantic event colours.** Planta's best idea — muted hues named after
+**9. Adopt semantic event colours.** **DONE 2026-09-08.** Planta's best idea — muted hues named after
 the activity, all equal in lightness so none reads as an alarm. Lets the
 timeline be scannable by colour without any colour meaning "bad".
 
-**10. Move off `material-icons-extended`** to Material Symbols Rounded,
+**10. Move off `material-icons-extended`** **DONE 2026-09-08** — APK 21.2MB → 14.2MB. to Material Symbols Rounded,
 outlined, ~16 XMLs. Reserve *filled* for exactly one thing — the droplet in its
 logged state. That also fixes a real ambiguity: `TouchApp` and `WaterDrop`
 currently sit side by side, both filled, both `primary`, with nothing saying
 which is the restraint action.
 
-**11. Grain, and a branching empty state.** A 2–4% alpha noise overlay on large
+**11. Grain, and a branching empty state.** **DONE 2026-09-08** — measured D = 1.441 by box-counting the render. A 2–4% alpha noise overlay on large
 dark surfaces — kills dark-mode banding, adds a paper quality, costs one tiled
 drawable. For the empty state: a single-weight monoline **branching form at
 fractal dimension ~1.3–1.5** in `outlineVariant`. No pot, no face, no mascot.
 
-**12. Photography: bigger.** Plant detail gets a full-bleed hero under the
+**12. Photography: bigger.** **PARTLY DONE 2026-09-08** — dashboard thumbnail 56→64dp with the hairline inset. The plant-detail full-bleed hero is still outstanding. Plant detail gets a full-bleed hero under the
 status bar with name and chips on a scrim — `UI-SPEC` §4 already specifies a
 collapsing header. Dashboard thumbnail to 64dp with a 1dp `outlineVariant` inset
 border; a bright photo on a near-black card has a hard cut-out edge and a

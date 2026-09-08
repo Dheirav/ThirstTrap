@@ -361,6 +361,70 @@ mandatory, so the app draws behind the status bar - and nothing ever set
 targetSdk went to 35 and no test could see it, because it is a property of the
 window rather than of the app's own drawing.
 
+### D16 — Design changes 6-12 (2026-09-08)
+
+**Icons (10).** Off `material-icons-extended`, which Google documents as "no
+longer maintained or recommended" and warns "can also increase the build time of
+your apps significantly". The app used sixteen of its several thousand icons.
+Now sixteen Material Symbols Rounded vector drawables vendored by
+`tools/fetch-icons.py`. **APK 21.2MB to 14.2MB.**
+
+The point was not the size. The two log actions - the app's central gesture -
+were `TouchApp` and `WaterDrop`: filled, `primary`, the same size, side by side,
+with nothing saying which was the restraint action. They are now a hand held
+back from the pot and a drop, which is a picture of each action rather than a
+picture of the UI. Outlined is the default everywhere and **filled means exactly
+one thing**: a watering just logged.
+
+**Motion (7).** `X4` claimed reduce-motion support in a codebase with zero
+animations, which was true only by vacuum. `Motion` now reads
+`ANIMATOR_DURATION_SCALE` and collapses every spec to `snap()` when the user has
+turned animations off - not a shortened duration, off. Everything is ease-out
+`tween`, never a spring: cozy-game guidance wants overshoot and calm-technology
+guidance forbids it, and a diary of slow biological processes should not bounce.
+
+UI-SPEC section 7 requires "Still wet" to get the same confirmation as
+"Watered". Both now get one identical 220ms scale, which is the point - the app
+must not celebrate watering and stay silent about restraint.
+
+**The ring (8).** A full-width bar filling toward 100% is the grammar of task
+completion, the one grammar this app exists to avoid: it turns "this pot is
+drying normally" into "you are 62% of the way to doing your job". The depletion
+is now a ring around the plant's photo, with the trigger as a tick rather than a
+percentage. It reads as a level, costs no vertical space, and is what let the
+card lose three rows.
+
+**Typeface (6).** Newsreader and Hanken Grotesk, bundled as variable TTFs.
+Chosen by measuring the font binaries: **Fraunces has no OpenType numeral
+features at all**, so its digits cannot be made to align, and the same is true
+of DM Sans and Instrument Serif. This app is full of grams, millilitres and day
+counts. Both chosen families are tabular by default, so no feature plumbing and
+no digit can jitter. Downloadable fonts were rejected outright - the API does
+not support variable fonts and requires Play Services.
+
+**Event colours (9).** Planta's best idea: the colour names the activity, not
+the urgency. All within a few lightness points of each other so none can read as
+an alarm, which keeps a timeline scannable in an app where nothing is a failure.
+
+**Grain and the empty state (11).** The first grain attempt did not render at
+all - a tile already at 6% alpha, multiplied by another 3%, quantises to zero on
+a near-black surface. Replaced with Gaussian noise centred on mid-grey composited
+with `BlendMode.Overlay`, which leaves a mid-grey pixel neutral and is therefore
+zero-mean by construction. Measured on device: background mean 15.00 to 15.01,
+standard deviation 0 to 1.69, one distinct colour to forty-four.
+
+The empty state is a branching monoline form, not a mascot. Mid-complexity
+fractals at **D between 1.3 and 1.5** measured roughly 60% better stress recovery
+by skin conductance, so that is the spec; box-counting the actual render gives
+**D = 1.441**. No mascot on purpose: "Dark Patterns of Cuteness" (Springer)
+argues cuteness's association with vulnerability stimulates trust responses and
+can be operationalised to inspire uncritical acceptance, which makes a cartoon
+face a persuasion channel rather than decoration.
+
+**Photography (12), partly.** Dashboard thumbnail 56 to 64dp with a hairline
+inset border, which resolves the hard cut-out edge a bright photo has on a dark
+card. The plant-detail full-bleed hero is still outstanding.
+
 ### D9 — MIT licence (2026-09-06)
 
 `LICENSE` to be added at `git init`. Copyright holder: the repo owner, under
