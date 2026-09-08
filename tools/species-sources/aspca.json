@@ -1,0 +1,6141 @@
+{
+ "Arum maculatum": {
+  "scientific": "Arum maculatum",
+  "common": [
+   "Adam-and-Eve",
+   "Arum",
+   "Bobbins",
+   "Cuckoo-pint",
+   "Lord-and-Ladies",
+   "Starch Root",
+   "Wake Robin"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Ricinus communis": {
+  "scientific": "Ricinus communis",
+  "common": [
+   "African Wonder Tree",
+   "Castor Bean Plant",
+   "Mole Bean Plant"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Alocasia spp.": {
+  "scientific": "Alocasia spp.",
+  "common": [
+   "Alocasia"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Aloe vera": {
+  "scientific": "Aloe vera",
+  "common": [
+   "Aloe"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Amaryllis spp.": {
+  "scientific": "Amaryllis spp.",
+  "common": [
+   "Amaryllis",
+   "Naked Lady"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Chenopodium botrys": {
+  "scientific": "Chenopodium botrys",
+  "common": [
+   "Ambrosia Mexicana"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Celastrus scandens": {
+  "scientific": "Celastrus scandens",
+  "common": [
+   "American Bittersweet",
+   "Climbing Bittersweet",
+   "False Bittersweet"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Ilex opaca": {
+  "scientific": "Ilex opaca",
+  "common": [
+   "American Holly",
+   "Holly",
+   "Inkberry",
+   "Oregon Holly",
+   "Winterberry"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Podophyllum peltatum": {
+  "scientific": "Podophyllum peltatum",
+  "common": [
+   "American Mandrake",
+   "Indian Apple",
+   "Mayapple",
+   "Umbrella Leaf"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Taxus canadensus": {
+  "scientific": "Taxus canadensus",
+  "common": [
+   "American Yew"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Pieris japonica": {
+  "scientific": "Pieris japonica",
+  "common": [
+   "Andromeda Japonica",
+   "Lily-of-the-Valley Bush",
+   "Pieris"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Aralia spinosa": {
+  "scientific": "Aralia spinosa",
+  "common": [
+   "Angelica Tree",
+   "Hercules' Club"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Malus sylvestrus": {
+  "scientific": "Malus sylvestrus",
+  "common": [
+   "Apple"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Prunus armeniaca": {
+  "scientific": "Prunus armeniaca",
+  "common": [
+   "Apricot"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Syngonium podophyllum": {
+  "scientific": "Syngonium podophyllum",
+  "common": [
+   "Arrow-Head Vine",
+   "Green Gold Naphthysis",
+   "Nephthytis"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Zantedeschia aethiopica": {
+  "scientific": "Zantedeschia aethiopica",
+  "common": [
+   "Arum Lily",
+   "Calla Lily",
+   "Florist's Calla",
+   "Garden Calla",
+   "Pig Lily",
+   "Trumpet Lily"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Asparagus densiflorus cv sprengeri": {
+  "scientific": "Asparagus densiflorus cv sprengeri",
+  "common": [
+   "Asparagus Fern",
+   "Lace Fern",
+   "Plumosa Fern",
+   "Racemose asparagus",
+   "Shatavari",
+   "Sprengeri Fern"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Brassaia actinophylla": {
+  "scientific": "Brassaia actinophylla",
+  "common": [
+   "Australian Ivy Palm",
+   "Starleaf",
+   "Umbrella Tree"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Macadamia integrifolia": {
+  "scientific": "Macadamia integrifolia",
+  "common": [
+   "Australian Nut",
+   "Macadamia Nut",
+   "Queensland Nut"
+  ],
+  "flags": [
+   "toxic_dog"
+  ]
+ },
+ "Colchicum autumnale": {
+  "scientific": "Colchicum autumnale",
+  "common": [
+   "Autumn Crocus",
+   "Meadow Saffron"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Rhododendron spp": {
+  "scientific": "Rhododendron spp",
+  "common": [
+   "Azalea",
+   "Rhododendron",
+   "Rosebay"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Cordyline terminalis": {
+  "scientific": "Cordyline terminalis",
+  "common": [
+   "Baby Doll Ti Plant",
+   "Ti-Plant"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Aloe barbadensis": {
+  "scientific": "Aloe barbadensis",
+  "common": [
+   "Barbados Aloe",
+   "True Aloe"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Hippeastrum spp.": {
+  "scientific": "Hippeastrum spp.",
+  "common": [
+   "Barbados Lily",
+   "Fire Lily",
+   "Lily of the Palace",
+   "Ridderstjerne"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Caesalpinia pulcherrima": {
+  "scientific": "Caesalpinia pulcherrima",
+  "common": [
+   "Barbados Pride",
+   "Dwarf Poinciana",
+   "Peacock Flower"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Poinciana gilliesii": {
+  "scientific": "Poinciana gilliesii",
+  "common": [
+   "Barbados Pride 2",
+   "Bird of Paradise 2",
+   "Brazilwood"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Laurus nobilis": {
+  "scientific": "Laurus nobilis",
+  "common": [
+   "Bay Laurel"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Melia azedarach": {
+  "scientific": "Melia azedarach",
+  "common": [
+   "Bead Tree",
+   "Chinaberry Tree",
+   "Pride-of-India",
+   "Texas Umbrella Tree"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Begonia spp.": {
+  "scientific": "Begonia spp.",
+  "common": [
+   "Begonia"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Citrus Aurantium": {
+  "scientific": "Citrus Aurantium",
+  "common": [
+   "Bergamot Orange"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Caesalpinia gilliesii": {
+  "scientific": "Caesalpinia gilliesii",
+  "common": [
+   "Bird of Paradise"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Strelitzia reginae": {
+  "scientific": "Strelitzia reginae",
+  "common": [
+   "Bird of Paradise Flower",
+   "Bird's Tongue Flower"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Ammi majus": {
+  "scientific": "Ammi majus",
+  "common": [
+   "Bishop’s Weed",
+   "False Queen Anne’s Lace",
+   "Greater Ammi"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Apocynum androsaemifolium": {
+  "scientific": "Apocynum androsaemifolium",
+  "common": [
+   "Bitter Root",
+   "Indian Hemp (Apocynum androsaemifolium)"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Arum palestinum": {
+  "scientific": "Arum palestinum",
+  "common": [
+   "Black Calla",
+   "Solomon’s Lily",
+   "Wild Arum",
+   "Wild Calla"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Prunus serotina": {
+  "scientific": "Prunus serotina",
+  "common": [
+   "Black Cherry"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Leucothoe spp.": {
+  "scientific": "Leucothoe spp.",
+  "common": [
+   "Black Laurel",
+   "Fetter Bush"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Solanum nigrum": {
+  "scientific": "Solanum nigrum",
+  "common": [
+   "Black Nightshade"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Juglans nigra": {
+  "scientific": "Juglans nigra",
+  "common": [
+   "Black Walnut"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Kalmia poliifolia": {
+  "scientific": "Kalmia poliifolia",
+  "common": [
+   "Bog Laurel"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Borage officinalis": {
+  "scientific": "Borage officinalis",
+  "common": [
+   "Borage"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Buxus spp.": {
+  "scientific": "Buxus spp.",
+  "common": [
+   "Boxwood"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Hedera helix": {
+  "scientific": "Hedera helix",
+  "common": [
+   "Branching Ivy",
+   "California Ivy",
+   "English Ivy",
+   "Glacier Ivy",
+   "Hahn's Self Branching English Ivy",
+   "Needlepoint Ivy",
+   "Sweetheart Ivy"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Coleus ampoinicus": {
+  "scientific": "Coleus ampoinicus",
+  "common": [
+   "Bread and Butter Plant",
+   "Coleus",
+   "Indian Borage",
+   "Spanish Thyme"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Brunfelsia species": {
+  "scientific": "Brunfelsia species",
+  "common": [
+   "Brunfelsia",
+   "Franciscan Rain Tree",
+   "Kiss-me-quick",
+   "Lady-of-the-night",
+   "Morning-Noon-and-Night",
+   "Paraguayan Jasmine",
+   "Yesterday, Today, Tomorrow"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Aesculus spp": {
+  "scientific": "Aesculus spp",
+  "common": [
+   "Buckeye"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Fagopyrum spp.": {
+  "scientific": "Fagopyrum spp.",
+  "common": [
+   "Buckwheat"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Podocarpus macrophylla": {
+  "scientific": "Podocarpus macrophylla",
+  "common": [
+   "Buddhist Pine",
+   "Yew Pine"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Euonymus atropurpurea": {
+  "scientific": "Euonymus atropurpurea",
+  "common": [
+   "Burning Bush",
+   "Spindle Tree"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Ranunculus spp.": {
+  "scientific": "Ranunculus spp.",
+  "common": [
+   "Buttercup"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Iris spuria": {
+  "scientific": "Iris spuria",
+  "common": [
+   "Butterfly Iris"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Caladium hortulanum": {
+  "scientific": "Caladium hortulanum",
+  "common": [
+   "Caladium",
+   "Elephant Ears (Caladium hortulanum)",
+   "Taro (Caladium hortulanum)"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Citrus mitis": {
+  "scientific": "Citrus mitis",
+  "common": [
+   "Calamondin Orange"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Gardenia jasminoides": {
+  "scientific": "Gardenia jasminoides",
+  "common": [
+   "Cape Jasmine",
+   "Gardenia"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Carum carvi": {
+  "scientific": "Carum carvi",
+  "common": [
+   "Caraway"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Zamia furfuracea": {
+  "scientific": "Zamia furfuracea",
+  "common": [
+   "Cardboard Cycad"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Zamia spp.": {
+  "scientific": "Zamia spp.",
+  "common": [
+   "Cardboard Palm",
+   "Fern Palm"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Lobelia cardinalis": {
+  "scientific": "Lobelia cardinalis",
+  "common": [
+   "Cardinal Flower",
+   "Indian Pink",
+   "Lobelia"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Dianthus caryophyllus": {
+  "scientific": "Dianthus caryophyllus",
+  "common": [
+   "Carnation",
+   "Pinks",
+   "Sweet William",
+   "Wild Carnation"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Monstera deliciosa": {
+  "scientific": "Monstera deliciosa",
+  "common": [
+   "Ceriman",
+   "Cutleaf Philodendron",
+   "Hurricane Plant",
+   "Mexican Breadfruit",
+   "Mother-in-Law",
+   "Swiss Cheese Plant"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Anthemis nobilis": {
+  "scientific": "Anthemis nobilis",
+  "common": [
+   "Chamomile",
+   "Garden Chamomile",
+   "Ground Apple",
+   "Roman Chamomile"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Kalanchoe tubiflora": {
+  "scientific": "Kalanchoe tubiflora",
+  "common": [
+   "Chandelier Plant",
+   "Devil's Backbone",
+   "Mother of Millions",
+   "Mother-In-Law Plant"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Dieffenbachia amoena": {
+  "scientific": "Dieffenbachia amoena",
+  "common": [
+   "Charming Dieffenbachia",
+   "Exotica",
+   "Giant Dumb Cane",
+   "Spotted Dumb Cane",
+   "Tropic Snow"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Prunus spp.": {
+  "scientific": "Prunus spp.",
+  "common": [
+   "Cherry"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Aglaonema modestum": {
+  "scientific": "Aglaonema modestum",
+  "common": [
+   "Chinese Evergreen"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Crassula arborescens": {
+  "scientific": "Crassula arborescens",
+  "common": [
+   "Chinese Jade",
+   "Silver Dollar",
+   "Silver Jade Plant"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Allium schoenoprasum": {
+  "scientific": "Allium schoenoprasum",
+  "common": [
+   "Chives"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Prunus virginiana": {
+  "scientific": "Prunus virginiana",
+  "common": [
+   "Choke Cherry"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Helleborus niger": {
+  "scientific": "Helleborus niger",
+  "common": [
+   "Christmas Rose",
+   "Easter Rose",
+   "Hellebore",
+   "Lenten Rose"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Chrysanthemum spp.": {
+  "scientific": "Chrysanthemum spp.",
+  "common": [
+   "Chrysanthemum",
+   "Mum"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Clematis spp.": {
+  "scientific": "Clematis spp.",
+  "common": [
+   "Clematis"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Gloriosa superba": {
+  "scientific": "Gloriosa superba",
+  "common": [
+   "Climbing Lily",
+   "Gloriosa Lily",
+   "Superb Lily"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Solanum dulcamara": {
+  "scientific": "Solanum dulcamara",
+  "common": [
+   "Climbing Nightshade",
+   "European Bittersweet"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Clivia spp.": {
+  "scientific": "Clivia spp.",
+  "common": [
+   "Clivia Lily"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Clusia major": {
+  "scientific": "Clusia major",
+  "common": [
+   "Clusia Rosea"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Polyscias guilfoylei": {
+  "scientific": "Polyscias guilfoylei",
+  "common": [
+   "Coffee Tree",
+   "Geranium-Leaf Aralia",
+   "Wild Coffee"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Ligustrum vulgare": {
+  "scientific": "Ligustrum vulgare",
+  "common": [
+   "Common Privet"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Zamia pumila": {
+  "scientific": "Zamia pumila",
+  "common": [
+   "Coontie Palm"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Acalypha godseffiana": {
+  "scientific": "Acalypha godseffiana",
+  "common": [
+   "Copperleaf"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Philodendron oxycardium": {
+  "scientific": "Philodendron oxycardium",
+  "common": [
+   "Cordatum"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Dracaena fragrans": {
+  "scientific": "Dracaena fragrans",
+  "common": [
+   "Corn Plant",
+   "Cornstalk Plant"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Heracleum maximum": {
+  "scientific": "Heracleum maximum",
+  "common": [
+   "Cow parsnip",
+   "Giant Hogweed"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Cicuta species": {
+  "scientific": "Cicuta species",
+  "common": [
+   "Cowbane"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Cycas and Zamia species": {
+  "scientific": "Cycas and Zamia species",
+  "common": [
+   "Cycads"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Cyclamen spp": {
+  "scientific": "Cyclamen spp",
+  "common": [
+   "Cyclamen",
+   "Sowbread"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Narcissus spp": {
+  "scientific": "Narcissus spp",
+  "common": [
+   "Daffodil",
+   "Narcissus",
+   "Paper White"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Dahlia species": {
+  "scientific": "Dahlia species",
+  "common": [
+   "Dahlia"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Chrysanthemum species": {
+  "scientific": "Chrysanthemum species",
+  "common": [
+   "Daisy"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Solanum spp": {
+  "scientific": "Solanum spp",
+  "common": [
+   "Deadly Nightshade",
+   "Nightshade"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Adenium obesum": {
+  "scientific": "Adenium obesum",
+  "common": [
+   "Desert Azalea",
+   "Desert Rose",
+   "Impala Lily",
+   "Kudu Lily",
+   "Mock Azalea",
+   "Sabi Star"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Epipremnum aureum": {
+  "scientific": "Epipremnum aureum",
+  "common": [
+   "Devils Ivy",
+   "Golden Pothos",
+   "Ivy Arum",
+   "Taro Vine"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Dieffenbachia": {
+  "scientific": "Dieffenbachia",
+  "common": [
+   "Dieffenbachia",
+   "Dumbcane"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Rumex sp.": {
+  "scientific": "Rumex sp.",
+  "common": [
+   "Dock"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Achillea millefolium": {
+  "scientific": "Achillea millefolium",
+  "common": [
+   "Dog Daisy",
+   "Milfoil",
+   "Yarrow"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Leucothoe sp.": {
+  "scientific": "Leucothoe sp.",
+  "common": [
+   "Dog Hobble"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Apocynum spp.": {
+  "scientific": "Apocynum spp.",
+  "common": [
+   "Dogbane Hemp"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Dracaena spp.": {
+  "scientific": "Dracaena spp.",
+  "common": [
+   "Dracaena",
+   "Ribbon Plant"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Dianthus spp.": {
+  "scientific": "Dianthus spp.",
+  "common": [
+   "Eastern Star"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Colocasia esculenta": {
+  "scientific": "Colocasia esculenta",
+  "common": [
+   "Elephant Ears (Colocasia esculenta)",
+   "Malanga",
+   "Taro (Colocasia esculenta)"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Begonia scharfii": {
+  "scientific": "Begonia scharfii",
+  "common": [
+   "Elephant-Ear Begonia"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Asparagus densiflorus": {
+  "scientific": "Asparagus densiflorus",
+  "common": [
+   "Emerald Feather"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Ilex aquifolium": {
+  "scientific": "Ilex aquifolium",
+  "common": [
+   "English Holly",
+   "European Holly"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Taxus baccata": {
+  "scientific": "Taxus baccata",
+  "common": [
+   "English Yew"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Chenopodium ambrosioides": {
+  "scientific": "Chenopodium ambrosioides",
+  "common": [
+   "Epazote"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Eucalyptus species": {
+  "scientific": "Eucalyptus species",
+  "common": [
+   "Eucalyptus"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Ambrosia mexicana": {
+  "scientific": "Ambrosia mexicana",
+  "common": [
+   "Feather Geranium",
+   "Jerusalem Oak"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Lyonia spp.": {
+  "scientific": "Lyonia spp.",
+  "common": [
+   "Fetterbush"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Philodendron bipennifolium": {
+  "scientific": "Philodendron bipennifolium",
+  "common": [
+   "Fiddle-Leaf",
+   "Horsehead Philodendron",
+   "Panda Plant",
+   "Red Emerald",
+   "Red Princess",
+   "Saddle Leaf",
+   "Split Leaf Philodendron"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Ficus benjamina": {
+  "scientific": "Ficus benjamina",
+  "common": [
+   "Fig",
+   "Indian Rubber Plant"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Ranunculus acris": {
+  "scientific": "Ranunculus acris",
+  "common": [
+   "Figwort"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Iris species": {
+  "scientific": "Iris species",
+  "common": [
+   "Flag",
+   "Iris",
+   "Snake Lilly",
+   "Water Flag"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Anthurium scherzeranum": {
+  "scientific": "Anthurium scherzeranum",
+  "common": [
+   "Flamingo Flower",
+   "Oilcloth Flower",
+   "Painter's Pallette",
+   "Pigtail Plant",
+   "Tail Flower"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Erigeron speciosus": {
+  "scientific": "Erigeron speciosus",
+  "common": [
+   "Fleabane",
+   "Horseweed",
+   "Seaside Daisy",
+   "Showy Daisy"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Dracaena surculosa": {
+  "scientific": "Dracaena surculosa",
+  "common": [
+   "Florida Beauty",
+   "Gold Dust Dracaena"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Digitalis purpurea": {
+  "scientific": "Digitalis purpurea",
+  "common": [
+   "Foxglove"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Acalypha hispida": {
+  "scientific": "Acalypha hispida",
+  "common": [
+   "Foxtail"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Hyacinthus orientalis": {
+  "scientific": "Hyacinthus orientalis",
+  "common": [
+   "Garden Hyacinth",
+   "Hyacinth"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Allium sativum": {
+  "scientific": "Allium sativum",
+  "common": [
+   "Garlic"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Pelargonium species": {
+  "scientific": "Pelargonium species",
+  "common": [
+   "Geranium"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Cordyline australis": {
+  "scientific": "Cordyline australis",
+  "common": [
+   "Giant Dracaena",
+   "Grass Palm",
+   "Palm Lily"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Gladiolus species": {
+  "scientific": "Gladiolus species",
+  "common": [
+   "Gladiola"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Dieffenbachia picta": {
+  "scientific": "Dieffenbachia picta",
+  "common": [
+   "Gold Dieffenbachia",
+   "Variable Dieffenbachia"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Sansevieria trifasciata": {
+  "scientific": "Sansevieria trifasciata",
+  "common": [
+   "Golden Birds Nest",
+   "Mother-in-Law’s Tongue",
+   "Snake Plant"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Senecio species": {
+  "scientific": "Senecio species",
+  "common": [
+   "Golden Ragwort",
+   "Groundsel",
+   "Ragwort"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Oxalis spp.": {
+  "scientific": "Oxalis spp.",
+  "common": [
+   "Good Luck Plant",
+   "Shamrock Plant"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Citrus paradisii": {
+  "scientific": "Citrus paradisii",
+  "common": [
+   "Grapefruit"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Cannabis sativa": {
+  "scientific": "Cannabis sativa",
+  "common": [
+   "Hashish",
+   "Indian Hemp (Cannabis sativa)",
+   "Marijuana"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Giant Dracaena": {
+  "scientific": "Giant Dracaena",
+  "common": [
+   "Hawaiian Ti"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Philodendron hederaceum": {
+  "scientific": "Philodendron hederaceum",
+  "common": [
+   "Heartleaf Philodendron"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Nandina domestica": {
+  "scientific": "Nandina domestica",
+  "common": [
+   "Heavenly Bamboo",
+   "Nandina",
+   "Sacred Bamboo"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Hydrangea arborescens": {
+  "scientific": "Hydrangea arborescens",
+  "common": [
+   "Hills of Snow",
+   "Hortensia",
+   "Hydrangea",
+   "Seven Bark"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Humulus lupulus": {
+  "scientific": "Humulus lupulus",
+  "common": [
+   "Hops"
+  ],
+  "flags": [
+   "toxic_dog"
+  ]
+ },
+ "Aesculus glabra": {
+  "scientific": "Aesculus glabra",
+  "common": [
+   "Horse Chestnut"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Hosta plataginea": {
+  "scientific": "Hosta plataginea",
+  "common": [
+   "Hosta"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Tradescantia flumeninsis": {
+  "scientific": "Tradescantia flumeninsis",
+  "common": [
+   "Inch Plant",
+   "Variegated Inch Plant",
+   "Variegated Laurel"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Begonia masoniana": {
+  "scientific": "Begonia masoniana",
+  "common": [
+   "Iron Cross Begonia"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Arisaema triphyllum": {
+  "scientific": "Arisaema triphyllum",
+  "common": [
+   "Jack-in-the-pulpit"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Crassula argentea": {
+  "scientific": "Crassula argentea",
+  "common": [
+   "Jade Plant"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Taxus sp.": {
+  "scientific": "Taxus sp.",
+  "common": [
+   "Japanese Yew"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Solanum pseudocapsicum": {
+  "scientific": "Solanum pseudocapsicum",
+  "common": [
+   "Jerusalem Cherry",
+   "Ornamental Pepper",
+   "Winter Cherry"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Narcissus jonquilla": {
+  "scientific": "Narcissus jonquilla",
+  "common": [
+   "Jonquil"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Clivia minata": {
+  "scientific": "Clivia minata",
+  "common": [
+   "Kaffir Lily"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Kalanchoe spp": {
+  "scientific": "Kalanchoe spp",
+  "common": [
+   "Kalanchoe"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Hypericum perforatum": {
+  "scientific": "Hypericum perforatum",
+  "common": [
+   "Klamath Weed",
+   "St. John’s Wort"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Philodendron selloum": {
+  "scientific": "Philodendron selloum",
+  "common": [
+   "Lacy Tree Philodendron",
+   "Tree Philodendron"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Kalmia augustifolia": {
+  "scientific": "Kalmia augustifolia",
+  "common": [
+   "Lambkill"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Lantana camara": {
+  "scientific": "Lantana camara",
+  "common": [
+   "Lantana"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Delphinium species": {
+  "scientific": "Delphinium species",
+  "common": [
+   "Larkspur"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Kalmia latifolia": {
+  "scientific": "Kalmia latifolia",
+  "common": [
+   "Laurel"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Lavendula angustifolia": {
+  "scientific": "Lavendula angustifolia",
+  "common": [
+   "Lavender"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Clematis sp.": {
+  "scientific": "Clematis sp.",
+  "common": [
+   "Leatherflower",
+   "Virgin's Bower"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Allium ampeloprasum": {
+  "scientific": "Allium ampeloprasum",
+  "common": [
+   "Leek"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Citrus limonia": {
+  "scientific": "Citrus limonia",
+  "common": [
+   "Lemon"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Cymbopogon citratus": {
+  "scientific": "Cymbopogon citratus",
+  "common": [
+   "Lemon Grass"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Aloysia triphylla": {
+  "scientific": "Aloysia triphylla",
+  "common": [
+   "Lemon Verbena"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Convallaria majalis": {
+  "scientific": "Convallaria majalis",
+  "common": [
+   "Lily of the Valley"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Citrus aurantifolia": {
+  "scientific": "Citrus aurantifolia",
+  "common": [
+   "Lime"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Robinia spp.": {
+  "scientific": "Robinia spp.",
+  "common": [
+   "Locust"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Levisticum officinale": {
+  "scientific": "Levisticum officinale",
+  "common": [
+   "Lovage"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Dracaena marginata": {
+  "scientific": "Dracaena marginata",
+  "common": [
+   "Madagascar Dragon Tree",
+   "Red-Marginated Dracaena",
+   "Straight-Margined Dracaena"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Dracaena reflexa": {
+  "scientific": "Dracaena reflexa",
+  "common": [
+   "Malaysian Dracaena"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Lyonia sp.": {
+  "scientific": "Lyonia sp.",
+  "common": [
+   "Maleberry",
+   "Staggerbush"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Begonia cleopatra": {
+  "scientific": "Begonia cleopatra",
+  "common": [
+   "Mapleleaf Begonia"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Scindapsus aureus": {
+  "scientific": "Scindapsus aureus",
+  "common": [
+   "Marble Queen"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Origanum majorana": {
+  "scientific": "Origanum majorana",
+  "common": [
+   "Marjoram"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Spathiphyllum": {
+  "scientific": "Spathiphyllum",
+  "common": [
+   "Mauna Loa Peace Lily",
+   "Peace Lily"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Anthemis cotula": {
+  "scientific": "Anthemis cotula",
+  "common": [
+   "Mayweed",
+   "Poison Daisy",
+   "Stinking Chamomile"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Begonia metallica": {
+  "scientific": "Begonia metallica",
+  "common": [
+   "Metallic Leaf Begonia"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Asclepias species": {
+  "scientific": "Asclepias species",
+  "common": [
+   "Milkweed"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Mentha sp.": {
+  "scientific": "Mentha sp.",
+  "common": [
+   "Mint"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Phoradendron flavescens": {
+  "scientific": "Phoradendron flavescens",
+  "common": [
+   "Mistletoe &quot;American&quot;"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Ipomoea spp": {
+  "scientific": "Ipomoea spp",
+  "common": [
+   "Morning Glory"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Portulaca oleracea": {
+  "scientific": "Portulaca oleracea",
+  "common": [
+   "Moss Rose",
+   "Portulaca",
+   "Purslane",
+   "Rock Moss"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Nasturtium officinale": {
+  "scientific": "Nasturtium officinale",
+  "common": [
+   "Nasturtium (Watercress)"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Nicotiana glauca": {
+  "scientific": "Nicotiana glauca",
+  "common": [
+   "Nicotiana",
+   "Tobacco",
+   "Tree Tobacco"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Schefflera or Brassia actinoplylla": {
+  "scientific": "Schefflera or Brassia actinoplylla",
+  "common": [
+   "Octopus Tree"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Nerium oleander": {
+  "scientific": "Nerium oleander",
+  "common": [
+   "Oleander"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Allium cepa": {
+  "scientific": "Allium cepa",
+  "common": [
+   "Onion"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Citrus sinensis": {
+  "scientific": "Citrus sinensis",
+  "common": [
+   "Orange"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Origanum vulgare hirtum": {
+  "scientific": "Origanum vulgare hirtum",
+  "common": [
+   "Oregano"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Taxus brevifolia": {
+  "scientific": "Taxus brevifolia",
+  "common": [
+   "Pacific Yew",
+   "Western Yew"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Petroselinum crispum": {
+  "scientific": "Petroselinum crispum",
+  "common": [
+   "Parsley"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Begonia rex 'peace'": {
+  "scientific": "Begonia rex 'peace'",
+  "common": [
+   "Peace Begonia"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Prunus persica": {
+  "scientific": "Prunus persica",
+  "common": [
+   "Peach"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Euphorbia tirucalli": {
+  "scientific": "Euphorbia tirucalli",
+  "common": [
+   "Pencil Cactus"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Paeonis officinalis": {
+  "scientific": "Paeonis officinalis",
+  "common": [
+   "Peony"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Vinca rosea": {
+  "scientific": "Vinca rosea",
+  "common": [
+   "Periwinkle",
+   "Running Myrtle",
+   "Vinca"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Philodendron spp": {
+  "scientific": "Philodendron spp",
+  "common": [
+   "Philodendron Pertusum"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Rheum rhabarbarium": {
+  "scientific": "Rheum rhabarbarium",
+  "common": [
+   "Pie Plant",
+   "Rhubarb"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Begonia semperflorens cultivar": {
+  "scientific": "Begonia semperflorens cultivar",
+  "common": [
+   "Pink Pearl"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Hosta plantaginea": {
+  "scientific": "Hosta plantaginea",
+  "common": [
+   "Plantain Lily"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Prunus domestica": {
+  "scientific": "Prunus domestica",
+  "common": [
+   "Plum"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Caesalpinia gilliessi": {
+  "scientific": "Caesalpinia gilliessi",
+  "common": [
+   "Poinciana"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Euphorbia pulcherrima": {
+  "scientific": "Euphorbia pulcherrima",
+  "common": [
+   "Poinsettia"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Conium maculatum": {
+  "scientific": "Conium maculatum",
+  "common": [
+   "Poison Hemlock"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Cicuta maculata": {
+  "scientific": "Cicuta maculata",
+  "common": [
+   "Poison Parsnip",
+   "Water Hemlock"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Primula vulgaris": {
+  "scientific": "Primula vulgaris",
+  "common": [
+   "Primrose"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Ligustrum japonicum": {
+  "scientific": "Ligustrum japonicum",
+  "common": [
+   "Privet",
+   "Wax-Leaf"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Sphenosciadium capitellatum": {
+  "scientific": "Sphenosciadium capitellatum",
+  "common": [
+   "Ranger's Button",
+   "White Heads"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Begonia rex": {
+  "scientific": "Begonia rex",
+  "common": [
+   "Rex Begonia"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Abrus precatorius": {
+  "scientific": "Abrus precatorius",
+  "common": [
+   "Rosary Pea"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Cycas revoluta, zamia species": {
+  "scientific": "Cycas revoluta, zamia species",
+  "common": [
+   "Sago Palm"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Scindapsus pictus": {
+  "scientific": "Scindapsus pictus",
+  "common": [
+   "Satin Pothos"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Pelargonium sp.": {
+  "scientific": "Pelargonium sp.",
+  "common": [
+   "Scented Geranium"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Schefflera": {
+  "scientific": "Schefflera",
+  "common": [
+   "Schefflera"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Symplocarpus foetidus": {
+  "scientific": "Symplocarpus foetidus",
+  "common": [
+   "Skunk Cabbage"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Rumex scutatus": {
+  "scientific": "Rumex scutatus",
+  "common": [
+   "Sorrel"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Cymopterus watsonii": {
+  "scientific": "Cymopterus watsonii",
+  "common": [
+   "Spring Parsley"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Dracaena deremensis": {
+  "scientific": "Dracaena deremensis",
+  "common": [
+   "Striped Dracaena",
+   "Warneckei Dracaena"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Prunus avium": {
+  "scientific": "Prunus avium",
+  "common": [
+   "Sweet Cherry"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "tradescantia multiflora": {
+  "scientific": "tradescantia multiflora",
+  "common": [
+   "Tahitian Bridal Veil"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Artemisia dracunculus": {
+  "scientific": "Artemisia dracunculus",
+  "common": [
+   "Tarragon"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Lycopersicon spp": {
+  "scientific": "Lycopersicon spp",
+  "common": [
+   "Tomato Plant"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Tulipa spp.": {
+  "scientific": "Tulipa spp.",
+  "common": [
+   "Tulip"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Scindapsus, Philodendron spp": {
+  "scientific": "Scindapsus, Philodendron spp",
+  "common": [
+   "Variegated Philodendron"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Euonymus occidentalis": {
+  "scientific": "Euonymus occidentalis",
+  "common": [
+   "Wahoo"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Ficus sp.": {
+  "scientific": "Ficus sp.",
+  "common": [
+   "Weeping Fig"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Wisteria spp.": {
+  "scientific": "Wisteria spp.",
+  "common": [
+   "Wisteria"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Thevetia peruviana": {
+  "scientific": "Thevetia peruviana",
+  "common": [
+   "Yellow Oleander"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Taxus spp.": {
+  "scientific": "Taxus spp.",
+  "common": [
+   "Yew"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Yucca spp.": {
+  "scientific": "Yucca spp.",
+  "common": [
+   "Yucca"
+  ],
+  "flags": [
+   "toxic_cat",
+   "toxic_dog"
+  ]
+ },
+ "Lilium asiatica": {
+  "scientific": "Lilium asiatica",
+  "common": [
+   "Asian Lily"
+  ],
+  "flags": [
+   "toxic_cat"
+  ]
+ },
+ "Nepeta cataria": {
+  "scientific": "Nepeta cataria",
+  "common": [
+   "Catnip"
+  ],
+  "flags": [
+   "toxic_cat"
+  ]
+ },
+ "Hemerocallis spp.": {
+  "scientific": "Hemerocallis spp.",
+  "common": [
+   "Day Lilies (many varieties)"
+  ],
+  "flags": [
+   "nontoxic_dog",
+   "toxic_cat"
+  ]
+ },
+ "Lilium longiflorum": {
+  "scientific": "Lilium longiflorum",
+  "common": [
+   "Easter Lily"
+  ],
+  "flags": [
+   "nontoxic_dog",
+   "toxic_cat"
+  ]
+ },
+ "Lilium speciosum": {
+  "scientific": "Lilium speciosum",
+  "common": [
+   "Japanese Show Lily",
+   "Rubrum Lily"
+  ],
+  "flags": [
+   "nontoxic_dog",
+   "toxic_cat"
+  ]
+ },
+ "Lilium species": {
+  "scientific": "Lilium species",
+  "common": [
+   "Lily"
+  ],
+  "flags": [
+   "nontoxic_dog",
+   "toxic_cat"
+  ]
+ },
+ "Hemerocallis graminea": {
+  "scientific": "Hemerocallis graminea",
+  "common": [
+   "Orange Day Lily"
+  ],
+  "flags": [
+   "nontoxic_dog",
+   "toxic_cat"
+  ]
+ },
+ "Lilium umbellatum": {
+  "scientific": "Lilium umbellatum",
+  "common": [
+   "Red Lily",
+   "Wood Lily"
+  ],
+  "flags": [
+   "nontoxic_dog",
+   "toxic_cat"
+  ]
+ },
+ "Lilium orientalis": {
+  "scientific": "Lilium orientalis",
+  "common": [
+   "Stargazer Lily"
+  ],
+  "flags": [
+   "nontoxic_dog",
+   "toxic_cat"
+  ]
+ },
+ "Lilium tigrinum": {
+  "scientific": "Lilium tigrinum",
+  "common": [
+   "Tiger Lily"
+  ],
+  "flags": [
+   "nontoxic_dog",
+   "toxic_cat"
+  ]
+ },
+ "Cucurbita pepo": {
+  "scientific": "Cucurbita pepo",
+  "common": [
+   "Acorn Squash"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Gerbera jamesonii": {
+  "scientific": "Gerbera jamesonii",
+  "common": [
+   "African Daisy",
+   "Barberton Daisy",
+   "Gerber Daisy"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Saintpaulia spp.": {
+  "scientific": "Saintpaulia spp.",
+  "common": [
+   "African Violet"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Prosopis limensis": {
+  "scientific": "Prosopis limensis",
+  "common": [
+   "Algaroba"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Pilea cadieri": {
+  "scientific": "Pilea cadieri",
+  "common": [
+   "Aluminum Plant",
+   "Watermelon Pilea"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Heuchera sanguinea": {
+  "scientific": "Heuchera sanguinea",
+  "common": [
+   "Alumroot",
+   "Coral Bells"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Alyssum spp.": {
+  "scientific": "Alyssum spp.",
+  "common": [
+   "Alyssum"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Peperomia obtusifolia": {
+  "scientific": "Peperomia obtusifolia",
+  "common": [
+   "American Rubber Plant",
+   "Baby Rubber Plant",
+   "Blunt Leaf Peperomia",
+   "Pepper Face",
+   "Rhynchophorum"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Acer ginnala": {
+  "scientific": "Acer ginnala",
+  "common": [
+   "Amur Maple"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Chlorophytum comosum": {
+  "scientific": "Chlorophytum comosum",
+  "common": [
+   "Anthericum Comosum",
+   "Ribbon Plant (Chlorophytum Comosum)",
+   "Spider Ivy",
+   "Spider Plant",
+   "Walking Anthericum"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Antirrhinum multiflorum": {
+  "scientific": "Antirrhinum multiflorum",
+  "common": [
+   "Antirrhinum Multiflorum"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Exacum affine": {
+  "scientific": "Exacum affine",
+  "common": [
+   "Arabian Gentian",
+   "German Violet",
+   "Persian Violet"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Dypsis lutescens": {
+  "scientific": "Dypsis lutescens",
+  "common": [
+   "Areca Palm",
+   "Golden Butterfly Palm",
+   "Yellow Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Neoregalia spp.": {
+  "scientific": "Neoregalia spp.",
+  "common": [
+   "Aregelia",
+   "Blushing Bromeliad",
+   "Crimson Cup",
+   "Neoregelia",
+   "Ossifragi Vase",
+   "Striped Blushing"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Pilea microphylla": {
+  "scientific": "Pilea microphylla",
+  "common": [
+   "Artillery Plant",
+   "Pilea Microphylla",
+   "Pilea Mucosa"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cyrtomium falcatum": {
+  "scientific": "Cyrtomium falcatum",
+  "common": [
+   "Aspidium falcatum",
+   "Fish Tail Fern",
+   "Holly Fern",
+   "Japanese Holly Fern",
+   "Polystichum Falcatum"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Araucaria heterophylla": {
+  "scientific": "Araucaria heterophylla",
+  "common": [
+   "Australian Pine"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Eleagnus spp.": {
+  "scientific": "Eleagnus spp.",
+  "common": [
+   "Autumn Olive"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Gypsophila elegans": {
+  "scientific": "Gypsophila elegans",
+  "common": [
+   "Baby’s Breath"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Hypoestes phyllostachya": {
+  "scientific": "Hypoestes phyllostachya",
+  "common": [
+   "Baby’s Tears",
+   "Freckle Face",
+   "Pink Splash",
+   "Polka Dot Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Centaurea cyanus": {
+  "scientific": "Centaurea cyanus",
+  "common": [
+   "Bachelors Buttons",
+   "Bluebottle",
+   "Cornflower"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Davallia spp.": {
+  "scientific": "Davallia spp.",
+  "common": [
+   "Ball Fern",
+   "Hare Fern",
+   "Rabbits Foot Fern"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Phyllostachys aurea": {
+  "scientific": "Phyllostachys aurea",
+  "common": [
+   "Bamboo"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Chamaedorea elegans": {
+  "scientific": "Chamaedorea elegans",
+  "common": [
+   "Bamboo Palm",
+   "Chamaedorea",
+   "Collinia Elegans",
+   "Dwarf Palm",
+   "Good Luck Palm",
+   "Miniature Fish Tail",
+   "Neanthe Bella Palm",
+   "Parlor Palm",
+   "Reed Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Smilax laurifolia": {
+  "scientific": "Smilax laurifolia",
+  "common": [
+   "Bamboo Vine",
+   "Blaspheme Vine",
+   "Laurel-Leaved Greenbrier"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Musa acuminata": {
+  "scientific": "Musa acuminata",
+  "common": [
+   "Banana",
+   "Edible Banana",
+   "Musa Paradisiaca"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cucurbita maxima var. banana": {
+  "scientific": "Cucurbita maxima var. banana",
+  "common": [
+   "Banana Squash"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Centaurea solstitialis": {
+  "scientific": "Centaurea solstitialis",
+  "common": [
+   "Barnaby's Thistle"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Ocimum basilicum": {
+  "scientific": "Ocimum basilicum",
+  "common": [
+   "Basil"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Beta vulgaris": {
+  "scientific": "Beta vulgaris",
+  "common": [
+   "Beets"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cissus dicolor": {
+  "scientific": "Cissus dicolor",
+  "common": [
+   "Begonia, Climbing"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Pellionia daveauana": {
+  "scientific": "Pellionia daveauana",
+  "common": [
+   "Begonia, Trailing"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Howea belmoreana": {
+  "scientific": "Howea belmoreana",
+  "common": [
+   "Belmore Sentry Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Carya laciniosa": {
+  "scientific": "Carya laciniosa",
+  "common": [
+   "Big Shagbark Hickory",
+   "Big Shellbark Hickory",
+   "Broom Hickory",
+   "King Nut",
+   "Shagbark Hickory",
+   "Shellbark Hickory"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Carya aquatica": {
+  "scientific": "Carya aquatica",
+  "common": [
+   "Bitter Pecan",
+   "Water Hickory"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Carya cordiformis": {
+  "scientific": "Carya cordiformis",
+  "common": [
+   "Bitternut"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Viburnum lentago": {
+  "scientific": "Viburnum lentago",
+  "common": [
+   "Black Haw"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Crataegus douglasii": {
+  "scientific": "Crataegus douglasii",
+  "common": [
+   "Black Hawthorn",
+   "Thorn Apple"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Pinus ponderosa": {
+  "scientific": "Pinus ponderosa",
+  "common": [
+   "Blackjack Pine"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Iresine herbstii": {
+  "scientific": "Iresine herbstii",
+  "common": [
+   "Bloodleaf",
+   "Chicken-Gizzard",
+   "Joseph's Coat",
+   "Yellow Bloodleaf"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Epilobium angustifolium": {
+  "scientific": "Epilobium angustifolium",
+  "common": [
+   "Blooming Sally",
+   "Fire Weed",
+   "Great Willow Herb",
+   "Willow Herb"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Clintonia borealis": {
+  "scientific": "Clintonia borealis",
+  "common": [
+   "Blue Bead"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Felicia amelloides": {
+  "scientific": "Felicia amelloides",
+  "common": [
+   "Blue Daisy"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Echeveria glauca": {
+  "scientific": "Echeveria glauca",
+  "common": [
+   "Blue Echeveria"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Arctotis stoechadifolia": {
+  "scientific": "Arctotis stoechadifolia",
+  "common": [
+   "Blue Eyed Daisy",
+   "Blue-eyed African Daisy"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Dichelostemma pulchellum": {
+  "scientific": "Dichelostemma pulchellum",
+  "common": [
+   "Blue-dicks",
+   "Brodiaea Pulchella",
+   "Hookera pulchella",
+   "Wild Hyacinth"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Hookera pulchella": {
+  "scientific": "Hookera pulchella",
+  "common": [
+   "Blue-dicks 2"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Brodiaea pulchella": {
+  "scientific": "Brodiaea pulchella",
+  "common": [
+   "Blue-dicks 3"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Nephrolepis biserrata": {
+  "scientific": "Nephrolepis biserrata",
+  "common": [
+   "Bold Sword Fern",
+   "Crisped Feather Fern",
+   "Dallas Fern",
+   "Roosevelt Fern",
+   "Sword Fern",
+   "Tall Feather Fern",
+   "Verona Fern",
+   "Verona Lace Fern",
+   "Whitman Fern"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Nephrolepis exalta bostoniensis": {
+  "scientific": "Nephrolepis exalta bostoniensis",
+  "common": [
+   "Boston Fern"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Beaucarnea recurvata": {
+  "scientific": "Beaucarnea recurvata",
+  "common": [
+   "Bottle Palm",
+   "Pony Tail"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Nolina tuberculata": {
+  "scientific": "Nolina tuberculata",
+  "common": [
+   "Bottle Palm 2"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Callistemon species": {
+  "scientific": "Callistemon species",
+  "common": [
+   "Bottlebrush",
+   "Callistemon Brachyandrus",
+   "Crimson Bottlebush",
+   "Weeping Bottlebrush"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Sophronitis spp.": {
+  "scientific": "Sophronitis spp.",
+  "common": [
+   "Brazilian Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Clintonia uniflora": {
+  "scientific": "Clintonia uniflora",
+  "common": [
+   "Bride's Bonnet",
+   "Queencup"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Smilax hispida": {
+  "scientific": "Smilax hispida",
+  "common": [
+   "Bristly Greenbrier",
+   "Hagbrier",
+   "Hellfetter",
+   "Smilax Tamnoides Vas"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Smilax rotundifolia": {
+  "scientific": "Smilax rotundifolia",
+  "common": [
+   "Bullbrier",
+   "Common Catbrier",
+   "Common Greenbrier"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cucumis anguria": {
+  "scientific": "Cucumis anguria",
+  "common": [
+   "Bur Gourd",
+   "West Indian Gherkin"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Sedum morganianum": {
+  "scientific": "Sedum morganianum",
+  "common": [
+   "Burro's Tail"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cucurbita maxima cv buttercup": {
+  "scientific": "Cucurbita maxima cv buttercup",
+  "common": [
+   "Buttercup Squash"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Hedychium coronarium": {
+  "scientific": "Hedychium coronarium",
+  "common": [
+   "Butterfly Ginger",
+   "White Ginger"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cucurbita maxima cv butternut": {
+  "scientific": "Cucurbita maxima cv butternut",
+  "common": [
+   "Butternut Squash"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Impatiens spp.": {
+  "scientific": "Impatiens spp.",
+  "common": [
+   "Buzzy Lizzie",
+   "Giant Touch-Me-Not",
+   "Impatience Plant",
+   "Lady Slipper",
+   "Patient Lucy",
+   "Patient Plant",
+   "Tangerine Impatience"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Calathea insignis": {
+  "scientific": "Calathea insignis",
+  "common": [
+   "Caeroba",
+   "Calathea Lancifolia 3",
+   "Maranta",
+   "Prayer Plant",
+   "Red Veined Prayer"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Calathea spp.": {
+  "scientific": "Calathea spp.",
+  "common": [
+   "Calathea"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Maranta insignis": {
+  "scientific": "Maranta insignis",
+  "common": [
+   "Calathea Lancifolia 2"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Darlingtonia californica": {
+  "scientific": "Darlingtonia californica",
+  "common": [
+   "California Pitcher Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Callistemon citrinus": {
+  "scientific": "Callistemon citrinus",
+  "common": [
+   "Callistemon citrinus"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Callistemon viminalis": {
+  "scientific": "Callistemon viminalis",
+  "common": [
+   "Callistemon viminalis"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Calochortus spp.": {
+  "scientific": "Calochortus spp.",
+  "common": [
+   "Calochortus nuttalli",
+   "Cat Ear"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Camellia japonica": {
+  "scientific": "Camellia japonica",
+  "common": [
+   "Camellia",
+   "Thea Japonica"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Tsuga canadensis": {
+  "scientific": "Tsuga canadensis",
+  "common": [
+   "Canada Hemlock"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Phoenix canariensis": {
+  "scientific": "Phoenix canariensis",
+  "common": [
+   "Canary Date Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Plectranthus coleoides": {
+  "scientific": "Plectranthus coleoides",
+  "common": [
+   "Candle Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Hypocyrta nummularia": {
+  "scientific": "Hypocyrta nummularia",
+  "common": [
+   "Candycorn Plant",
+   "Gold-Fish Plant",
+   "Hypocyrta",
+   "Nematanthus spp."
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Dypsis lutescens, chrysalidocarpus lutescens (alternate scientific name)": {
+  "scientific": "Dypsis lutescens, chrysalidocarpus lutescens (alternate scientific name)",
+  "common": [
+   "Cane Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Canna indica": {
+  "scientific": "Canna indica",
+  "common": [
+   "Canna"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Canna generalis": {
+  "scientific": "Canna generalis",
+  "common": [
+   "Canna Lily",
+   "Common Garden Canna"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Gloxinia perennis": {
+  "scientific": "Gloxinia perennis",
+  "common": [
+   "Canterbury-bell"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Dimorphotheca pluvialis": {
+  "scientific": "Dimorphotheca pluvialis",
+  "common": [
+   "Cape Marigold"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Streptocarpus spp.": {
+  "scientific": "Streptocarpus spp.",
+  "common": [
+   "Cape Primrose"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Ceratonia siliqua": {
+  "scientific": "Ceratonia siliqua",
+  "common": [
+   "Carob",
+   "Kharoub",
+   "Locust Pods",
+   "Sugar Pods"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Jacaranda procera": {
+  "scientific": "Jacaranda procera",
+  "common": [
+   "Caroba"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Tsuga caroliniana": {
+  "scientific": "Tsuga caroliniana",
+  "common": [
+   "Carolina Hemlock"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Smilax herbacea": {
+  "scientific": "Smilax herbacea",
+  "common": [
+   "Carrion Flower",
+   "Jacob's Ladder"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Stapelia hirsata": {
+  "scientific": "Stapelia hirsata",
+  "common": [
+   "Carrion Flower 2"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Onychium japonica": {
+  "scientific": "Onychium japonica",
+  "common": [
+   "Carrot Fern"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Daucus carota var. sativa": {
+  "scientific": "Daucus carota var. sativa",
+  "common": [
+   "Carrot Flower"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cucumis melo": {
+  "scientific": "Cucumis melo",
+  "common": [
+   "Casaba Melon",
+   "Honeydew Melon",
+   "Muskmelon",
+   "True Cantaloupe"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Aspidistra elatior": {
+  "scientific": "Aspidistra elatior",
+  "common": [
+   "Cast Iron Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Smilax glabra": {
+  "scientific": "Smilax glabra",
+  "common": [
+   "Cat Brier",
+   "Chin-lao-shu",
+   "China Root",
+   "Greenbrier",
+   "Kuang-yen-pa-hsieh",
+   "Shan Ku'ei-lai",
+   "Ti hu-ling",
+   "Tu Fu-Ling"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cattleya labiata": {
+  "scientific": "Cattleya labiata",
+  "common": [
+   "Cattleya Labiata"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Celosia globosa": {
+  "scientific": "Celosia globosa",
+  "common": [
+   "Celosia Globosa"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Celosia plumosa": {
+  "scientific": "Celosia plumosa",
+  "common": [
+   "Celosia Plumosa"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Celosia spicata": {
+  "scientific": "Celosia spicata",
+  "common": [
+   "Celosia Spicata"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Larrea tridentata": {
+  "scientific": "Larrea tridentata",
+  "common": [
+   "Chaparral"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Anthriscus cerefolium": {
+  "scientific": "Anthriscus cerefolium",
+  "common": [
+   "Chervil"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Castanea dentata": {
+  "scientific": "Castanea dentata",
+  "common": [
+   "Chestnut"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Echeveria elegans": {
+  "scientific": "Echeveria elegans",
+  "common": [
+   "Chickens and Hens",
+   "Hens and Chickens",
+   "Urbinia Agavoides"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Callistephus chinensis": {
+  "scientific": "Callistephus chinensis",
+  "common": [
+   "China Aster"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Ceratostigma willmottianum": {
+  "scientific": "Ceratostigma willmottianum",
+  "common": [
+   "Chinese Plumbago"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Anthericum comosum": {
+  "scientific": "Anthericum comosum",
+  "common": [
+   "Chlorophytum"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Chlorophytum bichetti": {
+  "scientific": "Chlorophytum bichetti",
+  "common": [
+   "Chlorophytum bichetti"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Episcia dianthiflora": {
+  "scientific": "Episcia dianthiflora",
+  "common": [
+   "Chocolate Soldier",
+   "Episcia",
+   "Lace Flower Vine"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Schlumbergera bridgesii": {
+  "scientific": "Schlumbergera bridgesii",
+  "common": [
+   "Christmas Cactus"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Polystichum acrostichoides": {
+  "scientific": "Polystichum acrostichoides",
+  "common": [
+   "Christmas Dagger"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cattleya trianaei": {
+  "scientific": "Cattleya trianaei",
+  "common": [
+   "Christmas Orchid",
+   "Winter Cattleya"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Adonidia merrillii": {
+  "scientific": "Adonidia merrillii",
+  "common": [
+   "Christmas Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Coriandrum sativum": {
+  "scientific": "Coriandrum sativum",
+  "common": [
+   "Cilantro"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cinnamomum zeylanicum": {
+  "scientific": "Cinnamomum zeylanicum",
+  "common": [
+   "Cinnamon"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Potentilla spp.": {
+  "scientific": "Potentilla spp.",
+  "common": [
+   "Cinquefoil"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Bulbophyllum appendiculatum": {
+  "scientific": "Bulbophyllum appendiculatum",
+  "common": [
+   "Cirrhopetalum",
+   "Old World Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Pilea pumila": {
+  "scientific": "Pilea pumila",
+  "common": [
+   "Clearweed",
+   "Coolwort"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Pellaea rotundifolia": {
+  "scientific": "Pellaea rotundifolia",
+  "common": [
+   "Cliff Brake"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Selaginella kraussiana": {
+  "scientific": "Selaginella kraussiana",
+  "common": [
+   "Club Moss",
+   "Cushion Moss",
+   "Irish Moss",
+   "Japanese Moss",
+   "Moss Fern",
+   "Tropical Moss"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Amaranthus hypochondriacus": {
+  "scientific": "Amaranthus hypochondriacus",
+  "common": [
+   "Cocks Comb"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cattleya forbesii": {
+  "scientific": "Cattleya forbesii",
+  "common": [
+   "Cocktail Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Camellia japonica; Thea japonica": {
+  "scientific": "Camellia japonica; Thea japonica",
+  "common": [
+   "Common Camellia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Antirrhinum majus": {
+  "scientific": "Antirrhinum majus",
+  "common": [
+   "Common Snapdragon",
+   "Garden Snapdragon"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Platycerium bifurcatum": {
+  "scientific": "Platycerium bifurcatum",
+  "common": [
+   "Common Staghorn Fern"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Trachelospermum jasminoides": {
+  "scientific": "Trachelospermum jasminoides",
+  "common": [
+   "Confederate Jasmine",
+   "Star Jasmine"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Echeveria multicaulis": {
+  "scientific": "Echeveria multicaulis",
+  "common": [
+   "Copper Rose",
+   "Maroon",
+   "Painted Lady"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Coreopsis spp.": {
+  "scientific": "Coreopsis spp.",
+  "common": [
+   "Coreopsis"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Lagerstroemia indica": {
+  "scientific": "Lagerstroemia indica",
+  "common": [
+   "Crape Myrtle",
+   "Crepe Myrtle",
+   "Lagerstroemia Indica"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Pilea nummulariifolia": {
+  "scientific": "Pilea nummulariifolia",
+  "common": [
+   "Creeping Charlie",
+   "Creeping Pilea"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Asarina erubescens": {
+  "scientific": "Asarina erubescens",
+  "common": [
+   "Creeping Gloxinia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Mahonia aquifolium": {
+  "scientific": "Mahonia aquifolium",
+  "common": [
+   "Creeping Mahonia",
+   "Mahonia",
+   "Mountain Grape",
+   "Oregon Grape",
+   "Tall Mahonia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Rubus pedatus": {
+  "scientific": "Rubus pedatus",
+  "common": [
+   "Creeping Rubus"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Sanvitalia spp.": {
+  "scientific": "Sanvitalia spp.",
+  "common": [
+   "Creeping Zinnia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Crossandra species": {
+  "scientific": "Crossandra species",
+  "common": [
+   "Crossandra"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cucumis sativus": {
+  "scientific": "Cucumis sativus",
+  "common": [
+   "Cucumber",
+   "Gherkins"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Aloe retusa": {
+  "scientific": "Aloe retusa",
+  "common": [
+   "Cushion Aloe"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Episcia reptans": {
+  "scientific": "Episcia reptans",
+  "common": [
+   "Cyrtudeira",
+   "Flame African Violet",
+   "Lady Lou",
+   "Moss Agate",
+   "Red African Violet"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Davallia fejeensis": {
+  "scientific": "Davallia fejeensis",
+  "common": [
+   "Dainty Rabbits-Foot Fern"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Oncidium flexuosum": {
+  "scientific": "Oncidium flexuosum",
+  "common": [
+   "Dancing Doll Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Eriogonium inflatum": {
+  "scientific": "Eriogonium inflatum",
+  "common": [
+   "Desert Trumpet"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Dichelostemma species": {
+  "scientific": "Dichelostemma species",
+  "common": [
+   "Dichelostemma"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Dichorisandra reginae": {
+  "scientific": "Dichorisandra reginae",
+  "common": [
+   "Dichorisandra Reginae",
+   "Queens Spiderwort"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Anethum graveolena": {
+  "scientific": "Anethum graveolena",
+  "common": [
+   "Dill"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Dinteranthus vanzylii": {
+  "scientific": "Dinteranthus vanzylii",
+  "common": [
+   "Dinteranthus"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Nephrolepsis cordifolia 'duffii'": {
+  "scientific": "Nephrolepsis cordifolia 'duffii'",
+  "common": [
+   "Duffii Fern"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Phoenix acaulis": {
+  "scientific": "Phoenix acaulis",
+  "common": [
+   "Dwarf Date Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Nephrolepis exalta": {
+  "scientific": "Nephrolepis exalta",
+  "common": [
+   "Dwarf Feather Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cryptanthus bivattus minor": {
+  "scientific": "Cryptanthus bivattus minor",
+  "common": [
+   "Dwarf Rose-Stripe Star",
+   "Earth Star",
+   "Pink Starlite",
+   "Star Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Veitchia merillii": {
+  "scientific": "Veitchia merillii",
+  "common": [
+   "Dwarf Royal Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Nephrolepsis cordifolia plumosa": {
+  "scientific": "Nephrolepsis cordifolia plumosa",
+  "common": [
+   "Dwarf Whitman Fern"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cattleya mossiae": {
+  "scientific": "Cattleya mossiae",
+  "common": [
+   "Easter Cattleya",
+   "Easter Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Townsendia sericea": {
+  "scientific": "Townsendia sericea",
+  "common": [
+   "Easter Daisy",
+   "Giant Aster"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Echinopsis multiplex": {
+  "scientific": "Echinopsis multiplex",
+  "common": [
+   "Easter Lily Cactus"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Peperomia caperata": {
+  "scientific": "Peperomia caperata",
+  "common": [
+   "Emerald Ripple Peperomia",
+   "Green Ripple Peperomia",
+   "Little Fantasy Peperomia",
+   "Metallic Peperomia",
+   "Silver Heart"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Crataegus laevigata": {
+  "scientific": "Crataegus laevigata",
+  "common": [
+   "English Hawthorn"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Celosia cristata": {
+  "scientific": "Celosia cristata",
+  "common": [
+   "Fairy Fountain",
+   "Woolflower"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Dizygotheca elegantissima": {
+  "scientific": "Dizygotheca elegantissima",
+  "common": [
+   "False Aralia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Rhapis flabelliformis": {
+  "scientific": "Rhapis flabelliformis",
+  "common": [
+   "Fan Tufted Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Nephrolepis exaltata": {
+  "scientific": "Nephrolepis exaltata",
+  "common": [
+   "Feather Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Foeniculum vulgare": {
+  "scientific": "Foeniculum vulgare",
+  "common": [
+   "Fennel"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Epidendrum ibaguense": {
+  "scientific": "Epidendrum ibaguense",
+  "common": [
+   "Fiery Reed Orchid",
+   "Spice Orchid (Epidendrum ibaguense)"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cucurbita ficifolia": {
+  "scientific": "Cucurbita ficifolia",
+  "common": [
+   "Fig Leaf Gourd",
+   "Malabar Gourd"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Fatsia japonica": {
+  "scientific": "Fatsia japonica",
+  "common": [
+   "Figleaf Palm",
+   "Japanese Aralia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Neoregelia spectabilis": {
+  "scientific": "Neoregelia spectabilis",
+  "common": [
+   "Fingernail Plant",
+   "Marbled Fingernail",
+   "Miniature Marble Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Ixora coccinea": {
+  "scientific": "Ixora coccinea",
+  "common": [
+   "Flame of the Woods",
+   "Iron Tree"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Encyclia tampensis": {
+  "scientific": "Encyclia tampensis",
+  "common": [
+   "Florida Butterfly Orchid (Encyclia tampensis)"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Epidendrum tampense": {
+  "scientific": "Epidendrum tampense",
+  "common": [
+   "Florida Butterfly Orchid (Epidendrum tampense)",
+   "Scarlet Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Nephrolepsis exalta": {
+  "scientific": "Nephrolepsis exalta",
+  "common": [
+   "Fluffy Ruffles"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Howea forsteriana": {
+  "scientific": "Howea forsteriana",
+  "common": [
+   "Forster Sentry Palm",
+   "Kentia Palm",
+   "Paradise Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Trachycarpus fortunei": {
+  "scientific": "Trachycarpus fortunei",
+  "common": [
+   "Fortunes Palm",
+   "Windmill Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Pilea involucrata": {
+  "scientific": "Pilea involucrata",
+  "common": [
+   "Friendship Plant",
+   "Panamiga"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Calendula officinalis": {
+  "scientific": "Calendula officinalis",
+  "common": [
+   "Garden Marigold",
+   "Gold Bloom",
+   "Holligold",
+   "Mary-Bud",
+   "Pot Marigold"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Polyrrhiza lindenii": {
+  "scientific": "Polyrrhiza lindenii",
+  "common": [
+   "Ghost Leafless Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Sedum weinbergii": {
+  "scientific": "Sedum weinbergii",
+  "common": [
+   "Ghost Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Ploystichum munitum": {
+  "scientific": "Ploystichum munitum",
+  "common": [
+   "Giant Holly Fern",
+   "Western Sword"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Albiflora spp.": {
+  "scientific": "Albiflora spp.",
+  "common": [
+   "Giant White Inch Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Echinops spp.": {
+  "scientific": "Echinops spp.",
+  "common": [
+   "Globe Thistle"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Sinningia speciosa": {
+  "scientific": "Sinningia speciosa",
+  "common": [
+   "Gloxinia",
+   "Violet Slipper Gloxinia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Oleaceae": {
+  "scientific": "Oleaceae",
+  "common": [
+   "Golden Bells"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Haemaria discolor": {
+  "scientific": "Haemaria discolor",
+  "common": [
+   "Golden Lace Orchid",
+   "Jewel Orchid",
+   "Tiger Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Oncidium sphacelatum": {
+  "scientific": "Oncidium sphacelatum",
+  "common": [
+   "Golden Shower Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Muscari armeniacum": {
+  "scientific": "Muscari armeniacum",
+  "common": [
+   "Grape Hyacinth",
+   "Muscari Armeniacum"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cissus rhombifolia": {
+  "scientific": "Cissus rhombifolia",
+  "common": [
+   "Grape Ivy"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Sedum album": {
+  "scientific": "Sedum album",
+  "common": [
+   "Hardy Baby Tears"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Incarvillea delavayi": {
+  "scientific": "Incarvillea delavayi",
+  "common": [
+   "Hardy Gloxinia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Haworthia species": {
+  "scientific": "Haworthia species",
+  "common": [
+   "Haworthia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Crataegus species": {
+  "scientific": "Crataegus species",
+  "common": [
+   "Haws",
+   "Haws Apple",
+   "Hawthorn",
+   "Pirliteiro",
+   "Red Hawthorne",
+   "Washington Hawthorn",
+   "Weisdornbluten"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cucumis dipsaceus": {
+  "scientific": "Cucumis dipsaceus",
+  "common": [
+   "Hedgehog Gourd",
+   "Teasel Gourd"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Tsuga species": {
+  "scientific": "Tsuga species",
+  "common": [
+   "Hemlock Tree",
+   "Weeping Sargent Hemlock"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Asplenium bulbiferum": {
+  "scientific": "Asplenium bulbiferum",
+  "common": [
+   "Hen and Chickens Fern",
+   "King and Queen Fern",
+   "Mother Fern",
+   "Mother Spleenwort",
+   "Parsley Fern"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Hibiscus syriacus": {
+  "scientific": "Hibiscus syriacus",
+  "common": [
+   "Hibiscus",
+   "Rose of China",
+   "Rose of Sharon"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Hoya carnosa 'krinkle kurl'": {
+  "scientific": "Hoya carnosa 'krinkle kurl'",
+  "common": [
+   "Hindu Rope Plant",
+   "Porcelain Flower",
+   "Wax Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Berteroa incana": {
+  "scientific": "Berteroa incana",
+  "common": [
+   "Hoary Alyssum"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Alcea rosea": {
+  "scientific": "Alcea rosea",
+  "common": [
+   "Hollyhock"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Gleditsia triacanthos": {
+  "scientific": "Gleditsia triacanthos",
+  "common": [
+   "Honey Locust"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Hoya carnosa": {
+  "scientific": "Hoya carnosa",
+  "common": [
+   "Honey Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Fuchsia triphylla": {
+  "scientific": "Fuchsia triphylla",
+  "common": [
+   "Honeysuckle Fuchsia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cucurbita maxima var. hubbard": {
+  "scientific": "Cucurbita maxima var. hubbard",
+  "common": [
+   "Hubbard Squash"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Lampranthus piquet": {
+  "scientific": "Lampranthus piquet",
+  "common": [
+   "Ice Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Peperomia griseoargentea": {
+  "scientific": "Peperomia griseoargentea",
+  "common": [
+   "Ivy Peperomia",
+   "Peperomia Hederifolia",
+   "Platinum Peperomia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Smilax lanceolata": {
+  "scientific": "Smilax lanceolata",
+  "common": [
+   "Jackson Brier"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Pittosporum tobira": {
+  "scientific": "Pittosporum tobira",
+  "common": [
+   "Japanese Pittosporum"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Jasminum species": {
+  "scientific": "Jasminum species",
+  "common": [
+   "Jasmine"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Ixora javanica": {
+  "scientific": "Ixora javanica",
+  "common": [
+   "Jungle Geranium"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Kaempferia spp.": {
+  "scientific": "Kaempferia spp.",
+  "common": [
+   "Kaempferia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Hedychium gardnerianum": {
+  "scientific": "Hedychium gardnerianum",
+  "common": [
+   "Kahali Ginger"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cymbalaria muralis": {
+  "scientific": "Cymbalaria muralis",
+  "common": [
+   "Kenilworth Ivy"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Saintpaulia confusa": {
+  "scientific": "Saintpaulia confusa",
+  "common": [
+   "Kenya Violet"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Anoectuchilus setaceus": {
+  "scientific": "Anoectuchilus setaceus",
+  "common": [
+   "King of the Forest"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Odontoglossum crispum": {
+  "scientific": "Odontoglossum crispum",
+  "common": [
+   "Lace Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Fuschsia spp.": {
+  "scientific": "Fuschsia spp.",
+  "common": [
+   "Ladies Ear Drops"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Rhapis flabelliformus": {
+  "scientific": "Rhapis flabelliformus",
+  "common": [
+   "Lady Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Draceana spp.": {
+  "scientific": "Draceana spp.",
+  "common": [
+   "Lance Pleomele"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Peperomia crassifolia": {
+  "scientific": "Peperomia crassifolia",
+  "common": [
+   "Leather Peperomia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Melissa officinalis": {
+  "scientific": "Melissa officinalis",
+  "common": [
+   "Lemon Balm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Dendrobium gracilicaule": {
+  "scientific": "Dendrobium gracilicaule",
+  "common": [
+   "Leopard Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Antirrhinum orontium": {
+  "scientific": "Antirrhinum orontium",
+  "common": [
+   "Lesser Snapdragon"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Odontoglossum pulchellum": {
+  "scientific": "Odontoglossum pulchellum",
+  "common": [
+   "Lily of the Valley Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Tilia americana": {
+  "scientific": "Tilia americana",
+  "common": [
+   "Linden"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Aeschynanthus humilis": {
+  "scientific": "Aeschynanthus humilis",
+  "common": [
+   "Lipstick Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Haworthia subfasciata": {
+  "scientific": "Haworthia subfasciata",
+  "common": [
+   "Little Zebra Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Pleiospilos bolusii": {
+  "scientific": "Pleiospilos bolusii",
+  "common": [
+   "Living Rock Cactus"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Lithops naureeniae": {
+  "scientific": "Lithops naureeniae",
+  "common": [
+   "Living Stones"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Oxytropis spp.": {
+  "scientific": "Oxytropis spp.",
+  "common": [
+   "Loco Weed (Oxytropis spp.)"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Stephanotis floribunda": {
+  "scientific": "Stephanotis floribunda",
+  "common": [
+   "Madagascar Jasmine"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Magnolia stellata": {
+  "scientific": "Magnolia stellata",
+  "common": [
+   "Magnolia Bush"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Ravenea rivularis": {
+  "scientific": "Ravenea rivularis",
+  "common": [
+   "Majesty Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Veitchia merrillii": {
+  "scientific": "Veitchia merrillii",
+  "common": [
+   "Manila Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Calochortus gunnisonii": {
+  "scientific": "Calochortus gunnisonii",
+  "common": [
+   "Mariposa Lily",
+   "Sego Lily"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Echeveria derenbergii": {
+  "scientific": "Echeveria derenbergii",
+  "common": [
+   "Maroon Chenille Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Acantha": {
+  "scientific": "Acantha",
+  "common": [
+   "Measles Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Echeveria Pulinata": {
+  "scientific": "Echeveria Pulinata",
+  "common": [
+   "Mexican Firecracker"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Echevaria": {
+  "scientific": "Echevaria",
+  "common": [
+   "Mexican Rosettes",
+   "Mexican Snowballs"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Phoenix robellinii": {
+  "scientific": "Phoenix robellinii",
+  "common": [
+   "Miniature Date Palm"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Calathea micans": {
+  "scientific": "Calathea micans",
+  "common": [
+   "Miniature Maranta"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Rhipsalis cassutha": {
+  "scientific": "Rhipsalis cassutha",
+  "common": [
+   "Mistletoe Cactus"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Carya tomentosa": {
+  "scientific": "Carya tomentosa",
+  "common": [
+   "Mockernut Hickory",
+   "White Heart Hickory"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Pachira aquatica": {
+  "scientific": "Pachira aquatica",
+  "common": [
+   "Money Tree"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Bertolonia mosaica": {
+  "scientific": "Bertolonia mosaica",
+  "common": [
+   "Mosaic Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Guzmania musaica": {
+  "scientific": "Guzmania musaica",
+  "common": [
+   "Mosaic Vase"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Silene acaulis": {
+  "scientific": "Silene acaulis",
+  "common": [
+   "Moss Campion",
+   "Mossy Campion"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Phlox subulata": {
+  "scientific": "Phlox subulata",
+  "common": [
+   "Moss Phlox"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Secum weinbergii": {
+  "scientific": "Secum weinbergii",
+  "common": [
+   "Mother of Pearl"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Stewartia ovata": {
+  "scientific": "Stewartia ovata",
+  "common": [
+   "Mountain Camellia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Smilax sp.": {
+  "scientific": "Smilax sp.",
+  "common": [
+   "Mulberry Bush Greenbrier"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Morus sp.": {
+  "scientific": "Morus sp.",
+  "common": [
+   "Mulberry Tree"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Tropaeolum majus": {
+  "scientific": "Tropaeolum majus",
+  "common": [
+   "Nasturtium"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Carissa grandiflora": {
+  "scientific": "Carissa grandiflora",
+  "common": [
+   "Natal Plum"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Fittonia verschaffeltii": {
+  "scientific": "Fittonia verschaffeltii",
+  "common": [
+   "Nerve Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Hylocereus undatus": {
+  "scientific": "Hylocereus undatus",
+  "common": [
+   "Night Blooming Cereus",
+   "Pitaya"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cephalocereus senilis": {
+  "scientific": "Cephalocereus senilis",
+  "common": [
+   "Old Man Cactus"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Guzmania lingulata minor": {
+  "scientific": "Guzmania lingulata minor",
+  "common": [
+   "Orange Star"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Soleirolia soleirolii": {
+  "scientific": "Soleirolia soleirolii",
+  "common": [
+   "Paddys Wig"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cortaderia selloana": {
+  "scientific": "Cortaderia selloana",
+  "common": [
+   "Pampas Grass"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Miltonia roezlii alba": {
+  "scientific": "Miltonia roezlii alba",
+  "common": [
+   "Pansy Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Kaempferia": {
+  "scientific": "Kaempferia",
+  "common": [
+   "Peacock Plant",
+   "Resurrection Lily"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Haworthia margaritifera": {
+  "scientific": "Haworthia margaritifera",
+  "common": [
+   "Pearl Plant",
+   "Pearly Dots"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Peperomia peltifolia": {
+  "scientific": "Peperomia peltifolia",
+  "common": [
+   "Peperomia Peltfolia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Peperomia rotundifolia": {
+  "scientific": "Peperomia rotundifolia",
+  "common": [
+   "Peperomia Rotundifolia",
+   "Yorba Linda"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Peperomia sandersii": {
+  "scientific": "Peperomia sandersii",
+  "common": [
+   "Peperomia Sandersii"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Alstroemeria": {
+  "scientific": "Alstroemeria",
+  "common": [
+   "Peruvian Lily"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Petunia species": {
+  "scientific": "Petunia species",
+  "common": [
+   "Petunia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Phalaenopsis sp.": {
+  "scientific": "Phalaenopsis sp.",
+  "common": [
+   "Phalaenopsis Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cryptanthus zonatus": {
+  "scientific": "Cryptanthus zonatus",
+  "common": [
+   "Pheasant Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Tolmeia menziesii": {
+  "scientific": "Tolmeia menziesii",
+  "common": [
+   "Piggy Back Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Carya glabra": {
+  "scientific": "Carya glabra",
+  "common": [
+   "Pignut Hickory",
+   "Small Fruited Hickory"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Leucospermum incisum": {
+  "scientific": "Leucospermum incisum",
+  "common": [
+   "Pincushion Flower",
+   "Scabious"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Episcia cultivar": {
+  "scientific": "Episcia cultivar",
+  "common": [
+   "Pink Brocade"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Plantanus occidentalis": {
+  "scientific": "Plantanus occidentalis",
+  "common": [
+   "Plantanus Occidentalis"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Platycerium alcicorne": {
+  "scientific": "Platycerium alcicorne",
+  "common": [
+   "Platycerium Alcicorne"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Ceratostigma larpentiae": {
+  "scientific": "Ceratostigma larpentiae",
+  "common": [
+   "Plumbago Larpentiae"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Echeveria pul-oliver": {
+  "scientific": "Echeveria pul-oliver",
+  "common": [
+   "Plush Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Toxicodendron species": {
+  "scientific": "Toxicodendron species",
+  "common": [
+   "Poison Ivy",
+   "Poison Oak",
+   "Poison Sumac"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Zephyranthes drummondii": {
+  "scientific": "Zephyranthes drummondii",
+  "common": [
+   "Prairie Lily"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Plectranthus oetendahlii": {
+  "scientific": "Plectranthus oetendahlii",
+  "common": [
+   "Prostrate Coleus"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Salix purpurea": {
+  "scientific": "Salix purpurea",
+  "common": [
+   "Pupleosier Willow"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Frithia pulchra": {
+  "scientific": "Frithia pulchra",
+  "common": [
+   "Purple Baby Tears"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Gynura aurantica": {
+  "scientific": "Gynura aurantica",
+  "common": [
+   "Purple Passion Vine",
+   "Purple Velvet Plant",
+   "Velvet Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Hemigraphis exotica": {
+  "scientific": "Hemigraphis exotica",
+  "common": [
+   "Purple Waffle Plant",
+   "Waffle Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Canna edulis": {
+  "scientific": "Canna edulis",
+  "common": [
+   "Queensland Arrowroot",
+   "Tous-les-mois"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Epidendrum prismatocarpum": {
+  "scientific": "Epidendrum prismatocarpum",
+  "common": [
+   "Rainbow Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Smilax walteria": {
+  "scientific": "Smilax walteria",
+  "common": [
+   "Red Berried Greenbrier"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Peperomia clusiifolia": {
+  "scientific": "Peperomia clusiifolia",
+  "common": [
+   "Red Edge Peperomia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Acer rubrum": {
+  "scientific": "Acer rubrum",
+  "common": [
+   "Red Maple"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cordyline rubra": {
+  "scientific": "Cordyline rubra",
+  "common": [
+   "Red Palm Lily"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Rosa Species": {
+  "scientific": "Rosa Species",
+  "common": [
+   "Rose"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Rosmarinus officinalis": {
+  "scientific": "Rosmarinus officinalis",
+  "common": [
+   "Rosemary"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Centaurea repens": {
+  "scientific": "Centaurea repens",
+  "common": [
+   "Russian Knapweed"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "elaeagnus species": {
+  "scientific": "elaeagnus species",
+  "common": [
+   "Russian Olive",
+   "Silver Berry"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Aphelandra squarrosa": {
+  "scientific": "Aphelandra squarrosa",
+  "common": [
+   "Saffron Spike Zebra"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Salvia officinalis": {
+  "scientific": "Salvia officinalis",
+  "common": [
+   "Sage"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Anthericum liliago": {
+  "scientific": "Anthericum liliago",
+  "common": [
+   "Saint Bernards Lily"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Poterium sanguisorba": {
+  "scientific": "Poterium sanguisorba",
+  "common": [
+   "Salad Burnet"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Leucocrinum montanum": {
+  "scientific": "Leucocrinum montanum",
+  "common": [
+   "Sand Lily",
+   "Star Lily"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Abronia fragrans": {
+  "scientific": "Abronia fragrans",
+  "common": [
+   "Sand Verbena",
+   "Wild Lantana"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Pellonia pulchra": {
+  "scientific": "Pellonia pulchra",
+  "common": [
+   "Satin Pellionia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Satureja hortensis": {
+  "scientific": "Satureja hortensis",
+  "common": [
+   "Savory (Summer)",
+   "Savory (Winter)"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Smilax glauca": {
+  "scientific": "Smilax glauca",
+  "common": [
+   "Sawbrier",
+   "Wild Sasparilla"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Vallota speciosa": {
+  "scientific": "Vallota speciosa",
+  "common": [
+   "Scarborough Lily"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Salvia coccinea": {
+  "scientific": "Salvia coccinea",
+  "common": [
+   "Scarlet Sage",
+   "Texas Sage"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Schlumbergera russelliana": {
+  "scientific": "Schlumbergera russelliana",
+  "common": [
+   "Shrimp Cactus"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Halesia carolina": {
+  "scientific": "Halesia carolina",
+  "common": [
+   "Silver Bell"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Hoya publcalyx": {
+  "scientific": "Hoya publcalyx",
+  "common": [
+   "Silver Pink Vine"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cryptanthus lacerdae": {
+  "scientific": "Cryptanthus lacerdae",
+  "common": [
+   "Silver Star"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Pteris sp.": {
+  "scientific": "Pteris sp.",
+  "common": [
+   "Silver Table Fern"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "NONE LISTED": {
+  "scientific": "NONE LISTED",
+  "common": [
+   "Silver Tree Anamiga"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Deutzia gracilis": {
+  "scientific": "Deutzia gracilis",
+  "common": [
+   "Slender Deutzia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Clintonia umbelluata": {
+  "scientific": "Clintonia umbelluata",
+  "common": [
+   "Speckled Wood Lily"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Epidendrum atropurpeum": {
+  "scientific": "Epidendrum atropurpeum",
+  "common": [
+   "Spice Orchid (Epidendrum atropurpeum)"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cleome hasserlana": {
+  "scientific": "Cleome hasserlana",
+  "common": [
+   "Spider Flower"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Stevia rebaudiana": {
+  "scientific": "Stevia rebaudiana",
+  "common": [
+   "Stevia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Fragaria spp.": {
+  "scientific": "Fragaria spp.",
+  "common": [
+   "Strawberry"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Sorghum vulgare var sudanesis": {
+  "scientific": "Sorghum vulgare var sudanesis",
+  "common": [
+   "Sudan Grass"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Eriogonium umbellatum": {
+  "scientific": "Eriogonium umbellatum",
+  "common": [
+   "Sulfur Flower",
+   "Umbrella Plant",
+   "Wild Buckwheat"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Galtonia spp.": {
+  "scientific": "Galtonia spp.",
+  "common": [
+   "Summer Hyacinth"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "helianthus angustifolius": {
+  "scientific": "helianthus angustifolius",
+  "common": [
+   "Sunflower",
+   "Swamp Sunflower"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Plectranthus australis": {
+  "scientific": "Plectranthus australis",
+  "common": [
+   "Swedish Ivy",
+   "White Edged Swedish Ivy"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Lathyrus latifolius": {
+  "scientific": "Lathyrus latifolius",
+  "common": [
+   "Sweet Pea"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Ipomoea batatas": {
+  "scientific": "Ipomoea batatas",
+  "common": [
+   "Sweet Potato Vine"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Hoya kerrii": {
+  "scientific": "Hoya kerrii",
+  "common": [
+   "Sweetheart Hoya"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Masdevallia spp.": {
+  "scientific": "Masdevallia spp.",
+  "common": [
+   "Tailed Orchid"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Mammillaria fragilis": {
+  "scientific": "Mammillaria fragilis",
+  "common": [
+   "Thimble Cactus"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Thymus vulgaris": {
+  "scientific": "Thymus vulgaris",
+  "common": [
+   "Thyme"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Coreopsis californica": {
+  "scientific": "Coreopsis californica",
+  "common": [
+   "Tickseed"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Stapelia variegata": {
+  "scientific": "Stapelia variegata",
+  "common": [
+   "Toad Spotted Cactus"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Kniphofia": {
+  "scientific": "Kniphofia",
+  "common": [
+   "Torch Lily"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Peperomia prostata": {
+  "scientific": "Peperomia prostata",
+  "common": [
+   "Trailing Peperomia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Opuntia species": {
+  "scientific": "Opuntia species",
+  "common": [
+   "Tree Cactus"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Kohleria lindeniana": {
+  "scientific": "Kohleria lindeniana",
+  "common": [
+   "Tree Gloxinia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Liriodendron tulipifera": {
+  "scientific": "Liriodendron tulipifera",
+  "common": [
+   "Tulip Poplar"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cucurbita maxima cv turbaniformis": {
+  "scientific": "Cucurbita maxima cv turbaniformis",
+  "common": [
+   "Turban Squash"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Liriope muscari": {
+  "scientific": "Liriope muscari",
+  "common": [
+   "Turf Lily"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Santpaulia confusa": {
+  "scientific": "Santpaulia confusa",
+  "common": [
+   "Usambara Violet"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Echeveria sp.": {
+  "scientific": "Echeveria sp.",
+  "common": [
+   "Variegated Wax Plant"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Dionaea muscipula": {
+  "scientific": "Dionaea muscipula",
+  "common": [
+   "Venus Fly Trap"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Peperomia serpens variegata": {
+  "scientific": "Peperomia serpens variegata",
+  "common": [
+   "Vining Peperomia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Eichhornia crassipes": {
+  "scientific": "Eichhornia crassipes",
+  "common": [
+   "Water Hyacinth"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Peperomia argyreia": {
+  "scientific": "Peperomia argyreia",
+  "common": [
+   "Watermelon Begonia",
+   "Watermelon Peperomia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Echeveria gilva": {
+  "scientific": "Echeveria gilva",
+  "common": [
+   "Wax Rosette"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Fragaria": {
+  "scientific": "Fragaria",
+  "common": [
+   "Wild Strawberry"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Anthirrhinum multiflorum": {
+  "scientific": "Anthirrhinum multiflorum",
+  "common": [
+   "Withered Snapdragon"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cucurbita species": {
+  "scientific": "Cucurbita species",
+  "common": [
+   "Yellow-Flowered Gourd"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Barbarea vulgaris": {
+  "scientific": "Barbarea vulgaris",
+  "common": [
+   "Yellowrocket"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Haworthia fasciata": {
+  "scientific": "Haworthia fasciata",
+  "common": [
+   "Zebra Haworthia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Zinnia species": {
+  "scientific": "Zinnia species",
+  "common": [
+   "Zinnia"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ },
+ "Cucurbia pepo cv zucchini": {
+  "scientific": "Cucurbia pepo cv zucchini",
+  "common": [
+   "Zucchini Squash"
+  ],
+  "flags": [
+   "nontoxic_cat",
+   "nontoxic_dog"
+  ]
+ }
+}

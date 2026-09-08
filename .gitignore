@@ -36,3 +36,9 @@ s.png
 .vscode/
 *.swp
 *~
+
+# Catalogue generator scratch. The vendored sources under tools/species-sources
+# are committed on purpose; the run artefacts are not.
+tools/__pycache__/
+tools/*_progress.txt
+tools/*.log

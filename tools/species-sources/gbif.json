@@ -1,0 +1,2372 @@
+{
+ "Abutilon": {
+  "accepted": "Abutilon",
+  "canonical": "Abutilon",
+  "confidence": 95,
+  "family": "Malvaceae",
+  "genus": "Abutilon",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3152599
+ },
+ "Achimenes": {
+  "accepted": "Achimenes",
+  "canonical": "Achimenes",
+  "confidence": 95,
+  "family": "Gesneriaceae",
+  "genus": "Achimenes",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3233488
+ },
+ "Acorus calamus": {
+  "accepted": "Acorus calamus",
+  "canonical": "Acorus calamus",
+  "confidence": 100,
+  "family": "Acoraceae",
+  "genus": "Acorus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2873769
+ },
+ "Acorus gramineus": {
+  "accepted": "Acorus gramineus",
+  "canonical": "Acorus gramineus",
+  "confidence": 99,
+  "family": "Acoraceae",
+  "genus": "Acorus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2873807
+ },
+ "Adiantum raddianum": {
+  "accepted": "Adiantum raddianum",
+  "canonical": "Adiantum raddianum",
+  "confidence": 100,
+  "family": "Pteridaceae",
+  "genus": "Adiantum",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2651826
+ },
+ "Adromischus cristatus": {
+  "accepted": "Adromischus cristatus",
+  "canonical": "Adromischus cristatus",
+  "confidence": 100,
+  "family": "Crassulaceae",
+  "genus": "Adromischus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 7334238
+ },
+ "Adromischus festivus": {
+  "accepted": "Adromischus cooperi",
+  "canonical": "Adromischus festivus",
+  "confidence": 100,
+  "family": "Crassulaceae",
+  "genus": "Adromischus",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 4199279
+ },
+ "Aechmea": {
+  "accepted": "Aechmea",
+  "canonical": "Aechmea",
+  "confidence": 96,
+  "family": "Bromeliaceae",
+  "genus": "Aechmea",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2697812
+ },
+ "Aechmea fasciata": {
+  "accepted": "Aechmea fasciata",
+  "canonical": "Aechmea fasciata",
+  "confidence": 100,
+  "family": "Bromeliaceae",
+  "genus": "Aechmea",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2698346
+ },
+ "Aechmea miniata": {
+  "accepted": "Aechmea miniata",
+  "canonical": "Aechmea miniata",
+  "confidence": 99,
+  "family": "Bromeliaceae",
+  "genus": "Aechmea",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2698614
+ },
+ "Aeschynanthus marmoratus": {
+  "accepted": "Aeschynanthus longicaulis",
+  "canonical": "Aeschynanthus marmoratus",
+  "confidence": 100,
+  "family": "Gesneriaceae",
+  "genus": "Aeschynanthus",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 3825479
+ },
+ "Aeschynanthus pulcher": {
+  "accepted": "Aeschynanthus pulcher",
+  "canonical": "Aeschynanthus pulcher",
+  "confidence": 99,
+  "family": "Gesneriaceae",
+  "genus": "Aeschynanthus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 10746857
+ },
+ "Agave Americana": {
+  "accepted": "Plantae",
+  "canonical": "Plantae",
+  "confidence": 99,
+  "family": null,
+  "genus": null,
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 6
+ },
+ "Agave victoriae-reginae": {
+  "accepted": "Agave victoriae-reginae",
+  "canonical": "Agave victoriae-reginae",
+  "confidence": 100,
+  "family": "Asparagaceae",
+  "genus": "Agave",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2766696
+ },
+ "Aglaonema": {
+  "accepted": "Aglaonema",
+  "canonical": "Aglaonema",
+  "confidence": 96,
+  "family": "Araceae",
+  "genus": "Aglaonema",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2866350
+ },
+ "Aglaonema modestum": {
+  "accepted": "Aglaonema modestum",
+  "canonical": "Aglaonema modestum",
+  "confidence": 99,
+  "family": "Araceae",
+  "genus": "Aglaonema",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2866488
+ },
+ "Allamanda cathartica": {
+  "accepted": "Allamanda cathartica",
+  "canonical": "Allamanda cathartica",
+  "confidence": 99,
+  "family": "Apocynaceae",
+  "genus": "Allamanda",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3169836
+ },
+ "Alloplectus nummularia": {
+  "accepted": "Pachycaulos nummularia",
+  "canonical": "Alloplectus nummularia",
+  "confidence": 100,
+  "family": "Gesneriaceae",
+  "genus": "Pachycaulos",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 5590551
+ },
+ "Aloe aborescens": {
+  "accepted": "Aloe",
+  "canonical": "Aloe",
+  "confidence": 95,
+  "family": "Asphodelaceae",
+  "genus": "Aloe",
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 2770879
+ },
+ "Aloe barbadensis": {
+  "accepted": "Aloe vera",
+  "canonical": "Aloe barbadensis",
+  "confidence": 100,
+  "family": "Asphodelaceae",
+  "genus": "Aloe",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2777729
+ },
+ "Aloe brevifolia": {
+  "accepted": "Aloe brevifolia",
+  "canonical": "Aloe brevifolia",
+  "confidence": 99,
+  "family": "Asphodelaceae",
+  "genus": "Aloe",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2777639
+ },
+ "Ananas comosus": {
+  "accepted": "Ananas comosus",
+  "canonical": "Ananas comosus",
+  "confidence": 99,
+  "family": "Bromeliaceae",
+  "genus": "Ananas",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5288819
+ },
+ "Anthurium clarinervium": {
+  "accepted": "Anthurium clarinervium",
+  "canonical": "Anthurium clarinervium",
+  "confidence": 100,
+  "family": "Araceae",
+  "genus": "Anthurium",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2872501
+ },
+ "Anthurium hookeri": {
+  "accepted": "Anthurium hookeri",
+  "canonical": "Anthurium hookeri",
+  "confidence": 99,
+  "family": "Araceae",
+  "genus": "Anthurium",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2872293
+ },
+ "Anthurium scherzeranum": {
+  "accepted": "Anthurium scherzerianum",
+  "canonical": "Anthurium scherzerianum",
+  "confidence": 96,
+  "family": "Araceae",
+  "genus": "Anthurium",
+  "matchType": "FUZZY",
+  "status": "ACCEPTED",
+  "usageKey": 2873525
+ },
+ "Aphelandra squarrosa": {
+  "accepted": "Aphelandra squarrosa",
+  "canonical": "Aphelandra squarrosa",
+  "confidence": 100,
+  "family": "Acanthaceae",
+  "genus": "Aphelandra",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 7263987
+ },
+ "Araliaceae": {
+  "accepted": "Araliaceae",
+  "canonical": "Araliaceae",
+  "confidence": 96,
+  "family": "Araliaceae",
+  "genus": null,
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 8800
+ },
+ "Araucaria heterophylla": {
+  "accepted": "Araucaria heterophylla",
+  "canonical": "Araucaria heterophylla",
+  "confidence": 100,
+  "family": "Araucariaceae",
+  "genus": "Araucaria",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2684969
+ },
+ "Ardissa crenata": {
+  "accepted": "Ardisia crenata",
+  "canonical": "Ardisia crenata",
+  "confidence": 88,
+  "family": "Primulaceae",
+  "genus": "Ardisia",
+  "matchType": "FUZZY",
+  "status": "ACCEPTED",
+  "usageKey": 5414379
+ },
+ "Asokebuyn budys": {
+  "accepted": "Plantae",
+  "canonical": "Plantae",
+  "confidence": 99,
+  "family": null,
+  "genus": null,
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 6
+ },
+ "Asparagus densiflorus": {
+  "accepted": "Asparagus densiflorus",
+  "canonical": "Asparagus densiflorus",
+  "confidence": 100,
+  "family": "Asparagaceae",
+  "genus": "Asparagus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2768503
+ },
+ "Asparagus falcatus": {
+  "accepted": "Asparagus falcatus",
+  "canonical": "Asparagus falcatus",
+  "confidence": 99,
+  "family": "Asparagaceae",
+  "genus": "Asparagus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2768780
+ },
+ "Asparagus plumosus": {
+  "accepted": "Asparagus setaceus",
+  "canonical": "Asparagus plumosus",
+  "confidence": 100,
+  "family": "Asparagaceae",
+  "genus": "Asparagus",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2768693
+ },
+ "Aspidistra elatior": {
+  "accepted": "Aspidistra elatior",
+  "canonical": "Aspidistra elatior",
+  "confidence": 100,
+  "family": "Asparagaceae",
+  "genus": "Aspidistra",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2769937
+ },
+ "Asplenium daucifolium": {
+  "accepted": "Asplenium daucifolium",
+  "canonical": "Asplenium daucifolium",
+  "confidence": 100,
+  "family": "Aspleniaceae",
+  "genus": "Asplenium",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 4258282
+ },
+ "Astrophytum myriostigma": {
+  "accepted": "Astrophytum myriostigma",
+  "canonical": "Astrophytum myriostigma",
+  "confidence": 100,
+  "family": "Cactaceae",
+  "genus": "Astrophytum",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 7282451
+ },
+ "Astrophytum ornatum": {
+  "accepted": "Astrophytum ornatum",
+  "canonical": "Astrophytum ornatum",
+  "confidence": 99,
+  "family": "Cactaceae",
+  "genus": "Astrophytum",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 7282413
+ },
+ "Beaucarnea recurvata": {
+  "accepted": "Beaucarnea recurvata",
+  "canonical": "Beaucarnea recurvata",
+  "confidence": 100,
+  "family": "Asparagaceae",
+  "genus": "Beaucarnea",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2768035
+ },
+ "Begonia": {
+  "accepted": "Begonia",
+  "canonical": "Begonia",
+  "confidence": 96,
+  "family": "Begoniaceae",
+  "genus": "Begonia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2874710
+ },
+ "Begonia President": {
+  "accepted": "Bigonia",
+  "canonical": "Bigonia",
+  "confidence": 81,
+  "family": "Bignoniaceae",
+  "genus": "Bignonia",
+  "matchType": "FUZZY",
+  "status": "SYNONYM",
+  "usageKey": 3169507
+ },
+ "Begonia cubensis": {
+  "accepted": "Begonia cubensis",
+  "canonical": "Begonia cubensis",
+  "confidence": 100,
+  "family": "Begoniaceae",
+  "genus": "Begonia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 4158218
+ },
+ "Begonia haageana": {
+  "accepted": "Begonia haageana",
+  "canonical": "Begonia haageana",
+  "confidence": 99,
+  "family": "Begoniaceae",
+  "genus": "Begonia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 11331859
+ },
+ "Begonia metallica": {
+  "accepted": "Begonia metallica",
+  "canonical": "Begonia metallica",
+  "confidence": 99,
+  "family": "Begoniaceae",
+  "genus": "Begonia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 11184649
+ },
+ "Begonia semperflorens": {
+  "accepted": "Begonia semperflorens",
+  "canonical": "Begonia semperflorens",
+  "confidence": 99,
+  "family": "Begoniaceae",
+  "genus": "Begonia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2874718
+ },
+ "Beloperone guttata": {
+  "accepted": "Justicia brandegeeana",
+  "canonical": "Beloperone guttata",
+  "confidence": 100,
+  "family": "Acanthaceae",
+  "genus": "Justicia",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 3173123
+ },
+ "Billbergia nutans": {
+  "accepted": "Billbergia nutans",
+  "canonical": "Billbergia nutans",
+  "confidence": 99,
+  "family": "Bromeliaceae",
+  "genus": "Billbergia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2693788
+ },
+ "Billbergia pyramidalis": {
+  "accepted": "Billbergia pyramidalis",
+  "canonical": "Billbergia pyramidalis",
+  "confidence": 99,
+  "family": "Bromeliaceae",
+  "genus": "Billbergia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2693754
+ },
+ "Billbergia zebrina": {
+  "accepted": "Billbergia zebrina",
+  "canonical": "Billbergia zebrina",
+  "confidence": 100,
+  "family": "Bromeliaceae",
+  "genus": "Billbergia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2693714
+ },
+ "Bougainvillea spp.": {
+  "accepted": "Bougainvillea",
+  "canonical": "Bougainvillea",
+  "confidence": 95,
+  "family": "Nyctaginaceae",
+  "genus": "Bougainvillea",
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 3086089
+ },
+ "Brassaia actinophylla": {
+  "accepted": "Heptapleurum actinophyllum",
+  "canonical": "Brassaia actinophylla",
+  "confidence": 99,
+  "family": "Araliaceae",
+  "genus": "Heptapleurum",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 3038549
+ },
+ "Brassaia arboricola": {
+  "accepted": "Brassaia",
+  "canonical": "Brassaia",
+  "confidence": 96,
+  "family": "Araliaceae",
+  "genus": "Heptapleurum",
+  "matchType": "HIGHERRANK",
+  "status": "SYNONYM",
+  "usageKey": 7314457
+ },
+ "Calathea insignis": {
+  "accepted": "Marantaceae",
+  "canonical": "Marantaceae",
+  "confidence": 99,
+  "family": "Marantaceae",
+  "genus": null,
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 8784
+ },
+ "Calathea makoyana": {
+  "accepted": "Goeppertia makoyana",
+  "canonical": "Calathea makoyana",
+  "confidence": 100,
+  "family": "Marantaceae",
+  "genus": "Goeppertia",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2761699
+ },
+ "Calathea micans": {
+  "accepted": "Goeppertia micans",
+  "canonical": "Calathea micans",
+  "confidence": 100,
+  "family": "Marantaceae",
+  "genus": "Goeppertia",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 8635798
+ },
+ "Calathea roseopicta": {
+  "accepted": "Goeppertia roseopicta",
+  "canonical": "Calathea roseopicta",
+  "confidence": 100,
+  "family": "Marantaceae",
+  "genus": "Goeppertia",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2761756
+ },
+ "Calceolaria crenatiflora": {
+  "accepted": "Calceolaria crenatiflora",
+  "canonical": "Calceolaria crenatiflora",
+  "confidence": 100,
+  "family": "Calceolariaceae",
+  "genus": "Calceolaria",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3728971
+ },
+ "Callisia elegans": {
+  "accepted": "Callisia gentlei",
+  "canonical": "Callisia elegans",
+  "confidence": 99,
+  "family": "Commelinaceae",
+  "genus": "Callisia",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 5303429
+ },
+ "Carissa grandiflora": {
+  "accepted": "Carissa macrocarpa",
+  "canonical": "Carissa grandiflora",
+  "confidence": 100,
+  "family": "Apocynaceae",
+  "genus": "Carissa",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 5414421
+ },
+ "Caryota mitis": {
+  "accepted": "Caryota mitis",
+  "canonical": "Caryota mitis",
+  "confidence": 99,
+  "family": "Arecaceae",
+  "genus": "Caryota",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2738902
+ },
+ "Catharanthus roseus": {
+  "accepted": "Catharanthus roseus",
+  "canonical": "Catharanthus roseus",
+  "confidence": 100,
+  "family": "Apocynaceae",
+  "genus": "Catharanthus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3169830
+ },
+ "Cereus peruvianus": {
+  "accepted": "Cactaceae",
+  "canonical": "Cactaceae",
+  "confidence": 99,
+  "family": "Cactaceae",
+  "genus": null,
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 2519
+ },
+ "Ceropegia woodii": {
+  "accepted": "Ceropegia woodii",
+  "canonical": "Ceropegia woodii",
+  "confidence": 100,
+  "family": "Apocynaceae",
+  "genus": "Ceropegia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3572767
+ },
+ "Chamaedorea elegans": {
+  "accepted": "Chamaedorea elegans",
+  "canonical": "Chamaedorea elegans",
+  "confidence": 100,
+  "family": "Arecaceae",
+  "genus": "Chamaedorea",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2734661
+ },
+ "Chamaedorea erumpens": {
+  "accepted": "Chamaedorea seifrizii",
+  "canonical": "Chamaedorea erumpens",
+  "confidence": 100,
+  "family": "Arecaceae",
+  "genus": "Chamaedorea",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2734711
+ },
+ "Chamaerops humilis": {
+  "accepted": "Chamaerops humilis",
+  "canonical": "Chamaerops humilis",
+  "confidence": 100,
+  "family": "Arecaceae",
+  "genus": "Chamaerops",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2736625
+ },
+ "Chirita lavandulacea": {
+  "accepted": "Microchirita lavandulacea",
+  "canonical": "Chirita lavandulacea",
+  "confidence": 100,
+  "family": "Gesneriaceae",
+  "genus": "Microchirita",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 3818643
+ },
+ "Chlorophytum comosum": {
+  "accepted": "Chlorophytum comosum",
+  "canonical": "Chlorophytum comosum",
+  "confidence": 99,
+  "family": "Asparagaceae",
+  "genus": "Chlorophytum",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2774846
+ },
+ "Chrysalidocarpus lutescens": {
+  "accepted": "Dypsis lutescens",
+  "canonical": "Chrysalidocarpus lutescens",
+  "confidence": 100,
+  "family": "Arecaceae",
+  "genus": "Dypsis",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2735936
+ },
+ "Chrysanthemum morifolium": {
+  "accepted": "Chrysanthemum morifolium",
+  "canonical": "Chrysanthemum morifolium",
+  "confidence": 99,
+  "family": "Asteraceae",
+  "genus": "Chrysanthemum",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3150767
+ },
+ "Cissus antarctica": {
+  "accepted": "Cissus antarctica",
+  "canonical": "Cissus antarctica",
+  "confidence": 100,
+  "family": "Vitaceae",
+  "genus": "Cissus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 7130688
+ },
+ "Cissus rhombifolia": {
+  "accepted": "Cissus alata",
+  "canonical": "Cissus rhombifolia",
+  "confidence": 100,
+  "family": "Vitaceae",
+  "genus": "Cissus",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 3039161
+ },
+ "Cissus rotundifolia": {
+  "accepted": "Cissus rotundifolia",
+  "canonical": "Cissus rotundifolia",
+  "confidence": 99,
+  "family": "Vitaceae",
+  "genus": "Cissus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3039168
+ },
+ "Cissus striata": {
+  "accepted": "Clematicissus striata",
+  "canonical": "Cissus striata",
+  "confidence": 100,
+  "family": "Vitaceae",
+  "genus": "Clematicissus",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 7293898
+ },
+ "Citrofortunella mitis": {
+  "accepted": "Citrus microcarpa",
+  "canonical": "Citrofortunella mitis",
+  "confidence": 100,
+  "family": "Rutaceae",
+  "genus": "Citrus",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 3190398
+ },
+ "Clerodendrum thomsoniae": {
+  "accepted": "Clerodendrum thomsoniae",
+  "canonical": "Clerodendrum thomsoniae",
+  "confidence": 100,
+  "family": "Lamiaceae",
+  "genus": "Clerodendrum",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3889087
+ },
+ "Clivia miniata": {
+  "accepted": "Clivia miniata",
+  "canonical": "Clivia miniata",
+  "confidence": 99,
+  "family": "Amaryllidaceae",
+  "genus": "Clivia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 9482657
+ },
+ "Codiaeum variegatum": {
+  "accepted": "Codiaeum variegatum",
+  "canonical": "Codiaeum variegatum",
+  "confidence": 99,
+  "family": "Euphorbiaceae",
+  "genus": "Codiaeum",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3071476
+ },
+ "Coffeaa arabica": {
+  "accepted": "Coffea arabica",
+  "canonical": "Coffea arabica",
+  "confidence": 94,
+  "family": "Rubiaceae",
+  "genus": "Coffea",
+  "matchType": "FUZZY",
+  "status": "ACCEPTED",
+  "usageKey": 2895345
+ },
+ "Coleus": {
+  "accepted": "Coleus",
+  "canonical": "Coleus",
+  "confidence": 96,
+  "family": "Lamiaceae",
+  "genus": "Coleus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2927310
+ },
+ "Coleus blumeri": {
+  "accepted": "Coleus scutellarioides",
+  "canonical": "Coleus blumei",
+  "confidence": 95,
+  "family": "Lamiaceae",
+  "genus": "Coleus",
+  "matchType": "FUZZY",
+  "status": "SYNONYM",
+  "usageKey": 5341493
+ },
+ "Colummea": {
+  "accepted": "Tracheophyta",
+  "canonical": "Tracheophyta",
+  "confidence": 80,
+  "family": null,
+  "genus": null,
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 7707728
+ },
+ "Cordyline australis": {
+  "accepted": "Cordyline australis",
+  "canonical": "Cordyline australis",
+  "confidence": 99,
+  "family": "Asparagaceae",
+  "genus": "Cordyline",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2766411
+ },
+ "Cordyline terminalis": {
+  "accepted": "Cordyline fruticosa",
+  "canonical": "Cordyline terminalis",
+  "confidence": 100,
+  "family": "Asparagaceae",
+  "genus": "Cordyline",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2766314
+ },
+ "Crassula argentea": {
+  "accepted": "Crassula ovata",
+  "canonical": "Crassula argentea",
+  "confidence": 100,
+  "family": "Crassulaceae",
+  "genus": "Crassula",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 5689639
+ },
+ "Crassula falcata": {
+  "accepted": "Crassula perfoliata",
+  "canonical": "Crassula falcata",
+  "confidence": 99,
+  "family": "Crassulaceae",
+  "genus": "Crassula",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 5688714
+ },
+ "Crassula hemisphaerica": {
+  "accepted": "Crassula hemisphaerica",
+  "canonical": "Crassula hemisphaerica",
+  "confidence": 100,
+  "family": "Crassulaceae",
+  "genus": "Crassula",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5688485
+ },
+ "Crassula lycopodioides": {
+  "accepted": "Crassula muscosa",
+  "canonical": "Crassula lycopodioides",
+  "confidence": 100,
+  "family": "Crassulaceae",
+  "genus": "Crassula",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 5688221
+ },
+ "Crassula schmidtii": {
+  "accepted": "Crassula exilis",
+  "canonical": "Crassula schmidtii",
+  "confidence": 100,
+  "family": "Crassulaceae",
+  "genus": "Crassula",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 5690195
+ },
+ "Crassula teres": {
+  "accepted": "Crassula barklyi",
+  "canonical": "Crassula teres",
+  "confidence": 100,
+  "family": "Crassulaceae",
+  "genus": "Crassula",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 9688165
+ },
+ "Crossandra infundibuliformis": {
+  "accepted": "Crossandra infundibuliformis",
+  "canonical": "Crossandra infundibuliformis",
+  "confidence": 100,
+  "family": "Acanthaceae",
+  "genus": "Crossandra",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 6359825
+ },
+ "Cryptanthus bivittatus": {
+  "accepted": "Cryptanthus bivittatus",
+  "canonical": "Cryptanthus bivittatus",
+  "confidence": 100,
+  "family": "Bromeliaceae",
+  "genus": "Cryptanthus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5287727
+ },
+ "Cryptanthus fosteranus": {
+  "accepted": "Cryptanthus zonatus",
+  "canonical": "Cryptanthus fosterianus",
+  "confidence": 96,
+  "family": "Bromeliaceae",
+  "genus": "Cryptanthus",
+  "matchType": "FUZZY",
+  "status": "SYNONYM",
+  "usageKey": 5287734
+ },
+ "Cryptanthus zonatus": {
+  "accepted": "Cryptanthus zonatus",
+  "canonical": "Cryptanthus zonatus",
+  "confidence": 99,
+  "family": "Bromeliaceae",
+  "genus": "Cryptanthus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 10950218
+ },
+ "Cyrtomium falcatum": {
+  "accepted": "Cyrtomium falcatum",
+  "canonical": "Cyrtomium falcatum",
+  "confidence": 99,
+  "family": "Dryopteridaceae",
+  "genus": "Cyrtomium",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2650829
+ },
+ "Davallia fejeensis": {
+  "accepted": "Davallia fejeensis",
+  "canonical": "Davallia fejeensis",
+  "confidence": 100,
+  "family": "Davalliaceae",
+  "genus": "Davallia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 4204670
+ },
+ "Dieffenbachia": {
+  "accepted": "Dieffenbachia",
+  "canonical": "Dieffenbachia",
+  "confidence": 96,
+  "family": "Araceae",
+  "genus": "Dieffenbachia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2869330
+ },
+ "Dieffenbachia maculata": {
+  "accepted": "Dieffenbachia seguine",
+  "canonical": "Dieffenbachia maculata",
+  "confidence": 99,
+  "family": "Araceae",
+  "genus": "Dieffenbachia",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 8245617
+ },
+ "Dizygotheca elegantissima": {
+  "accepted": "Plerandra elegantissima",
+  "canonical": "Dizygotheca elegantissima",
+  "confidence": 100,
+  "family": "Araliaceae",
+  "genus": "Plerandra",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 3038058
+ },
+ "Dracaena deremensis": {
+  "accepted": "Dracaena fragrans",
+  "canonical": "Dracaena deremensis",
+  "confidence": 100,
+  "family": "Asparagaceae",
+  "genus": "Dracaena",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 5304602
+ },
+ "Dracaena fragrans": {
+  "accepted": "Dracaena fragrans",
+  "canonical": "Dracaena fragrans",
+  "confidence": 99,
+  "family": "Asparagaceae",
+  "genus": "Dracaena",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5304583
+ },
+ "Dracaena marginata": {
+  "accepted": "Dracaena marginata",
+  "canonical": "Dracaena marginata",
+  "confidence": 99,
+  "family": "Asparagaceae",
+  "genus": "Dracaena",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 10818704
+ },
+ "Dracaena surculosa": {
+  "accepted": "Dracaena surculosa",
+  "canonical": "Dracaena surculosa",
+  "confidence": 100,
+  "family": "Asparagaceae",
+  "genus": "Dracaena",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5304547
+ },
+ "Dyckia brevifolia": {
+  "accepted": "Dyckia brevifolia",
+  "canonical": "Dyckia brevifolia",
+  "confidence": 100,
+  "family": "Bromeliaceae",
+  "genus": "Dyckia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2699725
+ },
+ "Dyckia fosterana": {
+  "accepted": "Dyckia fosteriana",
+  "canonical": "Dyckia fosteriana",
+  "confidence": 96,
+  "family": "Bromeliaceae",
+  "genus": "Dyckia",
+  "matchType": "FUZZY",
+  "status": "ACCEPTED",
+  "usageKey": 2699576
+ },
+ "Echeveria agavoides": {
+  "accepted": "Echeveria agavoides",
+  "canonical": "Echeveria agavoides",
+  "confidence": 100,
+  "family": "Crassulaceae",
+  "genus": "Echeveria",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 7333993
+ },
+ "Echeveria elegans": {
+  "accepted": "Echeveria elegans",
+  "canonical": "Echeveria elegans",
+  "confidence": 99,
+  "family": "Crassulaceae",
+  "genus": "Echeveria",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 8315197
+ },
+ "Echinocereus reichenbachii": {
+  "accepted": "Echinocereus reichenbachii",
+  "canonical": "Echinocereus reichenbachii",
+  "confidence": 99,
+  "family": "Cactaceae",
+  "genus": "Echinocereus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 7939246
+ },
+ "Epidendrum atropurpureum": {
+  "accepted": "Epidendrum atropurpureum",
+  "canonical": "Epidendrum atropurpureum",
+  "confidence": 99,
+  "family": "Orchidaceae",
+  "genus": "Epidendrum",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 7873009
+ },
+ "Epiphyllum": {
+  "accepted": "Epiphyllum",
+  "canonical": "Epiphyllum",
+  "confidence": 95,
+  "family": "Cactaceae",
+  "genus": "Epiphyllum",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3084180
+ },
+ "Epipremnum aureum": {
+  "accepted": "Epipremnum aureum",
+  "canonical": "Epipremnum aureum",
+  "confidence": 100,
+  "family": "Araceae",
+  "genus": "Epipremnum",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2868323
+ },
+ "Episcia cupreata": {
+  "accepted": "Episcia cupreata",
+  "canonical": "Episcia cupreata",
+  "confidence": 100,
+  "family": "Gesneriaceae",
+  "genus": "Episcia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3172881
+ },
+ "Episcia dianthiflora": {
+  "accepted": "Alsobia dianthiflora",
+  "canonical": "Episcia dianthiflora",
+  "confidence": 100,
+  "family": "Gesneriaceae",
+  "genus": "Alsobia",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 3820929
+ },
+ "Episcia reptans": {
+  "accepted": "Episcia reptans",
+  "canonical": "Episcia reptans",
+  "confidence": 100,
+  "family": "Gesneriaceae",
+  "genus": "Episcia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3820231
+ },
+ "Euphorbia coeralescens": {
+  "accepted": "Euphorbia caerulescens",
+  "canonical": "Euphorbia coerulescens",
+  "confidence": 95,
+  "family": "Euphorbiaceae",
+  "genus": "Euphorbia",
+  "matchType": "FUZZY",
+  "status": "SYNONYM",
+  "usageKey": 3919321
+ },
+ "Euphorbia mammillaris": {
+  "accepted": "Euphorbia mammillaris",
+  "canonical": "Euphorbia mammillaris",
+  "confidence": 99,
+  "family": "Euphorbiaceae",
+  "genus": "Euphorbia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3065765
+ },
+ "Euphorbia milii": {
+  "accepted": "Euphorbia milii",
+  "canonical": "Euphorbia milii",
+  "confidence": 99,
+  "family": "Euphorbiaceae",
+  "genus": "Euphorbia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3067157
+ },
+ "Euphorbia pulcherrima": {
+  "accepted": "Euphorbia pulcherrima",
+  "canonical": "Euphorbia pulcherrima",
+  "confidence": 99,
+  "family": "Euphorbiaceae",
+  "genus": "Euphorbia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3066465
+ },
+ "Euphorbia tirucalli": {
+  "accepted": "Euphorbia tirucalli",
+  "canonical": "Euphorbia tirucalli",
+  "confidence": 99,
+  "family": "Euphorbiaceae",
+  "genus": "Euphorbia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3069353
+ },
+ "Fatshedera lizei": {
+  "accepted": "Fatshedera lizei",
+  "canonical": "Fatshedera lizei",
+  "confidence": 99,
+  "family": "Araliaceae",
+  "genus": "Fatshedera",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3597552
+ },
+ "Fatsia japonica": {
+  "accepted": "Fatsia japonica",
+  "canonical": "Fatsia japonica",
+  "confidence": 100,
+  "family": "Araliaceae",
+  "genus": "Fatsia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3039046
+ },
+ "Ficus benjamina": {
+  "accepted": "Ficus benjamina",
+  "canonical": "Ficus benjamina",
+  "confidence": 99,
+  "family": "Moraceae",
+  "genus": "Ficus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5361932
+ },
+ "Ficus deltoidea": {
+  "accepted": "Ficus deltoidea",
+  "canonical": "Ficus deltoidea",
+  "confidence": 100,
+  "family": "Moraceae",
+  "genus": "Ficus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 7262889
+ },
+ "Ficus elastica": {
+  "accepted": "Ficus elastica",
+  "canonical": "Ficus elastica",
+  "confidence": 99,
+  "family": "Moraceae",
+  "genus": "Ficus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 7835333
+ },
+ "Ficus lyrata": {
+  "accepted": "Ficus lyrata",
+  "canonical": "Ficus lyrata",
+  "confidence": 100,
+  "family": "Moraceae",
+  "genus": "Ficus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5361899
+ },
+ "Ficus pumila": {
+  "accepted": "Ficus pumila",
+  "canonical": "Ficus pumila",
+  "confidence": 99,
+  "family": "Moraceae",
+  "genus": "Ficus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5361930
+ },
+ "Ficus retusa": {
+  "accepted": "Ficus retusa",
+  "canonical": "Ficus retusa",
+  "confidence": 99,
+  "family": "Moraceae",
+  "genus": "Ficus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3765871
+ },
+ "Ficus sagittata": {
+  "accepted": "Ficus sagittata",
+  "canonical": "Ficus sagittata",
+  "confidence": 99,
+  "family": "Moraceae",
+  "genus": "Ficus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5571076
+ },
+ "Ficus willdemaniana": {
+  "accepted": "Ficus wildemaniana",
+  "canonical": "Ficus wildemaniana",
+  "confidence": 97,
+  "family": "Moraceae",
+  "genus": "Ficus",
+  "matchType": "FUZZY",
+  "status": "ACCEPTED",
+  "usageKey": 5571391
+ },
+ "Fittonia verschaffeltii": {
+  "accepted": "Fittonia albivenis",
+  "canonical": "Fittonia verschaffeltii",
+  "confidence": 99,
+  "family": "Acanthaceae",
+  "genus": "Fittonia",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 5574487
+ },
+ "Fuchsia hybrida": {
+  "accepted": "Fuchsia hybrida",
+  "canonical": "Fuchsia hybrida",
+  "confidence": 99,
+  "family": "Onagraceae",
+  "genus": "Fuchsia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 11300394
+ },
+ "Gasteria hybrida": {
+  "accepted": "Gasteria",
+  "canonical": "Gasteria",
+  "confidence": 95,
+  "family": "Asphodelaceae",
+  "genus": "Gasteria",
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 2778529
+ },
+ "Graptopetalum amethystinum": {
+  "accepted": "Graptopetalum amethystinum",
+  "canonical": "Graptopetalum amethystinum",
+  "confidence": 100,
+  "family": "Crassulaceae",
+  "genus": "Graptopetalum",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 4203035
+ },
+ "Guzmania lingulata": {
+  "accepted": "Guzmania lingulata",
+  "canonical": "Guzmania lingulata",
+  "confidence": 100,
+  "family": "Bromeliaceae",
+  "genus": "Guzmania",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2699095
+ },
+ "Guzmania monostachia": {
+  "accepted": "Guzmania monostachia",
+  "canonical": "Guzmania monostachia",
+  "confidence": 100,
+  "family": "Bromeliaceae",
+  "genus": "Guzmania",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2699018
+ },
+ "Gynura aurantiaca": {
+  "accepted": "Gynura aurantiaca",
+  "canonical": "Gynura aurantiaca",
+  "confidence": 99,
+  "family": "Asteraceae",
+  "genus": "Gynura",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3115470
+ },
+ "Haworthia cuspidata": {
+  "accepted": "Haworthia cymbiformis",
+  "canonical": "Haworthia cuspidata",
+  "confidence": 100,
+  "family": "Asphodelaceae",
+  "genus": "Haworthia",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2779835
+ },
+ "Haworthia fasciata": {
+  "accepted": "Haworthiopsis fasciata",
+  "canonical": "Haworthia fasciata",
+  "confidence": 100,
+  "family": "Asphodelaceae",
+  "genus": "Haworthiopsis",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2780382
+ },
+ "Haworthia subfasciata": {
+  "accepted": "Haworthiopsis fasciata",
+  "canonical": "Haworthia subfasciata",
+  "confidence": 100,
+  "family": "Asphodelaceae",
+  "genus": "Haworthiopsis",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2780384
+ },
+ "Haworthia truncata": {
+  "accepted": "Haworthia truncata",
+  "canonical": "Haworthia truncata",
+  "confidence": 100,
+  "family": "Asphodelaceae",
+  "genus": "Haworthia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 8097702
+ },
+ "Hedera canariensis": {
+  "accepted": "Hedera canariensis",
+  "canonical": "Hedera canariensis",
+  "confidence": 99,
+  "family": "Araliaceae",
+  "genus": "Hedera",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3036170
+ },
+ "Hedera helix": {
+  "accepted": "Hedera helix",
+  "canonical": "Hedera helix",
+  "confidence": 99,
+  "family": "Araliaceae",
+  "genus": "Hedera",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 8351737
+ },
+ "Hemigraphis alternata": {
+  "accepted": "Strobilanthes alternata",
+  "canonical": "Hemigraphis alternata",
+  "confidence": 100,
+  "family": "Acanthaceae",
+  "genus": "Strobilanthes",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 3173034
+ },
+ "Hibiscus rosa-sinensis": {
+  "accepted": "Hibiscus rosa-sinensis",
+  "canonical": "Hibiscus rosa-sinensis",
+  "confidence": 100,
+  "family": "Malvaceae",
+  "genus": "Hibiscus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3152559
+ },
+ "Hippeastrum": {
+  "accepted": "Hippeastrum",
+  "canonical": "Hippeastrum",
+  "confidence": 95,
+  "family": "Amaryllidaceae",
+  "genus": "Hippeastrum",
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 2854235
+ },
+ "Howea belmoreana": {
+  "accepted": "Howea belmoreana",
+  "canonical": "Howea belmoreana",
+  "confidence": 100,
+  "family": "Arecaceae",
+  "genus": "Howea",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 7783777
+ },
+ "Howea forsterana": {
+  "accepted": "Howea forsteriana",
+  "canonical": "Howea forsteriana",
+  "confidence": 96,
+  "family": "Arecaceae",
+  "genus": "Howea",
+  "matchType": "FUZZY",
+  "status": "ACCEPTED",
+  "usageKey": 7857942
+ },
+ "Hoya carnosa": {
+  "accepted": "Hoya carnosa",
+  "canonical": "Hoya carnosa",
+  "confidence": 100,
+  "family": "Apocynaceae",
+  "genus": "Hoya",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 8658195
+ },
+ "Hoya kerrii": {
+  "accepted": "Hoya kerrii",
+  "canonical": "Hoya kerrii",
+  "confidence": 100,
+  "family": "Apocynaceae",
+  "genus": "Hoya",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3573959
+ },
+ "Hyacinthus orientalis": {
+  "accepted": "Hyacinthus orientalis",
+  "canonical": "Hyacinthus orientalis",
+  "confidence": 100,
+  "family": "Asparagaceae",
+  "genus": "Hyacinthus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2772666
+ },
+ "Hydrangea hortensia": {
+  "accepted": "Hydrangea macrophylla",
+  "canonical": "Hydrangea hortensia",
+  "confidence": 100,
+  "family": "Hydrangeaceae",
+  "genus": "Hydrangea",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 3645799
+ },
+ "Impatiens wallerana": {
+  "accepted": "Impatiens walleriana",
+  "canonical": "Impatiens wallerana",
+  "confidence": 100,
+  "family": "Balsaminaceae",
+  "genus": "Impatiens",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 7436140
+ },
+ "Ixora coccinea": {
+  "accepted": "Ixora coccinea",
+  "canonical": "Ixora coccinea",
+  "confidence": 99,
+  "family": "Rubiaceae",
+  "genus": "Ixora",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 8793122
+ },
+ "Jatropha integerrima": {
+  "accepted": "Jatropha integerrima",
+  "canonical": "Jatropha integerrima",
+  "confidence": 100,
+  "family": "Euphorbiaceae",
+  "genus": "Jatropha",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3073017
+ },
+ "Justicia brandegeana": {
+  "accepted": "Justicia brandegeeana",
+  "canonical": "Justicia brandegeeana",
+  "confidence": 98,
+  "family": "Acanthaceae",
+  "genus": "Justicia",
+  "matchType": "FUZZY",
+  "status": "ACCEPTED",
+  "usageKey": 3173122
+ },
+ "Kalanchoe blossfeldiana": {
+  "accepted": "Kalanchoe blossfeldiana",
+  "canonical": "Kalanchoe blossfeldiana",
+  "confidence": 100,
+  "family": "Crassulaceae",
+  "genus": "Kalanchoe",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2985944
+ },
+ "Kalanchoe pumila": {
+  "accepted": "Kalanchoe pumila",
+  "canonical": "Kalanchoe pumila",
+  "confidence": 100,
+  "family": "Crassulaceae",
+  "genus": "Kalanchoe",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 7334193
+ },
+ "Kalanchoe tomentosa": {
+  "accepted": "Kalanchoe tomentosa",
+  "canonical": "Kalanchoe tomentosa",
+  "confidence": 100,
+  "family": "Crassulaceae",
+  "genus": "Kalanchoe",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 4198346
+ },
+ "Malvaviscus arboreus": {
+  "accepted": "Malvaviscus arboreus",
+  "canonical": "Malvaviscus arboreus",
+  "confidence": 100,
+  "family": "Malvaceae",
+  "genus": "Malvaviscus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3152775
+ },
+ "Mammillaria bocasana": {
+  "accepted": "Mammillaria bocasana",
+  "canonical": "Mammillaria bocasana",
+  "confidence": 100,
+  "family": "Cactaceae",
+  "genus": "Mammillaria",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 7281463
+ },
+ "Manettia inflata": {
+  "accepted": "Manettia paraguariensis",
+  "canonical": "Manettia inflata",
+  "confidence": 100,
+  "family": "Rubiaceae",
+  "genus": "Manettia",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 5338462
+ },
+ "Maranta bicolor": {
+  "accepted": "Marantaceae",
+  "canonical": "Marantaceae",
+  "confidence": 99,
+  "family": "Marantaceae",
+  "genus": null,
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 8784
+ },
+ "Maranta leuconeura": {
+  "accepted": "Maranta leuconeura",
+  "canonical": "Maranta leuconeura",
+  "confidence": 100,
+  "family": "Marantaceae",
+  "genus": "Maranta",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2761337
+ },
+ "Mikania ternata": {
+  "accepted": "Mikania ternata",
+  "canonical": "Mikania ternata",
+  "confidence": 100,
+  "family": "Asteraceae",
+  "genus": "Mikania",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5398714
+ },
+ "Monstera deliciosa": {
+  "accepted": "Monstera deliciosa",
+  "canonical": "Monstera deliciosa",
+  "confidence": 100,
+  "family": "Araceae",
+  "genus": "Monstera",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2868241
+ },
+ "Monstera obliqua": {
+  "accepted": "Monstera obliqua",
+  "canonical": "Monstera obliqua",
+  "confidence": 100,
+  "family": "Araceae",
+  "genus": "Monstera",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2868185
+ },
+ "Monstera pertusa": {
+  "accepted": "Araceae",
+  "canonical": "Araceae",
+  "confidence": 99,
+  "family": "Araceae",
+  "genus": null,
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 6979
+ },
+ "Nautilocalyx lynchii": {
+  "accepted": "Nautilocalyx lynchii",
+  "canonical": "Nautilocalyx lynchii",
+  "confidence": 100,
+  "family": "Gesneriaceae",
+  "genus": "Nautilocalyx",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3820178
+ },
+ "Neoregelia carolinae": {
+  "accepted": "Neoregelia carolinae",
+  "canonical": "Neoregelia carolinae",
+  "confidence": 100,
+  "family": "Bromeliaceae",
+  "genus": "Neoregelia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2694159
+ },
+ "Neoregelia spectabilis": {
+  "accepted": "Neoregelia spectabilis",
+  "canonical": "Neoregelia spectabilis",
+  "confidence": 100,
+  "family": "Bromeliaceae",
+  "genus": "Neoregelia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2694071
+ },
+ "Neoregelia zonata": {
+  "accepted": "Neoregelia zonata",
+  "canonical": "Neoregelia zonata",
+  "confidence": 100,
+  "family": "Bromeliaceae",
+  "genus": "Neoregelia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2694095
+ },
+ "Nephrolepis exaltata": {
+  "accepted": "Nephrolepis exaltata",
+  "canonical": "Nephrolepis exaltata",
+  "confidence": 100,
+  "family": "Nephrolepidaceae",
+  "genus": "Nephrolepis",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2650927
+ },
+ "Nidularium innocentii": {
+  "accepted": "Nidularium innocentii",
+  "canonical": "Nidularium innocentii",
+  "confidence": 100,
+  "family": "Bromeliaceae",
+  "genus": "Nidularium",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2697762
+ },
+ "Opuntia vilis": {
+  "accepted": "Grusonia vilis",
+  "canonical": "Opuntia vilis",
+  "confidence": 100,
+  "family": "Cactaceae",
+  "genus": "Grusonia",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 5624045
+ },
+ "Opuntia vulgaris": {
+  "accepted": "Opuntia vulgaris",
+  "canonical": "Opuntia vulgaris",
+  "confidence": 99,
+  "family": "Cactaceae",
+  "genus": "Opuntia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5384067
+ },
+ "Oxalis flava": {
+  "accepted": "Oxalis flava",
+  "canonical": "Oxalis flava",
+  "confidence": 100,
+  "family": "Oxalidaceae",
+  "genus": "Oxalis",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3626045
+ },
+ "Oxalis rubra": {
+  "accepted": "Oxalis articulata",
+  "canonical": "Oxalis rubra",
+  "confidence": 100,
+  "family": "Oxalidaceae",
+  "genus": "Oxalis",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2891727
+ },
+ "Pachira aquatiac": {
+  "accepted": "Pachira aquatica",
+  "canonical": "Pachira aquatica",
+  "confidence": 96,
+  "family": "Malvaceae",
+  "genus": "Pachira",
+  "matchType": "FUZZY",
+  "status": "ACCEPTED",
+  "usageKey": 3152235
+ },
+ "Pachyphytum oviferum": {
+  "accepted": "Pachyphytum oviferum",
+  "canonical": "Pachyphytum oviferum",
+  "confidence": 100,
+  "family": "Crassulaceae",
+  "genus": "Pachyphytum",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 4202469
+ },
+ "Pachystachys lutea": {
+  "accepted": "Pachystachys lutea",
+  "canonical": "Pachystachys lutea",
+  "confidence": 100,
+  "family": "Acanthaceae",
+  "genus": "Pachystachys",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3778625
+ },
+ "Paphiopedilum": {
+  "accepted": "Paphiopedilum",
+  "canonical": "Paphiopedilum",
+  "confidence": 96,
+  "family": "Orchidaceae",
+  "genus": "Paphiopedilum",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2825152
+ },
+ "Pelargoniium peltatum": {
+  "accepted": "Pelargonium peltatum",
+  "canonical": "Pelargonium peltatum",
+  "confidence": 86,
+  "family": "Geraniaceae",
+  "genus": "Pelargonium",
+  "matchType": "FUZZY",
+  "status": "ACCEPTED",
+  "usageKey": 9561762
+ },
+ "Pelargonium grandiflorum": {
+  "accepted": "Pelargonium grandiflorum",
+  "canonical": "Pelargonium grandiflorum",
+  "confidence": 100,
+  "family": "Geraniaceae",
+  "genus": "Pelargonium",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3827422
+ },
+ "Pellaea rotundifolia": {
+  "accepted": "Pellaea rotundifolia",
+  "canonical": "Pellaea rotundifolia",
+  "confidence": 100,
+  "family": "Pteridaceae",
+  "genus": "Pellaea",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5566702
+ },
+ "Pellionia pulchra": {
+  "accepted": "Procris repens",
+  "canonical": "Pellionia pulchra",
+  "confidence": 100,
+  "family": "Urticaceae",
+  "genus": "Procris",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 4100844
+ },
+ "Pentas lanceolata": {
+  "accepted": "Pentas lanceolata",
+  "canonical": "Pentas lanceolata",
+  "confidence": 99,
+  "family": "Rubiaceae",
+  "genus": "Pentas",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2908986
+ },
+ "Peperomia caperata": {
+  "accepted": "Peperomia caperata",
+  "canonical": "Peperomia caperata",
+  "confidence": 99,
+  "family": "Piperaceae",
+  "genus": "Peperomia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 4186167
+ },
+ "Peperomia crassifolia": {
+  "accepted": "Peperomia fernandopoiana",
+  "canonical": "Peperomia crassifolia",
+  "confidence": 100,
+  "family": "Piperaceae",
+  "genus": "Peperomia",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 4191063
+ },
+ "Peperomia obtusifolia": {
+  "accepted": "Peperomia obtusifolia",
+  "canonical": "Peperomia obtusifolia",
+  "confidence": 99,
+  "family": "Piperaceae",
+  "genus": "Peperomia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3086423
+ },
+ "Philodendron": {
+  "accepted": "Philodendron",
+  "canonical": "Philodendron",
+  "confidence": 95,
+  "family": "Araceae",
+  "genus": "Philodendron",
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 2861312
+ },
+ "Philodendron bipennifolium": {
+  "accepted": "Philodendron bipennifolium",
+  "canonical": "Philodendron bipennifolium",
+  "confidence": 100,
+  "family": "Araceae",
+  "genus": "Philodendron",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2870800
+ },
+ "Philodendron hederaceum": {
+  "accepted": "Philodendron hederaceum",
+  "canonical": "Philodendron hederaceum",
+  "confidence": 99,
+  "family": "Araceae",
+  "genus": "Philodendron",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2871003
+ },
+ "Philodendron scandens": {
+  "accepted": "Philodendron hederaceum",
+  "canonical": "Philodendron scandens",
+  "confidence": 100,
+  "family": "Araceae",
+  "genus": "Philodendron",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2871019
+ },
+ "Philodendron selloum": {
+  "accepted": "Thaumatophyllum bipinnatifidum",
+  "canonical": "Philodendron selloum",
+  "confidence": 100,
+  "family": "Araceae",
+  "genus": "Thaumatophyllum",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2870784
+ },
+ "Phoenix roebelenii": {
+  "accepted": "Phoenix roebelenii",
+  "canonical": "Phoenix roebelenii",
+  "confidence": 99,
+  "family": "Arecaceae",
+  "genus": "Phoenix",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5293153
+ },
+ "Pilea cadierei": {
+  "accepted": "Pilea cadierei",
+  "canonical": "Pilea cadierei",
+  "confidence": 100,
+  "family": "Urticaceae",
+  "genus": "Pilea",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5671157
+ },
+ "Pilea microphylla": {
+  "accepted": "Pilea microphylla",
+  "canonical": "Pilea microphylla",
+  "confidence": 99,
+  "family": "Urticaceae",
+  "genus": "Pilea",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5361841
+ },
+ "Platycerium bifurcatum": {
+  "accepted": "Platycerium bifurcatum",
+  "canonical": "Platycerium bifurcatum",
+  "confidence": 100,
+  "family": "Polypodiaceae",
+  "genus": "Platycerium",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 7126767
+ },
+ "Plectranthus australis": {
+  "accepted": "Coleus australis",
+  "canonical": "Plectranthus australis",
+  "confidence": 100,
+  "family": "Lamiaceae",
+  "genus": "Coleus",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2926643
+ },
+ "Podocarpus macrophyllus": {
+  "accepted": "Podocarpus macrophyllus",
+  "canonical": "Podocarpus macrophyllus",
+  "confidence": 99,
+  "family": "Podocarpaceae",
+  "genus": "Podocarpus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5285930
+ },
+ "Polyscias balfouriana": {
+  "accepted": "Polyscias balfouriana",
+  "canonical": "Polyscias balfouriana",
+  "confidence": 100,
+  "family": "Araliaceae",
+  "genus": "Polyscias",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3035891
+ },
+ "Polyscias fruticosa": {
+  "accepted": "Polyscias fruticosa",
+  "canonical": "Polyscias fruticosa",
+  "confidence": 100,
+  "family": "Araliaceae",
+  "genus": "Polyscias",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3035652
+ },
+ "Rhapis excelsa": {
+  "accepted": "Rhapis excelsa",
+  "canonical": "Rhapis excelsa",
+  "confidence": 99,
+  "family": "Arecaceae",
+  "genus": "Rhapis",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2736747
+ },
+ "Rhododendron": {
+  "accepted": "Rhododendron",
+  "canonical": "Rhododendron",
+  "confidence": 95,
+  "family": "Ericaceae",
+  "genus": "Rhododendron",
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 2883026
+ },
+ "Ruellia graeciznas": {
+  "accepted": "Ruellia",
+  "canonical": "Ruellia",
+  "confidence": 93,
+  "family": "Acanthaceae",
+  "genus": "Ruellia",
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 3171840
+ },
+ "Saintpaulia": {
+  "accepted": "Saintpaulia",
+  "canonical": "Saintpaulia",
+  "confidence": 96,
+  "family": "Gesneriaceae",
+  "genus": "Streptocarpus",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 6365227
+ },
+ "Sansevieria parva": {
+  "accepted": "Dracaena parva",
+  "canonical": "Sansevieria parva",
+  "confidence": 100,
+  "family": "Asparagaceae",
+  "genus": "Dracaena",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2770627
+ },
+ "Sansevieria trifasciata": {
+  "accepted": "Dracaena trifasciata",
+  "canonical": "Sansevieria trifasciata",
+  "confidence": 100,
+  "family": "Asparagaceae",
+  "genus": "Dracaena",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2770610
+ },
+ "Saxifraga stolonifera": {
+  "accepted": "Saxifraga stolonifera",
+  "canonical": "Saxifraga stolonifera",
+  "confidence": 99,
+  "family": "Saxifragaceae",
+  "genus": "Saxifraga",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3032762
+ },
+ "Scheflera actinophylla": {
+  "accepted": "Heptapleurum actinophyllum",
+  "canonical": "Schefflera actinophylla",
+  "confidence": 88,
+  "family": "Araliaceae",
+  "genus": "Heptapleurum",
+  "matchType": "FUZZY",
+  "status": "SYNONYM",
+  "usageKey": 3038546
+ },
+ "Schlumbergera bridgesii": {
+  "accepted": "Schlumbergera russeliana",
+  "canonical": "Schlumbergera bridgesii",
+  "confidence": 100,
+  "family": "Cactaceae",
+  "genus": "Schlumbergera",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 5620172
+ },
+ "Schlumbergera truncata": {
+  "accepted": "Schlumbergera truncata",
+  "canonical": "Schlumbergera truncata",
+  "confidence": 100,
+  "family": "Cactaceae",
+  "genus": "Schlumbergera",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5383983
+ },
+ "Scindapsus aureus": {
+  "accepted": "Epipremnum aureum",
+  "canonical": "Scindapsus aureus",
+  "confidence": 100,
+  "family": "Araceae",
+  "genus": "Epipremnum",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2868327
+ },
+ "Scindapsus pictus": {
+  "accepted": "Scindapsus pictus",
+  "canonical": "Scindapsus pictus",
+  "confidence": 100,
+  "family": "Araceae",
+  "genus": "Scindapsus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2873745
+ },
+ "Sedum spectabile": {
+  "accepted": "Hylotelephium spectabile",
+  "canonical": "Sedum spectabile",
+  "confidence": 100,
+  "family": "Crassulaceae",
+  "genus": "Hylotelephium",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 9210845
+ },
+ "Sempervivum arachniodeum": {
+  "accepted": "Sempervivum arachnoideum",
+  "canonical": "Sempervivum arachnoideum",
+  "confidence": 96,
+  "family": "Crassulaceae",
+  "genus": "Sempervivum",
+  "matchType": "FUZZY",
+  "status": "ACCEPTED",
+  "usageKey": 4201709
+ },
+ "Setcreasea pallida": {
+  "accepted": "Tradescantia pallida",
+  "canonical": "Setcreasea pallida",
+  "confidence": 100,
+  "family": "Commelinaceae",
+  "genus": "Tradescantia",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2765225
+ },
+ "Sinningia speciosa": {
+  "accepted": "Sinningia speciosa",
+  "canonical": "Sinningia speciosa",
+  "confidence": 99,
+  "family": "Gesneriaceae",
+  "genus": "Sinningia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3825228
+ },
+ "Soleirolia soleirolii": {
+  "accepted": "Soleirolia soleirolii",
+  "canonical": "Soleirolia soleirolii",
+  "confidence": 100,
+  "family": "Urticaceae",
+  "genus": "Soleirolia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2984366
+ },
+ "Spathiphyllum": {
+  "accepted": "Spathiphyllum",
+  "canonical": "Spathiphyllum",
+  "confidence": 96,
+  "family": "Araceae",
+  "genus": "Spathiphyllum",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2869649
+ },
+ "Stapelia nobilis": {
+  "accepted": "Ceropegia gigantea",
+  "canonical": "Stapelia nobilis",
+  "confidence": 99,
+  "family": "Apocynaceae",
+  "genus": "Ceropegia",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 3170423
+ },
+ "Stephanotis floribunda": {
+  "accepted": "Stephanotis floribunda",
+  "canonical": "Stephanotis floribunda",
+  "confidence": 99,
+  "family": "Apocynaceae",
+  "genus": "Stephanotis",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 3573314
+ },
+ "Streptocarpus": {
+  "accepted": "Plantae",
+  "canonical": "Plantae",
+  "confidence": 95,
+  "family": null,
+  "genus": null,
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 6
+ },
+ "Strobilanthes dyeranum": {
+  "accepted": "Strobilanthes auriculata",
+  "canonical": "Strobilanthes dyeriana",
+  "confidence": 96,
+  "family": "Acanthaceae",
+  "genus": "Strobilanthes",
+  "matchType": "FUZZY",
+  "status": "SYNONYM",
+  "usageKey": 3781115
+ },
+ "Syngonium podophyllum": {
+  "accepted": "Syngonium podophyllum",
+  "canonical": "Syngonium podophyllum",
+  "confidence": 100,
+  "family": "Araceae",
+  "genus": "Syngonium",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2867866
+ },
+ "Tillandsia lindenii": {
+  "accepted": "Wallisia",
+  "canonical": "Wallisia",
+  "confidence": 99,
+  "family": "Bromeliaceae",
+  "genus": "Wallisia",
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 2696506
+ },
+ "Tolmiea menziesii": {
+  "accepted": "Tolmiea menziesii",
+  "canonical": "Tolmiea menziesii",
+  "confidence": 100,
+  "family": "Saxifragaceae",
+  "genus": "Tolmiea",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 5371605
+ },
+ "Tradescantia blossfeldiana": {
+  "accepted": "Tradescantia blossfeldiana",
+  "canonical": "Tradescantia blossfeldiana",
+  "confidence": 99,
+  "family": "Commelinaceae",
+  "genus": "Tradescantia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 7494497
+ },
+ "Tradescantia sillamontana": {
+  "accepted": "Tradescantia sillamontana",
+  "canonical": "Tradescantia sillamontana",
+  "confidence": 100,
+  "family": "Commelinaceae",
+  "genus": "Tradescantia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2765120
+ },
+ "Trillandsia bulbosa": {
+  "accepted": "Plantae",
+  "canonical": "Plantae",
+  "confidence": 99,
+  "family": null,
+  "genus": null,
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 6
+ },
+ "Vriesea splendens": {
+  "accepted": "Lutheria splendens",
+  "canonical": "Vriesea splendens",
+  "confidence": 100,
+  "family": "Bromeliaceae",
+  "genus": "Lutheria",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 5289043
+ },
+ "Yucca elephantipes": {
+  "accepted": "Yucca gigantea",
+  "canonical": "Yucca elephantipes",
+  "confidence": 99,
+  "family": "Asparagaceae",
+  "genus": "Yucca",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 2775729
+ },
+ "Zebrina pendula": {
+  "accepted": "Tradescantia zebrina",
+  "canonical": "Zebrina pendula",
+  "confidence": 99,
+  "family": "Commelinaceae",
+  "genus": "Tradescantia",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 5303583
+ },
+ "Zygocactus truncatus": {
+  "accepted": "Schlumbergera truncata",
+  "canonical": "Zygocactus truncatus",
+  "confidence": 100,
+  "family": "Cactaceae",
+  "genus": "Schlumbergera",
+  "matchType": "EXACT",
+  "status": "SYNONYM",
+  "usageKey": 7280671
+ },
+ "cyperus alternifolius": {
+  "accepted": "Cyperus alternifolius",
+  "canonical": "Cyperus alternifolius",
+  "confidence": 99,
+  "family": "Cyperaceae",
+  "genus": "Cyperus",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2714156
+ },
+ "dieffenbachia amoena": {
+  "accepted": "Dieffenbachia amoena",
+  "canonical": "Dieffenbachia amoena",
+  "confidence": 99,
+  "family": "Araceae",
+  "genus": "Dieffenbachia",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 11211751
+ },
+ "fuchsia leonora": {
+  "accepted": "Fuchsia",
+  "canonical": "Fuchsia",
+  "confidence": 95,
+  "family": "Onagraceae",
+  "genus": "Fuchsia",
+  "matchType": "HIGHERRANK",
+  "status": "ACCEPTED",
+  "usageKey": 5938221
+ },
+ "monstera deliciosa": {
+  "accepted": "Monstera deliciosa",
+  "canonical": "Monstera deliciosa",
+  "confidence": 100,
+  "family": "Araceae",
+  "genus": "Monstera",
+  "matchType": "EXACT",
+  "status": "ACCEPTED",
+  "usageKey": 2868241
+ }
+}

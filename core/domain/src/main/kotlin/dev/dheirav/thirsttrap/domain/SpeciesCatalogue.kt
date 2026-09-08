@@ -1,13 +1,16 @@
 package dev.dheirav.thirsttrap.domain
 
 /**
- * The bundled catalogue. Common houseplants, written properly.
+ * The hand-written catalogue. Common houseplants, written properly.
  *
  * The depletion triggers follow docs/WATERING-MODEL.md §2: succulents and cacti
  * 0.7-0.8, most foliage 0.5, moisture-lovers 0.3. They are the single most
  * useful field here, because it is the one number a user has no way to guess.
+ *
+ * These beat [bundledSpeciesCatalogue] on any query they both match: only these
+ * say what actually kills the plant. See [speciesCatalogue] for the union.
  */
-val speciesCatalogue: List<SpeciesCare> = listOf(
+val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
 
     SpeciesCare(
         name = "Peperomia",
@@ -252,12 +255,36 @@ val speciesCatalogue: List<SpeciesCare> = listOf(
     SpeciesCare(
         name = "Cactus",
         botanical = "Cactaceae",
-        aliases = listOf("cactus", "cacti", "christmas cactus", "schlumbergera"),
-        light = "Bright, most want direct sun. Christmas cactus is the exception and prefers indirect.",
+        aliases = listOf("cactus", "cacti", "desert cactus"),
+        light = "Bright, and most want direct sun.",
         water = "Almost none in winter. Thoroughly but rarely in summer.",
         medium = Medium.SOIL,
         depletionTrigger = 0.85,
         commonProblems = listOf("Soft brown patches at the base is rot, and it moves upward."),
+        note = "Christmas and Easter cactus are not this plant - see their own entry. Treating them as desert cacti is the usual way they get killed.",
+    ),
+
+    SpeciesCare(
+        name = "Christmas cactus",
+        botanical = "Schlumbergera spp.",
+        aliases = listOf(
+            "christmas cactus", "schlumbergera", "thanksgiving cactus", "easter cactus",
+            "zygocactus", "holiday cactus",
+        ),
+        light = "Bright indirect. Direct sun scorches the segments - it grows in tree forks in Brazilian forest, not in a desert.",
+        water = "Let the top half dry, then water properly. It wants far more water than a desert cactus, and drops segments when kept as dry as one.",
+        medium = Medium.SOIL,
+        // Nothing like the 0.85 the desert cacti get. This entry exists because
+        // the generated tier disagreed with the old shared "Cactus" entry, and
+        // the generated tier was right: an epiphyte is not a succulent.
+        depletionTrigger = 0.5,
+        humidity = "Appreciates humidity above dry room air.",
+        toxicity = "Non-toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Shrivelled, limp segments usually mean it has been kept too dry, not too wet.",
+            "Buds dropping just before flowering is almost always a move, a draught, or a change in light. Leave it alone once buds set.",
+        ),
+        note = "Needs cool nights and long dark evenings in autumn to set buds. A lamp on in the room at night is the usual reason one never flowers.",
     ),
 
     SpeciesCare(
@@ -675,3 +702,18 @@ val speciesCatalogue: List<SpeciesCare> = listOf(
         commonProblems = listOf("Going brown and crisp means it dried; going black and slimy means no air movement."),
     ),
 )
+
+/**
+ * Everything the app can look up.
+ *
+ * The hand-written entries come first, each widened with any old botanical
+ * synonyms and stray common names the generated tier turned up for the same
+ * plant, then the generated long tail. Order is not what decides ties -
+ * [findSpeciesCare] ranks curated above bundled explicitly - but keeping it
+ * stable makes the tests readable.
+ */
+val speciesCatalogue: List<SpeciesCare> =
+    curatedSpeciesCatalogue.map { entry ->
+        val extra = bundledAliasesForCurated[entry.name].orEmpty()
+        if (extra.isEmpty()) entry else entry.copy(aliases = entry.aliases + extra)
+    } + bundledSpeciesCatalogue
