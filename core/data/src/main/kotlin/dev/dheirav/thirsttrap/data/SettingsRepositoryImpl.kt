@@ -29,6 +29,7 @@ class SettingsRepositoryImpl @Inject constructor(
     private val triggerKey = doublePreferencesKey("default_depletion_trigger")
     private val exactAlarmsKey = booleanPreferencesKey("use_exact_alarms")
     private val dismissedKey = stringSetPreferencesKey("dismissed_diagnostics")
+    private val onlineLookupKey = booleanPreferencesKey("online_species_lookup")
 
     override val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
         AppSettings(
@@ -36,6 +37,9 @@ class SettingsRepositoryImpl @Inject constructor(
             reminderHour = prefs[reminderHourKey] ?: 9,
             defaultDepletionTrigger = prefs[triggerKey] ?: DEFAULT_DEPLETION_TRIGGER,
             useExactAlarms = prefs[exactAlarmsKey] ?: false,
+            // Absent means off. A missing preference must never be read as
+            // consent to use the network.
+            onlineSpeciesLookup = prefs[onlineLookupKey] ?: false,
         )
     }
 
@@ -49,6 +53,10 @@ class SettingsRepositoryImpl @Inject constructor(
 
     override suspend fun setUseExactAlarms(enabled: Boolean) {
         context.dataStore.edit { it[exactAlarmsKey] = enabled }
+    }
+
+    override suspend fun setOnlineSpeciesLookup(enabled: Boolean) {
+        context.dataStore.edit { it[onlineLookupKey] = enabled }
     }
 
     override suspend fun dismissDiagnostic(key: String) {

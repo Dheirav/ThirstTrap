@@ -150,7 +150,13 @@ fun PlantDetailScreen(
                                 )
                                 DropdownMenuItem(
                                     text = { Text("Care notes") },
-                                    enabled = hasSpeciesCare(p.species) || hasSpeciesCare(p.name),
+                                    // Deliberately NOT disabled when the
+                                    // catalogue has nothing. The care screen's
+                                    // empty state is the only route to the
+                                    // online name lookup, and disabling this
+                                    // made it unreachable for exactly the
+                                    // plants it exists for. The hint below
+                                    // still sets the expectation.
                                     trailingIcon = {
                                         if (!hasSpeciesCare(p.species) && !hasSpeciesCare(p.name)) {
                                             Text(

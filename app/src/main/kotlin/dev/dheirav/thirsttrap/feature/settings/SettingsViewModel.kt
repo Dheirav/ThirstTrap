@@ -43,6 +43,9 @@ class SettingsViewModel @Inject constructor(
 
     fun setDynamicColor(on: Boolean) = viewModelScope.launch { settings.setDynamicColor(on) }
 
+    fun setOnlineSpeciesLookup(on: Boolean) =
+        viewModelScope.launch { settings.setOnlineSpeciesLookup(on) }
+
     fun setReminderHour(hour: Int) = viewModelScope.launch {
         settings.setReminderHour(hour)
         // Re-enqueue, or the setting would change a number and nothing else.

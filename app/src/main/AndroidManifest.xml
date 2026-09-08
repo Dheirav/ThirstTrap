@@ -7,6 +7,14 @@
       inexact WorkManager scheduling (handover D4). No INTERNET in M0 — the core
       loop is offline and nothing here needs the network yet.
     -->
+    <!--
+      Already present via manifest merge (the ML Kit scanner pulls it in through
+      datatransport - handover D10). Declared explicitly now that the app uses
+      it deliberately: species NAME lookup only, opt-in, off by default. No
+      screen fetches anything on its own.
+    -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
 

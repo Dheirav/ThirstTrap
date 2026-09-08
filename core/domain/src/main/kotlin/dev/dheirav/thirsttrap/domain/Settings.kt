@@ -21,6 +21,12 @@ data class AppSettings(
      * on Android 13+, and a watering check does not need to land at 09:00:00.
      */
     val useExactAlarms: Boolean = false,
+    /**
+     * Off by default, and the only setting in the app that can cause a packet
+     * to leave the phone. The requirements call offline-first a promise rather
+     * than a default, so this asks first and stays asked.
+     */
+    val onlineSpeciesLookup: Boolean = false,
 )
 
 interface SettingsRepository {
@@ -29,6 +35,7 @@ interface SettingsRepository {
     suspend fun setReminderHour(hour: Int)
     suspend fun setDefaultDepletionTrigger(fraction: Double)
     suspend fun setUseExactAlarms(enabled: Boolean)
+    suspend fun setOnlineSpeciesLookup(enabled: Boolean)
 
     /** Dismissals are per drying cycle, so a new cycle can speak up again. */
     suspend fun dismissDiagnostic(key: String)

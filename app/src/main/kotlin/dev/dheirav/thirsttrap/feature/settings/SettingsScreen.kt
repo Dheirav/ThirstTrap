@@ -86,6 +86,30 @@ fun SettingsScreen(
             }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            SectionHeader("Network")
+            SettingRow(
+                title = "Look up unknown plant names online",
+                subtitle = "Off by default, and the only thing in the app that can send " +
+                    "anything anywhere. On, the care screen can resolve a name it does not " +
+                    "recognise and link the Wikipedia article - it sends the name you typed " +
+                    "and nothing else. It never fetches care advice, and never runs on its own.",
+            ) {
+                Switch(
+                    checked = settings.onlineSpeciesLookup,
+                    onCheckedChange = viewModel::setOnlineSpeciesLookup,
+                    modifier = Modifier.semantics {
+                        contentDescription = "Look up unknown plant names online"
+                    },
+                )
+            }
+            Text(
+                "Everything else - the catalogue, the predictions, the reminders, your whole " +
+                    "diary - works with no network at all, and always will.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
             SectionHeader("Reminders")
             Text(
                 "When to check for plants that need a look",

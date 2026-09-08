@@ -9,6 +9,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.dheirav.thirsttrap.data.ExportRepositoryImpl
+import dev.dheirav.thirsttrap.data.GbifSpeciesLookupService
 import dev.dheirav.thirsttrap.data.MaintenanceRepository
 import dev.dheirav.thirsttrap.data.PhotoRepositoryImpl
 import dev.dheirav.thirsttrap.data.WeightRepositoryImpl
@@ -27,6 +28,7 @@ import dev.dheirav.thirsttrap.domain.WeightRepository
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.ReminderRepository
 import dev.dheirav.thirsttrap.domain.SettingsRepository
+import dev.dheirav.thirsttrap.domain.SpeciesLookupService
 import javax.inject.Singleton
 
 @Module
@@ -79,6 +81,13 @@ object DatabaseModule {
     @Singleton
     fun provideSettingsRepository(@ApplicationContext context: Context): SettingsRepository =
         SettingsRepositoryImpl(context)
+
+    @Provides
+    @Singleton
+    fun provideSpeciesLookupService(
+        @ApplicationContext context: Context,
+        settings: SettingsRepository,
+    ): SpeciesLookupService = GbifSpeciesLookupService(context, settings)
 }
 
 @Module
