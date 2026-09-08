@@ -11,9 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
+import dev.dheirav.thirsttrap.ui.ScreenTitle
+import dev.dheirav.thirsttrap.ui.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
+import dev.dheirav.thirsttrap.ui.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -72,7 +73,7 @@ fun DueScreen(
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Due") }) },
+        topBar = { TopAppBar(title = { ScreenTitle("Due") }) },
         snackbarHost = { SnackbarHost(snackbarHost) },
     ) { padding ->
         if (state.loaded && state.items.isEmpty()) {
@@ -104,7 +105,7 @@ fun DueScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             items(state.items, key = { it.reminder.id }) { item ->
-                Card(shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth()) {
+                Card(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(16.dp)) {
                         Text(
                             "Time to check the ${item.plant.name}",

@@ -8,10 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
+import dev.dheirav.thirsttrap.ui.ScreenTitle
+import dev.dheirav.thirsttrap.ui.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilledTonalButton
+import dev.dheirav.thirsttrap.ui.FilterChip
+import dev.dheirav.thirsttrap.ui.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -76,7 +77,7 @@ fun AmbientScreen(onBack: () -> Unit, viewModel: AmbientViewModel = hiltViewMode
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Room conditions") },
+                title = { ScreenTitle("Room conditions") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(AppIcons.arrowBack, contentDescription = "Back")

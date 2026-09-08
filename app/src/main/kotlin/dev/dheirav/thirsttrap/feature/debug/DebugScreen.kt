@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.debug
 
+import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
+import dev.dheirav.thirsttrap.ui.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,7 +39,7 @@ fun DebugScreen(onBack: () -> Unit, viewModel: DebugViewModel = hiltViewModel())
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Debug") },
+                title = { ScreenTitle("Debug") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(AppIcons.arrowBack, contentDescription = "Back")

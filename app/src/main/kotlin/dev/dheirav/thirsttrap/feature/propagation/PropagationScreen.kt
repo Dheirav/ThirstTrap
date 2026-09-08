@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.propagation
 
+import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,7 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
+import dev.dheirav.thirsttrap.ui.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -57,7 +58,7 @@ fun PropagationScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Propagation") },
+                title = { ScreenTitle("Propagation") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(AppIcons.arrowBack, contentDescription = "Back")

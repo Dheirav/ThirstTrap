@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.compare
 
+import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -80,7 +81,7 @@ fun CompareScreen(onBack: () -> Unit, viewModel: CompareViewModel = hiltViewMode
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Compare") },
+                title = { ScreenTitle("Compare") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(AppIcons.arrowBack, contentDescription = "Back")

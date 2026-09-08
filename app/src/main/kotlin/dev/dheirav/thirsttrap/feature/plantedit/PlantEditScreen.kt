@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.plantedit
 
+import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,9 +13,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
+import dev.dheirav.thirsttrap.ui.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
+import dev.dheirav.thirsttrap.ui.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -228,7 +229,7 @@ fun PlantEditScreen(
     if (confirmDelete) {
         AlertDialog(
             onDismissRequest = { confirmDelete = false },
-            title = { Text("Delete ${state.name}?") },
+            title = { ScreenTitle("Delete ${state.name}?") },
             // Archiving is the reversible option and is offered first, because
             // a plant's history is the thing that is expensive to lose.
             text = {

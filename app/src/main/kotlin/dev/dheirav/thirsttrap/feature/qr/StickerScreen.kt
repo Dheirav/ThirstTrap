@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.qr
 
+import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -41,7 +42,7 @@ fun StickerScreen(onBack: () -> Unit, viewModel: StickerViewModel = hiltViewMode
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Pot sticker") },
+                title = { ScreenTitle("Pot sticker") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(AppIcons.arrowBack, contentDescription = "Back")

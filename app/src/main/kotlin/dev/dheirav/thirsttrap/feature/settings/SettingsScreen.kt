@@ -11,10 +11,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
+import dev.dheirav.thirsttrap.ui.ScreenTitle
+import dev.dheirav.thirsttrap.ui.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
+import dev.dheirav.thirsttrap.ui.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -51,7 +52,7 @@ fun SettingsScreen(
     if (needsExact) {
         AlertDialog(
             onDismissRequest = viewModel::dismissExactPermissionPrompt,
-            title = { Text("Android has to allow this") },
+            title = { ScreenTitle("Android has to allow this") },
             text = {
                 Text(
                     "Precise reminders need the \"Alarms & reminders\" permission. Android " +
@@ -69,7 +70,7 @@ fun SettingsScreen(
         )
     }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Settings") }) }) { padding ->
+    Scaffold(topBar = { TopAppBar(title = { ScreenTitle("Settings") }) }) { padding ->
         Column(
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
