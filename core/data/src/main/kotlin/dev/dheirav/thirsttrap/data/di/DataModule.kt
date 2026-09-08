@@ -9,6 +9,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.dheirav.thirsttrap.data.AmbientRepositoryImpl
+import dev.dheirav.thirsttrap.data.LocationRepositoryImpl
 import dev.dheirav.thirsttrap.data.ExportRepositoryImpl
 import dev.dheirav.thirsttrap.data.GbifSpeciesLookupService
 import dev.dheirav.thirsttrap.data.MaintenanceRepository
@@ -20,12 +21,14 @@ import dev.dheirav.thirsttrap.data.ReminderRepositoryImpl
 import dev.dheirav.thirsttrap.data.SettingsRepositoryImpl
 import dev.dheirav.thirsttrap.data.ThirstTrapDatabase
 import dev.dheirav.thirsttrap.data.dao.AmbientDao
+import dev.dheirav.thirsttrap.data.dao.LocationDao
 import dev.dheirav.thirsttrap.data.dao.CareEventDao
 import dev.dheirav.thirsttrap.data.dao.ReminderDao
 import dev.dheirav.thirsttrap.data.dao.PhotoDao
 import dev.dheirav.thirsttrap.data.dao.WeightDao
 import dev.dheirav.thirsttrap.data.dao.PlantDao
 import dev.dheirav.thirsttrap.domain.AmbientRepository
+import dev.dheirav.thirsttrap.domain.LocationRepository
 import dev.dheirav.thirsttrap.domain.PhotoRepository
 import dev.dheirav.thirsttrap.domain.WeightRepository
 import dev.dheirav.thirsttrap.domain.PlantRepository
@@ -57,6 +60,8 @@ object DatabaseModule {
     @Provides fun provideWeightDao(db: ThirstTrapDatabase): WeightDao = db.weightDao()
 
     @Provides fun provideAmbientDao(db: ThirstTrapDatabase): AmbientDao = db.ambientDao()
+
+    @Provides fun provideLocationDao(db: ThirstTrapDatabase): LocationDao = db.locationDao()
 
     @Provides
     @Singleton
@@ -115,4 +120,7 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun bindAmbientRepository(impl: AmbientRepositoryImpl): AmbientRepository
+
+    @Binds
+    abstract fun bindLocationRepository(impl: LocationRepositoryImpl): LocationRepository
 }

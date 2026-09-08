@@ -40,6 +40,7 @@ data class LightUiState(
 class LightMeterViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val plants: PlantRepository,
+    private val locations: dev.dheirav.thirsttrap.domain.LocationRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel(), SensorEventListener {
 
@@ -110,6 +111,13 @@ class LightMeterViewModel @Inject constructor(
                         (p?.location?.takeIf { it.isNotBlank() }?.let { " ($it)" } ?: ""),
                 ),
             )
+            // The reading also belongs to the place, not just to this plant's
+            // timeline. Requirement 13 wants light notes per location, and a
+            // measurement that vanishes when the screen closes is no use when
+            // you are deciding where to put the next pot.
+            p?.location?.takeIf { it.isNotBlank() }?.let {
+                locations.recordLight(it, lux, now)
+            }
             _state.value = _state.value.copy(saved = true)
         }
     }

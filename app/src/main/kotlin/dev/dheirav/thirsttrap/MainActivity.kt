@@ -1,6 +1,7 @@
 package dev.dheirav.thirsttrap
 
 import dev.dheirav.thirsttrap.feature.ambient.AmbientScreen
+import dev.dheirav.thirsttrap.feature.locations.LocationsScreen
 import dev.dheirav.thirsttrap.feature.stats.StatsScreen
 import dev.dheirav.thirsttrap.feature.timelapse.TimelapseScreen
 import dev.dheirav.thirsttrap.ui.AppIcons
@@ -179,6 +180,7 @@ class MainActivity : ComponentActivity() {
                                 onOpenDiagnose = { nav.navigate(Routes.DIAGNOSE) },
                                 onOpenAmbient = { nav.navigate(Routes.AMBIENT) },
                                 onOpenStats = { nav.navigate(Routes.STATS) },
+                                onOpenPlaces = { nav.navigate(Routes.PLACES) },
                                 onOpenDebug = { nav.navigate(Routes.DEBUG) },
                             )
                         }
@@ -230,6 +232,9 @@ class MainActivity : ComponentActivity() {
                             arguments = listOf(navArgument("id") { type = NavType.StringType }),
                         ) {
                             TimelapseScreen(onBack = { nav.popBackStack() })
+                        }
+                        composable(Routes.PLACES) {
+                            LocationsScreen(onBack = { nav.popBackStack() })
                         }
                         composable(Routes.STATS) {
                             StatsScreen(onBack = { nav.popBackStack() })

@@ -42,6 +42,7 @@ fun SettingsScreen(
     onOpenDiagnose: () -> Unit,
     onOpenAmbient: () -> Unit,
     onOpenStats: () -> Unit,
+    onOpenPlaces: () -> Unit,
     onOpenDebug: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
@@ -166,6 +167,7 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            TextButton(onClick = onOpenPlaces) { Text("Places") }
             TextButton(onClick = onOpenAmbient) { Text("Room conditions") }
             TextButton(onClick = onOpenStats) { Text("Figures") }
 

@@ -133,7 +133,32 @@ class PlantRepositoryImpl @Inject constructor(
 
     override suspend fun upsertPlant(plant: Plant) {
         val now = System.currentTimeMillis()
+        // Requirement 13 asks for a "moved plant" event. CareEventType.MOVED has
+        // existed since the first schema and nothing had ever emitted one.
+        //
+        // Hooked here rather than in the edit screen so it fires wherever a
+        // plant's location changes, and only on a real change - saving the edit
+        // form without touching the location must not manufacture a move.
+        val before = plantDao.observePlant(plant.id).first()?.toDomain()
+        val from = before?.location?.takeIf { it.isNotBlank() }
+        val to = plant.location?.takeIf { it.isNotBlank() }
         plantDao.upsert(plant.toEntity(createdAt = now, updatedAt = now))
+        if (before != null && !from.equals(to, ignoreCase = true)) {
+            eventDao.insert(
+                CareEvent(
+                    id = newId(),
+                    plantId = plant.id,
+                    timestampMillis = now,
+                    tzOffsetMinutes = tzOffsetMinutesAt(now),
+                    type = CareEventType.MOVED,
+                    note = when {
+                        from == null -> "Placed on the $to"
+                        to == null -> "Taken off the $from"
+                        else -> "Moved from $from to $to"
+                    },
+                ).toEntity(now, now),
+            )
+        }
         TTLog.i(TTLog.DATA) { "upsert plant ${plant.id} '${plant.name}'" }
     }
 

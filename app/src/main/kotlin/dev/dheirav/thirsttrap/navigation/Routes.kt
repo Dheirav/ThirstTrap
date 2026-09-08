@@ -18,6 +18,7 @@ object Routes {
     const val DIAGNOSE = "diagnose"
     const val AMBIENT = "ambient"
     const val STATS = "stats"
+    const val PLACES = "places"
     const val TIMELAPSE = "plant/timelapse"
     const val CARE = "plant/care"
     const val PLANT_EDIT = "plant/edit"

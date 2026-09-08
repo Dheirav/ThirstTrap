@@ -166,7 +166,7 @@ complete before any UI is written.*
 
 - [ ] **F11** Experiments module *(req. 11)* — subjects, start date, variable tested, per-day notes/photos, conclusion
 - [ ] **F12** Notes with `[[plant]]` cross-links *(req. 12)*
-- [ ] **F13** Location light/placement notes + `moved` event *(req. 13)*
+- [x] **F13** Location light/placement notes + `moved` event *(req. 13)* — "Places": a gazetteer of the spots plants live in, with a note and the last light reading, which the F22 meter now records instead of discarding. `CareEventType.MOVED` had existed since the first schema and was **never emitted by anything**; a plant's location changing now writes one
 - [ ] **F14** Fertilizer inventory + dilution calculator *(req. 14)* — mL concentrate per L
 - [x] **F15** Stats *(req. 15)* — "Figures": waterings by month, what became of them, days-to-root. Tables with column heads and rules; the only chart is a proportional rule. The survival rate is computed **only over plants that have actually left** and is written as a sentence, not a percentage on its own line — a living plant is not a pending failure
 - [ ] **F16** Cloud backup *(req. 16)* — optional account, **never required for core use**
