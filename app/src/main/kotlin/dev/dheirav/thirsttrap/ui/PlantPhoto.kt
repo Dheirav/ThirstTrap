@@ -1,10 +1,9 @@
 package dev.dheirav.thirsttrap.ui
 
+import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -13,6 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import androidx.compose.ui.platform.LocalContext
 import java.io.File
 
 /**
@@ -40,7 +41,7 @@ fun PlantPhoto(
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    Icons.Filled.BrokenImage,
+                    AppIcons.brokenImage,
                     // Silent when the caller wanted a decorative image, or every
                     // dashboard card would announce a lost file.
                     contentDescription = contentDescription?.let { "$it - file is missing" },
@@ -48,8 +49,14 @@ fun PlantPhoto(
                 )
             }
         } else {
+            // Coil's crossfade is off by default. A photo appearing instantly
+            // on a dark card is a flash; 220ms is the difference between a page
+            // loading and a page blinking.
             AsyncImage(
-                model = path,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(path)
+                    .crossfade(if (Motion.reduced()) 0 else Motion.CONFIRM_MS)
+                    .build(),
                 contentDescription = contentDescription,
                 contentScale = contentScale,
                 modifier = Modifier.fillMaxSize(),
