@@ -76,10 +76,19 @@ enum class ReadingContext(val label: String) {
     ROUTINE("routine"),
 
     /** Immediately before watering. Evidence about where "dry enough" really is. */
-    PRE_WATER("before watering"),
+    PRE_WATER("dry"),
 
-    /** After watering and draining. Re-anchors the wet anchor. */
-    POST_WATER("after watering"),
+    /**
+     * After watering and draining. Re-anchors the wet anchor.
+     *
+     * Deliberately NOT labelled "wet". PRE_WATER only nudges the dry end, which
+     * is a guarded running minimum, so a loose reading of "dry" costs little.
+     * This one resets the wet anchor outright, and "wet" would invite somebody
+     * to pick it because the soil felt damp rather than because they had just
+     * watered - which would silently recalibrate the plant against a pot that
+     * was never full.
+     */
+    POST_WATER("just watered"),
 
     /** The initial wet-anchor capture during calibration. */
     CALIBRATION("calibration"),

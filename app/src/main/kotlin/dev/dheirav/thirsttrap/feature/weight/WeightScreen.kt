@@ -318,15 +318,17 @@ fun WeightScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth().padding(bottom = 14.dp),
                 ) {
+                    // The enum's own labels, not a second copy of the words -
+                    // the chips and the readings table used to be able to drift.
                     listOf(
-                        ReadingContext.ROUTINE to "just checking",
-                        ReadingContext.PRE_WATER to "before watering",
-                        ReadingContext.POST_WATER to "after watering",
-                    ).forEach { (c, label) ->
+                        ReadingContext.ROUTINE,
+                        ReadingContext.PRE_WATER,
+                        ReadingContext.POST_WATER,
+                    ).forEach { c ->
                         FilterChip(
                             selected = context == c,
                             onClick = { viewModel.onContext(c) },
-                            label = { Text(label) },
+                            label = { Text(c.label) },
                         )
                     }
                 }
