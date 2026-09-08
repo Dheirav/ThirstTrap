@@ -200,6 +200,120 @@ Note for a future iOS port: the scanner is the *least* portable part of this.
 AVFoundation. What ports for free is the URI itself - `thirsttrap://plant/{id}`
 - which iOS handles natively through `CFBundleURLTypes`.
 
+### D11 — Two-tier species catalogue, generated from public-domain data (2026-09-08)
+
+The 48 hand-written entries covered the collection and almost nothing else.
+Rather than an API with a key, a quota and a shutdown date, the catalogue is
+seeded from `biologiste95/plant-dataset` (Unlicense) plus the ASPCA toxicity
+list, both vendored under `tools/species-sources/`. 49 curated + 115 generated,
+with 497 aliases.
+
+The two tiers are marked and rendered differently. A curated entry always wins,
+unconditionally - only it knows what actually kills the plant. Full reasoning,
+the code legend and its calibration in `docs/SPECIES-CATALOGUE.md`.
+
+What the dataset actually contains is worth recording, because its README
+oversells it: toxicity is filled on **10 of 250** rows, general care prose on
+**3**, problems on **2**, and the advertised commercial-light column on **none**.
+The real payload is a botanical name, common names, and four *undocumented*
+ordinal codes. The codes are genuinely useful - watering maps straight onto
+`depletionTrigger` - but the legend had to be reverse-engineered and is only
+trustworthy because it agrees with the hand-written tier, which was written
+earlier and independently.
+
+Two rules keep the tiers honest. A generated entry the curated tier already
+answers is **dropped** (102 of 217), which makes a contradiction structurally
+impossible; and the dropped entry **donates its aliases** to the curated entry
+that shadowed it (186 of them), so an old name on a plant label still resolves.
+
+The cross-check found a real bug in the hand-written tier: `Cactus` applied a
+0.85 trigger to Christmas cactus while its own light field said Christmas cactus
+was the exception. *Schlumbergera* is now a separate curated entry at 0.5.
+
+### D12 — Online lookup resolves names, never care (2026-09-08)
+
+The fallback for an unrecognised name is GBIF plus a Wikipedia link, not a care
+API. `SpeciesLookupService` has no field for care advice, so a wrong answer
+costs a wrong link and can never produce a wrong watering schedule. Nothing it
+returns feeds `SpeciesCare`, `depletionTrigger` or any prediction.
+
+Off by default, under Settings → Network, and consent is checked inside the
+service rather than at call sites so there is one place to get it wrong. It
+sends the typed species name and nothing else. `INTERNET` and
+`ACCESS_NETWORK_STATE` are now declared explicitly in the manifest rather than
+inherited through the merge described in D10 - the app uses one deliberately, so
+it should say so.
+
+Built on `HttpURLConnection`. Two calls to two keyless public APIs do not
+justify pulling OkHttp and its interceptor stack into an app whose whole
+argument is that it does not need a network.
+
+### D13 — Every colour role is set explicitly (2026-09-08)
+
+`DarkScheme` and `LightScheme` set `surface` and `background` and left the
+`surfaceContainer*` family to `darkColorScheme()`, whose defaults are M3's
+purple-tinted baseline neutrals. Material's filled `Card` takes its container
+from those roles, so **every card in dark mode rendered at hue ~300 against a
+hue ~156 background** - about 145 degrees out - at 1.08:1 contrast, below
+perceptual threshold. With `elevation = 1.dp` drawing only a shadow, invisible
+on near-black, dark mode had no visible card at all.
+
+An unset role does not fall back to something neutral. It falls back to someone
+else's palette. Both schemes are now complete, including `surfaceDim`,
+`surfaceBright`, `outlineVariant`, `scrim`, the inverse roles and the error
+family.
+
+Two contrast failures were fixed while measuring: light `tertiary` `#C0603F` was
+4.02:1 on the background (now `#A4482A`, 5.67:1), and light `primary` `#2E7D4F`
+was 3.91:1 *on a card* - a failure that only existed once cards became visible
+(now `#276B44`, 4.97:1). Dark `primary` dropped from OKLCH L 82 to 76: on a
+near-black screen the depletion bar made the old value the brightest object in
+the room.
+
+`core/ui` now has a unit test suite that measures the palette in OKLCH -
+hue consistency, a monotonic surface ramp, a card distinguishable from its
+background, a real lightness ladder in the text roles, and WCAG AA for body
+text on both the background and a card. It was verified against the bug: with
+the roles removed it fails with *"dark surfaceContainerLowest is 144 degrees off
+the background hue (300 vs 155)"*.
+
+Background: `docs/DESIGN-RESEARCH.md`, change 1 of 12.
+
+### D14 — Three bugs the device found that the tests did not (2026-09-08)
+
+All three shipped through a green build and a passing suite. Recorded because
+each is a *category* of thing unit tests here cannot see.
+
+**Doubled status-bar inset, on every screen.** `MainActivity`'s Scaffold has no
+`topBar`, but a Scaffold hands its content the status-bar inset regardless, and
+that padding went onto the `NavHost`. Every screen inside then has its own
+Scaffold whose `TopAppBar` applies the same inset again. Measured on device:
+**268px of dead space above every title, 82dp at this density**, down to 116px /
+36dp - normal M3 title padding - once the outer Scaffold was given
+`contentWindowInsets = WindowInsets(0, 0, 0, 0)`. It only places the bottom nav;
+`NavigationBar` handles its own inset. Found by the user looking at the screen,
+not by anything automated.
+
+**The online lookup was unreachable.** `PlantDetailScreen` gated both routes to
+the care screen on `hasSpeciesCare()` - correct when there was no fallback, and
+exactly backwards once the care screen's empty state became the only way to
+reach the name lookup. The feature was gated off for precisely the plants it
+exists for. The menu item is now always enabled; the "not on file" hint stays.
+
+**GBIF answers everything, including nonsense.** Asked for "Flax seeds" it
+returns `matchType: HIGHERRANK`, `rank: KINGDOM`, `canonicalName: Plantae` at
+99 confidence. The service only rejected `matchType == "NONE"`, so the screen
+rendered *"Plantae"* with an encyclopaedia article about photosynthesis, framed
+as the resolved identity of the plant. The generator already guarded this exact
+trap (`Begonia President` resolving to `Bigonia`); the guard was never carried
+to runtime. Now `isUsableMatch` in `:core:domain` requires a real taxon rank -
+species through genus, never family or above - and rejects weak fuzzy matches,
+with `SpeciesLookupTest` covering it.
+
+The pattern in all three: a green suite and a screen nobody had looked at. The
+palette test suite added in D13 exists for the same reason and would not have
+caught any of these.
+
 ### D9 — MIT licence (2026-09-06)
 
 `LICENSE` to be added at `git init`. Copyright holder: the repo owner, under

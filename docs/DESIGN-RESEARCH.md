@@ -239,6 +239,10 @@ ours: texture, grain and warmth as a reaction to AI-generated visual sameness.
 Values generated in OKLCH and contrast-checked. [J] from [M] data.
 
 **1. Complete the dark colour scheme.** Highest leverage by a wide margin.
+**DONE 2026-09-08** - both schemes, all roles, plus a measuring test suite in
+`core/ui/src/test`. See handover D13. Two contrast failures fell out of doing
+it: light `tertiary` at 4.02:1, and light `primary` at 3.91:1 *on a card*, a
+failure that only existed once cards became visible.
 
 ```kotlin
 surfaceContainerLowest  = Color(0xFF090D0A)
