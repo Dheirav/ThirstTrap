@@ -495,7 +495,38 @@ should be covered by a `MigrationTestHelper` test; the `androidTest` directory
 existed and was empty. Room validates an auto-migration against the exported
 schemas at compile time, which catches a malformed migration and says nothing
 about whether the rows on someone's phone survive it. `MigrationTest` now covers
-6 to 7 with a real plant and a real weight reading, plus a 1-to-7 walk.
+6 to 7 with a real plant and a real weight reading, plus a 1-to-7 walk. Both pass
+on the device.
+
+Running them needs a detour: Gradle's `connectedAndroidTest` installer trips
+MIUI's `INSTALL_FAILED_USER_RESTRICTED`, because the test APK is a *new* package
+rather than an update. `adb install -r -t` of
+`core/data/build/outputs/apk/androidTest/debug/data-debug-androidTest.apk`
+followed by `am instrument -w -e class dev.dheirav.thirsttrap.data.MigrationTest
+dev.dheirav.thirsttrap.data.test/androidx.test.runner.AndroidJUnitRunner` works.
+
+**The manifest recorded the wrong schema version.** `DATABASE_VERSION` was a
+private constant in `ExportRepositoryImpl` that stopped at 4 while the database
+went to 7, so every backup since has carried a stale number - and the importer's
+"written by a newer version of the app" warning has been comparing against it.
+It now lives beside the `@Database` annotation and feeds both.
+
+### Verified on the device
+
+The v6-to-v7 migration ran against the real database with a backup taken first:
+4 plants, 13 events, 6 photos, 4 reminders, identical before and after, no
+crash. The ambient screen records, persists, exports and deletes; the test row
+was removed afterwards, so nothing is left behind.
+
+One thing to know for future device work: `adb shell input tap` fires
+ACTION_DOWN and ACTION_UP about 8ms apart, and some Compose buttons do not
+register it. `input swipe x y x y 120` presses for 120ms and does. A control
+that looks broken under `input tap` is worth re-testing that way before being
+called a bug.
+
+The grain overlay added in D16 also means screenshots no longer contain exact
+theme hex values - every pixel is perturbed by a point or two. Pixel assertions
+against the palette need a tolerance now.
 
 ### Not built
 
