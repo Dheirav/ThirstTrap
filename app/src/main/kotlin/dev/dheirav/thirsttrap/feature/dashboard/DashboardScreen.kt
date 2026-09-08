@@ -45,7 +45,9 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -68,6 +70,7 @@ import dev.dheirav.thirsttrap.domain.CareEvent
 import dev.dheirav.thirsttrap.domain.PlantAttention
 import dev.dheirav.thirsttrap.domain.Prediction
 import dev.dheirav.thirsttrap.domain.SuppressionReason
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
@@ -108,6 +111,20 @@ fun DashboardScreen(
     }
 
     var frozenOrder by remember { mutableStateOf<List<String>?>(null) }
+    // Counts snackbars still in flight. Watering several plants in a row is
+    // normal, and the first one finishing must not unfreeze the order while a
+    // later undo is still offered.
+    var pendingUndos by remember { mutableIntStateOf(0) }
+    // A ticking clock, not a value frozen at composition. Without it a reminder
+    // falling due at 09:00 shows no badge until some unrelated database write
+    // happens to re-emit the flow.
+    val now by produceState(System.currentTimeMillis()) {
+        while (true) {
+            value = System.currentTimeMillis()
+            delay(60_000)
+        }
+    }
+
     val items = remember(state.items, frozenOrder) {
         val order = frozenOrder ?: return@remember state.items
         val byId = state.items.associateBy { it.plant.id }
@@ -117,10 +134,12 @@ fun DashboardScreen(
     fun announce(event: CareEvent, message: String) {
         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
         frozenOrder = items.map { it.plant.id }
+        pendingUndos++
         scope.launch {
             val result = snackbarHost.showSnackbar(message, "UNDO", duration = SnackbarDuration.Short)
             if (result == SnackbarResult.ActionPerformed) viewModel.undo(event)
-            frozenOrder = null
+            pendingUndos--
+            if (pendingUndos == 0) frozenOrder = null
         }
     }
 
@@ -168,7 +187,7 @@ fun DashboardScreen(
                 items(items, key = { it.plant.id }) { item ->
                     PlantCard(
                         item = item,
-                        nowMillis = System.currentTimeMillis(),
+                        nowMillis = now,
                         onQuickWater = {
                             viewModel.logWatered(item.plant.id, item.suggestedWaterMl) { event ->
                                 announce(event, wateredMessage(item.plant.name, item.suggestedWaterMl))
@@ -394,9 +413,15 @@ private fun PredictionLine(prediction: Prediction) {
             prediction.days < 2.0 -> "Water tomorrow"
             else -> "Water in about ${prediction.days.toInt()} days"
         }
-        // Telling someone to weigh a cutting in a jar is nonsense; say nothing.
-        is Prediction.NeedAnotherReading ->
-            if (prediction.reason == SuppressionReason.WEIGHT_MEANINGLESS_FOR_MEDIUM) null else null
+        is Prediction.NeedAnotherReading -> when (prediction.reason) {
+            // Telling someone to weigh a cutting in a jar is nonsense.
+            SuppressionReason.WEIGHT_MEANINGLESS_FOR_MEDIUM -> null
+            SuppressionReason.NOT_CALIBRATED -> null
+            SuppressionReason.NEEDS_RECALIBRATION -> "Needs recalibrating"
+            SuppressionReason.NO_MEASURABLE_DRYING -> "Not drying measurably yet"
+            SuppressionReason.NO_READINGS,
+            SuppressionReason.ONE_READING_NO_HISTORY -> "Weigh once more to predict"
+        }
     } ?: return
 
     Text(

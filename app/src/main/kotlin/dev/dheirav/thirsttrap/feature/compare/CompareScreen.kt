@@ -3,6 +3,7 @@ package dev.dheirav.thirsttrap.feature.compare
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,10 +34,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -187,14 +190,41 @@ private fun ZoomPane(
     onTransform: (Float, Offset) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // rememberUpdatedState, because pointerInput(Unit) starts its suspend block
+    // once and would otherwise keep multiplying against the scale from the very
+    // first composition.
+    val currentScale by rememberUpdatedState(scale)
+    val currentOffset by rememberUpdatedState(offset)
+    val onTransformNow by rememberUpdatedState(onTransform)
+
     Box(
         modifier
             .background(MaterialTheme.colorScheme.surfaceVariant)
+            .clipToBounds()
             .pointerInput(Unit) {
                 detectTransformGestures { _, pan, zoom, _ ->
-                    val next = (scale * zoom).coerceIn(1f, 6f)
-                    onTransform(next, if (next <= 1f) Offset.Zero else offset + pan)
+                    val next = (currentScale * zoom).coerceIn(1f, 6f)
+                    if (next <= 1f) {
+                        onTransformNow(1f, Offset.Zero)
+                    } else {
+                        // Clamp the pan to the scaled image, or the photo can be
+                        // flung off-screen with no way back short of zooming out.
+                        val maxX = size.width * (next - 1f) / 2f
+                        val maxY = size.height * (next - 1f) / 2f
+                        val moved = currentOffset + pan
+                        onTransformNow(
+                            next,
+                            Offset(
+                                moved.x.coerceIn(-maxX, maxX),
+                                moved.y.coerceIn(-maxY, maxY),
+                            ),
+                        )
+                    }
                 }
+            }
+            .pointerInput(Unit) {
+                // The only escape from a zoom was pinching back to exactly 1x.
+                detectTapGestures(onDoubleTap = { onTransformNow(1f, Offset.Zero) })
             },
         contentAlignment = Alignment.Center,
     ) {

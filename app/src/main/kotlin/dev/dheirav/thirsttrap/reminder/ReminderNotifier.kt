@@ -59,6 +59,9 @@ object ReminderNotifier {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .setOnlyAlertOnce(true)
+            // Tapping the body opens the plant it is about. Without this the
+            // notification is inert AND setAutoCancel has nothing to cancel on.
+            .setContentIntent(openPlant(context, plantId))
             // Equal weight. Neither answer is styled as the primary one, because
             // "still wet" is just as correct as "watered".
             .addAction(0, "Watered", action(context, plantId, plantName, ReminderActionReceiver.ACTION_WATERED))
@@ -78,6 +81,23 @@ object ReminderNotifier {
 
     fun dismiss(context: Context, plantId: String) {
         NotificationManagerCompat.from(context).cancel(notificationId(plantId))
+    }
+
+    /** Deep-links into the plant, so the reminder leads somewhere. */
+    private fun openPlant(context: Context, plantId: String): PendingIntent {
+        val intent = Intent(
+            Intent.ACTION_VIEW,
+            android.net.Uri.parse("thirsttrap://plant/$plantId"),
+            context,
+            Class.forName("dev.dheirav.thirsttrap.MainActivity"),
+        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+        return PendingIntent.getActivity(
+            context,
+            plantId.hashCode(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
     }
 
     private fun action(context: Context, plantId: String, plantName: String, what: String): PendingIntent {

@@ -112,11 +112,16 @@ fun PlantDetailScreen(
                             }
                         }
                     }
-                    IconButton(onClick = capture.pickFromGallery) {
-                        Icon(Icons.Filled.PhotoLibrary, contentDescription = "Add from gallery")
-                    }
-                    IconButton(onClick = capture.takePhoto) {
-                        Icon(Icons.Filled.AddAPhoto, contentDescription = "Take a photo")
+                    // Guarded like the rest: without this you could still shoot
+                    // a photo on a screen whose plant had just been deleted, and
+                    // it would be filed against a plantId that no longer exists.
+                    if (plant != null) {
+                        IconButton(onClick = capture.pickFromGallery) {
+                            Icon(Icons.Filled.PhotoLibrary, contentDescription = "Add from gallery")
+                        }
+                        IconButton(onClick = capture.takePhoto) {
+                            Icon(Icons.Filled.AddAPhoto, contentDescription = "Take a photo")
+                        }
                     }
                     plant?.let { p ->
                         IconButton(onClick = { onEdit(p.id) }) {

@@ -68,6 +68,7 @@ fun WeightScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val entry by viewModel.entry.collectAsStateWithLifecycle()
     val context by viewModel.context.collectAsStateWithLifecycle()
+    val hint by viewModel.hint.collectAsStateWithLifecycle()
     var showCalibration by remember { mutableStateOf(false) }
 
     LaunchedEffect(state?.isCalibrated) { state?.let(viewModel::suggestContext) }
@@ -136,6 +137,15 @@ fun WeightScreen(
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(vertical = 12.dp),
             )
+
+            hint?.let {
+                Text(
+                    it,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 12.dp),
+                )
+            }
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(bottom = 12.dp)) {
                 listOf(
@@ -259,7 +269,10 @@ private fun PredictionHeadline(s: WeightState) {
 /** A fraction between the anchors, never raw grams - docs/WATERING-MODEL.md section 8. */
 @Composable
 private fun DepletionBar(s: WeightState) {
-    val d = s.depletion ?: return
+    // NaN is reachable when the wet and dry anchors collapse onto each other.
+    // It renders as a confident "0%" and goes into fillMaxWidth, so it is
+    // caught here rather than shown.
+    val d = s.depletion?.takeIf { it.isFinite() } ?: return
     val trigger = s.plant.depletionTrigger
     val past = s.prediction is Prediction.WaterNow
     Column {
@@ -428,38 +441,80 @@ private fun WeightChart(s: WeightState, modifier: Modifier = Modifier) {
     val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
 
     Canvas(modifier) {
-        val minT = points.first().timestampMillis.toFloat()
-        val maxT = points.last().timestampMillis.toFloat()
-        val spanT = max(1f, maxT - minT)
+        // Time as days-since-first in Double before it touches Float. Epoch
+        // millis through Float has a ULP of ~131 seconds at present dates, so
+        // readings would quantise into roughly two-minute buckets.
+        val originT = points.first().timestampMillis
+        fun days(t: Long) = (t - originT) / 86_400_000.0
+        val spanD = max(1e-6, days(points.last().timestampMillis))
 
-        val lo = min(anchors.dryGrams, points.minOf { it.grams }).toFloat()
-        val hi = max(anchors.wetGrams, points.maxOf { it.grams }).toFloat()
-        val spanG = max(1f, hi - lo)
+        val lo = min(anchors.dryGrams, points.minOf { it.grams })
+        val hi = max(anchors.wetGrams, points.maxOf { it.grams })
+        val spanG = max(1.0, hi - lo)
 
-        fun x(t: Long) = (t.toFloat() - minT) / spanT * size.width
-        fun y(g: Double) = size.height - ((g.toFloat() - lo) / spanG * size.height)
+        // Inset, or the topmost point and the first and last are half-clipped
+        // by the canvas edge.
+        val padY = 8.dp.toPx()
+        val plotH = size.height - padY * 2
+        val padX = 6.dp.toPx()
+        val plotW = size.width - padX * 2
 
-        // Wet, dry and the trigger between them.
-        drawLine(surfaceVariant, Offset(0f, y(anchors.wetGrams)), Offset(size.width, y(anchors.wetGrams)), 2f)
-        drawLine(surfaceVariant, Offset(0f, y(anchors.dryGrams)), Offset(size.width, y(anchors.dryGrams)), 2f)
+        fun x(t: Long) = padX + (days(t) / spanD * plotW).toFloat()
+        fun y(g: Double) = padY + (plotH - ((g - lo) / spanG * plotH)).toFloat()
+
+        drawLine(outline, Offset(0f, y(anchors.wetGrams)), Offset(size.width, y(anchors.wetGrams)),
+            1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f)))
+        drawLine(outline, Offset(0f, y(anchors.dryGrams)), Offset(size.width, y(anchors.dryGrams)),
+            1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(4f, 6f)))
         val triggerG = anchors.triggerWeight(s.plant.depletionTrigger)
-        drawLine(
-            tertiary, Offset(0f, y(triggerG)), Offset(size.width, y(triggerG)), 3f,
-            pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 8f)),
-        )
+        drawLine(tertiary, Offset(0f, y(triggerG)), Offset(size.width, y(triggerG)),
+            1.5.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 8f)))
 
-        // A vertical at each segment start, so the sawtooth is visible.
+        // One polyline PER SEGMENT. Joining the last reading of one drying
+        // cycle to the first of the next would draw exactly the continuous fit
+        // across a watering that the model refuses to compute.
+        s.segments.forEach { segment ->
+            val seg = segment.readings.filterNot { it.excluded }
+            for (i in 0 until seg.size - 1) {
+                val a = seg[i]
+                val b = seg[i + 1]
+                drawLine(
+                    primary,
+                    Offset(x(a.timestampMillis), y(a.grams)),
+                    Offset(x(b.timestampMillis), y(b.grams)),
+                    2.dp.toPx(),
+                )
+            }
+        }
+
+        // Where each new cycle began.
         s.segments.drop(1).forEach { seg ->
-            seg.first?.let { drawLine(outline, Offset(x(it.timestampMillis), 0f), Offset(x(it.timestampMillis), size.height), 1.5f) }
+            seg.first?.let {
+                drawLine(outline, Offset(x(it.timestampMillis), 0f),
+                    Offset(x(it.timestampMillis), size.height), 1.dp.toPx())
+            }
         }
 
-        for (i in 0 until points.size - 1) {
-            val a = points[i]
-            val b = points[i + 1]
-            drawLine(primary, Offset(x(a.timestampMillis), y(a.grams)), Offset(x(b.timestampMillis), y(b.grams)), 4f)
+        // The fit over the current segment, dashed on to where it crosses the
+        // trigger - the one element that makes the prediction legible.
+        val slope = s.slopeGramsPerDay
+        val last = s.segments.lastOrNull()?.readings?.lastOrNull { !it.excluded }
+        if (slope != null && slope < 0 && last != null) {
+            val daysToTrigger = (last.grams - triggerG) / -slope
+            if (daysToTrigger > 0) {
+                val endX = padX + ((days(last.timestampMillis) + daysToTrigger) / spanD * plotW).toFloat()
+                drawLine(
+                    tertiary,
+                    Offset(x(last.timestampMillis), y(last.grams)),
+                    Offset(endX.coerceAtMost(size.width), y(triggerG)),
+                    1.5.dp.toPx(),
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(8f, 8f)),
+                )
+            }
         }
+
         points.forEach {
-            drawCircle(primary, radius = 6f, center = Offset(x(it.timestampMillis), y(it.grams)))
+            drawCircle(primary, radius = 3.dp.toPx(), center = Offset(x(it.timestampMillis), y(it.grams)))
         }
     }
 }

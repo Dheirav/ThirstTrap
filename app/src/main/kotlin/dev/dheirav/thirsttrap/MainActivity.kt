@@ -13,6 +13,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.foundation.layout.padding
@@ -167,6 +168,8 @@ class MainActivity : ComponentActivity() {
                         composable(
                             route = "${Routes.PLANT_DETAIL}/{id}",
                             arguments = listOf(navArgument("id") { type = NavType.StringType }),
+                            // Lets a reminder notification open the plant it is about.
+                            deepLinks = listOf(navDeepLink { uriPattern = "thirsttrap://plant/{id}" }),
                         ) {
                             PlantDetailScreen(
                                 onBack = { nav.popBackStack() },
@@ -182,7 +185,17 @@ class MainActivity : ComponentActivity() {
                                 navArgument("id") { type = NavType.StringType; defaultValue = "" },
                             ),
                         ) {
-                            PlantEditScreen(onDone = { nav.popBackStack() })
+                            PlantEditScreen(
+                                onDone = { nav.popBackStack() },
+                                // A deleted or archived plant has no detail
+                                // screen to go back to - popping one step would
+                                // land on a ghost.
+                                onPlantGone = {
+                                    nav.navigate(Routes.DASHBOARD) {
+                                        popUpTo(Routes.DASHBOARD) { inclusive = true }
+                                    }
+                                },
+                            )
                         }
                     }
                 }

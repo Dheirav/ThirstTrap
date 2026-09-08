@@ -54,7 +54,9 @@ class WeightViewModel @Inject constructor(
      * Defaults sensibly: a plant already past its trigger is almost certainly
      * being weighed just before watering it.
      */
+    /** Only ever moves the chip when the user has not already chosen one. */
     fun suggestContext(s: WeightState) {
+        if (_context.value != ReadingContext.ROUTINE) return
         _context.value = if (s.prediction is Prediction.WaterNow) {
             ReadingContext.PRE_WATER
         } else {
@@ -62,13 +64,31 @@ class WeightViewModel @Inject constructor(
         }
     }
 
+    private val _hint = MutableStateFlow<String?>(null)
+    val hint: StateFlow<String?> = _hint.asStateFlow()
+
+    fun clearHint() { _hint.value = null }
+
     fun save(onDone: () -> Unit) {
         val grams = _entry.value.toDoubleOrNull() ?: return
         if (grams <= 0) return
+        val saved = _context.value
         viewModelScope.launch {
-            repository.addReading(plantId, grams, _context.value)
+            repository.addReading(plantId, grams, saved)
             rescheduleFromPrediction()
             _entry.value = ""
+
+            // The documented flow is "weigh before watering, weigh after". The
+            // chip used to stay on PRE_WATER for that second weigh, which meant
+            // it was stored as another pre-water reading and the wet anchor was
+            // never re-captured - so it silently went stale as the plant grew.
+            // Advance it, and say so, rather than relying on the user noticing.
+            if (saved == ReadingContext.PRE_WATER) {
+                _context.value = ReadingContext.POST_WATER
+                _hint.value = "Water it, then weigh again - I'll take that as the new full mark."
+            } else {
+                _context.value = ReadingContext.ROUTINE
+            }
             onDone()
         }
     }

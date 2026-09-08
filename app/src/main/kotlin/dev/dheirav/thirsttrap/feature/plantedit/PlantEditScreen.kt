@@ -41,6 +41,7 @@ import dev.dheirav.thirsttrap.domain.PlantSource
 @Composable
 fun PlantEditScreen(
     onDone: () -> Unit,
+    onPlantGone: () -> Unit,
     viewModel: PlantEditViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -186,7 +187,7 @@ fun PlantEditScreen(
 
             if (!state.isNew) {
                 TextButton(
-                    onClick = { viewModel.archive(onDone) },
+                    onClick = { viewModel.archive(onPlantGone) },
                     modifier = Modifier.fillMaxWidth(),
                 ) { Text("Archive (keeps its history)") }
 
@@ -213,7 +214,7 @@ fun PlantEditScreen(
                 )
             },
             confirmButton = {
-                TextButton(onClick = { confirmDelete = false; viewModel.delete(onDone) }) {
+                TextButton(onClick = { confirmDelete = false; viewModel.delete(onPlantGone) }) {
                     Text("Delete", color = MaterialTheme.colorScheme.error)
                 }
             },
