@@ -21,6 +21,9 @@ interface PlantRepository {
 
     fun observeEvents(plantId: String): Flow<List<CareEvent>>
 
+    /** Every event, across every plant. For stats, which count the collection. */
+    fun observeAllEvents(): Flow<List<CareEvent>>
+
     suspend fun upsertPlant(plant: Plant)
 
     suspend fun archivePlant(plantId: String, archived: Boolean)

@@ -168,7 +168,7 @@ complete before any UI is written.*
 - [ ] **F12** Notes with `[[plant]]` cross-links *(req. 12)*
 - [ ] **F13** Location light/placement notes + `moved` event *(req. 13)*
 - [ ] **F14** Fertilizer inventory + dilution calculator *(req. 14)* — mL concentrate per L
-- [ ] **F15** Stats *(req. 15)* — waterings/month, survival rate, average days-to-root
+- [x] **F15** Stats *(req. 15)* — "Figures": waterings by month, what became of them, days-to-root. Tables with column heads and rules; the only chart is a proportional rule. The survival rate is computed **only over plants that have actually left** and is written as a sentence, not a percentage on its own line — a living plant is not a pending failure
 - [ ] **F16** Cloud backup *(req. 16)* — optional account, **never required for core use**
 - [ ] **F25** Pl@ntNet ID *(req. 25)* — free tier 500/day, up to 5 images with `organs` tags, confidence scores, **in-app quota display**; suggestion only, never required
 - [ ] **F25b** Kindwise plant.health — bring-your-own-API-key settings field, costs the app nothing

@@ -7,6 +7,7 @@ import dev.dheirav.thirsttrap.domain.CareEvent
 import dev.dheirav.thirsttrap.domain.CareEventType
 import dev.dheirav.thirsttrap.domain.CheckResult
 import dev.dheirav.thirsttrap.domain.Medium
+import dev.dheirav.thirsttrap.domain.PropagationStage
 import dev.dheirav.thirsttrap.domain.Plant
 import dev.dheirav.thirsttrap.domain.PlantSource
 import dev.dheirav.thirsttrap.domain.PlantStatus
@@ -107,6 +108,9 @@ fun CareEventEntity.toDomain(): CareEvent = CareEvent(
     fromMedium = fromMedium?.let { decode(it, Medium.UNKNOWN) },
     toMedium = toMedium?.let { decode(it, Medium.UNKNOWN) },
     cause = cause,
+    propagationStage = propagationStage?.let {
+        runCatching { PropagationStage.valueOf(it.uppercase()) }.getOrNull()
+    },
 )
 
 fun CareEvent.toEntity(createdAt: Long, updatedAt: Long): CareEventEntity = CareEventEntity(
@@ -124,6 +128,7 @@ fun CareEvent.toEntity(createdAt: Long, updatedAt: Long): CareEventEntity = Care
     fromMedium = fromMedium?.name,
     toMedium = toMedium?.name,
     cause = cause,
+    propagationStage = propagationStage?.name,
     createdAt = createdAt,
     updatedAt = updatedAt,
 )

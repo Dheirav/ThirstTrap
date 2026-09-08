@@ -160,6 +160,16 @@ data class CareEvent(
     val fromMedium: Medium? = null,
     val toMedium: Medium? = null,
     val cause: String? = null,
+    /**
+     * Set on the MILESTONE event a stage change writes.
+     *
+     * The note already said "Moved to rooting", but deriving a statistic by
+     * parsing that prose would break silently the first time somebody reworded
+     * it, and a wrong average is worse than no average. Null on every event
+     * written before this column existed, which the stats screen states rather
+     * than quietly averaging over.
+     */
+    val propagationStage: PropagationStage? = null,
 )
 
 @Serializable

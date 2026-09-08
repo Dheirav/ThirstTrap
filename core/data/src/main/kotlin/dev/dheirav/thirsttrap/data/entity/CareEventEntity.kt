@@ -41,6 +41,8 @@ data class CareEventEntity(
     @ColumnInfo(name = "to_medium") val toMedium: String? = null,
     @ColumnInfo(name = "milestone_kind") val milestoneKind: String? = null,
     val cause: String? = null,
+    /** Structured counterpart to the "Moved to rooting" note. */
+    @ColumnInfo(name = "propagation_stage") val propagationStage: String? = null,
     @ColumnInfo(name = "created_at") val createdAt: Long,
     @ColumnInfo(name = "updated_at") val updatedAt: Long,
 )

@@ -32,7 +32,7 @@ import dev.dheirav.thirsttrap.data.entity.ReminderEntity
  * recorded the wrong schema version, and the importer's "written by a newer
  * version of the app" warning has been comparing against a stale number.
  */
-const val DATABASE_VERSION = 7
+const val DATABASE_VERSION = 8
 
 @Database(
     entities = [PlantEntity::class, CareEventEntity::class, ReminderEntity::class, PhotoEntity::class, WeightReadingEntity::class, AmbientReadingEntity::class],
@@ -49,6 +49,8 @@ const val DATABASE_VERSION = 7
         AutoMigration(from = 5, to = 6),
         // v7 only adds the ambient_readings table, so Room can generate it.
         AutoMigration(from = 6, to = 7),
+        // v8 adds a nullable column to care_events; Room can generate it.
+        AutoMigration(from = 7, to = 8),
     ],
 )
 abstract class ThirstTrapDatabase : RoomDatabase() {

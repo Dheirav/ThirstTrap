@@ -128,6 +128,9 @@ class PlantRepositoryImpl @Inject constructor(
     override fun observeEvents(plantId: String): Flow<List<CareEvent>> =
         eventDao.observeForPlant(plantId).map { rows -> rows.map { it.toDomain() } }
 
+    override fun observeAllEvents(): Flow<List<CareEvent>> =
+        eventDao.observeAll().map { rows -> rows.map { it.toDomain() } }
+
     override suspend fun upsertPlant(plant: Plant) {
         val now = System.currentTimeMillis()
         plantDao.upsert(plant.toEntity(createdAt = now, updatedAt = now))
@@ -177,6 +180,9 @@ class PlantRepositoryImpl @Inject constructor(
                 tzOffsetMinutes = tzOffsetMinutesAt(now),
                 type = CareEventType.MILESTONE,
                 note = "Moved to ${stage.label.lowercase()}",
+                // The note is for a human reading the timeline; this is for
+                // anything that needs to count.
+                propagationStage = stage,
             ).toEntity(now, now),
         )
         TTLog.i(TTLog.DATA) { "propagation $plantId -> $stage" }

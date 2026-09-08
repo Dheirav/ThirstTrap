@@ -536,6 +536,55 @@ labelling are already in place for it. Open-Meteo is the obvious fit - free,
 keyless, and geocodable by city name, so it needs no location permission. Worth
 doing, because nobody logs a thermometer by hand for six months.
 
+### D19 — F15 counts, it does not score (2026-09-08)
+
+Requirement 15 asks for waterings per month, a survival rate and an average
+days-to-root. Two of those are plain measurements. **"Survival rate" is a
+failure count wearing a percentage**, and the requirements list gamification and
+anything that makes a missed day feel like failure as an explicit anti-goal.
+
+It is built, because it was asked for and because it is the thing somebody
+genuinely wants to know after a year. Three things keep it from becoming a
+score. It is computed **only over plants that have actually left** - a living
+plant is not a pending failure, so it is not in the divisor. It is **null until
+something has left**, because a collection where nothing has died does not have
+a 100% survival rate, it has no data, and showing 100% invites watching it fall.
+And it is written as a **sentence about the ones that went**, not a percentage
+on its own line.
+
+**Days-to-root needed a schema change first.** A stage move was recorded only as
+the free-text note "Moved to rooting". Deriving a statistic by parsing that
+would break silently the first time somebody reworded it, and a wrong average is
+worse than none - so `care_events` gained a nullable `propagation_stage` column
+(v8, auto-migration). Events written before it are counted as `untracked` and
+stated on screen rather than averaged over as zero.
+
+The median, not the mean: one cutting left in a jar for five months would drag
+an average somewhere useless, and at these sample sizes that is likely rather
+than rare.
+
+**The month table starts at the first watering**, not a fixed twelve months
+back. A new diary was showing eleven rows of dashes for a year it did not exist
+in, which buried the single row that had anything in it. Gaps *inside* the
+record are still kept, because a quiet spell is the interesting part.
+
+### D20 — A stray tap deleted one of the user's care events (2026-09-08)
+
+During the screen sweep, one of the synthetic taps used to drive the app landed
+on a timeline row and deleted an OBSERVATION on the Creeping fig from 8 Sep
+01:54. It was noticed only because the stats screen reported 12 entries while a
+backup taken earlier in the session recorded 13.
+
+Restored from that backup via the debug import, after diffing to confirm the
+restore was a no-op for everything else: plants, photos and reminders were
+byte-identical, and the twelve surviving events differed only by the new
+`propagationStage` field being absent rather than null.
+
+The lesson is not "be careful". It is that **driving somebody's real diary with
+synthetic taps will eventually write to it**, and the only reason this was
+recoverable was that a backup had been taken before the migration earlier that
+day. Take one before any tap-driven session, and check the counts afterwards.
+
 ### D9 — MIT licence (2026-09-06)
 
 `LICENSE` to be added at `git init`. Copyright holder: the repo owner, under

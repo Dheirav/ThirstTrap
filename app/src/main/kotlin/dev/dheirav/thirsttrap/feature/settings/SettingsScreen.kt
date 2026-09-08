@@ -41,6 +41,7 @@ fun SettingsScreen(
     onOpenHelp: () -> Unit,
     onOpenDiagnose: () -> Unit,
     onOpenAmbient: () -> Unit,
+    onOpenStats: () -> Unit,
     onOpenDebug: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
@@ -166,6 +167,7 @@ fun SettingsScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             TextButton(onClick = onOpenAmbient) { Text("Room conditions") }
+            TextButton(onClick = onOpenStats) { Text("Figures") }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             SectionHeader("Watering")
