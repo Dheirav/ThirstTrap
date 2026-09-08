@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Spa
 import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.WaterDrop
@@ -93,6 +94,7 @@ fun DashboardScreen(
     onOpenPlant: (String) -> Unit,
     onLogMore: (String) -> Unit,
     onOpenPropagation: () -> Unit,
+    onScanned: (String) -> Unit,
     viewModel: DashboardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -102,6 +104,7 @@ fun DashboardScreen(
     val snackbarHost = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val haptics = LocalHapticFeedback.current
+    val ctx = androidx.compose.ui.platform.LocalContext.current
 
     var sheetFor by remember { mutableStateOf<PlantAttention?>(null) }
     val sheetState = rememberModalBottomSheetState()
@@ -162,6 +165,15 @@ fun DashboardScreen(
             TopAppBar(
                 title = { Text("Plants") },
                 actions = {
+                    IconButton(onClick = {
+                        dev.dheirav.thirsttrap.feature.qr.ScanPot.scan(
+                            context = ctx,
+                            onPlantId = onScanned,
+                            onProblem = { scope.launch { snackbarHost.showSnackbar(it) } },
+                        )
+                    }) {
+                        Icon(Icons.Filled.QrCodeScanner, contentDescription = "Scan a pot sticker")
+                    }
                     IconButton(onClick = onOpenPropagation) {
                         Icon(Icons.Filled.Spa, contentDescription = "Propagation board")
                     }

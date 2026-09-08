@@ -79,6 +79,7 @@ fun PlantDetailScreen(
     onCompare: (String) -> Unit,
     onWeigh: (String) -> Unit,
     onMeasureLight: (String) -> Unit,
+    onSticker: (String) -> Unit,
     viewModel: PlantDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -142,6 +143,10 @@ fun PlantDetailScreen(
                                 DropdownMenuItem(
                                     text = { Text("Measure the light here") },
                                     onClick = { menuOpen = false; onMeasureLight(p.id) },
+                                )
+                                DropdownMenuItem(
+                                    text = { Text("Pot sticker") },
+                                    onClick = { menuOpen = false; onSticker(p.id) },
                                 )
                                 DropdownMenuItem(
                                     text = { Text("Edit plant") },

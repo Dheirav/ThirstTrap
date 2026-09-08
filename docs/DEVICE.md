@@ -208,6 +208,16 @@ matters less, but it is free to set up and pays off the moment you go wireless.
 
 ---
 
+## 3b. Permissions, and what the app can actually reach
+
+Declared in our own manifest: `POST_NOTIFICATIONS`, `VIBRATE`. That is all.
+
+`INTERNET` arrives **transitively** from the ML Kit code scanner, so
+`dumpsys package` shows it granted while the manifest shows two permissions.
+Do not read that as the app being offline-only any more - see handover D10.
+There is still no `CAMERA` permission: Play Services owns the camera during a
+scan and hands back only the decoded string.
+
 ## 4. Toolchain — already configured, do not "fix" it
 
 | | Location | Notes |

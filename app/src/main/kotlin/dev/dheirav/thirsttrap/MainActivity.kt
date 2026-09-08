@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.Settings
 import dev.dheirav.thirsttrap.feature.backup.BackupScreen
 import dev.dheirav.thirsttrap.feature.light.LightMeterScreen
 import dev.dheirav.thirsttrap.feature.postmortem.PostMortemScreen
+import dev.dheirav.thirsttrap.feature.qr.StickerScreen
 import dev.dheirav.thirsttrap.feature.propagation.PropagationScreen
 import dev.dheirav.thirsttrap.feature.settings.SettingsScreen
 import dev.dheirav.thirsttrap.feature.weight.ScaleHelpScreen
@@ -106,6 +107,7 @@ class MainActivity : ComponentActivity() {
                                 onOpenPlant = { id -> nav.navigate(Routes.plantDetail(id)) },
                                 onLogMore = { id -> nav.navigate(Routes.logEvent(id)) },
                                 onOpenPropagation = { nav.navigate(Routes.PROPAGATION) },
+                                onScanned = { id -> nav.navigate(Routes.logEvent(id)) },
                             )
                         }
                         composable(Routes.DUE) {
@@ -164,6 +166,12 @@ class MainActivity : ComponentActivity() {
                                 }
                             })
                         }
+                        composable(
+                            route = "${Routes.STICKER}/{id}",
+                            arguments = listOf(navArgument("id") { type = NavType.StringType }),
+                        ) {
+                            StickerScreen(onBack = { nav.popBackStack() })
+                        }
                         composable(Routes.PROPAGATION) {
                             PropagationScreen(
                                 onBack = { nav.popBackStack() },
@@ -188,6 +196,7 @@ class MainActivity : ComponentActivity() {
                                 onCompare = { id -> nav.navigate(Routes.compare(id)) },
                                 onWeigh = { id -> nav.navigate(Routes.weight(id)) },
                                 onMeasureLight = { id -> nav.navigate(Routes.light(id)) },
+                                onSticker = { id -> nav.navigate(Routes.sticker(id)) },
                             )
                         }
                         composable(

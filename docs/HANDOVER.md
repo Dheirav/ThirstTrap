@@ -170,6 +170,36 @@ an archive, not a backup, and the requirements call backup non-negotiable.
 
 Confirmed.
 
+### D10 — The app now holds INTERNET, deliberately (2026-09-08)
+
+Adding the in-app QR scanner (`F21`) pulled `play-services-code-scanner`, which
+brings `INTERNET` transitively via `datatransport:transport-backend-cct` -
+Google's telemetry upload backend - along with a `TransportBackendDiscovery`
+service. The app's own manifest still declares only `POST_NOTIFICATIONS` and
+`VIBRATE`.
+
+This was raised as a regression and accepted by the user, who preferred an
+in-app scan to a two-app one. What it changes:
+
+- The offline claim weakens from **"the OS would refuse a network call"** to
+  **"the app does not make one"**. Still true of our code, no longer enforced
+  from outside it. Any future session verifying offline behaviour should test
+  the behaviour rather than trusting the permission list.
+- **Scanning specifically does not work offline the first time.** The scanner is
+  a Play Services module fetched on demand, so it is the one feature in the app
+  that needs a network. It is prewarmed at startup and says so plainly when the
+  module is missing.
+
+The alternative considered was CameraX plus the ZXing already present for
+generation - no `INTERNET`, but a `CAMERA` runtime permission and roughly 200
+lines. Worth revisiting if the telemetry component ever matters more than the
+convenience.
+
+Note for a future iOS port: the scanner is the *least* portable part of this.
+`play-services-code-scanner` is Android-only and would be rewritten against
+AVFoundation. What ports for free is the URI itself - `thirsttrap://plant/{id}`
+- which iOS handles natively through `CFBundleURLTypes`.
+
 ### D9 — MIT licence (2026-09-06)
 
 `LICENSE` to be added at `git init`. Copyright holder: the repo owner, under

@@ -63,6 +63,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.coil.compose)
+    implementation(libs.zxing.core)
+    implementation(libs.mlkit.code.scanner)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.hilt.work)
     ksp(libs.androidx.hilt.compiler)

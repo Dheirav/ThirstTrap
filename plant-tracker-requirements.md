@@ -229,6 +229,11 @@ managed-allowable-depletion framework).*
   weight prediction — works with no network, ever. Online features (plant ID,
   optional backup) are additive and degrade gracefully when absent. Sync, if
   ever, is additive.
+  - *As built (2026-09-08):* verified offline with no network at all — cold
+    launch, logging, export and import all work. One exception: **QR scanning**
+    needs a network the first time, because its scanner is a Play Services
+    module fetched on demand. It is prewarmed at startup and says so when it
+    cannot. See handover D10 for why the app now carries `INTERNET`.
 - **Fast logging**: cold open → watering logged in under 10 seconds.
 - **Cheap storage**: photos compressed (~200–500 KB each); a 3-year history of
   10 plants should fit in < 1 GB.

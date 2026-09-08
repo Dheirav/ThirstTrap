@@ -14,6 +14,7 @@ object Routes {
     const val LIGHT = "plant/light"
     const val PROPAGATION = "propagation"
     const val POST_MORTEM = "plant/postmortem"
+    const val STICKER = "plant/sticker"
     const val PLANT_EDIT = "plant/edit"
     const val PLANT_DETAIL = "plant/detail"
     /** Empty id means "new plant". */
@@ -28,6 +29,8 @@ object Routes {
     fun light(plantId: String) = "$LIGHT/$plantId"
 
     fun postMortem(plantId: String) = "$POST_MORTEM/$plantId"
+
+    fun sticker(plantId: String) = "$STICKER/$plantId"
 
     fun plantEdit(plantId: String? = null) =
         if (plantId == null) "$PLANT_EDIT?id=" else "$PLANT_EDIT?id=$plantId"

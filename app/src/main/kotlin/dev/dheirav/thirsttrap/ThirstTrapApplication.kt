@@ -36,5 +36,11 @@ class ThirstTrapApplication : Application(), Configuration.Provider {
             // Idempotent; covers plants and photos that predate their tables.
             backfill.run()
         }
+
+        // Fetch the scan module now rather than when someone is standing at a
+        // pot waiting for it.
+        dev.dheirav.thirsttrap.feature.qr.ScanPot.prewarm(this)
+        run {
+        }
     }
 }
