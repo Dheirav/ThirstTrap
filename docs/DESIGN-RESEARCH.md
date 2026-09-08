@@ -317,7 +317,9 @@ dark surfaces — kills dark-mode banding, adds a paper quality, costs one tiled
 drawable. For the empty state: a single-weight monoline **branching form at
 fractal dimension ~1.3–1.5** in `outlineVariant`. No pot, no face, no mascot.
 
-**12. Photography: bigger.** **PARTLY DONE 2026-09-08** — dashboard thumbnail 56→64dp with the hairline inset. The plant-detail full-bleed hero is still outstanding. Plant detail gets a full-bleed hero under the
+**12. Photography: bigger.** **DONE 2026-09-08** — dashboard thumbnail 56→88dp
+with a hairline inset, and a full-bleed 300dp hero on plant detail running under
+the status bar with the name and chips on a scrim. Plant detail gets a full-bleed hero under the
 status bar with name and chips on a scrim — `UI-SPEC` §4 already specifies a
 collapsing header. Dashboard thumbnail to 64dp with a 1dp `outlineVariant` inset
 border; a bright photo on a near-black card has a hard cut-out edge and a

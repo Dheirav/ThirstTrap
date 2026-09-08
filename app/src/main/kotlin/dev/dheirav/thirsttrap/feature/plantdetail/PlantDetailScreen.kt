@@ -2,6 +2,7 @@ package dev.dheirav.thirsttrap.feature.plantdetail
 
 import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.EventColors
+import dev.dheirav.thirsttrap.ui.fullBleed
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -30,8 +31,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -46,6 +50,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import dev.dheirav.thirsttrap.domain.hasSpeciesCare
 import dev.dheirav.thirsttrap.domain.CareEvent
 import androidx.compose.material3.AlertDialog
@@ -84,10 +90,27 @@ fun PlantDetailScreen(
     var captionFor by remember { mutableStateOf<Photo?>(null) }
     var menuOpen by remember { mutableStateOf(false) }
 
+    val hero = state.photos.firstOrNull()?.let(viewModel::pathOf)
+
     Scaffold(
+        // The hero runs under the status bar, so this screen draws its own
+        // insets rather than being pushed below them.
+        contentWindowInsets = if (hero != null) WindowInsets(0, 0, 0, 0) else ScaffoldDefaults.contentWindowInsets,
         topBar = {
             TopAppBar(
-                title = { Text(plant?.name ?: "") },
+                // The name lives on the photo when there is one; repeating it in
+                // the bar would put the same four words on screen twice.
+                title = { if (hero == null) Text(plant?.name ?: "") },
+                colors = if (hero != null) {
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        scrolledContainerColor = Color.Transparent,
+                        navigationIconContentColor = Color.White,
+                        actionIconContentColor = Color.White,
+                    )
+                } else {
+                    TopAppBarDefaults.topAppBarColors()
+                },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(AppIcons.arrowBack, contentDescription = "Back")
@@ -176,23 +199,55 @@ fun PlantDetailScreen(
         },
     ) { padding ->
         LazyColumn(
-            Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(16.dp),
+            // With a hero the list must start at the very top of the window so
+            // the photo runs under the status bar and the app bar floats over
+            // it; Scaffold's padding would otherwise push it below both.
+            Modifier
+                .fillMaxSize()
+                .padding(
+                    if (hero != null) {
+                        PaddingValues(bottom = padding.calculateBottomPadding())
+                    } else {
+                        padding
+                    },
+                ),
+            contentPadding = PaddingValues(
+                start = 16.dp,
+                end = 16.dp,
+                top = if (hero != null) 0.dp else 16.dp,
+                bottom = 16.dp,
+            ),
         ) {
+            if (hero != null) {
+                item {
+                    // Full-bleed, under the status bar, per UI-SPEC section 4.
+                    // fullBleed measures past the list's 16dp gutter rather than
+                    // negating it - Compose rejects negative padding at runtime.
+                    PlantHero(
+                        path = hero,
+                        name = plant?.name.orEmpty(),
+                        chips = plantChips(plant),
+                        modifier = Modifier.fullBleed(16.dp),
+                    )
+                }
+            }
+
             item {
                 Column(Modifier.padding(bottom = 16.dp)) {
-                    plant?.species?.let {
-                        Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (hero == null) {
+                        plant?.species?.let {
+                            Text(
+                                it,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        Text(
+                            plantChips(plant).joinToString(" · "),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
-                    Text(
-                        listOfNotNull(
-                            plant?.location?.takeIf { it.isNotBlank() },
-                            plant?.medium?.label?.lowercase(),
-                            plant?.containerDesc?.takeIf { it.isNotBlank() },
-                        ).joinToString(" · "),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
 
                     plant?.let { p ->
                         if (hasSpeciesCare(p.species) || hasSpeciesCare(p.name)) {
@@ -474,4 +529,82 @@ private fun cadenceLabel(avgDays: Double): String = when (val d = avgDays.toInt(
     0 -> "Waters more than once a day"
     1 -> "Waters roughly every day"
     else -> "Waters roughly every $d days"
+}
+
+/**
+ * The facts worth putting next to a plant's name.
+ *
+ * Medium appears only when it is *not* soil. Soil is the default for almost
+ * every pot in the app, so printing it says nothing the photograph has not
+ * already said - it was on every dashboard card, captioning a picture of soil.
+ * Semi-hydro or water is different: that is a fact about the pot you cannot
+ * always see, and it changes how the weight model reads.
+ */
+private fun plantChips(plant: dev.dheirav.thirsttrap.domain.Plant?): List<String> = listOfNotNull(
+    // People name a plant after what it is, and then the hero read
+    // "Fittonia" over "Fittonia".
+    plant?.species?.takeIf { it.isNotBlank() && !it.equals(plant.name, ignoreCase = true) },
+    plant?.location?.takeIf { it.isNotBlank() },
+    plant?.medium?.takeIf { it != dev.dheirav.thirsttrap.domain.Medium.SOIL }?.label?.lowercase(),
+    plant?.containerDesc?.takeIf { it.isNotBlank() },
+)
+
+/**
+ * The cover photo, full-bleed, with the name over it.
+ *
+ * The plant's own photograph is the best identifier the screen has and it was
+ * previously a 120dp square below the fold. Two scrims make the overlay legible
+ * without dimming the whole picture: one at the top for the bar's icons, one at
+ * the bottom that resolves into the page background so the photo ends rather
+ * than stops.
+ */
+@Composable
+private fun PlantHero(
+    path: String,
+    name: String,
+    chips: List<String>,
+    modifier: Modifier = Modifier,
+) {
+    val surface = MaterialTheme.colorScheme.surface
+    Box(
+        modifier
+            .fillMaxWidth()
+            .height(300.dp),
+    ) {
+        PlantPhoto(
+            path = path,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+        )
+        Box(
+            Modifier.fillMaxSize().background(
+                Brush.verticalGradient(
+                    0f to Color.Black.copy(alpha = 0.55f),
+                    0.22f to Color.Transparent,
+                    0.62f to Color.Transparent,
+                    1f to surface,
+                ),
+            ),
+        )
+        Column(
+            Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+        ) {
+            Text(
+                name,
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            if (chips.isNotEmpty()) {
+                Text(
+                    chips.joinToString(" · "),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 2.dp),
+                )
+            }
+        }
+    }
 }

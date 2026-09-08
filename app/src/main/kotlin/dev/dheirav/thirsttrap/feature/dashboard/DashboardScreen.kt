@@ -442,7 +442,11 @@ private fun PlantCard(
                 val context = buildAnnotatedString {
                     val parts = mutableListOf<Pair<String, Boolean>>()
                     plant.location?.takeIf { it.isNotBlank() }?.let { parts += it to false }
-                    parts += plant.medium.label.lowercase() to false
+                    // Medium is deliberately absent. "soil" under a photograph
+                    // of soil is a caption for something already on screen, and
+                    // it was on every card in the list. It survives on the
+                    // detail screen only when it is NOT soil, where it is
+                    // actually information.
                     // Only repeat the watering line if row 2 did not use it.
                     if (prediction != null) parts += wateredText to false
                     // Restraint deserves visible credit, not silence - so this
@@ -556,8 +560,11 @@ private fun DepletionThumbnail(
 ) {
     val ringStroke = 3.dp
     val gap = 3.dp
-    val photo = 64.dp
-    val total = photo + (ringStroke + gap) * 2
+    val photo = 88.dp
+    // Only reserve the ring's margin when there is a ring. A plant with no
+    // weight readings was paying 12dp of height for an indicator it never
+    // draws, on every card in the list.
+    val total = if (depletion != null) photo + (ringStroke + gap) * 2 else photo
 
     val filled by animateFloatAsState(
         targetValue = depletion?.coerceIn(0.0, 1.0)?.toFloat() ?: 0f,
@@ -574,7 +581,7 @@ private fun DepletionThumbnail(
                 val inset = ringStroke.toPx() / 2f
                 // Concentric with the photo: its own 8dp corner plus however
                 // far the ring sits outside it, or the two curves fight.
-                val radius = CornerRadius((8.dp + ringStroke + gap).toPx())
+                val radius = CornerRadius((12.dp + ringStroke + gap).toPx())
                 val outline = Path().apply {
                     addRoundRect(
                         RoundRect(
@@ -607,9 +614,9 @@ private fun DepletionThumbnail(
         Box(
             modifier = Modifier
                 .size(photo)
-                .clip(MaterialTheme.shapes.small)
+                .clip(MaterialTheme.shapes.medium)
                 .background(MaterialTheme.colorScheme.primaryContainer)
-                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.small),
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.medium),
             contentAlignment = Alignment.Center,
         ) {
             Text(
@@ -623,7 +630,7 @@ private fun DepletionThumbnail(
                 PlantPhoto(
                     path = it,
                     contentDescription = null,
-                    modifier = Modifier.size(photo).clip(MaterialTheme.shapes.small),
+                    modifier = Modifier.size(photo).clip(MaterialTheme.shapes.medium),
                 )
             }
         }

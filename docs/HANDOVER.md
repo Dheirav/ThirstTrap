@@ -425,6 +425,33 @@ face a persuasion channel rather than decoration.
 inset border, which resolves the hard cut-out edge a bright photo has on a dark
 card. The plant-detail full-bleed hero is still outstanding.
 
+### D17 — The hero, and captions for things already on screen (2026-09-08)
+
+**Change 12, finished.** Plant detail opens on a 300dp full-bleed photo running
+under the status bar, name and chips on a gradient scrim that resolves into the
+page. The dashboard thumbnail went 56 to 88dp.
+
+Three things came out of building it.
+
+`Modifier.padding(-16.dp)` to cancel a `LazyColumn`'s `contentPadding` throws
+**`IllegalArgumentException: Padding must be non-negative` at runtime**, not at
+compile time - so it built, installed, and crashed the app on opening any plant.
+`Modifier.fullBleed()` in `:core:ui` measures past the gutter and places back,
+which is the supported way.
+
+**Medium is no longer printed under a photograph of it.** "soil" appeared on
+every dashboard card, captioning something already on screen, and it was one of
+the four rows the card was trying to fit. It now appears only where it is *not*
+soil - semi-hydro or water is a fact about the pot you cannot see, and it changes
+how the weight model reads. Same rule for species: suppressed when it equals the
+plant's name, because people name a plant after what it is and the hero read
+"Fittonia" over "Fittonia".
+
+**A ring's margin was being reserved with no ring to draw.** Every card paid
+12dp of height for an indicator that only appears once a pot has weight
+readings, which pushed the last card under the FAB - 4dp of clearance to a
+48dp tap target. Now reserved only when there is a ring: 43dp.
+
 ### D9 — MIT licence (2026-09-06)
 
 `LICENSE` to be added at `git init`. Copyright holder: the repo owner, under
