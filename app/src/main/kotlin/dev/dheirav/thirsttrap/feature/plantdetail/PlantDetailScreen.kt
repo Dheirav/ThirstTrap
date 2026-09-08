@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.plantdetail
 
+import dev.dheirav.thirsttrap.ui.AppIcons
+import dev.dheirav.thirsttrap.ui.EventColors
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -17,15 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AddAPhoto
-import androidx.compose.material.icons.filled.Compare
-import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.Scale
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.PhotoLibrary
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -97,7 +90,7 @@ fun PlantDetailScreen(
                 title = { Text(plant?.name ?: "") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(AppIcons.arrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
@@ -107,12 +100,12 @@ fun PlantDetailScreen(
                     // few dp, and nothing at all at large font sizes.
                     if (plant != null) {
                         IconButton(onClick = capture.takePhoto) {
-                            Icon(Icons.Filled.AddAPhoto, contentDescription = "Take a photo")
+                            Icon(AppIcons.addAPhoto, contentDescription = "Take a photo")
                         }
                     }
                     Box {
                         IconButton(onClick = { menuOpen = true }) {
-                            Icon(Icons.Filled.MoreVert, contentDescription = "More actions")
+                            Icon(AppIcons.moreVert, contentDescription = "More actions")
                         }
                         DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
                             plant?.let { p ->
@@ -379,12 +372,10 @@ private fun EventRow(
             Box(
                 // Order matters: size() then padding() shrinks the box to 8x2 and
                 // the marker renders as a dash instead of a dot.
+                // Colour names the activity, not the urgency - so the timeline
+                // is scannable by eye without any colour meaning "bad".
                 Modifier.padding(top = 6.dp).size(8.dp)
-                    .background(
-                        if (isLifeEvent) MaterialTheme.colorScheme.tertiary
-                        else MaterialTheme.colorScheme.primary,
-                        MaterialTheme.shapes.extraSmall,
-                    ),
+                    .background(EventColors.of(event.type), MaterialTheme.shapes.extraSmall),
             )
             Spacer(Modifier.size(12.dp))
             Column(Modifier.weight(1f)) {

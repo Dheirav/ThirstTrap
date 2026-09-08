@@ -21,6 +21,9 @@ android {
 }
 
 dependencies {
+    // For CareEventType only - EventColors maps an event kind to a hue.
+    api(project(":core:domain"))
+
     implementation(platform(libs.androidx.compose.bom))
     api(libs.androidx.compose.material3)
     api(libs.androidx.compose.ui)
