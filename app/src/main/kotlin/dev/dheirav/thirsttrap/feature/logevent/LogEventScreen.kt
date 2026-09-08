@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.domain.CareEventType
+import dev.dheirav.thirsttrap.domain.WhenLogged
 import dev.dheirav.thirsttrap.domain.CheckResult
 import dev.dheirav.thirsttrap.domain.Medium
 import dev.dheirav.thirsttrap.domain.WateringMethod

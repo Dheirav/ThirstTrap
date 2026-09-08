@@ -10,7 +10,9 @@ import dev.dheirav.thirsttrap.domain.CheckResult
 import dev.dheirav.thirsttrap.domain.Medium
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.WateringMethod
+import dev.dheirav.thirsttrap.domain.WhenLogged
 import dev.dheirav.thirsttrap.domain.newId
+import dev.dheirav.thirsttrap.domain.resolveLoggedAt
 import dev.dheirav.thirsttrap.domain.tzOffsetMinutesAt
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,20 +20,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-/**
- * When it actually happened.
- *
- * Every log used to be stamped with the moment you opened the screen, so
- * recording last night's watering this morning shifted it by half a day - and
- * both the cadence figure and the drying model are built from those intervals.
- */
-enum class WhenLogged(val label: String) {
-    NOW("Just now"),
-    EARLIER_TODAY("Earlier today"),
-    YESTERDAY("Yesterday"),
-    PICK("Another day"),
-}
 
 data class LogEventUiState(
     val plantName: String = "",
@@ -53,12 +41,8 @@ data class LogEventUiState(
      * recorded for "yesterday" cannot sort before one genuinely logged early
      * that morning, and cannot drift across a day boundary by timezone.
      */
-    fun timestamp(nowMillis: Long): Long = when (whenLogged) {
-        WhenLogged.NOW -> nowMillis
-        WhenLogged.EARLIER_TODAY -> middayOf(nowMillis).coerceAtMost(nowMillis)
-        WhenLogged.YESTERDAY -> middayOf(nowMillis - 86_400_000L)
-        WhenLogged.PICK -> pickedDateMillis?.let { middayOf(it) } ?: nowMillis
-    }
+    fun timestamp(nowMillis: Long): Long =
+        resolveLoggedAt(whenLogged, nowMillis, tzOffsetMinutesAt(nowMillis), pickedDateMillis)
 
     val isBackdated: Boolean get() = whenLogged != WhenLogged.NOW
 
@@ -70,16 +54,7 @@ data class LogEventUiState(
     val showCause get() = type == CareEventType.DIED
 }
 
-private fun middayOf(millis: Long): Long {
-    val cal = java.util.Calendar.getInstance().apply {
-        timeInMillis = millis
-        set(java.util.Calendar.HOUR_OF_DAY, 12)
-        set(java.util.Calendar.MINUTE, 0)
-        set(java.util.Calendar.SECOND, 0)
-        set(java.util.Calendar.MILLISECOND, 0)
-    }
-    return cal.timeInMillis
-}
+
 
 @HiltViewModel
 class LogEventViewModel @Inject constructor(
