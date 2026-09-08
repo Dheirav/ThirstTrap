@@ -260,22 +260,27 @@ Light mode likewise. Light `tertiary #C0603F` measures **4.02:1** on `#F7FBF3`,
 failing AA — darken it or restrict it to fills.
 
 **2. Build a lightness ladder; stop using colour for hierarchy.**
+**DONE 2026-09-08**, with the values corrected. See the note below on which
+surface a contrast figure is quoted against.
 `onSurface #DAE0DA` (L 90, 12.1:1) · `onSurfaceVariant #ACB3AD` (L 76, 7.6:1) ·
 a third dim tier `#8D948E` (L 66, 5.2:1, still AA). Drop dark `primary` from
 `#7DDB9C` (L 81.7) to **`#81C394`** (L 76, 7.9:1) — currently it is the
 brightest object on a near-black screen and the depletion bar makes it a
 full-width glowing stripe. This is what "muted but alive" actually means.
 
-**3. Cut the plant card from seven text rows to four.**
+**3. Cut the plant card from seven text rows to four.** **DONE 2026-09-08** -
+three rows in practice, since the bar only appears for a weight-tracked plant.
 Row 1 plant name `titleMedium`. Row 2 **the answer** — "Water in about 2 days" —
 `bodyMedium`. Row 3 the state object. Row 4 everything else on one line in the
 dim tier. Row 2 is the Gentler Streak move and the row people actually read.
 Move cadence to the detail screen.
 
-**4. Systematise shape.** Set `MaterialTheme(shapes = …)` once: card 12, thumb 8,
+**4. Systematise shape.** **DONE 2026-09-08** - eight radii to five roles, at
+most three on screen. Set `MaterialTheme(shapes = …)` once: card 12, thumb 8,
 chips 4, sheets 16, FAB 28. Three radii on screen, not eight.
 
-**5. Replace elevation with a hairline.** `elevation = 0.dp, border =
+**5. Replace elevation with a hairline.** **DONE 2026-09-08** - measured on
+device at `#414A44` dark and `#C1CAC0` light, 1dp. `elevation = 0.dp, border =
 BorderStroke(1.dp, outlineVariant)` — `#414A44` measures 2.03:1 on the
 background. What Vera does, and calmer: shadows imply floating objects,
 hairlines imply a page.
@@ -317,6 +322,31 @@ status bar with name and chips on a scrim — `UI-SPEC` §4 already specifies a
 collapsing header. Dashboard thumbnail to 64dp with a 1dp `outlineVariant` inset
 border; a bright photo on a near-black card has a hard cut-out edge and a
 hairline resolves it.
+
+### A correction to change 2, found by implementing it
+
+The dim tier was specified as `#8D948E` at "5.2:1, still AA". **That figure is
+against the background.** The text it carries sits on a *card*, and on
+`surfaceContainerHighest` the same colour measures **3.92:1** - a fail, measured
+on the device after shipping it.
+
+The same mistake appears in change 1's light `primary`, caught there only
+because completing the surface roles is what created the card to fail against.
+A contrast ratio quoted against the wrong surface is not a contrast ratio, and
+in this palette the card is always the harder surface.
+
+Corrected ladder, every tier AA on a card:
+
+| | dark | L | on card | light | L | on card |
+|---|---|---|---|---|---|---|
+| `onSurface` | `#DAE0DA` | 90.0 | 9.07:1 | `#191D18` | 22.5 | 13.22:1 |
+| `onSurfaceVariant` | `#BCC3BD` | 81.0 | 6.77:1 | `#414942` | 39.6 | 7.21:1 |
+| `outline` (dim) | `#9EA59F` | 71.4 | 4.83:1 | `#5E665E` | 50.1 | 4.60:1 |
+
+The AA floor on the card is what sets the spacing: it caps the dark ladder at
+roughly 19 L-points of usable range, so ~9.5 between tiers is the most that is
+available, not a free choice. The palette test now checks `outline` at AA too,
+since it is text.
 
 ### Two things not to do
 

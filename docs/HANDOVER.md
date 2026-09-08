@@ -314,6 +314,53 @@ The pattern in all three: a green suite and a screen nobody had looked at. The
 palette test suite added in D13 exists for the same reason and would not have
 caught any of these.
 
+### D15 — Design changes 2-5, and a contrast rule worth keeping (2026-09-08)
+
+**Shape (change 4).** Eight hardcoded radii - 4, 5, 6, 7, 8, 10, 12, 24 - and
+zero references to `MaterialTheme.shapes`. Nothing distinguished a 5 from a 6 to
+a reader; it only meant nobody chose. Now one `Shapes` in the theme mapped to
+what the app contains: badges 4, thumbnails 8, cards 12, sheets 16, FAB 28. At
+most three appear on a screen.
+
+**Hairline (change 5).** The plant card was the only elevated surface, at
+`1.dp` - a shadow, invisible on near-black, which was half of why it had no
+visible edge. Now `elevation = 0.dp` with a 1dp `outlineVariant` border.
+Measured on device: `#414A44` dark, `#C1CAC0` light. A shadow implies a floating
+object; a hairline implies a page.
+
+**The card (change 3).** Seven stacked text rows down to four - name, the
+answer, the state object, and one dim context line. Five of the seven were
+11-12sp in the same grey, which is a wall rather than a hierarchy. Cadence moved
+off the card entirely; the detail screen already showed it, and that is where
+someone goes to ask that question. Row 2 carries the prediction when there is
+one and the most recent fact otherwise, so the card always answers something.
+The "checked, not thirsty" credit survives as a coloured span inside the dim
+row rather than a row of its own - restraint still gets visible credit.
+
+**The contrast rule (change 2).** The research specified the dim tier as
+`#8D948E` at "5.2:1, still AA". That figure is against the *background*. The
+text sits on a *card*, where the same colour measures **3.92:1** - a fail, and
+one that shipped and was caught by measuring the device screenshot afterwards.
+
+Same class of error as light `primary` in D13, which was only exposed because
+completing the surface roles created the card it failed against. The rule:
+**quote contrast against the surface the text is actually drawn on, and in this
+palette that is always the card, never the background.**
+
+The AA floor on the card is also what sets the ladder spacing. It caps the dark
+scheme's usable text range at roughly 19 OKLCH L-points, so ~9.5 between tiers
+is what is available rather than a free choice: 90.0 / 81.0 / 71.4 dark,
+22.5 / 39.6 / 50.1 light. `ThemeTest` now checks `outline` at AA as well, since
+it carries text.
+
+**A light-mode bug found on the way.** `targetSdk = 35` makes edge-to-edge
+mandatory, so the app draws behind the status bar - and nothing ever set
+`isAppearanceLightStatusBars`. In light mode the system icons stayed white on a
+`#F7FBF3` background, measuring **1.0:1**. Invisible. Now set from
+`isSystemInDarkTheme()`; measured at 10.11:1 after. It had been there since
+targetSdk went to 35 and no test could see it, because it is a property of the
+window rather than of the app's own drawing.
+
 ### D9 — MIT licence (2026-09-06)
 
 `LICENSE` to be added at `git init`. Copyright holder: the repo owner, under
