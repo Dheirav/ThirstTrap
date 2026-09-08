@@ -1,6 +1,9 @@
 package dev.dheirav.thirsttrap.feature.dashboard
 
 import dev.dheirav.thirsttrap.ui.Motion
+import dev.dheirav.thirsttrap.ui.DoubleRule
+import dev.dheirav.thirsttrap.ui.OutlinedButton
+import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.BranchingMark
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -33,12 +36,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
+import dev.dheirav.thirsttrap.ui.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilterChip
+import dev.dheirav.thirsttrap.ui.FilledTonalButton
+import dev.dheirav.thirsttrap.ui.FilterChip
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -83,6 +87,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -179,7 +184,13 @@ fun DashboardScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Plants") },
+                title = {
+                    Text(
+                        "PLANTS",
+                        style = MaterialTheme.typography.titleLarge,
+                        letterSpacing = 0.22.em,
+                    )
+                },
                 actions = {
                     IconButton(onClick = {
                         dev.dheirav.thirsttrap.feature.qr.ScanPot.scan(
@@ -198,7 +209,18 @@ fun DashboardScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHost) },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddPlant) {
+            // A ruled block, not a floating one. The shadow was the last thing
+            // on the page still pretending to hover above the paper.
+            FloatingActionButton(
+                onClick = onAddPlant,
+                shape = MaterialTheme.shapes.small,
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp,
+                    focusedElevation = 0.dp,
+                    hoveredElevation = 0.dp,
+                ),
+            ) {
                 Icon(AppIcons.add, contentDescription = "Add a plant")
             }
         },
@@ -213,11 +235,11 @@ fun DashboardScreen(
             else -> LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(padding),
                 contentPadding = PaddingValues(
-                    start = 16.dp, end = 16.dp, top = 16.dp,
+                    start = 16.dp, end = 16.dp, top = 0.dp,
                     bottom = 88.dp + WindowInsets.navigationBars.asPaddingValues()
                         .calculateBottomPadding(),
                 ),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(0.dp),
             ) {
                 if (archived.isNotEmpty()) {
                     item {
@@ -277,7 +299,15 @@ fun DashboardScreen(
     }
 
     sheetFor?.let { item ->
-        ModalBottomSheet(onDismissRequest = { sheetFor = null }, sheetState = sheetState) {
+        ModalBottomSheet(
+            onDismissRequest = { sheetFor = null },
+            sheetState = sheetState,
+            shape = MaterialTheme.shapes.large,
+            // A drag handle is a screen affordance; a printed page does not have
+            // one. The rule under the plant's name does the same job of saying
+            // "this panel starts here".
+            dragHandle = null,
+        ) {
             QuickLogSheet(
                 plantName = item.plant.name,
                 suggestedWaterMl = item.suggestedWaterMl,
@@ -343,13 +373,11 @@ private fun PlantCard(
     onLongPress: () -> Unit,
 ) {
     val plant = item.plant
-    Card(
-        shape = MaterialTheme.shapes.medium,
-        // A shadow implies a floating object; a hairline implies a page. On a
-        // near-black background the 1.dp shadow this used to draw was invisible
-        // anyway, which is half of why the card had no visible edge.
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    // An entry on a page, not a card. A card says "separate object"; a rule says
+    // "same page, further down", which is the truer statement about a list of
+    // plants you are keeping. It also removes the last container in the app
+    // that could read as full-or-empty.
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .combinedClickable(
@@ -359,7 +387,10 @@ private fun PlantCard(
                 onLongClickLabel = "Open ${plant.name}",
             ),
     ) {
-        Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            Modifier.padding(vertical = 14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             // The most recent photo, falling back to an initial. A broken or
             // missing file must never crash the list - see docs/UI-SPEC.md
             // section 9 - so the placeholder stays behind the image.
@@ -505,6 +536,7 @@ private fun PlantCard(
                 onLongClick = onDetailedWater,
             )
         }
+        Rule()
     }
 }
 
@@ -648,40 +680,63 @@ private fun QuickLogSheet(
     onHistory: () -> Unit,
     onEdit: () -> Unit,
 ) {
-    Column(Modifier.padding(start = 24.dp, end = 24.dp, bottom = 40.dp)) {
-        Text(plantName, style = MaterialTheme.typography.titleLarge)
+    Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 32.dp)) {
+        // The sheet gets the same furniture as a page: a head, a rule, then
+        // entries. Previously it was a floating panel of pills that shared no
+        // vocabulary with the list it came out of.
+        Text(
+            plantName.uppercase(),
+            style = MaterialTheme.typography.titleMedium,
+            letterSpacing = 0.18.em,
+        )
         Text(
             "How does the pot feel?",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 4.dp, bottom = 20.dp),
+            modifier = Modifier.padding(top = 2.dp),
         )
+        DoubleRule(Modifier.padding(top = 10.dp, bottom = 16.dp))
+
         // Both answers, same size and weight. Neither is the primary one.
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            FilledTonalButton(onClick = onWatered, modifier = Modifier.weight(1f).heightIn(min = 64.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            FilledTonalButton(onClick = onWatered, modifier = Modifier.weight(1f).height(SheetBlock)) {
                 Text(
-                    if (suggestedWaterMl != null) "Watered\n${suggestedWaterMl.toInt()} ml" else "Watered",
+                    if (suggestedWaterMl != null) "Watered  ${suggestedWaterMl.toInt()} ml" else "Watered",
                     textAlign = TextAlign.Center,
                 )
             }
-            FilledTonalButton(onClick = onStillWet, modifier = Modifier.weight(1f).heightIn(min = 64.dp)) {
+            FilledTonalButton(onClick = onStillWet, modifier = Modifier.weight(1f).height(SheetBlock)) {
                 Text("Still wet")
             }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.padding(top = 12.dp)) {
-            FilledTonalButton(onClick = onPhoto, modifier = Modifier.weight(1f).heightIn(min = 64.dp)) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.padding(top = 10.dp),
+        ) {
+            OutlinedButton(onClick = onPhoto, modifier = Modifier.weight(1f).height(SheetBlock)) {
                 Text("Photo")
             }
-            FilledTonalButton(onClick = onMore, modifier = Modifier.weight(1f).heightIn(min = 64.dp)) {
-                Text("More…")
+            OutlinedButton(onClick = onMore, modifier = Modifier.weight(1f).height(SheetBlock)) {
+                Text("More")
             }
         }
-        Row {
-            TextButton(onClick = onHistory, modifier = Modifier.padding(top = 8.dp)) { Text("History") }
-            TextButton(onClick = onEdit, modifier = Modifier.padding(top = 8.dp)) { Text("Edit plant") }
+
+        Rule(Modifier.padding(top = 20.dp))
+        Row(Modifier.padding(top = 4.dp)) {
+            TextButton(onClick = onHistory) { Text("History") }
+            TextButton(onClick = onEdit) { Text("Edit plant") }
         }
     }
 }
+
+/**
+ * One height for all four sheet buttons.
+ *
+ * "Watered 50 ml" used to wrap onto a second line while its neighbours did not,
+ * which made a 2x2 grid of buttons that were not the same size. The amount now
+ * sits on one line beside the word.
+ */
+private val SheetBlock = 56.dp
 
 /** "every 1 days" is the kind of thing that makes an app feel unfinished. */
 private fun cadenceLabel(avgDays: Double): String = when (val d = avgDays.toInt()) {

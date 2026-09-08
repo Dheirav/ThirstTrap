@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.plantdetail
 
+import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.EventColors
 import dev.dheirav.thirsttrap.ui.fullBleed
@@ -25,7 +26,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.FilledTonalButton
+import dev.dheirav.thirsttrap.ui.FilledTonalButton
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -485,7 +486,7 @@ private fun CaptionDialog(
     var text by remember { mutableStateOf(initial) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Photo") },
+        title = { ScreenTitle("Photo") },
         text = {
             OutlinedTextField(
                 value = text,
@@ -590,7 +591,11 @@ private fun PlantHero(
         Column(
             Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 16.dp, end = 16.dp, bottom = 12.dp),
+                // 32 = the 16dp the hero was shifted left by fullBleed, plus the
+                // 16dp page gutter. Its own 16dp landed the name at x=0, hard
+                // against the screen edge while every other line on the page
+                // started at 16.
+                .padding(start = 32.dp, end = 32.dp, bottom = 12.dp),
         ) {
             Text(
                 name,

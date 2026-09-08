@@ -1,6 +1,8 @@
 package dev.dheirav.thirsttrap.feature.weight
 
+import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
+import dev.dheirav.thirsttrap.ui.BlockHeight
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,12 +19,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
+import dev.dheirav.thirsttrap.ui.Button
+import dev.dheirav.thirsttrap.ui.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
+import dev.dheirav.thirsttrap.ui.FilledTonalButton
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.FilterChip
+import dev.dheirav.thirsttrap.ui.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -201,7 +203,7 @@ fun WeightScreen(
                     if (!s.isCalibrated) showCalibration = true else viewModel.save {}
                 },
                 enabled = entry.isNotBlank(),
-                modifier = Modifier.fillMaxWidth().padding(top = 12.dp).height(56.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
             ) {
                 Text(if (s.isCalibrated) "Save this weight" else "Use as the watered weight")
             }
@@ -409,7 +411,10 @@ private fun NotCalibratedCard(needsRecalibration: Boolean, onStart: () -> Unit) 
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(vertical = 8.dp),
             )
-            FilledTonalButton(onClick = onStart) { Text("Set the watered weight") }
+            FilledTonalButton(
+                onClick = onStart,
+                modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+            ) { Text("Set the watered weight") }
         }
     }
 }
@@ -424,7 +429,7 @@ private fun Keypad(onDigit: (Char) -> Unit, onBackspace: () -> Unit) {
                 row.forEach { ch ->
                     FilledTonalButton(
                         onClick = { if (ch == '<') onBackspace() else onDigit(ch) },
-                        modifier = Modifier.weight(1f).height(60.dp),
+                        modifier = Modifier.weight(1f).height(BlockHeight),
                     ) {
                         if (ch == '<') {
                             Icon(AppIcons.backspace, contentDescription = "Delete last digit")
@@ -447,7 +452,7 @@ private fun CalibrationDialog(
     var trigger by remember { androidx.compose.runtime.mutableDoubleStateOf(0.5) }
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Set the watered weight") },
+        title = { ScreenTitle("Set the watered weight") },
         text = {
             Column {
                 Text(
