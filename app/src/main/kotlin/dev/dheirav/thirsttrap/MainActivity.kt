@@ -6,6 +6,10 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.core.view.WindowCompat
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.runtime.SideEffect
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
@@ -64,6 +68,19 @@ class MainActivity : ComponentActivity() {
         setContent {
             val mainViewModel: MainViewModel = hiltViewModel()
             val settings by mainViewModel.settings.collectAsStateWithLifecycle()
+
+            // targetSdk 35 makes edge-to-edge mandatory, so the app draws behind
+            // the status bar - and nothing was telling the system which way to
+            // colour its icons. In light mode they stayed white on a #F7FBF3
+            // background, which measured 1.0:1. Invisible.
+            val dark = isSystemInDarkTheme()
+            val view = LocalView.current
+            if (!view.isInEditMode) {
+                SideEffect {
+                    WindowCompat.getInsetsController(window, view)
+                        .isAppearanceLightStatusBars = !dark
+                }
+            }
 
             ThirstTrapTheme(dynamicColor = settings.dynamicColor) {
                 val nav = rememberNavController()
