@@ -147,6 +147,10 @@ class ThemeTest {
             listOf(
                 "onSurface" to scheme.onSurface,
                 "onSurfaceVariant" to scheme.onSurfaceVariant,
+                // outline carries the plant card's context row, so it is text
+                // and has to clear AA like any other text - against the card,
+                // which is the darkest surface it lands on, not the background.
+                "outline" to scheme.outline,
                 "primary" to scheme.primary,
                 "tertiary" to scheme.tertiary,
             ).forEach { (name, fg) ->
