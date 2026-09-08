@@ -16,6 +16,7 @@ object Routes {
     const val POST_MORTEM = "plant/postmortem"
     const val STICKER = "plant/sticker"
     const val DIAGNOSE = "diagnose"
+    const val CARE = "plant/care"
     const val PLANT_EDIT = "plant/edit"
     const val PLANT_DETAIL = "plant/detail"
     /** Empty id means "new plant". */
@@ -32,6 +33,8 @@ object Routes {
     fun postMortem(plantId: String) = "$POST_MORTEM/$plantId"
 
     fun sticker(plantId: String) = "$STICKER/$plantId"
+
+    fun care(plantId: String) = "$CARE/$plantId"
 
     fun plantEdit(plantId: String? = null) =
         if (plantId == null) "$PLANT_EDIT?id=" else "$PLANT_EDIT?id=$plantId"

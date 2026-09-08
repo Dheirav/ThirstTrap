@@ -32,6 +32,8 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,6 +54,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.dheirav.thirsttrap.domain.hasSpeciesCare
 import dev.dheirav.thirsttrap.domain.CareEvent
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.OutlinedTextField
@@ -80,6 +83,7 @@ fun PlantDetailScreen(
     onWeigh: (String) -> Unit,
     onMeasureLight: (String) -> Unit,
     onSticker: (String) -> Unit,
+    onCare: (String) -> Unit,
     viewModel: PlantDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -145,6 +149,20 @@ fun PlantDetailScreen(
                                     onClick = { menuOpen = false; onMeasureLight(p.id) },
                                 )
                                 DropdownMenuItem(
+                                    text = { Text("Care notes") },
+                                    enabled = hasSpeciesCare(p.species) || hasSpeciesCare(p.name),
+                                    trailingIcon = {
+                                        if (!hasSpeciesCare(p.species) && !hasSpeciesCare(p.name)) {
+                                            Text(
+                                                "not on file",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            )
+                                        }
+                                    },
+                                    onClick = { menuOpen = false; onCare(p.id) },
+                                )
+                                DropdownMenuItem(
                                     text = { Text("Pot sticker") },
                                     onClick = { menuOpen = false; onSticker(p.id) },
                                 )
@@ -177,6 +195,20 @@ fun PlantDetailScreen(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
+
+                    plant?.let { p ->
+                        if (hasSpeciesCare(p.species) || hasSpeciesCare(p.name)) {
+                            // A real 48dp target. contentPadding = 0 collapsed
+                            // it to the text's own height, which is both hard
+                            // to hit and under the accessibility floor.
+                            FilledTonalButton(
+                                onClick = { onCare(p.id) },
+                                modifier = Modifier
+                                    .padding(top = 8.dp)
+                                    .heightIn(min = 48.dp),
+                            ) { Text("Care notes for this species") }
+                        }
+                    }
 
                     // Requirements item 8. Only shown once there are two
                     // waterings to measure between - one is not a cadence.

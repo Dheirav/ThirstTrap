@@ -37,6 +37,7 @@ import dev.dheirav.thirsttrap.feature.debug.DebugScreen
 import androidx.compose.material.icons.filled.Settings
 import dev.dheirav.thirsttrap.feature.backup.BackupScreen
 import dev.dheirav.thirsttrap.feature.light.LightMeterScreen
+import dev.dheirav.thirsttrap.feature.care.CareScreen
 import dev.dheirav.thirsttrap.feature.diagnose.DiagnoseScreen
 import dev.dheirav.thirsttrap.feature.postmortem.PostMortemScreen
 import dev.dheirav.thirsttrap.feature.qr.StickerScreen
@@ -174,6 +175,12 @@ class MainActivity : ComponentActivity() {
                         ) {
                             StickerScreen(onBack = { nav.popBackStack() })
                         }
+                        composable(
+                            route = "${Routes.CARE}/{id}",
+                            arguments = listOf(navArgument("id") { type = NavType.StringType }),
+                        ) {
+                            CareScreen(onBack = { nav.popBackStack() })
+                        }
                         composable(Routes.DIAGNOSE) {
                             DiagnoseScreen(onBack = { nav.popBackStack() })
                         }
@@ -202,6 +209,7 @@ class MainActivity : ComponentActivity() {
                                 onWeigh = { id -> nav.navigate(Routes.weight(id)) },
                                 onMeasureLight = { id -> nav.navigate(Routes.light(id)) },
                                 onSticker = { id -> nav.navigate(Routes.sticker(id)) },
+                                onCare = { id -> nav.navigate(Routes.care(id)) },
                             )
                         }
                         composable(

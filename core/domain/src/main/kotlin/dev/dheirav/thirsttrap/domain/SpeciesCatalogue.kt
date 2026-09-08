@@ -1,0 +1,457 @@
+package dev.dheirav.thirsttrap.domain
+
+/**
+ * The bundled catalogue. Common houseplants, written properly.
+ *
+ * The depletion triggers follow docs/WATERING-MODEL.md §2: succulents and cacti
+ * 0.7-0.8, most foliage 0.5, moisture-lovers 0.3. They are the single most
+ * useful field here, because it is the one number a user has no way to guess.
+ */
+val speciesCatalogue: List<SpeciesCare> = listOf(
+
+    SpeciesCare(
+        name = "Peperomia",
+        botanical = "Peperomia spp.",
+        aliases = listOf("peperomia", "radiator plant", "peperomia obtusifolia", "baby rubber plant"),
+        light = "Bright indirect. Tolerates less, but grows leggy and pale in real shade.",
+        water = "Let the top half of the pot dry out. Thick leaves store water, so it is far more forgiving of drought than of a wet pot.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.65,
+        humidity = "Ordinary room air is fine.",
+        toxicity = "Non-toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Soft, translucent, dropping leaves means too much water - the commonest way these die.",
+            "Long bare stems with leaves only at the tips means not enough light.",
+        ),
+        note = "Semi-succulent. Treat it more like a jade plant than a fern.",
+    ),
+
+    SpeciesCare(
+        name = "Creeping fig",
+        botanical = "Ficus pumila",
+        aliases = listOf("creeping fig", "ficus pumila", "climbing fig", "creeping ficus"),
+        light = "Bright indirect. Direct midday sun scorches the small leaves.",
+        water = "Keep lightly moist - this one is genuinely unforgiving of drying out completely. Water when the top 2 cm feel dry.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.35,
+        humidity = "Likes it humid. Thrives in a terrarium, sulks in dry winter air.",
+        toxicity = "Mildly toxic if eaten; the sap irritates skin.",
+        commonProblems = listOf(
+            "Crisp brown leaves that drop suddenly usually mean it dried out once, briefly - they rarely come back on that stem.",
+            "Leaf drop after being moved is normal; leave it be and it recovers.",
+        ),
+        note = "One of the few figs that suits a terrarium, being small-leaved and humidity-loving.",
+    ),
+
+    SpeciesCare(
+        name = "Fiddle leaf fig",
+        botanical = "Ficus lyrata",
+        aliases = listOf("fiddle leaf fig", "ficus lyrata", "fiddle leaf", "fiddleleaf"),
+        light = "As bright as you can manage, short of harsh direct sun.",
+        water = "Let the top third dry, then water thoroughly until it runs out the bottom. Hates sitting wet.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.5,
+        toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Brown spots spreading from the leaf edge inward: usually overwatering or root rot.",
+            "Brown crispy edges: usually underwatering or dry air.",
+            "Dropping leaves after any move is normal. Do not respond by watering more.",
+        ),
+        note = "Notoriously dramatic about being moved. Pick a spot and leave it.",
+    ),
+
+    SpeciesCare(
+        name = "Rubber plant",
+        botanical = "Ficus elastica",
+        aliases = listOf("rubber plant", "ficus elastica", "rubber tree", "rubber fig"),
+        light = "Bright indirect. Tolerates medium light with slower growth.",
+        water = "Let the top third dry out. Less in winter.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.55,
+        toxicity = "Toxic to cats and dogs; sap irritates skin.",
+        commonProblems = listOf("Lower leaves yellowing and dropping is almost always overwatering."),
+    ),
+
+    SpeciesCare(
+        name = "Pothos",
+        botanical = "Epipremnum aureum",
+        aliases = listOf("pothos", "epipremnum", "devils ivy", "money plant", "marble queen", "golden pothos"),
+        light = "Anything from low to bright indirect. Variegation fades in low light.",
+        water = "Let the top half dry. It wilts visibly when thirsty and recovers within hours, which makes it very easy to read.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.6,
+        toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Yellow leaves usually mean too much water, not too little.",
+            "Roots in water indefinitely is fine, but it never transitions to soil as easily afterwards.",
+        ),
+        note = "The most forgiving houseplant there is, and the easiest to propagate.",
+    ),
+
+    SpeciesCare(
+        name = "Monstera",
+        botanical = "Monstera deliciosa",
+        aliases = listOf("monstera", "monstera deliciosa", "swiss cheese plant", "split leaf philodendron"),
+        light = "Bright indirect. Direct sun burns; deep shade means no splits in the leaves.",
+        water = "Let the top third to half dry out.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.5,
+        humidity = "Higher humidity gives bigger, better-split leaves.",
+        toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Leaves without splits usually means not enough light, not immaturity.",
+            "Yellowing lower leaves: overwatering.",
+            "Weeping droplets from leaf tips is normal - it means it is well watered.",
+        ),
+    ),
+
+    SpeciesCare(
+        name = "Snake plant",
+        botanical = "Dracaena trifasciata",
+        aliases = listOf("snake plant", "sansevieria", "dracaena trifasciata", "mother in laws tongue"),
+        light = "Anything. Genuinely thrives in low light and in a bright window.",
+        water = "Let it dry out almost completely. In winter, once a month is often enough.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.8,
+        toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Soft, mushy, falling-over leaves is rot from overwatering, and is usually fatal.",
+            "Almost nothing else goes wrong with them.",
+        ),
+        note = "The plant most often killed by kindness. When unsure, do not water.",
+    ),
+
+    SpeciesCare(
+        name = "ZZ plant",
+        botanical = "Zamioculcas zamiifolia",
+        aliases = listOf("zz plant", "zamioculcas", "zanzibar gem", "zz"),
+        light = "Low to bright indirect. Extremely tolerant.",
+        water = "Let it dry out completely. It stores water in underground rhizomes.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.8,
+        toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf("Yellowing stems means overwatering. It is very hard to underwater one."),
+    ),
+
+    SpeciesCare(
+        name = "Philodendron",
+        botanical = "Philodendron spp.",
+        aliases = listOf("philodendron", "heartleaf philodendron", "philodendron hederaceum", "brasil"),
+        light = "Medium to bright indirect.",
+        water = "Let the top half dry out.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.55,
+        toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf("Small leaves and long gaps between them means it wants more light."),
+    ),
+
+    SpeciesCare(
+        name = "Spider plant",
+        botanical = "Chlorophytum comosum",
+        aliases = listOf("spider plant", "chlorophytum", "airplane plant"),
+        light = "Bright indirect. Tolerates less.",
+        water = "Keep lightly moist in growth, drier in winter.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.45,
+        toxicity = "Non-toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Brown tips are usually fluoride or chloride in tap water - rainwater or filtered water fixes it.",
+            "No babies usually means it needs more light, or a longer day.",
+        ),
+    ),
+
+    SpeciesCare(
+        name = "Maidenhair fern",
+        botanical = "Adiantum spp.",
+        aliases = listOf("maidenhair fern", "adiantum", "maidenhair"),
+        light = "Bright indirect or dappled shade. No direct sun.",
+        water = "Never let it dry out, not even once. This is the whole difficulty with them.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.25,
+        humidity = "High. A bathroom or terrarium suits them far better than a living room.",
+        toxicity = "Non-toxic.",
+        commonProblems = listOf(
+            "Whole fronds crisping brown means it dried out - cut them off at the base, and the plant often regrows.",
+            "They are dramatic rather than dead. Keep watering a crisped one for a few weeks.",
+        ),
+    ),
+
+    SpeciesCare(
+        name = "Boston fern",
+        botanical = "Nephrolepis exaltata",
+        aliases = listOf("boston fern", "nephrolepis", "sword fern"),
+        light = "Bright indirect, no direct sun.",
+        water = "Keep evenly moist. Dislikes drying out.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.3,
+        humidity = "High.",
+        toxicity = "Non-toxic.",
+        commonProblems = listOf("Dropping leaflets everywhere usually means the air is too dry."),
+    ),
+
+    SpeciesCare(
+        name = "Calathea",
+        botanical = "Calathea / Goeppertia spp.",
+        aliases = listOf("calathea", "goeppertia", "prayer plant", "maranta", "rattlesnake plant"),
+        light = "Medium indirect. Direct sun fades the markings.",
+        water = "Keep lightly moist. Sensitive to tap water minerals.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.3,
+        humidity = "High. The usual reason they look bad indoors.",
+        toxicity = "Non-toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Crispy brown edges: dry air or tap water. Try filtered or rainwater.",
+            "Leaves folding up at night is normal and a good sign.",
+        ),
+        note = "Beautiful and genuinely demanding. Not a beginner plant, whatever the label says.",
+    ),
+
+    SpeciesCare(
+        name = "Aloe vera",
+        botanical = "Aloe barbadensis",
+        aliases = listOf("aloe", "aloe vera", "aloe barbadensis"),
+        light = "Bright, several hours of direct sun if possible.",
+        water = "Soak thoroughly, then let it dry out completely. Perhaps every three weeks.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.8,
+        toxicity = "Mildly toxic to cats and dogs if eaten.",
+        commonProblems = listOf(
+            "Flat, spreading, pale leaves means not enough light.",
+            "Soft mushy base is rot. Almost always fatal by the time it shows.",
+        ),
+        note = "Wants gritty, free-draining soil. Ordinary potting compost holds far too much water.",
+    ),
+
+    SpeciesCare(
+        name = "Jade plant",
+        botanical = "Crassula ovata",
+        aliases = listOf("jade plant", "crassula", "crassula ovata", "money tree", "lucky plant"),
+        light = "Bright, direct sun welcome.",
+        water = "Let it dry out completely between waterings.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.8,
+        toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf("Wrinkled leaves means thirsty; soft yellow leaves means overwatered."),
+    ),
+
+    SpeciesCare(
+        name = "Succulents",
+        botanical = "Echeveria, Sedum, Haworthia and similar",
+        aliases = listOf("succulent", "succulents", "echeveria", "sedum", "haworthia", "sempervivum"),
+        light = "As bright as possible. Most need direct sun to keep their shape and colour.",
+        water = "Soak thoroughly, then leave until bone dry. Weeks, not days.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.8,
+        commonProblems = listOf(
+            "Stretching upward with widening gaps between leaves means far too little light.",
+            "Translucent, mushy lower leaves means overwatering.",
+        ),
+        note = "Gritty free-draining mix, and a pot with a drainage hole. Both matter more than watering technique.",
+    ),
+
+    SpeciesCare(
+        name = "Cactus",
+        botanical = "Cactaceae",
+        aliases = listOf("cactus", "cacti", "christmas cactus", "schlumbergera"),
+        light = "Bright, most want direct sun. Christmas cactus is the exception and prefers indirect.",
+        water = "Almost none in winter. Thoroughly but rarely in summer.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.85,
+        commonProblems = listOf("Soft brown patches at the base is rot, and it moves upward."),
+    ),
+
+    SpeciesCare(
+        name = "Orchid",
+        botanical = "Phalaenopsis spp.",
+        aliases = listOf("orchid", "phalaenopsis", "moth orchid"),
+        light = "Bright indirect. An east window is close to ideal.",
+        water = "Soak the bark weekly, then let it drain completely. Never leave it standing in water.",
+        medium = Medium.SEMI_HYDRO,
+        depletionTrigger = 0.7,
+        humidity = "Moderate to high.",
+        toxicity = "Non-toxic.",
+        commonProblems = listOf(
+            "Limp wrinkled leaves usually means root loss from overwatering, not thirst.",
+            "Silvery roots are thirsty; green roots are wet. They tell you directly.",
+        ),
+        note = "Grows in bark, not soil. Weight readings work well for these, since bark dries predictably.",
+    ),
+
+    SpeciesCare(
+        name = "Anthurium",
+        botanical = "Anthurium andraeanum",
+        aliases = listOf("anthurium", "flamingo flower", "laceleaf"),
+        light = "Bright indirect.",
+        water = "Let the top third dry. Likes airy, chunky soil.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.45,
+        humidity = "High.",
+        toxicity = "Toxic to cats and dogs.",
+    ),
+
+    SpeciesCare(
+        name = "Alocasia",
+        botanical = "Alocasia spp.",
+        aliases = listOf("alocasia", "elephant ear", "african mask plant", "polly"),
+        light = "Bright indirect.",
+        water = "Keep lightly moist but never soggy. Very prone to root rot.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.4,
+        humidity = "High.",
+        toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Dropping every leaf and going dormant in winter is normal - the corm is often still alive.",
+            "Spider mites love these. Check leaf undersides.",
+        ),
+    ),
+
+    SpeciesCare(
+        name = "Hoya",
+        botanical = "Hoya spp.",
+        aliases = listOf("hoya", "wax plant", "porcelain flower"),
+        light = "Bright indirect, some direct sun encourages flowering.",
+        water = "Let it dry out substantially. Thick leaves store water.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.7,
+        toxicity = "Non-toxic.",
+        note = "Do not cut off old flower spurs - it reflowers from the same ones.",
+    ),
+
+    SpeciesCare(
+        name = "Tradescantia",
+        botanical = "Tradescantia zebrina / fluminensis",
+        aliases = listOf("tradescantia", "wandering dude", "zebrina", "inch plant", "spiderwort"),
+        light = "Bright indirect keeps the colour; low light turns it green and leggy.",
+        water = "Let the top half dry.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.55,
+        toxicity = "Mildly toxic; sap can irritate skin.",
+        note = "Roots from a cutting in water within about a week. Almost impossible to fail.",
+    ),
+
+    SpeciesCare(
+        name = "Syngonium",
+        botanical = "Syngonium podophyllum",
+        aliases = listOf("syngonium", "arrowhead plant", "arrowhead vine", "goosefoot"),
+        light = "Medium to bright indirect.",
+        water = "Let the top half dry.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.55,
+        toxicity = "Toxic to cats and dogs.",
+    ),
+
+    SpeciesCare(
+        name = "Begonia",
+        botanical = "Begonia spp.",
+        aliases = listOf("begonia", "rex begonia", "polka dot begonia", "maculata"),
+        light = "Bright indirect, no direct sun.",
+        water = "Lightly moist. Water the soil, not the leaves - wet foliage invites mildew.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.4,
+        humidity = "High, but without water sitting on the leaves.",
+        toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf("White powdery patches on leaves is mildew, from damp still air."),
+    ),
+
+    SpeciesCare(
+        name = "Dracaena",
+        botanical = "Dracaena spp.",
+        aliases = listOf("dracaena", "dragon tree", "marginata", "corn plant", "lucky bamboo"),
+        light = "Medium to bright indirect.",
+        water = "Let the top half dry. Sensitive to fluoride in tap water.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.6,
+        toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf("Brown tips with a yellow halo is usually tap water. Try filtered."),
+    ),
+
+    SpeciesCare(
+        name = "Basil",
+        botanical = "Ocimum basilicum",
+        aliases = listOf("basil", "ocimum", "tulsi", "holy basil"),
+        light = "As much direct sun as you can give it. Six hours is ideal.",
+        water = "Keep consistently moist. It wilts dramatically and recovers if caught quickly.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.35,
+        toxicity = "Edible.",
+        commonProblems = listOf(
+            "Flowering makes the leaves bitter - pinch the flower buds out.",
+            "Leggy stems means too little light.",
+        ),
+    ),
+
+    SpeciesCare(
+        name = "Mint",
+        botanical = "Mentha spp.",
+        aliases = listOf("mint", "mentha", "peppermint", "spearmint", "pudina"),
+        light = "Bright, some direct sun. Tolerates partial shade.",
+        water = "Keep moist. Mint is thirstier than most herbs.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.3,
+        toxicity = "Edible.",
+        note = "Keep it in its own pot. In a shared one it takes over completely.",
+    ),
+
+    SpeciesCare(
+        name = "Chilli",
+        botanical = "Capsicum spp.",
+        aliases = listOf("chilli", "chili", "chile", "capsicum", "pepper plant", "birds eye chilli"),
+        light = "Full sun, as much as possible.",
+        water = "Let the top third dry, then water thoroughly. Erratic watering splits the fruit.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.5,
+        toxicity = "Edible, obviously.",
+        commonProblems = listOf(
+            "Flowers dropping without fruit usually means no pollination indoors - shake the plant, or use a brush.",
+        ),
+    ),
+
+    SpeciesCare(
+        name = "Money plant (Pilea)",
+        botanical = "Pilea peperomioides",
+        aliases = listOf("pilea", "pilea peperomioides", "chinese money plant", "pancake plant", "ufo plant"),
+        light = "Bright indirect.",
+        water = "Let the top half dry. Leaves droop noticeably when thirsty.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.55,
+        toxicity = "Non-toxic.",
+        note = "Rotate it regularly or it leans hard toward the light.",
+    ),
+
+    SpeciesCare(
+        name = "String of pearls",
+        botanical = "Curio rowleyanus",
+        aliases = listOf("string of pearls", "senecio rowleyanus", "curio rowleyanus", "string of beads"),
+        light = "Very bright, some direct sun.",
+        water = "Let it dry out completely. Shrivelled pearls means thirsty; mushy ones mean overwatered.",
+        medium = Medium.SOIL,
+        depletionTrigger = 0.8,
+        toxicity = "Toxic to cats and dogs.",
+        note = "Shallow-rooted. A wide shallow pot suits it far better than a deep one.",
+    ),
+
+    SpeciesCare(
+        name = "Air plant",
+        botanical = "Tillandsia spp.",
+        aliases = listOf("air plant", "tillandsia", "airplant"),
+        light = "Bright indirect.",
+        water = "Soak in water for 20 minutes weekly, then shake out and dry upside down. Trapped water at the base rots them.",
+        medium = Medium.UNKNOWN,
+        depletionTrigger = 0.8,
+        toxicity = "Non-toxic.",
+        note = "No soil at all, so weight tracking does not apply here.",
+    ),
+
+    SpeciesCare(
+        name = "Moss",
+        botanical = "Bryophyta",
+        aliases = listOf("moss", "sheet moss", "cushion moss"),
+        light = "Low to medium indirect. Direct sun bleaches and kills it.",
+        water = "Keep constantly damp. Mist rather than pour.",
+        medium = Medium.SPHAGNUM,
+        depletionTrigger = 0.2,
+        humidity = "Very high - which is why it belongs in a closed terrarium.",
+        toxicity = "Non-toxic.",
+        commonProblems = listOf("Going brown and crisp means it dried; going black and slimy means no air movement."),
+    ),
+)
