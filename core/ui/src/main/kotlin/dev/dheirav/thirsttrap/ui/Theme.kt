@@ -185,5 +185,10 @@ fun ThirstTrapTheme(
         darkTheme -> DarkScheme
         else -> LightScheme
     }
-    MaterialTheme(colorScheme = scheme, shapes = AppShapes, content = content)
+    MaterialTheme(
+        colorScheme = scheme,
+        shapes = AppShapes,
+        typography = AppTypography,
+        content = content,
+    )
 }
