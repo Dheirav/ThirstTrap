@@ -39,8 +39,11 @@ class MigrationTest {
         helper.createDatabase(TEST_DB, 6).use { db ->
             db.execSQL(
                 """
-                INSERT INTO plants (id, name, status, medium, depletion_trigger, created_at, updated_at)
-                VALUES ('p1', 'Fittonia', 'active', 'soil', 0.35, 1000, 1000)
+                INSERT INTO plants (
+                    id, name, source, medium, status, depletion_trigger,
+                    dry_anchor_provisional, needs_recalibration, archived,
+                    created_at, updated_at
+                ) VALUES ('p1', 'Fittonia', 'bought', 'soil', 'active', 0.35, 0, 0, 0, 1000, 1000)
                 """.trimIndent(),
             )
             db.execSQL(
