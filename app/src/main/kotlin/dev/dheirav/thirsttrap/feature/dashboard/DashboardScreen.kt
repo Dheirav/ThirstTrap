@@ -1,7 +1,17 @@
 package dev.dheirav.thirsttrap.feature.dashboard
 
+import dev.dheirav.thirsttrap.ui.Motion
+import dev.dheirav.thirsttrap.ui.AppIcons
+import dev.dheirav.thirsttrap.ui.BranchingMark
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.border
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -23,12 +33,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.QrCodeScanner
-import androidx.compose.material.icons.filled.Spa
-import androidx.compose.material.icons.filled.TouchApp
-import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -61,11 +65,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathMeasure
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
@@ -176,10 +188,10 @@ fun DashboardScreen(
                             onProblem = { scope.launch { snackbarHost.showSnackbar(it) } },
                         )
                     }) {
-                        Icon(Icons.Filled.QrCodeScanner, contentDescription = "Scan a pot sticker")
+                        Icon(AppIcons.qrCodeScanner, contentDescription = "Scan a pot sticker")
                     }
                     IconButton(onClick = onOpenPropagation) {
-                        Icon(Icons.Filled.Spa, contentDescription = "Propagation board")
+                        Icon(AppIcons.spa, contentDescription = "Propagation board")
                     }
                 },
             )
@@ -187,7 +199,7 @@ fun DashboardScreen(
         snackbarHost = { SnackbarHost(snackbarHost) },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddPlant) {
-                Icon(Icons.Filled.Add, contentDescription = "Add a plant")
+                Icon(AppIcons.add, contentDescription = "Add a plant")
             }
         },
     ) { padding ->
@@ -304,6 +316,8 @@ private fun EmptyState(modifier: Modifier, onAddPlant: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        BranchingMark(Modifier.size(140.dp, 160.dp))
+        Spacer(Modifier.height(24.dp))
         Text("No plants yet", style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(8.dp))
         Text(
@@ -349,28 +363,15 @@ private fun PlantCard(
             // The most recent photo, falling back to an initial. A broken or
             // missing file must never crash the list - see docs/UI-SPEC.md
             // section 9 - so the placeholder stays behind the image.
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .clip(MaterialTheme.shapes.small)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    plant.name.take(1).uppercase(),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
-                    // Decorative: the card already announces the plant's name.
-                    modifier = Modifier.clearAndSetSemantics { },
-                )
-                item.coverPhotoPath?.let { path ->
-                    PlantPhoto(
-                        path = path,
-                        contentDescription = null,
-                        modifier = Modifier.size(56.dp).clip(MaterialTheme.shapes.small),
-                    )
-                }
-            }
+            // The depletion ring wraps the photo, so the state of the pot and
+            // the picture of the pot are the same object. It costs no vertical
+            // space, which is what let the card lose three rows.
+            DepletionThumbnail(
+                photoPath = item.coverPhotoPath,
+                initial = plant.name.take(1).uppercase(),
+                depletion = if (plant.isWeightTrackable) item.depletion else null,
+                trigger = plant.depletionTrigger,
+            )
 
             Spacer(Modifier.size(12.dp))
 
@@ -415,18 +416,22 @@ private fun PlantCard(
 
                 // 2. The answer. A prediction when there is one; otherwise the
                 //    most recent fact, which is the best answer available.
-                Text(
-                    prediction ?: wateredText,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.padding(top = 2.dp),
-                )
-
-                // 3. The state object.
-                if (plant.isWeightTrackable) {
-                    item.depletion?.let {
-                        DepletionBar(it, plant.depletionTrigger, item.prediction is Prediction.WaterNow)
-                    }
+                // The row people read, so a change in it should register as a
+                // change rather than as a different card.
+                // Hoisted: transitionSpec is not a composable scope, so the
+                // reduce-motion check has to happen out here.
+                val swap = Motion.confirm<Float>()
+                AnimatedContent(
+                    targetState = prediction ?: wateredText,
+                    transitionSpec = { fadeIn(swap) togetherWith fadeOut(swap) },
+                    label = "the answer",
+                ) { answer ->
+                    Text(
+                        answer,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(top = 2.dp),
+                    )
                 }
 
                 // 4. Everything else, one line, in the dim tier - the third step
@@ -468,41 +473,33 @@ private fun PlantCard(
                 )
             }
 
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .clickable(
-                        onClickLabel = "Log checked, still wet for ${plant.name}",
-                        onClick = onQuickCheck,
-                    ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    Icons.Filled.TouchApp,
-                    contentDescription = "Log checked, still wet for ${plant.name}",
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
+            // The two log actions. UI-SPEC section 7 requires "Still wet" to get
+            // the same confirmation as "Watered" - the app must not celebrate
+            // watering and stay silent about restraint. That was previously
+            // satisfied only because neither had one.
+            //
+            // Both were also TouchApp and WaterDrop: filled, primary, the same
+            // size, side by side, with nothing saying which was which. They now
+            // differ in the only way that survives being 24dp of green - the
+            // glyph depicts the action. A hand held back from the pot, and a
+            // drop.
+            LogAction(
+                icon = AppIcons.stillWet,
+                label = "Log checked, still wet for ${plant.name}",
+                justLogged = item.lastCheckedMillis,
+                onClick = onQuickCheck,
+            )
 
             // Tap logs immediately; long-press opens the detailed entry, for
             // the times you want to record something other than the usual.
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .combinedClickable(
-                        onClick = onQuickWater,
-                        onLongClick = onDetailedWater,
-                    )
-                    .semantics {
-                        contentDescription = "Log watering for ${plant.name}. " +
-                            "Long press for amount and method."
-                    },
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(Icons.Filled.WaterDrop, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-            }
+            LogAction(
+                icon = AppIcons.waterDrop,
+                loggedIcon = AppIcons.waterDropFilled,
+                label = "Log watering for ${plant.name}. Long press for amount and method.",
+                justLogged = item.lastWateredMillis,
+                onClick = onQuickWater,
+                onLongClick = onDetailedWater,
+            )
         }
     }
 }
@@ -538,28 +535,98 @@ private fun predictionText(prediction: Prediction): String? = when (prediction) 
     }
 }
 
+/**
+ * The pot's state, drawn around its photo.
+ *
+ * Replaces a full-width bar that filled toward 100%. A bar filling to full is
+ * the visual grammar of *task completion* - the one grammar this app exists to
+ * avoid, since it turns "this plant is drying normally" into "you are 62% of
+ * the way to doing your job". A ring reads as a level, not as progress toward a
+ * score, and Planta and Oura both use one for the same reason.
+ *
+ * The trigger is a tick on the ring rather than a number, because the number
+ * was never the point: what matters is whether the pot has passed the mark.
+ */
 @Composable
-private fun DepletionBar(depletion: Double, trigger: Double, pastTrigger: Boolean) {
-    val pct = (depletion * 100).toInt()
-    Column(Modifier.padding(top = 6.dp)) {
-        Box(
-            Modifier.fillMaxWidth().height(8.dp).clip(MaterialTheme.shapes.extraSmall)
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-        ) {
-            Box(
-                Modifier.fillMaxWidth(depletion.coerceIn(0.0, 1.0).toFloat()).height(8.dp)
-                    .background(MaterialTheme.colorScheme.primary),
-            )
-            Box(Modifier.fillMaxWidth(trigger.toFloat()).height(8.dp), contentAlignment = Alignment.CenterEnd) {
-                Box(Modifier.size(width = 2.dp, height = 8.dp).background(MaterialTheme.colorScheme.onSurfaceVariant))
+private fun DepletionThumbnail(
+    photoPath: String?,
+    initial: String,
+    depletion: Double?,
+    trigger: Double,
+) {
+    val ringStroke = 3.dp
+    val gap = 3.dp
+    val photo = 64.dp
+    val total = photo + (ringStroke + gap) * 2
+
+    val filled by animateFloatAsState(
+        targetValue = depletion?.coerceIn(0.0, 1.0)?.toFloat() ?: 0f,
+        animationSpec = Motion.settle(),
+        label = "depletion",
+    )
+    val track = MaterialTheme.colorScheme.outlineVariant
+    val fill = MaterialTheme.colorScheme.primary
+    val tick = MaterialTheme.colorScheme.onSurfaceVariant
+
+    Box(Modifier.size(total), contentAlignment = Alignment.Center) {
+        if (depletion != null) {
+            Canvas(Modifier.size(total)) {
+                val inset = ringStroke.toPx() / 2f
+                // Concentric with the photo: its own 8dp corner plus however
+                // far the ring sits outside it, or the two curves fight.
+                val radius = CornerRadius((8.dp + ringStroke + gap).toPx())
+                val outline = Path().apply {
+                    addRoundRect(
+                        RoundRect(
+                            left = inset, top = inset,
+                            right = size.width - inset, bottom = size.height - inset,
+                            cornerRadius = radius,
+                        ),
+                    )
+                }
+                drawPath(outline, track, style = Stroke(ringStroke.toPx()))
+
+                val measure = PathMeasure().apply { setPath(outline, false) }
+                val length = measure.length
+                if (filled > 0f) {
+                    val segment = Path()
+                    // Starts at the top-left corner and runs clockwise, so the
+                    // ring reads the way the eye already scans the card.
+                    measure.getSegment(0f, length * filled, segment, true)
+                    drawPath(segment, fill, style = Stroke(ringStroke.toPx(), cap = StrokeCap.Round))
+                }
+                val at = Path()
+                val markAt = (length * trigger.toFloat()).coerceIn(0f, length)
+                measure.getSegment((markAt - 4f).coerceAtLeast(0f), markAt, at, true)
+                drawPath(at, tick, style = Stroke(ringStroke.toPx() * 1.6f, cap = StrokeCap.Round))
             }
         }
-        Text(
-            if (pastTrigger) "$pct% - past its ${(trigger * 100).toInt()}% trigger" else "$pct% toward watering",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 2.dp),
-        )
+
+        // A bright photo on a near-black card has a hard cut-out edge; the
+        // hairline inset resolves it into the card instead.
+        Box(
+            modifier = Modifier
+                .size(photo)
+                .clip(MaterialTheme.shapes.small)
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, MaterialTheme.shapes.small),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                initial,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                // Decorative: the card already announces the plant's name.
+                modifier = Modifier.clearAndSetSemantics { },
+            )
+            photoPath?.let {
+                PlantPhoto(
+                    path = it,
+                    contentDescription = null,
+                    modifier = Modifier.size(photo).clip(MaterialTheme.shapes.small),
+                )
+            }
+        }
     }
 }
 
@@ -614,4 +681,59 @@ private fun cadenceLabel(avgDays: Double): String = when (val d = avgDays.toInt(
     0 -> "Waters more than once a day"
     1 -> "Waters roughly every day"
     else -> "Waters roughly every $d days"
+}
+
+/**
+ * One of the two log buttons on a card.
+ *
+ * [justLogged] is the timestamp of the most recent event of this kind. When it
+ * moves to within [Motion.CONFIRM_MS] of now, the icon does one small scale-and-
+ * fade - the same one for both actions, which is the point. Watering the plant
+ * and deciding not to are equally valid outcomes, and the UI has to treat them
+ * that way or it is quietly scoring one above the other.
+ *
+ * No overshoot: it settles, it does not bounce.
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun LogAction(
+    icon: Painter,
+    label: String,
+    justLogged: Long?,
+    onClick: () -> Unit,
+    loggedIcon: Painter? = null,
+    onLongClick: (() -> Unit)? = null,
+) {
+    // Keyed on the timestamp, not on the tap, so it also fires when the log
+    // came from somewhere else - the quick-log sheet, a scanned sticker.
+    var confirming by remember { mutableStateOf(false) }
+    LaunchedEffect(justLogged) {
+        if (justLogged == null) return@LaunchedEffect
+        if (System.currentTimeMillis() - justLogged > 1_500L) return@LaunchedEffect
+        confirming = true
+        delay(Motion.CONFIRM_MS.toLong() * 2)
+        confirming = false
+    }
+
+    val scale by animateFloatAsState(
+        targetValue = if (confirming) 1.18f else 1f,
+        animationSpec = Motion.confirm(),
+        label = "log confirmation",
+    )
+
+    Box(
+        modifier = Modifier
+            .size(48.dp)
+            .clip(CircleShape)
+            .combinedClickable(onClick = onClick, onLongClick = onLongClick)
+            .semantics { contentDescription = label },
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            if (confirming && loggedIcon != null) loggedIcon else icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.scale(scale),
+        )
+    }
 }

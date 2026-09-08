@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap
 
+import dev.dheirav.thirsttrap.ui.AppIcons
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
@@ -22,9 +23,6 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Yard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -39,7 +37,6 @@ import dev.dheirav.thirsttrap.feature.help.RemindersHelpScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.feature.debug.DebugScreen
-import androidx.compose.material.icons.filled.Settings
 import dev.dheirav.thirsttrap.feature.backup.BackupScreen
 import dev.dheirav.thirsttrap.feature.light.LightMeterScreen
 import dev.dheirav.thirsttrap.feature.care.CareScreen
@@ -56,6 +53,7 @@ import dev.dheirav.thirsttrap.feature.plantdetail.PlantDetailScreen
 import dev.dheirav.thirsttrap.feature.plantedit.PlantEditScreen
 import dev.dheirav.thirsttrap.navigation.Routes
 import dev.dheirav.thirsttrap.ui.ThirstTrapTheme
+import dev.dheirav.thirsttrap.ui.grain
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -103,19 +101,19 @@ class MainActivity : ComponentActivity() {
                                 NavigationBarItem(
                                     selected = route == Routes.DASHBOARD,
                                     onClick = { nav.navigate(Routes.DASHBOARD) { popUpTo(Routes.DASHBOARD) { inclusive = true } } },
-                                    icon = { Icon(Icons.Filled.Yard, contentDescription = null) },
+                                    icon = { Icon(AppIcons.yard, contentDescription = null) },
                                     label = { Text("Plants") },
                                 )
                                 NavigationBarItem(
                                     selected = route == Routes.DUE,
                                     onClick = { nav.navigate(Routes.DUE) { launchSingleTop = true } },
-                                    icon = { Icon(Icons.Filled.Notifications, contentDescription = null) },
+                                    icon = { Icon(AppIcons.notifications, contentDescription = null) },
                                     label = { Text("Due") },
                                 )
                                 NavigationBarItem(
                                     selected = route == Routes.SETTINGS,
                                     onClick = { nav.navigate(Routes.SETTINGS) { launchSingleTop = true } },
-                                    icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
+                                    icon = { Icon(AppIcons.settings, contentDescription = null) },
                                     label = { Text("Settings") },
                                 )
                             }
@@ -125,7 +123,9 @@ class MainActivity : ComponentActivity() {
                     NavHost(
                         navController = nav,
                         startDestination = Routes.DASHBOARD,
-                        modifier = Modifier.padding(barPadding),
+                        // Grain over the whole app rather than per screen: it is
+                        // a property of the paper, not of any one page.
+                        modifier = Modifier.padding(barPadding).grain(),
                     ) {
                         composable(Routes.DASHBOARD) {
                             DashboardScreen(
