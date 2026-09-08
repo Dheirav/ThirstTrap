@@ -16,6 +16,7 @@ object Routes {
     const val POST_MORTEM = "plant/postmortem"
     const val STICKER = "plant/sticker"
     const val DIAGNOSE = "diagnose"
+    const val AMBIENT = "ambient"
     const val CARE = "plant/care"
     const val PLANT_EDIT = "plant/edit"
     const val PLANT_DETAIL = "plant/detail"

@@ -154,7 +154,7 @@ complete before any UI is written.*
 - [x] **F21** QR stickers on pots *(req. 21)* — ML Kit Code Scanner (no camera permission) → deep-link to that plant's quick-log
 - [x] **F19** Diagnosis checklists *(req. 19)* — guided trees: fuzz (dunk test: root hairs vs mould), browning (firm vs mushy), cut-face reading (clean vs brown ring), leaf-drop triage
 - [x] **F22** Light meter *(req. 22)* — `SensorManager` + `TYPE_LIGHT`, lux per location, rated against the plant's needs
-- [ ] **F23** Ambient context *(req. 23)* — room temp/humidity per location, manual or free weather API, explains seasonal drying-rate change
+- [x] **F23** Ambient context *(req. 23)* — room temp/humidity **per location** (not per plant), manual entry. Feeds `explainDryingChange`, which sits beside the drying diagnostic and says whether the room accounts for a change. Explains a drying rate; never predicts one. The free-weather-API half of the requirement's "or" is not built — see handover D18
 - [ ] **F18** Timelapse builder *(req. 18)* — scrubbable assembly of a plant's photo history
 - [x] **F26** Species care notes — two tiers, 49 hand-written + 115 generated from `biologiste95/plant-dataset` (Unlicense) and the ASPCA toxicity list, 497 aliases. Curated always wins; the tiers are marked differently in the UI. *`docs/SPECIES-CATALOGUE.md`*
 - [x] **F26.1** Build-time GBIF name resolution — 62 outdated botanical names rewritten to accepted ones, so an old plant label still finds the right plant

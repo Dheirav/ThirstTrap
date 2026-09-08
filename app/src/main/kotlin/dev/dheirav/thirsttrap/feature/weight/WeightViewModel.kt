@@ -26,6 +26,7 @@ class WeightViewModel @Inject constructor(
     private val repository: WeightRepository,
     private val reminders: ReminderRepository,
     private val settings: dev.dheirav.thirsttrap.domain.SettingsRepository,
+    ambient: dev.dheirav.thirsttrap.domain.AmbientRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -34,6 +35,26 @@ class WeightViewModel @Inject constructor(
     val state: StateFlow<WeightState?> =
         repository.observeWeightState(plantId)
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    /**
+     * Whether the room accounts for a change in the drying rate.
+     *
+     * Sits beside the diagnostic rather than inside it, because it is a
+     * different kind of claim: the diagnostic is about the plant, this is about
+     * the weather. Null whenever there is nothing honest to say, which is most
+     * of the time.
+     */
+    val ambientExplanation: StateFlow<dev.dheirav.thirsttrap.domain.AmbientExplanation?> =
+        kotlinx.coroutines.flow.combine(
+            repository.observeWeightState(plantId),
+            ambient.observeAll(),
+        ) { weight, readings ->
+            dev.dheirav.thirsttrap.domain.explainForPlant(
+                weight,
+                readings,
+                System.currentTimeMillis(),
+            )
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     private val _entry = MutableStateFlow("")
     val entry: StateFlow<String> = _entry.asStateFlow()

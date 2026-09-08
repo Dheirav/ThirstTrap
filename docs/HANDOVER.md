@@ -452,6 +452,59 @@ plant's name, because people name a plant after what it is and the hero read
 readings, which pushed the last card under the FAB - 4dp of clearance to a
 48dp tap target. Now reserved only when there is a ring: 43dp.
 
+### D18 — Ambient context explains, it never predicts (2026-09-08)
+
+Requirement 23 asks for room temperature and humidity "so seasonal drying-rate
+changes are explainable", and **explainable is the entire scope**. Nothing in
+`Ambient.kt` feeds the prediction, the depletion trigger or the slope fit. A pot
+that dries faster dries faster whether or not the app knows why, and building a
+temperature correction on two thermometer readings would be a model resting on
+nothing.
+
+What it does instead is separate "this plant changed" from "the room changed",
+which is the difference between a diagnostic worth reading and one worth
+ignoring. `AmbientVerdict.ROOM_UNCHANGED` is the valuable one: it is the only
+verdict that makes a diagnostic *more* worth acting on, because it rules out the
+boring explanation and leaves the interesting ones - a shrunken root ball, a
+rootbound pot, rot.
+
+`explainDryingChange` returns null - says nothing at all - when either period
+has fewer than two readings, when the drying rate has not actually moved, when
+the two periods measured different things (temperature before, humidity after),
+or when the room moved both ways at once. Same discipline as `Prediction`: an
+app that confidently names a wrong cause sends someone to repot a healthy plant.
+
+**Keyed by location, not by plant.** Four pots on one windowsill share a
+windowsill; logging the same measurement against each would be four times the
+work for one fact, and would lose it when a plant is deleted - exactly when the
+history of that spot becomes interesting. The cost is that renaming a location
+orphans its readings, which is the right trade against a locations table nobody
+asked for. F13 is where that would belong if it lands.
+
+### Two things found on the way
+
+**Weight readings were never in the backup.** `ExportBundle` carried plants,
+events, photos and reminders and nothing else. Nothing had caught it because no
+pot has been weighed yet - but an export/import round trip would have silently
+destroyed the entire drying history, the one thing in this app that cannot be
+reconstructed from memory. Both `weightReadings` and `ambient` are in the bundle
+now, defaulting to empty so older backups still import.
+
+**There were no migration tests.** `ThirstTrapDatabase` says every migration
+should be covered by a `MigrationTestHelper` test; the `androidTest` directory
+existed and was empty. Room validates an auto-migration against the exported
+schemas at compile time, which catches a malformed migration and says nothing
+about whether the rows on someone's phone survive it. `MigrationTest` now covers
+6 to 7 with a real plant and a real weight reading, plus a 1-to-7 walk.
+
+### Not built
+
+The free-weather-API half of requirement 23's "or". Manual entry satisfies the
+requirement, and `AmbientSource.WEATHER` and the "not the same as the room"
+labelling are already in place for it. Open-Meteo is the obvious fit - free,
+keyless, and geocodable by city name, so it needs no location permission. Worth
+doing, because nobody logs a thermometer by hand for six months.
+
 ### D9 — MIT licence (2026-09-06)
 
 `LICENSE` to be added at `git init`. Copyright holder: the repo owner, under

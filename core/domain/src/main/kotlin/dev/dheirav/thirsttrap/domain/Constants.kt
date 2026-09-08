@@ -60,3 +60,24 @@ const val SLOW_DRYING_MIN_DAYS = 5.0
 const val MIN_CLOSED_SEGMENTS_FOR_DIAGNOSTICS = 2
 
 const val MILLIS_PER_DAY = 86_400_000.0
+
+// --- Ambient context (F23) -------------------------------------------------
+
+/**
+ * How much the room has to move before it counts as having moved.
+ *
+ * Below these the reading difference is as likely to be where the thermometer
+ * was sitting as a real change in the room, and attributing a drying-rate
+ * change to it would be inventing a cause.
+ */
+const val AMBIENT_TEMP_SHIFT_C = 3.0
+const val AMBIENT_HUMIDITY_SHIFT_PCT = 10.0
+
+/** A drying rate within this ratio of the baseline has not meaningfully changed. */
+const val AMBIENT_DRYING_SHIFT_RATIO = 1.25
+
+/** Readings older than this say nothing about the room the plant is in now. */
+const val AMBIENT_STALE_DAYS = 30.0
+
+/** One reading is an anecdote. Two is the minimum for a period average. */
+const val AMBIENT_MIN_READINGS_PER_PERIOD = 2

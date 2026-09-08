@@ -39,6 +39,7 @@ fun SettingsScreen(
     onOpenBackup: () -> Unit,
     onOpenHelp: () -> Unit,
     onOpenDiagnose: () -> Unit,
+    onOpenAmbient: () -> Unit,
     onOpenDebug: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
@@ -153,6 +154,17 @@ fun SettingsScreen(
 
             TextButton(onClick = onOpenHelp) { Text("Reminders not arriving?") }
             TextButton(onClick = onOpenDiagnose) { Text("Something looks wrong with a plant") }
+
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            SectionHeader("The room")
+            Text(
+                "A pot dries faster in a warm dry room than a cool damp one. Recording room " +
+                    "conditions now and then lets the app tell a plant that changed from a " +
+                    "season that changed - it explains a drying rate, it never predicts one.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            TextButton(onClick = onOpenAmbient) { Text("Room conditions") }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             SectionHeader("Watering")

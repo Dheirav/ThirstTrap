@@ -52,6 +52,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.domain.Confidence
+import dev.dheirav.thirsttrap.domain.AmbientExplanation
+import dev.dheirav.thirsttrap.domain.AmbientSource
+import dev.dheirav.thirsttrap.domain.AmbientVerdict
 import dev.dheirav.thirsttrap.domain.DryingDiagnostic
 import dev.dheirav.thirsttrap.domain.Prediction
 import dev.dheirav.thirsttrap.domain.ReadingContext
@@ -71,6 +74,7 @@ fun WeightScreen(
     val entry by viewModel.entry.collectAsStateWithLifecycle()
     val context by viewModel.context.collectAsStateWithLifecycle()
     val hint by viewModel.hint.collectAsStateWithLifecycle()
+    val ambient by viewModel.ambientExplanation.collectAsStateWithLifecycle()
     val dismissed by viewModel.dismissed.collectAsStateWithLifecycle()
     var showCalibration by remember { mutableStateOf(false) }
 
@@ -137,6 +141,7 @@ fun WeightScreen(
                         onHelp = onOpenScaleHelp,
                     )
                 }
+                ambient?.let { AmbientCard(it) }
                 if (s.readings.count { !it.excluded } < 2) {
                     Text(
                         "One reading so far. Weigh it again in a day or two and the curve " +
@@ -591,5 +596,77 @@ private fun chartSummary(s: WeightState): String = buildString {
         is Prediction.WaterNow -> append(", needs water now")
         is Prediction.Eta -> append(", water in about ${p.days.toInt()} days")
         else -> Unit
+    }
+}
+
+/**
+ * What the room did, next to what the pot did.
+ *
+ * Sits beside the diagnostic rather than replacing it. The two answer different
+ * questions - the diagnostic asks what might be wrong with the plant, this asks
+ * whether anything is wrong at all - and [AmbientVerdict.ROOM_UNCHANGED] is the
+ * one that makes the diagnostic worth acting on, by ruling out the boring
+ * explanation.
+ *
+ * Nothing here is a warning. A room getting warmer is not a failure, and a pot
+ * responding to it is the plant working correctly.
+ */
+@Composable
+private fun AmbientCard(e: AmbientExplanation) {
+    val faster = e.dryingRatio > 1.0
+    val pace = if (faster) "faster" else "slower"
+    val pct = kotlin.math.abs((e.dryingRatio - 1.0) * 100).toInt()
+
+    val room = buildList {
+        e.temperatureDeltaC?.let {
+            if (kotlin.math.abs(it) >= 1.0) {
+                add("%.0f °C %s".format(kotlin.math.abs(it), if (it > 0) "warmer" else "cooler"))
+            }
+        }
+        e.humidityDeltaPercent?.let {
+            if (kotlin.math.abs(it) >= 1.0) {
+                add("%.0f%% %s".format(kotlin.math.abs(it), if (it > 0) "more humid" else "drier"))
+            }
+        }
+    }.joinToString(" and ")
+
+    Card(Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+        Column(Modifier.padding(14.dp)) {
+            Text(
+                when (e.verdict) {
+                    AmbientVerdict.EXPLAINS_FASTER,
+                    AmbientVerdict.EXPLAINS_SLOWER -> "The room explains this"
+                    AmbientVerdict.ROOM_UNCHANGED -> "The room has not changed"
+                    AmbientVerdict.CONTRADICTS -> "The room does not explain this"
+                },
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Text(
+                when (e.verdict) {
+                    AmbientVerdict.EXPLAINS_FASTER,
+                    AmbientVerdict.EXPLAINS_SLOWER ->
+                        "Drying about $pct% $pace than usual, and where it lives is $room " +
+                            "than it was. That is the pot behaving normally in a changed room."
+                    AmbientVerdict.ROOM_UNCHANGED ->
+                        "Drying about $pct% $pace than usual, and the room is much as it was. " +
+                            "Whatever changed, it was not the weather."
+                    AmbientVerdict.CONTRADICTS ->
+                        "Drying about $pct% $pace than usual, but the room is $room - which " +
+                            "would push it the other way. Worth a closer look at the pot."
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+            if (e.source == AmbientSource.WEATHER) {
+                Text(
+                    "Based on outdoor weather, which is not the same as the room.",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.padding(top = 6.dp),
+                )
+            }
+        }
     }
 }

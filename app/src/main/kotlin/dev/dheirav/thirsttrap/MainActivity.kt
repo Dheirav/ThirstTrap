@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap
 
+import dev.dheirav.thirsttrap.feature.ambient.AmbientScreen
 import dev.dheirav.thirsttrap.ui.AppIcons
 import android.Manifest
 import android.content.pm.PackageManager
@@ -163,6 +164,7 @@ class MainActivity : ComponentActivity() {
                                 onOpenBackup = { nav.navigate(Routes.BACKUP) },
                                 onOpenHelp = { nav.navigate(Routes.HELP_REMINDERS) },
                                 onOpenDiagnose = { nav.navigate(Routes.DIAGNOSE) },
+                                onOpenAmbient = { nav.navigate(Routes.AMBIENT) },
                                 onOpenDebug = { nav.navigate(Routes.DEBUG) },
                             )
                         }
@@ -208,6 +210,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Routes.DIAGNOSE) {
                             DiagnoseScreen(onBack = { nav.popBackStack() })
+                        }
+                        composable(Routes.AMBIENT) {
+                            AmbientScreen(onBack = { nav.popBackStack() })
                         }
                         composable(Routes.PROPAGATION) {
                             PropagationScreen(
