@@ -7,20 +7,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
-import com.google.zxing.qrcode.QRCodeWriter
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
+import com.google.zxing.qrcode.encoder.Encoder
 
 /** The URI a sticker carries - the same one a reminder notification uses. */
 fun plantUri(plantId: String): String = "thirsttrap://plant/$plantId"
 
 /**
- * Drawn straight to the Canvas from the bit matrix rather than through a
- * Bitmap, so it stays crisp at whatever size it is shown or photographed at.
+ * The QR at its natural module resolution - about 33x33 for a URI this length.
  *
- * High error correction, because these end up taped to a pot and get splashed,
- * scuffed and grown over. A QR at level H survives roughly 30% damage.
+ * Encoder.encode is used rather than QRCodeWriter.encode(content, format, w, h),
+ * which returns a matrix of that many PIXELS. Asking it for 512x512 produced a
+ * 512x512 matrix, and drawing a rectangle per cell meant 262,144 draw calls per
+ * frame: a 7.5 second frame and a genuine ANR on the device. At natural
+ * resolution it is roughly 1,100 rectangles.
  */
 @Composable
 fun PlantQrCode(
@@ -30,28 +31,29 @@ fun PlantQrCode(
     background: Color = Color.White,
 ) {
     val matrix = remember(plantId) {
-        QRCodeWriter().encode(
+        Encoder.encode(
             plantUri(plantId),
-            BarcodeFormat.QR_CODE,
-            QR_SIZE,
-            QR_SIZE,
-            mapOf(
-                EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.H,
-                EncodeHintType.MARGIN to 1,
-            ),
-        )
+            // Level H survives roughly 30% damage. These get taped to pots and
+            // are splashed, scuffed and grown over.
+            ErrorCorrectionLevel.H,
+            mapOf(EncodeHintType.CHARACTER_SET to "UTF-8"),
+        ).matrix
     }
 
     Canvas(modifier) {
         val cells = matrix.width
-        val cell = size.minDimension / cells
-        drawRect(background, size = Size(cell * cells, cell * cells))
-        for (y in 0 until cells) {
+        // A quiet zone, or scanners struggle to find the code at all.
+        val quiet = 2
+        val total = cells + quiet * 2
+        val cell = size.minDimension / total
+
+        drawRect(background, size = Size(cell * total, cell * total))
+        for (y in 0 until matrix.height) {
             for (x in 0 until cells) {
-                if (matrix.get(x, y)) {
+                if (matrix.get(x, y).toInt() == 1) {
                     drawRect(
                         color = foreground,
-                        topLeft = Offset(x * cell, y * cell),
+                        topLeft = Offset((x + quiet) * cell, (y + quiet) * cell),
                         // A hair over one cell, or antialiasing leaves pale
                         // seams between modules that confuse some scanners.
                         size = Size(cell + 0.5f, cell + 0.5f),
@@ -61,5 +63,3 @@ fun PlantQrCode(
         }
     }
 }
-
-private const val QR_SIZE = 512
