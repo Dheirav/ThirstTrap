@@ -26,7 +26,6 @@ import java.util.zip.ZipOutputStream
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val DATABASE_VERSION = 4
 
 @Singleton
 class ExportRepositoryImpl @Inject constructor(

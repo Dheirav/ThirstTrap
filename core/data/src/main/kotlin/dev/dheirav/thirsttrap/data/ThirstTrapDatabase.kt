@@ -24,9 +24,19 @@ import dev.dheirav.thirsttrap.data.entity.ReminderEntity
  * docs/DATA-MODEL.md. This is a diary; wiping it on upgrade is the worst bug
  * the project could ship.
  */
+/**
+ * The one place the schema version is written down.
+ *
+ * It used to be duplicated as a private constant in ExportRepositoryImpl, which
+ * stopped at 4 while the database went to 7 - so every backup written since has
+ * recorded the wrong schema version, and the importer's "written by a newer
+ * version of the app" warning has been comparing against a stale number.
+ */
+const val DATABASE_VERSION = 7
+
 @Database(
     entities = [PlantEntity::class, CareEventEntity::class, ReminderEntity::class, PhotoEntity::class, WeightReadingEntity::class, AmbientReadingEntity::class],
-    version = 7,
+    version = DATABASE_VERSION,
     exportSchema = true,
     // v2 only adds the reminders table, so Room can generate the migration.
     // Anything that alters or drops a column must be written by hand and
