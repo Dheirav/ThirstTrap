@@ -2,6 +2,10 @@ package dev.dheirav.thirsttrap.feature.weight
 
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
+import dev.dheirav.thirsttrap.ui.ColumnHead
+import dev.dheirav.thirsttrap.ui.DoubleRule
+import dev.dheirav.thirsttrap.ui.Rule
+import dev.dheirav.thirsttrap.ui.SectionHead
 import dev.dheirav.thirsttrap.ui.BlockHeight
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -14,6 +18,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -28,6 +34,8 @@ import dev.dheirav.thirsttrap.ui.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -50,6 +58,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -79,6 +88,8 @@ fun WeightScreen(
     val ambient by viewModel.ambientExplanation.collectAsStateWithLifecycle()
     val dismissed by viewModel.dismissed.collectAsStateWithLifecycle()
     var showCalibration by remember { mutableStateOf(false) }
+    var showKeypad by remember { mutableStateOf(false) }
+    val keypadState = rememberModalBottomSheetState()
 
     LaunchedEffect(state?.isCalibrated) { state?.let(viewModel::suggestContext) }
 
@@ -122,19 +133,28 @@ fun WeightScreen(
             return@Scaffold
         }
 
+        // Head, plate, table - and nothing else. This screen used to stack a
+        // status view, an entry view and a history view into one scroll:
+        // headline, bar, two note cards, a chart, a heading, a live number, a
+        // hint, three chips, a twelve-key pad, a save button, another heading, a
+        // paragraph and twenty rows. Weighing is an act, not a view, so it moved
+        // into a sheet and the page became a page.
         Column(
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
         ) {
             if (!s.isCalibrated) {
                 NotCalibratedCard(
                     needsRecalibration = s.plant.needsRecalibration,
-                    onStart = { showCalibration = true },
+                    // Straight to the keypad: the calibration dialog asks for a
+                    // number, and there was nowhere to type one once the pad
+                    // moved off the page.
+                    onStart = { showKeypad = true },
                 )
             } else {
                 PredictionHeadline(s)
-                Spacer(Modifier.height(12.dp))
-                DepletionBar(s)
-                Spacer(Modifier.height(16.dp))
+                DepletionLine(s)
+                DoubleRule(Modifier.padding(top = 12.dp, bottom = 16.dp))
+
                 val diagKey = viewModel.diagnosticKey(s)
                 if (s.diagnostic != null && diagKey != null && diagKey !in dismissed) {
                     DiagnosticCard(
@@ -144,6 +164,7 @@ fun WeightScreen(
                     )
                 }
                 ambient?.let { AmbientCard(it) }
+
                 if (s.readings.count { !it.excluded } < 2) {
                     Text(
                         "One reading so far. Weigh it again in a day or two and the curve " +
@@ -152,73 +173,48 @@ fun WeightScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 } else {
-                    WeightChart(
-                        s,
-                        Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .semantics { contentDescription = chartSummary(s) },
-                    )
-                }
-                Spacer(Modifier.height(16.dp))
-            }
-
-            Text("Weigh it", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-            Text(
-                if (entry.isBlank()) "grams, pot and all" else "$entry g",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(vertical = 12.dp),
-            )
-
-            hint?.let {
-                Text(
-                    it,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 12.dp),
-                )
-            }
-
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(bottom = 12.dp)) {
-                listOf(
-                    ReadingContext.ROUTINE to "just checking",
-                    ReadingContext.PRE_WATER to "before watering",
-                    ReadingContext.POST_WATER to "after watering",
-                ).forEach { (c, label) ->
-                    FilterChip(
-                        selected = context == c,
-                        onClick = { viewModel.onContext(c) },
-                        label = { Text(label) },
+                    // A plate: the figure, boxed, with its caption underneath.
+                    // This is where an almanac puts a diagram, and it is the one
+                    // part of the app whose content is genuinely modern
+                    // data-visualisation rather than a table.
+                    Card(Modifier.fillMaxWidth()) {
+                        WeightChart(
+                            s,
+                            Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .padding(10.dp)
+                                .semantics { contentDescription = chartSummary(s) },
+                        )
+                    }
+                    Text(
+                        "The drying curve. Each drop is one cycle between waterings.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.outline,
+                        modifier = Modifier.padding(top = 6.dp),
                     )
                 }
             }
 
-            Keypad(
-                onDigit = viewModel::onDigit,
-                onBackspace = viewModel::onBackspace,
-            )
-
-            Button(
-                onClick = {
-                    if (!s.isCalibrated) showCalibration = true else viewModel.save {}
-                },
-                enabled = entry.isNotBlank(),
-                modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-            ) {
-                Text(if (s.isCalibrated) "Save this weight" else "Use as the watered weight")
+            // Only once calibrated. Before that the panel above already carries
+            // the single call to action, and rendering this too put "Set the
+            // watered weight" on the screen twice.
+            if (s.isCalibrated) {
+                FilledTonalButton(
+                    onClick = { showKeypad = true },
+                    modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                ) { Text("Weigh it") }
             }
 
             if (s.readings.isNotEmpty()) {
-                Spacer(Modifier.height(24.dp))
-                Text("Readings", style = MaterialTheme.typography.titleMedium)
-                Text(
-                    "Tap one to exclude a bad weigh-in - a pot half off the scale, or a " +
-                        "wet saucer. It stays in the record but stops skewing the curve.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 8.dp),
-                )
+                SectionHead("Readings")
                 val shown = s.readings.sortedByDescending { it.timestampMillis }.take(20)
+                Row(Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 4.dp)) {
+                    ColumnHead("Weight", Modifier.weight(0.32f))
+                    ColumnHead("When", Modifier.weight(0.38f))
+                    ColumnHead("Note", Modifier.weight(0.30f))
+                }
+                Rule()
                 shown.forEach { r ->
                     Row(
                         Modifier
@@ -232,7 +228,6 @@ fun WeightScreen(
                                 },
                             ) { viewModel.setExcluded(r.id, !r.excluded) }
                             .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
@@ -242,24 +237,115 @@ fun WeightScreen(
                             textDecoration = if (r.excluded) TextDecoration.LineThrough else null,
                             color = if (r.excluded) MaterialTheme.colorScheme.onSurfaceVariant
                             else MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(0.32f),
                         )
                         Text(
-                            buildString {
-                                append(readingDate(r.timestampMillis, r.tzOffsetMinutes))
-                                append(" · ")
-                                append(if (r.excluded) "excluded" else r.context.label)
-                            },
+                            readingDate(r.timestampMillis, r.tzOffsetMinutes),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.weight(0.38f),
+                        )
+                        Text(
+                            if (r.excluded) "excluded" else r.context.label,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.outline,
+                            modifier = Modifier.weight(0.30f),
+                        )
+                    }
+                    Rule()
+                }
+                Text(
+                    if (s.readings.size > shown.size) {
+                        "Most recent ${shown.size} of ${s.readings.size}. Tap a row to exclude " +
+                            "a bad weigh-in."
+                    } else {
+                        "Tap a row to exclude a bad weigh-in - a pot half off the scale, or a " +
+                            "wet saucer. It stays in the record but stops skewing the curve."
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+            }
+        }
+    }
+
+    if (showKeypad && state != null) {
+        val s = state!!
+        ModalBottomSheet(
+            onDismissRequest = { showKeypad = false },
+            sheetState = keypadState,
+            shape = MaterialTheme.shapes.large,
+            dragHandle = null,
+        ) {
+            Column(
+                Modifier
+                    // Without this the last keypad row sits under the system
+                    // navigation bar and the save button is off-screen
+                    // entirely - the one control the sheet exists to reach.
+                    .navigationBarsPadding()
+                    .verticalScroll(rememberScrollState())
+                    .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 20.dp),
+            ) {
+                Text(
+                    "WEIGH IT",
+                    style = MaterialTheme.typography.titleMedium,
+                    letterSpacing = 0.18.em,
+                )
+                Text(
+                    if (entry.isBlank()) "grams, pot and all" else "$entry g",
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(top = 4.dp),
+                )
+                DoubleRule(Modifier.padding(top = 10.dp, bottom = 14.dp))
+
+                hint?.let {
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 12.dp),
+                    )
+                }
+
+                // Scrolls rather than squeezing: at three-up "after watering"
+                // wrapped to two lines and made one chip taller than its
+                // neighbours.
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .horizontalScroll(rememberScrollState())
+                        .padding(bottom = 14.dp),
+                ) {
+                    listOf(
+                        ReadingContext.ROUTINE to "just checking",
+                        ReadingContext.PRE_WATER to "before watering",
+                        ReadingContext.POST_WATER to "after watering",
+                    ).forEach { (c, label) ->
+                        FilterChip(
+                            selected = context == c,
+                            onClick = { viewModel.onContext(c) },
+                            label = { Text(label) },
                         )
                     }
                 }
-                if (s.readings.size > shown.size) {
-                    Text(
-                        "Showing the most recent ${shown.size} of ${s.readings.size}.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+
+                Keypad(onDigit = viewModel::onDigit, onBackspace = viewModel::onBackspace)
+
+                Button(
+                    onClick = {
+                        if (!s.isCalibrated) {
+                            showKeypad = false
+                            showCalibration = true
+                        } else {
+                            viewModel.save {}
+                            showKeypad = false
+                        }
+                    },
+                    enabled = entry.isNotBlank(),
+                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                ) {
+                    Text(if (s.isCalibrated) "Save this weight" else "Use as the watered weight")
                 }
             }
         }
@@ -322,33 +408,34 @@ private fun PredictionHeadline(s: WeightState) {
     }
 }
 
-/** A fraction between the anchors, never raw grams - docs/WATERING-MODEL.md section 8. */
+/**
+ * How far down the pot is, as a sentence.
+ *
+ * A fraction between the anchors, never raw grams - docs/WATERING-MODEL.md
+ * section 8.
+ *
+ * This was a progress bar. A bar filling toward full is the grammar of task
+ * completion, which is the one grammar this app exists to avoid - it turns "the
+ * pot is drying normally" into "you are 62% of the way to doing your job". The
+ * dashboard already replaced its bar with a ring for that reason; here there is
+ * no thumbnail to wrap, and an almanac would not draw a bar anyway. It would
+ * print the number.
+ */
 @Composable
-private fun DepletionBar(s: WeightState) {
-    // NaN is reachable when the wet and dry anchors collapse onto each other.
-    // It renders as a confident "0%" and goes into fillMaxWidth, so it is
-    // caught here rather than shown.
-    val d = s.depletion?.takeIf { it.isFinite() } ?: return
-    val trigger = s.plant.depletionTrigger
-    val past = s.prediction is Prediction.WaterNow
-    Column {
-        Box(Modifier.fillMaxWidth().height(14.dp).clip(MaterialTheme.shapes.small)
-            .background(MaterialTheme.colorScheme.surfaceVariant)) {
-            Box(Modifier.fillMaxWidth(d.coerceIn(0.0, 1.0).toFloat()).height(14.dp)
-                .background(MaterialTheme.colorScheme.primary))
-            Box(Modifier.fillMaxWidth(trigger.toFloat()).height(14.dp), contentAlignment = Alignment.CenterEnd) {
-                Box(Modifier.size(width = 2.dp, height = 14.dp)
-                    .background(MaterialTheme.colorScheme.onSurfaceVariant))
-            }
-        }
-        Text(
-            if (past) "${(d * 100).toInt()}% - past its ${(trigger * 100).toInt()}% mark"
-            else "${(d * 100).toInt()}% of the way to needing water",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 4.dp),
-        )
-    }
+private fun DepletionLine(s: WeightState) {
+    val depletion = s.depletion ?: return
+    val pct = (depletion * 100).toInt()
+    val trigger = (s.plant.depletionTrigger * 100).toInt()
+    Text(
+        buildString {
+            append("$pct% down")
+            append("  ·  ")
+            append(if (depletion >= s.plant.depletionTrigger) "past its $trigger% mark" else "waters at $trigger%")
+        },
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = 6.dp),
+    )
 }
 
 /** Phrased as a question. The app has a slope, not a stethoscope. */
