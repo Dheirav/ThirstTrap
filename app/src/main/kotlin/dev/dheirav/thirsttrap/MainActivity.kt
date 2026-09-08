@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
 import androidx.core.content.ContextCompat
@@ -72,6 +73,13 @@ class MainActivity : ComponentActivity() {
                     route == Routes.SETTINGS
 
                 Scaffold(
+                    // No top bar here, but a Scaffold still hands its content
+                    // the status-bar inset - and every screen inside has its own
+                    // Scaffold whose TopAppBar applies that inset again. Applied
+                    // twice it cost ~82dp of dead space above every title. This
+                    // Scaffold exists only to place the bottom nav, so it
+                    // contributes no insets; NavigationBar handles its own.
+                    contentWindowInsets = WindowInsets(0, 0, 0, 0),
                     bottomBar = {
                         if (showBar) {
                             NavigationBar {
