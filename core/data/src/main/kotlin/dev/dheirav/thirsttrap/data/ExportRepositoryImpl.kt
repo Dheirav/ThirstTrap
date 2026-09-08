@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.Uri
 import dev.dheirav.thirsttrap.data.dao.CareEventDao
 import dev.dheirav.thirsttrap.data.dao.PhotoDao
+import dev.dheirav.thirsttrap.data.dao.WeightDao
+import dev.dheirav.thirsttrap.data.dao.AmbientDao
 import dev.dheirav.thirsttrap.data.dao.PlantDao
 import dev.dheirav.thirsttrap.data.dao.ReminderDao
 import dev.dheirav.thirsttrap.domain.CURRENT_EXPORT_FORMAT
@@ -33,6 +35,8 @@ class ExportRepositoryImpl @Inject constructor(
     private val eventDao: CareEventDao,
     private val photoDao: PhotoDao,
     private val reminderDao: ReminderDao,
+    private val weightDao: WeightDao,
+    private val ambientDao: AmbientDao,
     private val store: PhotoStore,
 ) {
 
@@ -88,7 +92,9 @@ class ExportRepositoryImpl @Inject constructor(
         val reminders = reminderDao.observeAll().first().map { it.toDomainReminder() }
 
         val now = System.currentTimeMillis()
-        val bundle = ExportBundle(plants, events, photos, reminders)
+        val weightReadings = weightDao.all().map { it.toDomainReading() }
+        val ambient = ambientDao.all().map { it.toDomain() }
+        val bundle = ExportBundle(plants, events, photos, reminders, weightReadings, ambient)
         val manifest = ExportManifest(
             formatVersion = CURRENT_EXPORT_FORMAT,
             databaseVersion = DATABASE_VERSION,
@@ -212,6 +218,8 @@ class ExportRepositoryImpl @Inject constructor(
             data.events.forEach { eventDao.upsert(it.toEntity(now, now)) }
             data.reminders.forEach { reminderDao.upsert(it.toReminderEntity(now)) }
             data.photos.forEach { photoDao.upsert(it.toPhotoEntity(now)) }
+            data.weightReadings.forEach { weightDao.upsert(it.toReadingEntity(now)) }
+            data.ambient.forEach { ambientDao.upsert(it.toEntity()) }
 
             val result = ImportResult(
                 plants = data.plants.size,

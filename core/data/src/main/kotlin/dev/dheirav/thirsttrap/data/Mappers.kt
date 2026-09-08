@@ -202,3 +202,24 @@ fun dev.dheirav.thirsttrap.data.entity.WeightReadingEntity.toDomainReading(): de
         }.getOrDefault(dev.dheirav.thirsttrap.domain.ReadingContext.ROUTINE),
         excluded = excluded,
     )
+
+/**
+ * The reverse of [toDomainReading], for import.
+ *
+ * `createdAt` is the import's own clock rather than anything from the backup:
+ * it records when this row entered *this* database, and the reading's real
+ * timestamp is carried separately in [timestamp].
+ */
+fun dev.dheirav.thirsttrap.domain.WeightReading.toReadingEntity(
+    createdAt: Long,
+): dev.dheirav.thirsttrap.data.entity.WeightReadingEntity =
+    dev.dheirav.thirsttrap.data.entity.WeightReadingEntity(
+        id = id,
+        plantId = plantId,
+        timestamp = timestampMillis,
+        tzOffsetMinutes = tzOffsetMinutes,
+        grams = grams,
+        context = context.name.lowercase(),
+        excluded = excluded,
+        createdAt = createdAt,
+    )

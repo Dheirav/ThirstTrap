@@ -20,6 +20,17 @@ data class ExportBundle(
     val events: List<CareEvent> = emptyList(),
     val photos: List<Photo> = emptyList(),
     val reminders: List<Reminder> = emptyList(),
+    /**
+     * Added 2026-09-08, and absent from every backup written before that.
+     *
+     * Weight readings were never in the bundle. Nothing had caught it because
+     * no pot has been weighed yet - but an export/import round trip would have
+     * silently destroyed the entire drying history, which is the one thing in
+     * this app that cannot be reconstructed from memory. Every field defaults
+     * to empty, so an older backup still imports; it simply has none.
+     */
+    val weightReadings: List<WeightReading> = emptyList(),
+    val ambient: List<AmbientReading> = emptyList(),
 )
 
 @Serializable
