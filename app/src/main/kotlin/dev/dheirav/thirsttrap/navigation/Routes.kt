@@ -15,6 +15,7 @@ object Routes {
     const val PROPAGATION = "propagation"
     const val POST_MORTEM = "plant/postmortem"
     const val STICKER = "plant/sticker"
+    const val DIAGNOSE = "diagnose"
     const val PLANT_EDIT = "plant/edit"
     const val PLANT_DETAIL = "plant/detail"
     /** Empty id means "new plant". */

@@ -37,6 +37,7 @@ import dev.dheirav.thirsttrap.feature.debug.DebugScreen
 import androidx.compose.material.icons.filled.Settings
 import dev.dheirav.thirsttrap.feature.backup.BackupScreen
 import dev.dheirav.thirsttrap.feature.light.LightMeterScreen
+import dev.dheirav.thirsttrap.feature.diagnose.DiagnoseScreen
 import dev.dheirav.thirsttrap.feature.postmortem.PostMortemScreen
 import dev.dheirav.thirsttrap.feature.qr.StickerScreen
 import dev.dheirav.thirsttrap.feature.propagation.PropagationScreen
@@ -135,6 +136,7 @@ class MainActivity : ComponentActivity() {
                             SettingsScreen(
                                 onOpenBackup = { nav.navigate(Routes.BACKUP) },
                                 onOpenHelp = { nav.navigate(Routes.HELP_REMINDERS) },
+                                onOpenDiagnose = { nav.navigate(Routes.DIAGNOSE) },
                                 onOpenDebug = { nav.navigate(Routes.DEBUG) },
                             )
                         }
@@ -171,6 +173,9 @@ class MainActivity : ComponentActivity() {
                             arguments = listOf(navArgument("id") { type = NavType.StringType }),
                         ) {
                             StickerScreen(onBack = { nav.popBackStack() })
+                        }
+                        composable(Routes.DIAGNOSE) {
+                            DiagnoseScreen(onBack = { nav.popBackStack() })
                         }
                         composable(Routes.PROPAGATION) {
                             PropagationScreen(

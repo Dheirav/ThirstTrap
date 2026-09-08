@@ -38,6 +38,7 @@ import dev.dheirav.thirsttrap.BuildConfig
 fun SettingsScreen(
     onOpenBackup: () -> Unit,
     onOpenHelp: () -> Unit,
+    onOpenDiagnose: () -> Unit,
     onOpenDebug: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
@@ -127,6 +128,7 @@ fun SettingsScreen(
             }
 
             TextButton(onClick = onOpenHelp) { Text("Reminders not arriving?") }
+            TextButton(onClick = onOpenDiagnose) { Text("Something looks wrong with a plant") }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             SectionHeader("Watering")
