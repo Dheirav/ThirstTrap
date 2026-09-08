@@ -55,11 +55,9 @@ fun StickerScreen(onBack: () -> Unit, viewModel: StickerViewModel = hiltViewMode
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                plant?.name.orEmpty(),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.SemiBold,
-            )
+            // The plant's name is not repeated here. It already sits under the
+            // code as that sticker's own caption, which is the copy that
+            // matters - it is the one that gets printed and taped to the pot.
             Text(
                 "Photograph or print this and tape it to the pot. Scanning it from the " +
                     "Plants screen jumps straight to logging, without hunting for the " +

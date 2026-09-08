@@ -179,7 +179,12 @@ fun CompareScreen(onBack: () -> Unit, viewModel: CompareViewModel = hiltViewMode
                 )
             }
 
-            Row(Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.SpaceBetween) {
+            // 16dp, like every other gutter in the app. These sat at 8 and read
+            // as jammed against the edges next to the rest of the page.
+            Row(
+                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
                 Text(dateOf(leftPhoto), style = MaterialTheme.typography.labelMedium)
                 Text(dateOf(rightPhoto), style = MaterialTheme.typography.labelMedium)
             }
