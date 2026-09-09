@@ -50,7 +50,6 @@ class ImportIdempotenceTest {
             db.weightDao(),
             db.ambientDao(),
             db.fertilizerDao(),
-            FertilizerRepositoryImpl(db.fertilizerDao()),
             PhotoStore(context),
         )
     }

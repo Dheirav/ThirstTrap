@@ -83,12 +83,11 @@ object DatabaseModule {
         weightDao: WeightDao,
         ambientDao: AmbientDao,
         fertilizerDao: FertilizerDao,
-        fertilizers: FertilizerRepository,
         store: PhotoStore,
     ): ExportRepositoryImpl =
         ExportRepositoryImpl(
             context, plantDao, eventDao, photoDao, reminderDao, weightDao, ambientDao,
-            fertilizerDao, fertilizers, store,
+            fertilizerDao, store,
         )
 
     @Provides

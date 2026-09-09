@@ -37,7 +37,6 @@ class ExportRepositoryImpl @Inject constructor(
     private val weightDao: WeightDao,
     private val ambientDao: AmbientDao,
     private val fertilizerDao: dev.dheirav.thirsttrap.data.dao.FertilizerDao,
-    private val fertilizers: dev.dheirav.thirsttrap.domain.FertilizerRepository,
     private val store: PhotoStore,
 ) {
 
@@ -260,7 +259,14 @@ class ExportRepositoryImpl @Inject constructor(
                 weightDao.upsert(it.toReadingEntity(weightDao.createdAtOf(it.id) ?: now))
             }
             data.ambient.forEach { ambientDao.upsert(it.toEntity()) }
-            data.fertilizers.forEach { fertilizers.upsert(it) }
+            data.fertilizers.forEach {
+                fertilizerDao.upsert(
+                    it.toEntity(
+                        createdAt = fertilizerDao.createdAtOf(it.id) ?: now,
+                        updatedAt = fertilizerDao.updatedAtOf(it.id) ?: now,
+                    ),
+                )
+            }
 
             val result = ImportResult(
                 plants = data.plants.size,

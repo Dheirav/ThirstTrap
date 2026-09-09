@@ -19,6 +19,9 @@ interface FertilizerDao {
     @Query("SELECT created_at FROM fertilizers WHERE id = :id")
     suspend fun createdAtOf(id: String): Long?
 
+    @Query("SELECT updated_at FROM fertilizers WHERE id = :id")
+    suspend fun updatedAtOf(id: String): Long?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(row: FertilizerEntity)
 

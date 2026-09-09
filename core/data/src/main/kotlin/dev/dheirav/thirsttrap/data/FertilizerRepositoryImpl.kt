@@ -21,14 +21,7 @@ class FertilizerRepositoryImpl @Inject constructor(
     override suspend fun upsert(fertilizer: Fertilizer) {
         val now = System.currentTimeMillis()
         dao.upsert(
-            FertilizerEntity(
-                id = fertilizer.id,
-                name = fertilizer.name.trim(),
-                // The typed text, not the parse. See FertilizerEntity.
-                dilutionText = fertilizer.dilutionText?.trim()?.takeIf { it.isNotEmpty() },
-                npk = fertilizer.npk?.trim()?.takeIf { it.isNotEmpty() },
-                note = fertilizer.note?.trim()?.takeIf { it.isNotEmpty() },
-                archived = fertilizer.archived,
+            fertilizer.toEntity(
                 createdAt = dao.createdAtOf(fertilizer.id) ?: now,
                 updatedAt = now,
             ),
@@ -37,6 +30,18 @@ class FertilizerRepositoryImpl @Inject constructor(
 
     override suspend fun delete(id: String) = dao.delete(id)
 }
+
+fun Fertilizer.toEntity(createdAt: Long, updatedAt: Long): FertilizerEntity = FertilizerEntity(
+    id = id,
+    name = name.trim(),
+    // The typed text, not the parse. See FertilizerEntity.
+    dilutionText = dilutionText?.trim()?.takeIf { it.isNotEmpty() },
+    npk = npk?.trim()?.takeIf { it.isNotEmpty() },
+    note = note?.trim()?.takeIf { it.isNotEmpty() },
+    archived = archived,
+    createdAt = createdAt,
+    updatedAt = updatedAt,
+)
 
 fun FertilizerEntity.toDomain(): Fertilizer = Fertilizer(
     id = id,
