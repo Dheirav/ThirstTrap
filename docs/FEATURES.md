@@ -170,9 +170,9 @@ complete before any UI is written.*
 - [ ] **F14** Fertilizer inventory + dilution calculator *(req. 14)* — mL concentrate per L
 - [x] **F15** Stats *(req. 15)* — "Figures": waterings by month, what became of them, days-to-root. Tables with column heads and rules; the only chart is a proportional rule. The survival rate is computed **only over plants that have actually left** and is written as a sentence, not a percentage on its own line — a living plant is not a pending failure
 - [ ] **F16** Cloud backup *(req. 16)* — optional account, **never required for core use**
-- [ ] **F25** Pl@ntNet ID *(req. 25)* — free tier 500/day, up to 5 images with `organs` tags, confidence scores, **in-app quota display**; suggestion only, never required
-- [ ] **F25b** Kindwise plant.health — bring-your-own-API-key settings field, costs the app nothing
-- [ ] **F25c** Offline TFLite classifier — AIY `plants_V1` (~7 MB) or MobileNet on Pl@ntNet-300K; labelled "rough guess", genus-level trust at best
+- [ ] **F25c** Offline TFLite classifier — AIY `plants_V1` (~7 MB) or MobileNet on Pl@ntNet-300K; labelled "rough guess", genus-level trust at best. **The chosen route (2026-09-09, D29)**
+- [ ] **F25b** Kindwise plant.health — bring-your-own-API-key settings field, costs the app nothing. Opt-in second tier, only if F25c proves too weak to be useful
+- [x] ~~**F25** Pl@ntNet ID~~ — **dropped 2026-09-09, D29.** A shared key shipped in the APK gets extracted and its quota burned, so in practice the user must bring their own key, at which point F25 and F25b are the same feature
 
 ---
 

@@ -10,7 +10,7 @@ Last updated: 2026-09-09
 
 ## Status
 
-**Phase: M0 through M3 complete. M4 partly done. 94 of 101 features built,
+**Phase: M0 through M3 complete. M4 partly done. 95 of 101 features built,
 all of it running on the target phone against a real plant diary.**
 
 Repo: https://github.com/Dheirav/ThirstTrap (branch `main`).
@@ -31,7 +31,8 @@ Repo: https://github.com/Dheirav/ThirstTrap (branch `main`).
 Six features, all M4 Phase 2, plus one decision:
 
 - **F11** experiments, **F12** `[[plant]]` cross-links, **F14** fertiliser
-  dilution calculator, **F25/25b/25c** plant identification.
+  dilution calculator, **F25c** offline plant identification with **F25b** as an
+  opt-in second tier. F25 itself is dropped, see D29.
 - **F16 cloud backup** is unstarted *and undecided*. Every other feature was
   built on "nothing leaves this phone", and Settings says so in those words. An
   account changes what the app is, so it wants a conversation before code.
@@ -630,6 +631,38 @@ The keypad sheet also grew to 88% of the screen with keys that fill the space,
 and opens fully expanded. It is used standing at a windowsill holding a pot; a
 keypad you have to drag open first is worse than no sheet, and the save button
 had been reachable only by scrolling past twelve keys.
+
+### D29 — Plant identification goes offline first, and F25 is dropped (2026-09-09)
+
+Pl@ntNet's API is genuinely free at around 500 identifications a day, run by a
+public research consortium rather than a startup, so it is unlikely to vanish or
+start charging abruptly. The price was never the problem.
+
+Two things decide it. A shared API key shipped inside the APK can be extracted
+from the binary and its quota spent by anyone, so any honest version of F25
+makes the user bring their own key, and at that point F25 and F25b are the same
+code with a different logo. F25 is therefore dropped rather than deferred.
+
+The larger objection is that identification sends a photo of somebody's home to
+a third party. The app currently transmits exactly one thing, a species name the
+user typed, off by default, and Settings says so in those words. A photo is a
+different category of data and the feature would have to say so at the moment it
+is used, not in a settings paragraph.
+
+So **F25c leads**: a bundled TFLite classifier, no network, labelled as a rough
+guess and trusted at genus level at best. **F25b stays as an opt-in second
+tier** for anyone who wants better answers and accepts the trade, and only if
+F25c turns out too weak to be worth shipping.
+
+**The open question, which is not about plumbing.** This app's character is
+that it refuses to guess: the weight model says which of three reasons it has
+for staying quiet rather than inventing a date, and the species catalogue keeps
+its generated tier visibly weaker than its curated one. A classifier that is
+genus-level at best is, by construction, a guesser. It earns its place only if
+its output is held to the same standard as everything else here, which means
+showing a confidence, refusing below a threshold, and never letting a guess
+reach the care advice. If it cannot clear that bar it should not ship, and
+finding that out is the first task rather than the last.
 
 ### D28 — There is no calibration step any more, and there had not been for a while (2026-09-09)
 
