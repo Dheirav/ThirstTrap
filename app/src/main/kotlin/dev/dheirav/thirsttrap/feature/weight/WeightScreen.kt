@@ -156,10 +156,7 @@ fun WeightScreen(
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
         ) {
             if (!s.isCalibrated) {
-                NotCalibratedCard(
-                    needsRecalibration = s.plant.needsRecalibration,
-                    onStart = { showKeypad = true },
-                )
+                NotCalibratedCard(needsRecalibration = s.plant.needsRecalibration)
                 // The curve, even with nothing to measure it against yet.
                 if (s.readings.count { !it.excluded } >= 2) {
                     Card(Modifier.fillMaxWidth().padding(top = 16.dp)) {
@@ -531,7 +528,7 @@ private fun DiagnosticCard(
 }
 
 @Composable
-private fun NotCalibratedCard(needsRecalibration: Boolean, onStart: () -> Unit) {
+private fun NotCalibratedCard(needsRecalibration: Boolean) {
     Card(Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
         Column(Modifier.padding(16.dp)) {
             Text(
@@ -552,13 +549,11 @@ private fun NotCalibratedCard(needsRecalibration: Boolean, onStart: () -> Unit) 
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(vertical = 8.dp),
             )
-            // Not "set up" - there is no setup step any more. Weighing a pot
-            // just after watering is what makes the anchor, wherever you do
-            // it, so the button says what it does: it opens the keypad.
-            FilledTonalButton(
-                onClick = onStart,
-                modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-            ) { Text("Weigh it now") }
+            // No button. The page carries one "Weigh it" already, a few
+            // hundred pixels below and visible at the same time, and this card
+            // had grown a second one saying the same thing - a leftover from
+            // when weighing here was a setup step rather than the ordinary
+            // action. This panel explains; the page acts.
         }
     }
 }

@@ -645,6 +645,11 @@ setup step to name any more: weighing a pot just after watering makes the
 anchor, from the plant page or from the weighing round, and D24's chip rule
 means the app suggests that context itself at the moment it applies.
 
+The card had also grown a second "Weigh it" button, visible on screen at the
+same time as the page's own one and doing the same thing: another leftover from
+when weighing here was a setup step rather than the ordinary action. The panel
+explains, the page acts, and the whole screen now fits without scrolling.
+
 `ReadingContext.CALIBRATION` stays in the enum and is now documented as legacy.
 Nothing writes it, databases written before D21 still contain it, and every
 place that derives an anchor already treats it exactly like POST_WATER.
