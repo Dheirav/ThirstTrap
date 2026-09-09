@@ -27,6 +27,19 @@ data class AppSettings(
      * than a default, so this asks first and stays asked.
      */
     val onlineSpeciesLookup: Boolean = false,
+    /**
+     * The can currently being measured into, in millilitres.
+     */
+    val wateringCanMl: Double = 1000.0,
+    /**
+     * The cans and bottles this person actually owns, in millilitres.
+     *
+     * Empty to begin with, and deliberately so. A shipped list of 250/500/1000
+     * is a guess about someone else's cupboard, and every wrong guess is a chip
+     * they have to read past to reach the one they use. These are typed once
+     * and then they are the presets.
+     */
+    val wateringCanSizesMl: List<Double> = emptyList(),
 )
 
 interface SettingsRepository {
@@ -36,6 +49,8 @@ interface SettingsRepository {
     suspend fun setDefaultDepletionTrigger(fraction: Double)
     suspend fun setUseExactAlarms(enabled: Boolean)
     suspend fun setOnlineSpeciesLookup(enabled: Boolean)
+    suspend fun setWateringCanMl(ml: Double)
+    suspend fun setWateringCanSizes(sizesMl: List<Double>)
 
     /** Dismissals are per drying cycle, so a new cycle can speak up again. */
     suspend fun dismissDiagnostic(key: String)

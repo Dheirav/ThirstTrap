@@ -16,6 +16,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,18 +29,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.domain.DoseAdvice
 import dev.dheirav.thirsttrap.domain.Fertilizer
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import dev.dheirav.thirsttrap.ui.AppIcons
-import dev.dheirav.thirsttrap.ui.ColumnHead
 import dev.dheirav.thirsttrap.ui.FilterChip
+import dev.dheirav.thirsttrap.ui.ColumnHead
 import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import kotlin.math.roundToInt
+
+/** 1000 rather than 1000.0, so a chip reads like a can. */
+private fun Double.tidy(): String =
+    if (this % 1.0 == 0.0) toLong().toString() else toString().trimEnd('0').trimEnd('.')
 
 /** 1.2 ml rather than 1.234567 ml. Nobody pours to a microlitre. */
 private fun Double.ml(): String =
@@ -48,7 +56,7 @@ private fun Double.ml(): String =
 /**
  * Feature F14. The cupboard and the arithmetic, on one page.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -79,23 +87,70 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
             item {
                 Text(
                     "What is in the cupboard, and how much of each goes in the can you are " +
-                        "holding. Pick the can size and read the last column.",
+                        "holding. Enter the can size and read the last column.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 12.dp),
                 )
-                Row(
-                    Modifier.fillMaxWidth().padding(bottom = 14.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    listOf(250.0, 500.0, 1000.0, 2000.0).forEach { ml ->
-                        FilterChip(
-                            selected = state.canMl == ml,
-                            onClick = { viewModel.onCan(ml) },
-                            label = { Text(if (ml >= 1000) "${(ml / 1000).toInt()} L" else "${ml.toInt()} ml") },
-                        )
+                OutlinedTextField(
+                    value = state.canText,
+                    onValueChange = viewModel::onCanText,
+                    label = { Text("Can size") },
+                    suffix = { Text("ml") },
+                    singleLine = true,
+                    isError = state.canText.isNotBlank() && state.canMl == null,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                )
+                // The saved sizes are the presets, and they are the user's own.
+                // Shipping 250/500/1000 would be a guess about someone else's
+                // cupboard, and every wrong guess is a chip to read past.
+                if (state.savedSizes.isNotEmpty()) {
+                    FlowRow(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                    ) {
+                        state.savedSizes.forEach { ml ->
+                            FilterChip(
+                                selected = state.canMl?.let { kotlin.math.abs(it - ml) < 0.001 } == true,
+                                onClick = { viewModel.onCanText(ml.tidy()) },
+                                label = { Text("${ml.tidy()} ml") },
+                            )
+                        }
                     }
                 }
+
+                // A text action rather than a cross on the chip: a 14dp target
+                // beside a control that changes what every row below it says is
+                // asking to be mis-hit.
+                val onAChip = state.canMl?.let { ml ->
+                    state.savedSizes.any { kotlin.math.abs(it - ml) < 0.001 }
+                } == true
+                if (state.canSaveSize) {
+                    TextButton(
+                        onClick = viewModel::saveCurrentSize,
+                        modifier = Modifier.padding(top = 2.dp),
+                    ) { Text("Keep ${state.canText} ml as a size") }
+                } else if (onAChip) {
+                    TextButton(
+                        onClick = { state.canMl?.let(viewModel::forgetSize) },
+                        modifier = Modifier.padding(top = 2.dp),
+                    ) { Text("Forget ${state.canText} ml") }
+                }
+
+                Text(
+                    when {
+                        state.canText.isBlank() || state.canMl == null ->
+                            "Type the volume your can or bottle holds."
+                        state.savedSizes.isEmpty() ->
+                            "Keep it and it becomes a button here."
+                        else -> "Tap a size to switch to it."
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.padding(top = 6.dp, bottom = 14.dp),
+                )
             }
 
             if (state.rows.isEmpty()) {

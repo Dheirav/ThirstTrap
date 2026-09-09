@@ -30,6 +30,8 @@ class SettingsRepositoryImpl @Inject constructor(
     private val exactAlarmsKey = booleanPreferencesKey("use_exact_alarms")
     private val dismissedKey = stringSetPreferencesKey("dismissed_diagnostics")
     private val onlineLookupKey = booleanPreferencesKey("online_species_lookup")
+    private val canMlKey = doublePreferencesKey("watering_can_ml")
+    private val canSizesKey = stringSetPreferencesKey("watering_can_sizes_ml")
 
     override val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
         AppSettings(
@@ -40,6 +42,11 @@ class SettingsRepositoryImpl @Inject constructor(
             // Absent means off. A missing preference must never be read as
             // consent to use the network.
             onlineSpeciesLookup = prefs[onlineLookupKey] ?: false,
+            wateringCanMl = prefs[canMlKey] ?: 1000.0,
+            // A set on disk because DataStore has no list; sorted on read so
+            // the chips are in a stable order however they were added.
+            wateringCanSizesMl = prefs[canSizesKey]
+                .orEmpty().mapNotNull { it.toDoubleOrNull() }.sorted(),
         )
     }
 
@@ -57,6 +64,17 @@ class SettingsRepositoryImpl @Inject constructor(
 
     override suspend fun setOnlineSpeciesLookup(enabled: Boolean) {
         context.dataStore.edit { it[onlineLookupKey] = enabled }
+    }
+
+    override suspend fun setWateringCanMl(ml: Double) {
+        context.dataStore.edit { it[canMlKey] = ml.coerceIn(1.0, 100_000.0) }
+    }
+
+    override suspend fun setWateringCanSizes(sizesMl: List<Double>) {
+        val cleaned = sizesMl.filter { it > 0 }.distinct().sorted().take(12)
+        context.dataStore.edit { prefs ->
+            prefs[canSizesKey] = cleaned.map { it.toString() }.toSet()
+        }
     }
 
     override suspend fun dismissDiagnostic(key: String) {
