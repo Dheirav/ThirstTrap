@@ -1,50 +1,52 @@
 # ThirstTrap — Handover
 
 **This is the live state document.** Read it first, every session. The README
-(when it exists) is the pitch and may lag; `plant-tracker-requirements.md` is
-the *what and why*; this file is the *where we are*.
+is the pitch and may lag; `plant-tracker-requirements.md` is the *what and
+why*; this file is the *where we are*.
 
-Last updated: 2026-09-06
+Last updated: 2026-09-09
 
 ---
 
 ## Status
 
-**Phase: M0 prototype built, installed and driven on the target phone.**
+**Phase: M0 through M3 complete. M4 partly done. 94 of 101 features built,
+all of it running on the target phone against a real plant diary.**
 
 Repo: https://github.com/Dheirav/ThirstTrap (branch `main`).
 
-- `:core:domain` carries the complete watering model under **57 JVM tests, all
-  passing** in ~1s with no device.
-- The M0 app runs on the Redmi Note 15 Pro. One-tap logging, undo, the quick-log
-  sheet, and the reminder with its three shade actions are all verified working
-  on device.
-- **M0's actual question is still open**: does this beat a paper note, and does
-  "Still wet" feel as good to tap as "Watered"? That needs three days of real
-  use with real plants, and only the user can answer it.
+- **214 JVM tests** across `:core:domain` and `:core:ui`, running in about a
+  second with no device attached.
+- **13 instrumented tests** in `:core:data`, covering schema migrations, the
+  reminder planning that gathers its own inputs, and the export/import round
+  trip. These need a phone.
+- Schema is at **v10**, every step an auto-migration, `exportSchema` on and
+  `schemas/*.json` committed. `fallbackToDestructiveMigration` appears nowhere.
+- The app runs daily on a Redmi Note 15 Pro against four real plants. Most of
+  the defects in the decisions log below were found that way rather than at the
+  desk, which is the single most useful habit this project has.
 
-### What running it on the phone found
+### What is left
 
-Five defects, none visible at the desk:
+Six features, all M4 Phase 2, plus one decision:
 
-1. **Undo did not undo** - the log row was removed but the derived
-   `lastWatered` was never restored, so the card still read "Watered today".
-2. **The list re-sorted on log**, moving cards out from under the finger.
-   Reproduced live: logging one plant and reaching for UNDO hit a different
-   plant's droplet. The order is now frozen until the undo window closes.
-3. **Receiver writes were invisible to the UI** - the screen used a local tick
-   instead of collecting the shared flow, so "Still wet" from the shade never
-   reached the dashboard.
-4. **A check was recorded as a watering** - "Still wet" made the card say
-   "Watered today", the exact conflation this app exists to prevent.
-5. Display faults: "Watered 1 days ago"; a water-propagation cutting told to
-   "weigh once more"; a past-trigger plant showing "40% toward watering" beside
-   "Needs water now"; content clipped under the navigation bar.
+- **F11** experiments, **F12** `[[plant]]` cross-links, **F14** fertiliser
+  dilution calculator, **F25/25b/25c** plant identification.
+- **F16 cloud backup** is unstarted *and undecided*. Every other feature was
+  built on "nothing leaves this phone", and Settings says so in those words. An
+  account changes what the app is, so it wants a conversation before code.
+- The per-plant depletion trigger has no control since D28 removed the dialog
+  that was its only one. Either it gets one in Edit plant, or the field stops
+  pretending to be per-plant.
 
-Two of the 57 domain tests also failed on their first run - one a real bug (a
-provisional dry anchor was never replaced by a higher real observation), one a
-worthless test (its outlier sat mid-series, where it has no leverage on a
-least-squares slope, so both estimators passed and it proved nothing).
+### The habit worth keeping
+
+Six times now the same defect has appeared: logic that is correct, tested,
+reads properly, and is wired to nothing. `X4` reduce-motion, `CareEventType.MOVED`,
+`deleteReading`, `resolveIntervalDays` at eight call sites, a calibration dialog
+nothing could open, and a duplicate button. It comes from changing one end of a
+path and not walking the other. A deliberate pass through `:core:domain` asking
+"who calls this, and with what" is worth more than the next feature.
 
 ## What exists
 
@@ -58,8 +60,11 @@ least-squares slope, so both estimators passed and it proved nothing).
 | `docs/NOTIFICATIONS.md` | Reminder scheduling and Android delivery reality. |
 | `docs/UI-SPEC.md` | Screen-by-screen specification. |
 | `docs/ROADMAP.md` | Build order, milestones, definition of done. |
-| `docs/FEATURES.md` | Flat checklist of all 98 features, IDs mapped to requirements items. |
+| `docs/FEATURES.md` | Flat checklist of all 101 features, IDs mapped to requirements items. |
 | `docs/DEVICE.md` | adb reality, phone constraints, toolchain. Read before debugging anything. |
+| `docs/DESIGN-RESEARCH.md` | The measured basis for the colour system and the almanac typography. |
+| `docs/SPECIES-CATALOGUE.md` | How the 164-species bundled catalogue is generated, and from what. |
+| `README.md` | The public pitch. Written for someone who has never seen the repo. |
 
 ## What is missing
 
@@ -67,7 +72,10 @@ least-squares slope, so both estimators passed and it proved nothing).
   as living "in this directory". It does not exist and has been **written off**
   (2026-09-06). The stack section of the requirements doc stands as
   summary-only; decision D1 supersedes its conclusion anyway.
-- **No git repository.** `git init` has not been run.
+- **`docs/ROADMAP.md` still describes M0 as upcoming.** Its milestone breakdown
+  was written before any of it was built and has not been revised since. The
+  build order it lays out was followed; treat it as the original plan rather
+  than a status report, and read the Status section above instead.
 
 ---
 
@@ -891,17 +899,20 @@ the round should not ask for a number that means nothing.
 
 ## Next actions
 
-In order. See `docs/ROADMAP.md` for the full milestone breakdown.
+In order, and only the first is uncontroversial.
 
-1. `git init`, `.gitignore`, MIT `LICENSE`, initial commit of the docs.
-   **No toolchain setup is needed** — the JDK pin and SDK are already in place
-   from earlier projects. See `docs/DEVICE.md` §4.
-2. **M0 — prototype the two hard UX problems before building anything else.**
-   The requirements doc names them: the 3-tap log, and reminder tone. If
-   logging is slower than a paper note, the app dies regardless of how good
-   the drying-curve maths is. Prototype these as throwaway Compose screens
-   with fake data.
-3. M1 — MVP scaffold and requirements items 1–10.
+1. **The call-site audit** described under Status. Six instances of one defect
+   is a pattern, not bad luck, and it is cheaper to find the seventh on purpose
+   than to have a plant find it.
+2. **F14, the fertiliser dilution calculator.** Small, self-contained, no new
+   concepts, and the last easy win in M4.
+3. **F11, experiments.** The largest remaining piece and the one that pays off
+   the weight model: "does the north window dry it slower" becomes a measured
+   answer rather than an impression.
+4. **Decide F16 and F25 before writing either.** Both cross the line the app has
+   held since the first commit. F16 wants an account; F25 and F25b send a photo
+   off the device. F25c, the offline classifier, does not, which is the whole
+   reason it is listed separately.
 
 ## Conventions
 
