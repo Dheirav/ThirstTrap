@@ -2,6 +2,7 @@ package dev.dheirav.thirsttrap.feature.logevent
 
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.layout.Arrangement
+import dev.dheirav.thirsttrap.ui.Card
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -108,6 +109,28 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
                         onClick = { viewModel.onType(t) },
                         label = { Text(t.label) },
                     )
+                }
+            }
+
+            // The consequence, at the moment of the decision. The app used to
+            // clear the anchors on save and let the user discover it days later
+            // on a weight screen that had gone back to asking to be set up.
+            if (state.clearsWeightSetup) {
+                Card(Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(14.dp)) {
+                        Text(
+                            "This clears the weight setup",
+                            style = MaterialTheme.typography.titleSmall,
+                        )
+                        Text(
+                            "The pot itself now weighs something different, so every reading " +
+                                "so far is measured against the wrong thing. Water it in and " +
+                                "weigh it once afterwards, and the full mark sets itself again.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 4.dp),
+                        )
+                    }
                 }
             }
 

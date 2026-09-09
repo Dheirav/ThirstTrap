@@ -623,6 +623,91 @@ and opens fully expanded. It is used standing at a windowsill holding a pot; a
 keypad you have to drag open first is worse than no sheet, and the save button
 had been reachable only by scrolling past twelve keys.
 
+### D25 — A stray synthetic tap deleted a care event again (2026-09-09)
+
+Same failure as D20, same cause, one day later. Verifying D24 on the device
+meant giving a plant a location and taking it away again, which left two MOVED
+events behind. Deleting those through the app's own history needed a long press
+and then a tap on "Delete this entry" in the menu that opens under it. The menu
+position was assumed rather than read off the screenshot, the tap landed on the
+wrong row, and it deleted a real entry: `e0db6a86`, an OBSERVATION on Creeping
+fig at 09 Sep 17:27, the one carrying a photo.
+
+Caught the same way as last time, by diffing the care event ids against a
+backup taken before the session rather than by trusting the count, which is why
+the backup is taken first every time now.
+
+The repair: reinsert that exact row from the backup, and remove the two MOVED
+artifacts, so the restored file's care event id set is identical to the backup.
+The photo row was never touched, so restoring the event restores the link.
+
+The rule that keeps being violated: a synthetic tap on a menu whose position
+was inferred is a guess, and a guess aimed at a delete control is a data loss
+waiting to happen. Screenshot first, read the coordinates off the image, and
+where a mis-tap deletes something, prefer a path that has no delete control on
+it at all.
+
+### D24 — Three places where the app's flow and the actual workflow disagreed (2026-09-09)
+
+All three are the same shape as D23: the logic was right and the moment was
+wrong.
+
+**Light belongs to a place, not to a plant.** You go and hold the phone at the
+window because you want to know about the window. The meter could only be
+opened from a plant, so measuring an empty corner meant picking some unrelated
+pot and pretending the reading was about it. Places can now start a measurement
+directly, and in that mode the screen lists every plant living there with
+whether the spot suits it, which is the question you were actually asking. The
+keyword rule that decides "suits it" is now `lightFitFor`, with
+`assessLightFor` as its one-plant wording, because Places needs the same
+judgement in two words rather than a sentence and two copies of a keyword match
+would have drifted.
+
+**Watering and weighing are one moment the app modelled as two.** You water a
+plant from the list, carry it to the scale, and the keypad opens on ROUTINE, so
+the reading that should have become the new wet anchor is filed as an ordinary
+sample. Nothing looks broken. The anchor just never gets recaptured and quietly
+goes stale as the plant grows. `suggestReadingContext` now starts the chip on
+"after watering" when the pot was watered within the last day and has not been
+weighed since, and the screen says why it moved rather than letting a
+preselected control change what a number means in silence. A day is the ceiling
+because drainage finishes in an hour while people weigh when they get round to
+it, and a pot weighed three days later has visibly dried. The weighing round
+does the same per pot and flags the ones that owe a wet mark, since after a
+watering round those are the readings worth the most.
+
+**A repot invalidates the calibration and the user found out days later.**
+Logging a repot cleared the anchors on save, said nothing, and the next visit to
+that plant's weight screen had gone back to asking to be set up. The log form
+now says so while the type is selected, along with what to do about it: water it
+in, weigh it once, and the full mark sets itself again, which is true because of
+the derived wet anchor from D21.
+
+Driving the three on the device found three more bugs that the unit tests could
+not have, and all three were about a value being read from the wrong place:
+
+- The repot warning asked `plant.anchors`, the stored column. Since D21 made
+  calibration derived from a post-water reading, that column is null for every
+  plant, so the warning would never have appeared once. It now asks the
+  assembled `WeightState.isCalibrated`.
+- The place-mode light screen reported "nothing lives here" for a place with a
+  plant in it. Its `residents` flow used `WhileSubscribed` while nothing ever
+  collects it: it is read synchronously out of a sensor callback, so it sat at
+  its initial empty value forever. `Eagerly` is the right sharing policy for a
+  flow nobody subscribes to.
+- The weighing round's "just watered" row flag had no time window while the
+  keypad's chip rule had one, so a pot watered two days ago would have been
+  labelled "just watered" above a keypad that had already decided otherwise.
+  Both now use `POST_WATER_WINDOW_MILLIS`.
+
+Four more sites were logging care events without replanning the reminder, found
+while doing the above and fixed with them: the notification's own "Watered"
+button, which is the least friction the app offers and was the one path that
+left the schedule untouched entirely; the detailed log screen; deleting an event
+from a plant's history; and the weighing round, which never rescheduled at all,
+so weighing everything in one sitting moved no due dates. That makes D23's
+count wrong in the right direction: it was not four call sites, it was eight.
+
 ### D23 — The reminder interval was computed but almost never used (2026-09-09)
 
 The whole premise of the app is that a reminder tracks the measured pot rather

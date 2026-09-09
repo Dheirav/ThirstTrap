@@ -239,7 +239,16 @@ class MainActivity : ComponentActivity() {
                             WeighingScreen(onBack = { nav.popBackStack() })
                         }
                         composable(Routes.PLACES) {
-                            LocationsScreen(onBack = { nav.popBackStack() })
+                            LocationsScreen(
+                                onBack = { nav.popBackStack() },
+                                onMeasure = { nav.navigate(Routes.placeLight(it)) },
+                            )
+                        }
+                        composable(
+                            route = "${Routes.PLACE_LIGHT}/{place}",
+                            arguments = listOf(navArgument("place") { type = NavType.StringType }),
+                        ) {
+                            LightMeterScreen(onBack = { nav.popBackStack() })
                         }
                         composable(Routes.STATS) {
                             StatsScreen(onBack = { nav.popBackStack() })

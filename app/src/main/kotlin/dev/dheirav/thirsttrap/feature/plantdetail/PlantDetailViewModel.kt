@@ -39,6 +39,7 @@ data class PlantDetailUiState(
 class PlantDetailViewModel @Inject constructor(
     private val repository: PlantRepository,
     private val photos: PhotoRepository,
+    private val reminders: dev.dheirav.thirsttrap.domain.ReminderRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -65,7 +66,13 @@ class PlantDetailViewModel @Inject constructor(
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), PlantDetailUiState())
 
     fun deleteEvent(event: CareEvent) {
-        viewModelScope.launch { repository.deleteEvent(event.id) }
+        viewModelScope.launch {
+            repository.deleteEvent(event.id)
+            // Deleting the watering the schedule was counting from has to move
+            // the schedule, or the plant stays due on the strength of an event
+            // that no longer exists.
+            reminders.rescheduleFromModel(event.plantId, System.currentTimeMillis())
+        }
     }
 
     fun addPhoto(uri: Uri) {

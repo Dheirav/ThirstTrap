@@ -51,4 +51,33 @@ class LightTest {
     fun `unrecognised wording produces silence, not a guess`() {
         assertNull(assessLightFor("east window in summer", LightLevel.MODERATE))
     }
+
+    @Test
+    fun `the compact fit and the sentence never disagree`() {
+        // Places lists several plants at once and cannot use the one-plant
+        // wording, so the two share a rule rather than each keeping their own
+        // copy of the keyword matching.
+        val needs = listOf("bright indirect", "low light, shade", "", "whatever", null)
+        for (n in needs) {
+            for (level in LightLevel.entries) {
+                val fit = lightFitFor(n, level)
+                val sentence = assessLightFor(n, level)
+                assertEquals(
+                    "disagreement for needs=$n level=$level",
+                    fit == null,
+                    sentence == null,
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `a shade plant in full sun reads as too bright`() {
+        assertEquals(LightFit.TOO_BRIGHT, lightFitFor("prefers shade", LightLevel.DIRECT))
+    }
+
+    @Test
+    fun `a sun plant in a dim corner reads as too dark`() {
+        assertEquals(LightFit.TOO_DARK, lightFitFor("bright light", LightLevel.DEEP_SHADE))
+    }
 }

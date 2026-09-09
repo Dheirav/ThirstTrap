@@ -17,11 +17,14 @@ fun assembleWeightState(
     repotEventsMillis: List<Long>,
     nowMillis: Long,
 ): WeightState {
+    val lastWatered = wateringEventsMillis.maxOrNull()
+
     if (readings.isEmpty()) {
         return WeightState(
             plant = plant,
             readings = readings,
             prediction = predictWatering(plant, emptyList(), nowMillis),
+            lastWateredMillis = lastWatered,
         )
     }
 
@@ -65,6 +68,7 @@ fun assembleWeightState(
             readings = readings,
             segments = segments,
             prediction = predictWatering(plant, segments, nowMillis),
+            lastWateredMillis = lastWatered,
         )
     }
 
@@ -110,5 +114,55 @@ fun assembleWeightState(
         depletion = latest?.let { anchors.depletionAt(it.grams) },
         slopeGramsPerDay = slope,
         closedSegmentCount = closed,
+        lastWateredMillis = lastWatered,
     )
 }
+
+/**
+ * Which context the keypad should start on.
+ *
+ * Watering and weighing are one moment that the app modelled as two. You water
+ * a plant from the list, carry it to the scale, and the keypad opens on
+ * ROUTINE, so the reading that should have become the new wet anchor is filed
+ * as an ordinary sample and the anchor quietly stays stale. Nothing tells you,
+ * because from the app's point of view nothing went wrong.
+ *
+ * A reading counts as the anchor when it comes after the last watering and
+ * close enough to it. A day is the ceiling: drainage finishes in an hour and
+ * people weigh when they get round to it, while a pot weighed three days after
+ * watering has visibly dried and calling that "full" would poison the scale it
+ * measures everything else against.
+ *
+ * The user can always override the chip. This only decides where it starts.
+ */
+fun suggestReadingContext(
+    prediction: Prediction,
+    lastWateredMillis: Long?,
+    lastReadingMillis: Long?,
+    nowMillis: Long,
+): ReadingContext {
+    if (lastWateredMillis != null &&
+        nowMillis - lastWateredMillis in 0..POST_WATER_WINDOW_MILLIS &&
+        (lastReadingMillis == null || lastReadingMillis < lastWateredMillis)
+    ) {
+        return ReadingContext.POST_WATER
+    }
+    return if (prediction is Prediction.WaterNow) {
+        ReadingContext.PRE_WATER
+    } else {
+        ReadingContext.ROUTINE
+    }
+}
+
+/** The same rule, for a screen that already has the assembled state. */
+fun suggestReadingContext(state: WeightState, nowMillis: Long): ReadingContext =
+    suggestReadingContext(
+        prediction = state.prediction,
+        lastWateredMillis = state.lastWateredMillis,
+        lastReadingMillis = state.readings.filter { !it.excluded }
+            .maxOfOrNull { it.timestampMillis },
+        nowMillis = nowMillis,
+    )
+
+/** How long after a watering a reading still counts as the wet anchor. */
+const val POST_WATER_WINDOW_MILLIS = 24 * 60 * 60 * 1000L

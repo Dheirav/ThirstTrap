@@ -11,6 +11,7 @@ import dev.dheirav.thirsttrap.domain.ReminderRepository
 import dev.dheirav.thirsttrap.domain.WeightRepository
 import dev.dheirav.thirsttrap.domain.computeNextDue
 import dev.dheirav.thirsttrap.domain.resolveIntervalDays
+import dev.dheirav.thirsttrap.domain.suggestReadingContext
 import kotlinx.coroutines.flow.first
 import dev.dheirav.thirsttrap.domain.WeightState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,18 +73,10 @@ class WeightViewModel @Inject constructor(
 
     fun onContext(c: ReadingContext) { _context.value = c }
 
-    /**
-     * Defaults sensibly: a plant already past its trigger is almost certainly
-     * being weighed just before watering it.
-     */
     /** Only ever moves the chip when the user has not already chosen one. */
     fun suggestContext(s: WeightState) {
         if (_context.value != ReadingContext.ROUTINE) return
-        _context.value = if (s.prediction is Prediction.WaterNow) {
-            ReadingContext.PRE_WATER
-        } else {
-            ReadingContext.ROUTINE
-        }
+        _context.value = suggestReadingContext(s, System.currentTimeMillis())
     }
 
     private val _dismissed = MutableStateFlow<Set<String>>(emptySet())

@@ -10,6 +10,7 @@ import dev.dheirav.thirsttrap.domain.CareEvent
 import dev.dheirav.thirsttrap.domain.CareEventType
 import dev.dheirav.thirsttrap.domain.CheckResult
 import dev.dheirav.thirsttrap.domain.PlantRepository
+import dev.dheirav.thirsttrap.domain.ReminderRepository
 import dev.dheirav.thirsttrap.domain.newId
 import dev.dheirav.thirsttrap.domain.tzOffsetMinutesAt
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +30,7 @@ import javax.inject.Inject
 class ReminderActionReceiver : BroadcastReceiver() {
 
     @Inject lateinit var repository: PlantRepository
+    @Inject lateinit var reminders: ReminderRepository
 
     override fun onReceive(context: Context, intent: Intent) {
         val plantId = intent.getStringExtra(EXTRA_PLANT_ID) ?: return
@@ -69,6 +71,11 @@ class ReminderActionReceiver : BroadcastReceiver() {
                         checkResult = if (type == CareEventType.CHECKED) CheckResult.STILL_HEAVY else null,
                     ),
                 )
+                // Tapping "Watered" in the shade is the least friction the app
+                // offers, and it was the one path that logged the event without
+                // replanning, so the same notification came back on the old
+                // schedule as if nothing had been done.
+                reminders.rescheduleFromModel(plantId, now)
                 Log.i(TAG, "recorded ${type.name} for $plantId")
             } finally {
                 pending.finish()

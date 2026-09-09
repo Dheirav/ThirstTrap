@@ -9,7 +9,9 @@ import dev.dheirav.thirsttrap.domain.CareEventType
 import dev.dheirav.thirsttrap.domain.CheckResult
 import dev.dheirav.thirsttrap.domain.Medium
 import dev.dheirav.thirsttrap.domain.PlantRepository
+import dev.dheirav.thirsttrap.domain.ReminderRepository
 import dev.dheirav.thirsttrap.domain.WateringMethod
+import dev.dheirav.thirsttrap.domain.WeightRepository
 import dev.dheirav.thirsttrap.domain.WhenLogged
 import dev.dheirav.thirsttrap.domain.newId
 import dev.dheirav.thirsttrap.domain.resolveLoggedAt
@@ -35,6 +37,8 @@ data class LogEventUiState(
     val whenLogged: WhenLogged = WhenLogged.NOW,
     /** Set only when whenLogged is PICK. */
     val pickedDateMillis: Long? = null,
+    /** Whether this plant currently has weight anchors worth losing. */
+    val plantIsCalibrated: Boolean = false,
 ) {
     /**
      * Backdated entries land at midday rather than midnight, so a watering
@@ -52,6 +56,18 @@ data class LogEventUiState(
     val showFertilizer get() = type == CareEventType.FERTILIZED
     val showMedium get() = type == CareEventType.MEDIUM_CHANGED
     val showCause get() = type == CareEventType.DIED
+
+    /**
+     * A repot or a medium change throws the weight setup away, because the pot
+     * itself now weighs something different and every stored reading is against
+     * the old one. That was happening silently: the app cleared the anchors on
+     * save and the user found out days later, when the plant's weight screen
+     * had gone back to asking to be set up. Say it while there is still a
+     * chance to have meant something else.
+     */
+    val clearsWeightSetup: Boolean
+        get() = plantIsCalibrated &&
+            (type == CareEventType.REPOTTED || type == CareEventType.MEDIUM_CHANGED)
 }
 
 
@@ -59,6 +75,8 @@ data class LogEventUiState(
 @HiltViewModel
 class LogEventViewModel @Inject constructor(
     private val repository: PlantRepository,
+    private val reminders: ReminderRepository,
+    private val weights: WeightRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -79,6 +97,11 @@ class LogEventViewModel @Inject constructor(
             _state.value = _state.value.copy(
                 plantName = plant.name,
                 amountMl = suggested?.toInt()?.toString().orEmpty(),
+                // Asked of the assembled state, not of the stored anchors.
+                // Since D21 a pot is calibrated when its readings contain a
+                // post-water weigh, and the stored column stays null for every
+                // plant that got there that way - which is all of them.
+                plantIsCalibrated = weights.observeWeightState(plantId).first().isCalibrated,
             )
         }
     }
@@ -144,6 +167,10 @@ class LogEventViewModel @Inject constructor(
                     else -> Unit
                 }
             }
+            // Everything logged here can move the schedule: a watering or a
+            // check resets the clock, and a repot throws the anchors away so
+            // the prediction that was driving the interval no longer exists.
+            reminders.rescheduleFromModel(plantId, now)
             onDone()
         }
     }

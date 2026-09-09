@@ -36,7 +36,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.dheirav.thirsttrap.domain.LightFit
 import dev.dheirav.thirsttrap.domain.LightLevel
+import dev.dheirav.thirsttrap.ui.Rule
 
 /** Feature F22. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -44,6 +46,8 @@ import dev.dheirav.thirsttrap.domain.LightLevel
 fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val plant by viewModel.plant.collectAsStateWithLifecycle()
+    val target by viewModel.target.collectAsStateWithLifecycle()
+    val placeMode = viewModel.isPlaceMode
     val lifecycleOwner = LocalLifecycleOwner.current
 
     // The sensor runs only while this screen is actually in front.
@@ -99,9 +103,22 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
                 return@Column
             }
 
+            target?.let {
+                Text(
+                    it,
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 8.dp),
+                )
+            }
+
             Text(
-                "Hold the phone where the plant sits, screen facing the same way the " +
-                    "leaves do.",
+                if (placeMode) {
+                    "Hold the phone where a pot would stand, screen facing the way the " +
+                        "leaves would."
+                } else {
+                    "Hold the phone where the plant sits, screen facing the same way the " +
+                        "leaves do."
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -141,7 +158,52 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
                 }
             }
 
-            if (plant?.lightNeeds.isNullOrBlank()) {
+            if (placeMode && state.here.isNotEmpty()) {
+                Column(Modifier.fillMaxWidth().padding(top = 20.dp)) {
+                    Rule()
+                    state.here.forEach { resident ->
+                        androidx.compose.foundation.layout.Row(
+                            Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                resident.name,
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.weight(1f),
+                            )
+                            Text(
+                                when (resident.fit) {
+                                    LightFit.SUITS -> "suits it"
+                                    LightFit.TOO_DARK -> "too dark"
+                                    LightFit.TOO_BRIGHT -> "too bright"
+                                    // Nothing noted about what this one wants,
+                                    // so the app has no business guessing.
+                                    null -> "not noted"
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (resident.fit == null) {
+                                    MaterialTheme.colorScheme.outline
+                                } else {
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                },
+                            )
+                        }
+                        Rule()
+                    }
+                }
+            }
+
+            if (placeMode && state.here.isEmpty() && state.lux != null) {
+                Text(
+                    "Nothing lives here yet, which is usually why you are measuring it.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(top = 20.dp),
+                )
+            }
+
+            if (!placeMode && plant?.lightNeeds.isNullOrBlank()) {
                 Text(
                     "Note what this plant wants in its details, and this screen will say " +
                         "whether the spot suits it.",
@@ -157,7 +219,15 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
                 onClick = viewModel::save,
                 enabled = state.lux != null && !state.saved,
                 modifier = Modifier.fillMaxWidth(),
-            ) { Text(if (state.saved) "Saved to its history" else "Save this reading") }
+            ) {
+                Text(
+                    when {
+                        state.saved && placeMode -> "Saved to this place"
+                        state.saved -> "Saved to its history"
+                        else -> "Save this reading"
+                    },
+                )
+            }
 
             Text(
                 "Phone light sensors are not calibrated and differ between handsets, so " +

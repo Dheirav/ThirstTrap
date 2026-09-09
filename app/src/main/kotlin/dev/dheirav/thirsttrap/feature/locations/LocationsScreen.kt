@@ -51,7 +51,11 @@ private val measured = SimpleDateFormat("d MMM", Locale.getDefault())
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LocationsScreen(onBack: () -> Unit, viewModel: LocationsViewModel = hiltViewModel()) {
+fun LocationsScreen(
+    onBack: () -> Unit,
+    onMeasure: (String) -> Unit,
+    viewModel: LocationsViewModel = hiltViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var editing by remember { mutableStateOf<LocationRow?>(null) }
 
@@ -95,8 +99,8 @@ fun LocationsScreen(onBack: () -> Unit, viewModel: LocationsViewModel = hiltView
         ) {
             item {
                 Text(
-                    "Tap a place to describe it. Measuring the light from a plant that lives " +
-                        "there records it here too.",
+                    "Tap a place to describe it, or to measure the light standing there. " +
+                        "Measuring from a plant that lives here records it against the place too.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 16.dp),
@@ -178,6 +182,28 @@ fun LocationsScreen(onBack: () -> Unit, viewModel: LocationsViewModel = hiltView
                         onValueChange = { text = it },
                         modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                     )
+                    // Light is a property of the spot, not of whichever pot
+                    // happens to be standing in it, so you should not have to
+                    // pick a plant first in order to ask about a window.
+                    Rule(Modifier.padding(top = 16.dp))
+                    TextButton(
+                        onClick = {
+                            // Only if there is something to keep. Measuring a
+                            // place you have not described should not leave an
+                            // empty note behind as a side effect.
+                            if (text.isNotBlank() || row.note?.note != null) {
+                                viewModel.setNote(row.name, text)
+                            }
+                            editing = null
+                            onMeasure(row.name)
+                        },
+                        modifier = Modifier.padding(top = 4.dp),
+                    ) {
+                        Text(
+                            row.note?.lux?.let { "Measure the light again" }
+                                ?: "Measure the light here",
+                        )
+                    }
                 }
             },
             confirmButton = {

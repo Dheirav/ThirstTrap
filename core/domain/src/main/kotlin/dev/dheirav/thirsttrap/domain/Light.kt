@@ -48,12 +48,19 @@ fun classifyLux(lux: Float): LightLevel = when {
     else -> LightLevel.DIRECT
 }
 
+/** How a measured level lines up with what the user wrote for a plant. */
+enum class LightFit { SUITS, TOO_DARK, TOO_BRIGHT }
+
 /**
  * Whether a measured level plausibly suits what the user wrote in the plant's
  * light needs. Free text, so this is a keyword match and says nothing when it
  * cannot tell - a confident wrong answer would be worse than silence.
+ *
+ * The judgement lives here and the wording lives in the callers, because the
+ * same rule has to read as a sentence on one plant's screen and as two words in
+ * a list of everything sharing a windowsill.
  */
-fun assessLightFor(needs: String?, measured: LightLevel): String? {
+fun lightFitFor(needs: String?, measured: LightLevel): LightFit? {
     val n = needs?.lowercase()?.trim().orEmpty()
     if (n.isEmpty()) return null
 
@@ -61,14 +68,21 @@ fun assessLightFor(needs: String?, measured: LightLevel): String? {
     val wantsShade = listOf("shade", "low", "indirect", "dim").any { it in n }
 
     return when {
-        wantsBright && measured <= LightLevel.LOW ->
-            "You noted this one wants bright light. Here it is getting rather less."
-        wantsShade && measured == LightLevel.DIRECT ->
-            "You noted this one prefers shade. This spot is full sun."
-        wantsBright && measured >= LightLevel.BRIGHT_INDIRECT ->
-            "That matches what you noted for this plant."
-        wantsShade && measured <= LightLevel.MODERATE ->
-            "That matches what you noted for this plant."
+        wantsBright && measured <= LightLevel.LOW -> LightFit.TOO_DARK
+        wantsShade && measured == LightLevel.DIRECT -> LightFit.TOO_BRIGHT
+        wantsBright && measured >= LightLevel.BRIGHT_INDIRECT -> LightFit.SUITS
+        wantsShade && measured <= LightLevel.MODERATE -> LightFit.SUITS
         else -> null
     }
 }
+
+/** The same judgement, said to someone looking at one plant. */
+fun assessLightFor(needs: String?, measured: LightLevel): String? =
+    when (lightFitFor(needs, measured)) {
+        LightFit.TOO_DARK ->
+            "You noted this one wants bright light. Here it is getting rather less."
+        LightFit.TOO_BRIGHT ->
+            "You noted this one prefers shade. This spot is full sun."
+        LightFit.SUITS -> "That matches what you noted for this plant."
+        null -> null
+    }

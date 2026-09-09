@@ -130,11 +130,18 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                         .clickable { viewModel.open(index) },
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        row.plant.name,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.weight(1f),
-                    )
+                    Column(Modifier.weight(1f)) {
+                        Text(row.plant.name, style = MaterialTheme.typography.bodyMedium)
+                        // The pot whose reading is worth the most: it sets the
+                        // full mark everything else is measured against.
+                        if (row.owesWetMark && row.doneThisRound == null) {
+                            Text(
+                                "just watered, this sets the full mark",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                    }
                     Text(
                         row.last?.let { "${it.grams.toInt()} g" } ?: "-",
                         style = MaterialTheme.typography.bodySmall,
@@ -192,6 +199,16 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                     style = MaterialTheme.typography.headlineMedium,
                 )
                 DoubleRule(Modifier.padding(top = 10.dp, bottom = 14.dp))
+
+                if (row.owesWetMark) {
+                    Text(
+                        "Watered and not weighed since, so this reading becomes the " +
+                            "new full mark.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 12.dp),
+                    )
+                }
 
                 Column(Modifier.weight(1f)) {
                     FlowRow(

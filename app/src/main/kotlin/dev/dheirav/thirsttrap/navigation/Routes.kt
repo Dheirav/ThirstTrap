@@ -12,6 +12,7 @@ object Routes {
     const val WEIGHT = "plant/weight"
     const val SCALE_HELP = "help/scale"
     const val LIGHT = "plant/light"
+    const val PLACE_LIGHT = "place/light"
     const val PROPAGATION = "propagation"
     const val POST_MORTEM = "plant/postmortem"
     const val STICKER = "plant/sticker"
@@ -36,6 +37,9 @@ object Routes {
     fun timelapse(plantId: String) = "$TIMELAPSE/$plantId"
 
     fun light(plantId: String) = "$LIGHT/$plantId"
+
+    /** Place names are free text, so they have to survive being a path segment. */
+    fun placeLight(place: String) = "$PLACE_LIGHT/${android.net.Uri.encode(place)}"
 
     fun postMortem(plantId: String) = "$POST_MORTEM/$plantId"
 

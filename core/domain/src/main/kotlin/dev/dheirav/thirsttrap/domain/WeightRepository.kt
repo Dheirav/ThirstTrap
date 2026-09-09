@@ -17,6 +17,12 @@ data class WeightState(
     val depletion: Double? = null,
     val slopeGramsPerDay: Double? = null,
     val closedSegmentCount: Int = 0,
+    /**
+     * When this pot was last watered, which the readings alone cannot say.
+     * Needed because watering and weighing are one moment: a reading taken
+     * shortly after a watering is the wet anchor, not a routine sample.
+     */
+    val lastWateredMillis: Long? = null,
 ) {
     val isCalibrated: Boolean get() = plant.anchors != null && !plant.needsRecalibration
     val currentSegment: DryingSegment? get() = segments.lastOrNull()

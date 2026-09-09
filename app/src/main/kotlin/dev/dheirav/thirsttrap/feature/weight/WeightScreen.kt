@@ -101,7 +101,11 @@ fun WeightScreen(
     // have to drag open before you can use it is worse than no sheet.
     val keypadState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    LaunchedEffect(state?.isCalibrated) { state?.let(viewModel::suggestContext) }
+    // Keyed on the watering too: watering from the plants list and then coming
+    // straight here is the case the chip has to get right on its own.
+    LaunchedEffect(state?.isCalibrated, state?.lastWateredMillis) {
+        state?.let(viewModel::suggestContext)
+    }
 
     Scaffold(
         topBar = {
@@ -339,6 +343,23 @@ fun WeightScreen(
                 // its neighbours; a scrolling row fixed the height but hid an
                 // option off the edge, which is worse - all three need to be
                 // visible to be chosen between.
+                // Says why the chip moved on its own, because a preselected
+                // control that changes what the number means should explain
+                // itself rather than be noticed later.
+                val anchorMoment = s.lastWateredMillis?.takeIf { watered ->
+                    context == ReadingContext.POST_WATER &&
+                        s.readings.none { !it.excluded && it.timestampMillis >= watered }
+                }
+                if (anchorMoment != null) {
+                    Text(
+                        "You watered this one ${wateredAgo(anchorMoment)}, so this reading " +
+                            "becomes the new full mark.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(bottom = 12.dp),
+                    )
+                }
+
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -946,4 +967,18 @@ private fun ReadingEditor(
             }
         },
     )
+}
+
+/**
+ * Rough, and deliberately so. The point is to remind someone what they just
+ * did, not to date it: an exact timestamp here would invite reading it as a
+ * claim about drainage having finished.
+ */
+private fun wateredAgo(millis: Long): String {
+    val minutes = (System.currentTimeMillis() - millis) / 60_000L
+    return when {
+        minutes < 90 -> "a few minutes ago"
+        minutes < 60 * 20 -> "${minutes / 60} hours ago"
+        else -> "yesterday"
+    }
 }
