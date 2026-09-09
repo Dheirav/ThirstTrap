@@ -37,10 +37,4 @@ class PropagationTest {
     fun `an established plant is never stale`() {
         assertFalse(stageIsStale(PropagationStage.ESTABLISHED, 3650))
     }
-
-    @Test
-    fun `days to root needs at least one finished propagation`() {
-        assertNull(averageDaysToRoot(emptyList()))
-        assertEquals(21.0, averageDaysToRoot(listOf(14, 28))!!, 1e-9)
-    }
 }

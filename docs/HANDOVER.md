@@ -632,6 +632,55 @@ and opens fully expanded. It is used standing at a windowsill holding a pot; a
 keypad you have to drag open first is worse than no sheet, and the save button
 had been reachable only by scrolling past twelve keys.
 
+### D30 — The call-site audit, and what it found (2026-09-09)
+
+Six instances of "correct, tested, wired to nothing" made it a pattern rather
+than bad luck, so this was a deliberate pass rather than another accident.
+Method: enumerate every top-level declaration in `:core:domain`, every enum
+value, and every method on a domain interface, then count who actually
+references each one across all main sources. Three heuristics, each aimed at a
+shape the project had already produced.
+
+**The module is in better health than the pattern suggested.** 72 top-level
+declarations, 55 interface methods: one dead function and three dead methods.
+Every `SuppressionReason`, every `AmbientVerdict` and every `Confidence` value
+is both produced and consumed. Both surviving `resolveIntervalDays(null, null,
+null)` calls are the deliberate create-then-replan pair from D23 and are
+correctly followed by `rescheduleFromModel`.
+
+**The one that mattered.** Settings offers 30/50/75, labelled "how dry a new
+plant is allowed to get before it is worth watering", stores the choice and
+shows it back highlighted. Nothing read it. Every plant was created on the data
+class default of 0.5 whatever the user picked, and the only reason any plant
+differs is the species catalogue writing its own trigger. A control that looks
+like it works and does nothing is worse than an absent one, because it spends
+the user's attention and returns a false belief. `PlantEditViewModel` now reads
+it when creating; an existing plant keeps whatever it has.
+
+**Dead, removed.** `averageDaysToRoot`, superseded by `rootingStat`, which
+derives its own durations and takes a median rather than a mean, so the old
+helper's only test was testing arithmetic nothing runs.
+`WeightRepository.markNeedsRecalibration`, superseded by the repot path writing
+the flag directly. `AmbientRepository.knownLocations` and its DAO query,
+superseded by `AmbientViewModel` computing the list from plants and readings so
+that places never measured before still appear.
+
+**Two left open, both judgement rather than tidying.**
+
+- `PlantRepository.updateEvent` is implemented and never called. It is not
+  really dead code, it is a missing feature: you can delete a diary entry but
+  not correct one, which after D25 is exactly the wrong way round. Deleting the
+  method and building the editor are both defensible; doing neither is not.
+- The `useExactAlarms` toggle writes a preference and asks the user to grant
+  SCHEDULE_EXACT_ALARM, and nothing ever schedules an exact alarm, because D4
+  decided inexact deliberately. The app is asking for a permission it does not
+  use. Either honour the setting or remove the toggle.
+
+**What the audit is worth repeating for.** Both real findings were settings and
+methods that *look* wired from every angle except the one that counts. Grep for
+a name and it appears; read the screen and it works. Only counting the direction
+of the reference, produced versus consumed, separates them.
+
 ### D29 — Plant identification goes offline first, and F25 is dropped (2026-09-09)
 
 Pl@ntNet's API is genuinely free at around 500 identifications a day, run by a

@@ -48,10 +48,3 @@ fun stageIsStale(stage: PropagationStage, days: Int): Boolean = when (stage) {
     PropagationStage.ESTABLISHED -> false
 }
 
-/**
- * Average days from first cutting to potted, across finished propagations.
- * Requirements item 15 wants this figure; it only means anything once a few
- * have made it through.
- */
-fun averageDaysToRoot(durations: List<Int>): Double? =
-    durations.takeIf { it.isNotEmpty() }?.average()

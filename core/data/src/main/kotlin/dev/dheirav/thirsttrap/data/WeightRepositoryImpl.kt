@@ -96,16 +96,5 @@ class WeightRepositoryImpl @Inject constructor(
         weightDao.delete(readingId)
     }
 
-    override suspend fun markNeedsRecalibration(plantId: String) {
-        val plant = plantDao.observePlant(plantId).first() ?: return
-        plantDao.upsert(
-            plant.copy(
-                wetAnchorG = null,
-                dryAnchorG = null,
-                dryAnchorProvisional = true,
-                needsRecalibration = true,
-                updatedAt = System.currentTimeMillis(),
-            ),
-        )
-    }
+
 }

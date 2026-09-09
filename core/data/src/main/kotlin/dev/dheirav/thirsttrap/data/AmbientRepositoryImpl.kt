@@ -20,7 +20,6 @@ class AmbientRepositoryImpl @Inject constructor(
 
     override suspend fun all(): List<AmbientReading> = dao.all().map { it.toDomain() }
 
-    override suspend fun knownLocations(): List<String> = dao.knownLocations()
 
     override suspend fun record(reading: AmbientReading) {
         TTLog.i(TTLog.DATA) { "ambient ${reading.location} ${reading.temperatureC}C ${reading.humidityPercent}%" }

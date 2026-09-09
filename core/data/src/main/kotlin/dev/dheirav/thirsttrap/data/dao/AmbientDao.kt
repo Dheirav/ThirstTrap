@@ -21,8 +21,6 @@ interface AmbientDao {
     suspend fun all(): List<AmbientReadingEntity>
 
     /** Distinct locations that already have readings, for the entry screen. */
-    @Query("SELECT DISTINCT location FROM ambient_readings ORDER BY location COLLATE NOCASE")
-    suspend fun knownLocations(): List<String>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(reading: AmbientReadingEntity)

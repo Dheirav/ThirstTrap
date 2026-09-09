@@ -57,6 +57,4 @@ interface WeightRepository {
 
     suspend fun deleteReading(readingId: String)
 
-    /** Clears the anchors after a repot or a change of medium. */
-    suspend fun markNeedsRecalibration(plantId: String)
 }

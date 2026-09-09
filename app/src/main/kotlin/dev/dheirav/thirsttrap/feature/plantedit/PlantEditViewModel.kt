@@ -69,6 +69,7 @@ data class PlantEditUiState(
 class PlantEditViewModel @Inject constructor(
     private val repository: PlantRepository,
     private val reminders: ReminderRepository,
+    private val settings: dev.dheirav.thirsttrap.domain.SettingsRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -138,7 +139,17 @@ class PlantEditViewModel @Inject constructor(
             // measurements. Nothing had noticed because the plants that have
             // been edited so far happened to be sitting on the defaults.
             val existing = repository.observePlant(plantId).first()
-            val edited = (existing ?: Plant(id = plantId, name = s.name.trim())).copy(
+            // Settings offers 30/50/75 as "how dry a new plant is allowed to
+            // get", stores the choice and shows it back, and nothing had ever
+            // read it: every plant was created on the data class default of
+            // 0.5 whatever the user picked. A new plant starts on the chosen
+            // value; an existing one keeps whatever it already has.
+            val start = existing ?: Plant(
+                id = plantId,
+                name = s.name.trim(),
+                depletionTrigger = settings.settings.first().defaultDepletionTrigger,
+            )
+            val edited = start.copy(
                 name = s.name.trim(),
                 species = s.species.trim().takeIf { it.isNotEmpty() },
                 medium = s.medium,

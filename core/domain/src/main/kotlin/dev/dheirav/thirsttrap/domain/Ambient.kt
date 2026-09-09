@@ -188,7 +188,6 @@ fun List<AmbientReading>.forLocation(location: String?, nowMillis: Long): List<A
 interface AmbientRepository {
     fun observeAll(): kotlinx.coroutines.flow.Flow<List<AmbientReading>>
     suspend fun all(): List<AmbientReading>
-    suspend fun knownLocations(): List<String>
     suspend fun record(reading: AmbientReading)
     suspend fun delete(id: String)
 }
