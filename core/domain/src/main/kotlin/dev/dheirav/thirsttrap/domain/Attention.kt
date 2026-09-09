@@ -59,3 +59,32 @@ fun averageWateringIntervalDays(wateringTimestampsMillis: List<Long>): Double? {
     val gaps = sorted.zipWithNext { a, b -> (b - a) / MILLIS_PER_DAY }
     return gaps.average()
 }
+
+/**
+ * Days between waterings, but robust enough to schedule from.
+ *
+ * The plain average is the right thing to *show* someone, while it is a poor
+ * thing to plan on, because the log is not a clean series. Two waterings hours
+ * apart are one episode, a top-up or a correction, not a rhythm, and averaging
+ * across a pair like that produced a Fittonia that fell due the next morning.
+ *
+ * So same-day repeats collapse, and there have to be at least two real gaps
+ * left before the log is allowed to speak at all. The median of what remains
+ * survives one unusual gap, which an average does not.
+ */
+fun checkIntervalFromLogDays(wateringTimestampsMillis: List<Long>): Double? {
+    val sorted = wateringTimestampsMillis.sorted()
+    val gaps = sorted.zipWithNext { a, b -> (b - a) / MILLIS_PER_DAY }
+        .filter { it >= SAME_EPISODE_DAYS }
+    if (gaps.size < 2) return null
+    val ordered = gaps.sorted()
+    val mid = ordered.size / 2
+    return if (ordered.size % 2 == 1) {
+        ordered[mid]
+    } else {
+        (ordered[mid - 1] + ordered[mid]) / 2.0
+    }
+}
+
+/** Below this, two waterings are the same watering. */
+private const val SAME_EPISODE_DAYS = 0.5

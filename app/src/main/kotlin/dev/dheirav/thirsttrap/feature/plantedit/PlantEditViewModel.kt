@@ -177,16 +177,25 @@ class PlantEditViewModel @Inject constructor(
 
                 // Every new plant gets a check reminder. Without one it is
                 // invisible until the user happens to open the app.
-                val interval = resolveIntervalDays(null, null, null)
+                //
+                // Created with the default, then immediately replanned: the row
+                // has to exist before rescheduleFromModel can update it, and a
+                // plant being edited rather than created may already have a
+                // history worth using.
                 reminders.upsert(
                     Reminder(
                         id = newId(),
                         plantId = plantId,
                         kind = ReminderKind.CHECK,
                         intervalDays = s.checkIntervalDays.toIntOrNull(),
-                        nextDueAtMillis = computeNextDue(lastAssessed, interval, now),
+                        nextDueAtMillis = computeNextDue(
+                            lastAssessed,
+                            resolveIntervalDays(null, null, null),
+                            now,
+                        ),
                     ),
                 )
+                reminders.rescheduleFromModel(plantId, now)
             }
             onDone()
         }

@@ -161,18 +161,14 @@ class WeightViewModel @Inject constructor(
     /**
      * Feature F17.21, and the point of the whole app: once the model has an
      * opinion, the reminder follows the measured pot rather than a calendar.
-     * A capped or suppressed prediction is not trusted - resolveIntervalDays
-     * falls back to the logged average, then to a week.
+     *
+     * The gathering moved into the repository so that every other caller gets
+     * the same treatment. This screen used to be the only place that passed a
+     * real prediction, which meant the reminder tracked the pot only if you
+     * happened to open it.
      */
     private suspend fun rescheduleFromPrediction() {
-        val s = repository.observeWeightState(plantId).first()
-        val existing = reminders.observeForPlant(plantId).first().firstOrNull() ?: return
-        val interval = resolveIntervalDays(
-            explicitIntervalDays = existing.intervalDays,
-            prediction = s.prediction,
-            loggedAverageDays = null,
-        )
-        val now = System.currentTimeMillis()
-        reminders.reschedule(plantId, computeNextDue(now, interval, now))
+        if (reminders.observeForPlant(plantId).first().isEmpty()) return
+        reminders.rescheduleFromModel(plantId, System.currentTimeMillis())
     }
 }

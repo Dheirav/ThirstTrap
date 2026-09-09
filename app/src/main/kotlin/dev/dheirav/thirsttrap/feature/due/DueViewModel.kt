@@ -91,8 +91,9 @@ class DueViewModel @Inject constructor(
             plants.logEvent(event)
             // A check that concluded "still wet" resets the clock exactly as a
             // watering does. Both mean the pot was assessed.
-            val interval = resolveIntervalDays(item.reminder.intervalDays, null, null)
-            reminders.reschedule(item.plant.id, computeNextDue(now, interval, now))
+            // Was resolveIntervalDays(explicit, null, null), so marking a plant
+            // done pushed it out a flat week no matter what the pot was doing.
+            reminders.rescheduleFromModel(item.plant.id, now)
             onLogged(event, previousDue)
         }
     }

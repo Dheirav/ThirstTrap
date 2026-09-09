@@ -623,6 +623,52 @@ and opens fully expanded. It is used standing at a windowsill holding a pot; a
 keypad you have to drag open first is worse than no sheet, and the save button
 had been reachable only by scrolling past twelve keys.
 
+### D23 — The reminder interval was computed but almost never used (2026-09-09)
+
+The whole premise of the app is that a reminder tracks the measured pot rather
+than a calendar, and `resolveIntervalDays` implements exactly that priority:
+the user's explicit setting, then the weight prediction, then the log, then a
+week. It was correct and unit tested, while three of its four callers passed it
+nothing:
+
+    ReminderBackfill      resolveIntervalDays(null, null, null)         -> a week
+    PlantEditViewModel    resolveIntervalDays(null, null, null)         -> a week
+    DueViewModel          resolveIntervalDays(explicit, null, null)     -> yours, or a week
+    WeightViewModel       the only site that passed a real prediction
+
+`DashboardViewModel` did not reference reminders at all, so watering or checking
+a plant from the list never replanned anything. On the real database every plant
+sat at a flat seven days with no interval set, which is the app quietly
+degrading to the calendar reminder it was built to replace.
+
+The fix is a single scheduling entry point, `ReminderRepository.rescheduleFromModel`,
+which gathers the plant, its events and its readings, assembles the weight state,
+and resolves the interval in one place. Every caller now goes through it, so
+there is exactly one implementation of "when is this plant next due" instead of
+four partial ones. This is the fourth instance of the same failure in this
+project: logic that exists, is tested, reads correctly, and is not wired to
+anything. Reviewing the call sites of a pure function is not optional.
+
+A stale due date is its own bug, so the backfill now replans every plant on
+launch rather than only the ones it creates. A default week is the state of a
+plant nobody has touched, which is precisely when the default is least likely
+to be right, and waiting for the user to open each plant to fix it defeats the
+purpose.
+
+Running it against the real database surfaced a second problem. Fittonia had two
+waterings 1.32 days apart, the average said a 1 day rhythm, and the plant fell
+due the next morning. Two waterings a day apart are one episode, a top-up or a
+correction, not a cycle. Scheduling now uses `checkIntervalFromLogDays`, which
+collapses gaps under half a day, requires at least two real gaps before the log
+is allowed to speak, and takes the median so one holiday does not double the
+interval. `averageWateringIntervalDays` is unchanged, because the plain average
+is still the honest thing to show someone on the plant page. What is right to
+display and what is right to plan on are not the same statistic.
+
+Verified on the device, not just in tests: `ReminderPlanningTest`, 7 instrumented
+tests against a real Room database, all passing, plus the four real plants
+replanning on launch with Flax seeds picking up a measured 5 day Eta.
+
 ### D22 — Weighing is a round, not a per-plant errand (2026-09-09)
 
 Reported after the first real weighing session: doing every pot meant plant,

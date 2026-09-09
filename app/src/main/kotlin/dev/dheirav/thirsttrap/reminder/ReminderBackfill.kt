@@ -16,12 +16,18 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Gives a check reminder to any plant that has none.
+ * Gives a check reminder to any plant that has none, then replans them all.
  *
- * Needed because plants added before reminders existed would otherwise stay
- * invisible in the Due list forever - and it also covers a reminder deleted by
- * accident, or a restored backup that predates this table. Idempotent, so it is
- * safe to run on every launch.
+ * The backfill half is needed because plants added before reminders existed
+ * would otherwise stay invisible in the Due list forever, and it also covers a
+ * reminder deleted by accident or a restored backup that predates this table.
+ *
+ * The replan half matters more. A due date is a prediction, so it goes stale on
+ * its own: the drying curve changes as readings arrive, and a plant sitting at
+ * a default week is one nobody has watered recently, which is exactly when the
+ * default is least likely to be right. Replanning every plant on launch keeps
+ * the Due list honest without waiting for the user to touch each plant. It is
+ * idempotent, and it leaves an explicitly chosen interval alone.
  */
 @Singleton
 class ReminderBackfill @Inject constructor(
@@ -37,8 +43,9 @@ class ReminderBackfill @Inject constructor(
         val now = System.currentTimeMillis()
 
         val missing = allPlants.filterNot { it.id in covered }
-        if (missing.isEmpty()) return
-        Log.i(TAG, "backfilling reminders for ${missing.size} plant(s)")
+        if (missing.isNotEmpty()) {
+            Log.i(TAG, "backfilling reminders for ${missing.size} plant(s)")
+        }
 
         for (plant in missing) {
             val events = plants.observeEvents(plant.id).first()
@@ -46,6 +53,10 @@ class ReminderBackfill @Inject constructor(
                 it.type == CareEventType.WATERED || it.type == CareEventType.CHECKED
             }?.timestampMillis
 
+            // Default first, so the row exists, then planned from whatever the
+            // plant's own history and readings say. A backfilled plant is by
+            // definition one that has been around a while, so it is exactly the
+            // case where a flat week is least likely to be right.
             reminders.upsert(
                 Reminder(
                     id = newId(),
@@ -58,6 +69,10 @@ class ReminderBackfill @Inject constructor(
                     ),
                 ),
             )
+        }
+
+        for (plant in allPlants) {
+            reminders.rescheduleFromModel(plant.id, now)
         }
     }
 

@@ -32,6 +32,7 @@ data class DashboardUiState(
 class DashboardViewModel @Inject constructor(
     private val repository: PlantRepository,
     private val photos: PhotoRepository,
+    private val reminders: dev.dheirav.thirsttrap.domain.ReminderRepository,
 ) : ViewModel() {
 
     private val _photoError = MutableStateFlow<String?>(null)
@@ -108,6 +109,11 @@ class DashboardViewModel @Inject constructor(
         )
         viewModelScope.launch {
             repository.logEvent(event)
+            // Watering and checking are the two most common actions in the app
+            // and neither touched the reminder, so a plant you had just watered
+            // could still be asked about on the old schedule. Both count as
+            // assessments, which is why a check resets the clock too.
+            reminders.rescheduleFromModel(plantId, now)
             _lastLogged.value = event
             onLogged(event)
         }
@@ -115,7 +121,12 @@ class DashboardViewModel @Inject constructor(
 
     /** Undo is a real delete, not a tombstone - docs/UI-SPEC.md section 2. */
     fun undo(event: CareEvent) {
-        viewModelScope.launch { repository.deleteEvent(event.id) }
+        viewModelScope.launch {
+            repository.deleteEvent(event.id)
+            // The reminder was pushed out on the strength of that event, so
+            // undoing it has to put the schedule back too.
+            reminders.rescheduleFromModel(event.plantId, System.currentTimeMillis())
+        }
     }
 
     suspend fun averageIntervalDays(plantId: String): Double? = null // surfaced in step 5
