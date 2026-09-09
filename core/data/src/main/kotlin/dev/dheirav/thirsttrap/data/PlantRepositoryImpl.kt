@@ -139,10 +139,15 @@ class PlantRepositoryImpl @Inject constructor(
         // Hooked here rather than in the edit screen so it fires wherever a
         // plant's location changes, and only on a real change - saving the edit
         // form without touching the location must not manufacture a move.
-        val before = plantDao.observePlant(plant.id).first()?.toDomain()
+        val beforeRow = plantDao.observePlant(plant.id).first()
+        val before = beforeRow?.toDomain()
         val from = before?.location?.takeIf { it.isNotBlank() }
         val to = plant.location?.takeIf { it.isNotBlank() }
-        plantDao.upsert(plant.toEntity(createdAt = now, updatedAt = now))
+        // A row is created once. Stamping created_at with "now" on every save
+        // meant editing a plant's name reset the date it was added.
+        plantDao.upsert(
+            plant.toEntity(createdAt = beforeRow?.createdAt ?: now, updatedAt = now),
+        )
         if (before != null && !from.equals(to, ignoreCase = true)) {
             eventDao.insert(
                 CareEvent(

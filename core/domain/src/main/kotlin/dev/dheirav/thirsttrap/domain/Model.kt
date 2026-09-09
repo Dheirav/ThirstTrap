@@ -122,6 +122,13 @@ data class Plant(
     /** Cross-segment drying-rate prior, grams/day, negative. Null until one segment has closed. */
     val slopeEwmaGramsPerDay: Double? = null,
     val needsRecalibration: Boolean = false,
+    /**
+     * The user's own answer to "is weighing this pot meaningful?". Some pots
+     * the medium cannot rule out are still hopeless: a closed terrarium
+     * recycles its water, so it loses almost nothing and the model would say
+     * "not drying measurably" forever while the weighing round kept asking.
+     */
+    val weightTracked: Boolean = true,
     val archived: Boolean = false,
     /** Explicitly chosen cover. Null means "use the most recent photo". */
     val coverPhotoId: String? = null,
@@ -141,7 +148,7 @@ data class Plant(
         get() = propagationStage ?: if (isPropagating) PropagationStage.CUTTING else null
 
     val isWeightTrackable: Boolean
-        get() = medium != Medium.WATER
+        get() = weightTracked && medium != Medium.WATER
 }
 
 @Serializable

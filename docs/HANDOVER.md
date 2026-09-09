@@ -623,6 +623,45 @@ and opens fully expanded. It is used standing at a windowsill holding a pot; a
 keypad you have to drag open first is worse than no sheet, and the save button
 had been reachable only by scrolling past twelve keys.
 
+### D26 — A delete that asks, a pot that opts out, and a save that stopped eating fields (2026-09-09)
+
+**Deleting a diary entry now asks.** It used to fire on the tap, with no
+confirmation and no undo, on the least reconstructable data in the app. The row
+opens its menu on a plain tap as well as a long press, the menu's only item is
+the delete, and the menu renders *above* the row it belongs to rather than
+below it, so what you are about to delete is not where you think it is. That
+combination cost a real entry (D25). The confirm names the entry it is about to
+remove, which is the part that matters: it turns a mis-aimed tap into something
+you can see before it commits.
+
+**A pot can opt out of being weighed.** `isWeightTrackable` was derived from the
+medium alone, and the medium cannot rule out a closed terrarium: it recycles its
+own water, loses almost nothing, and the model would say "not drying measurably"
+forever while the weighing round kept asking. Schema v10 adds `weight_tracked`
+with a default of 1, so every existing pot keeps the behaviour it had, and the
+edit form carries the switch. The Fittonia is the first pot to use it.
+
+**Two bugs found on the way, both in saving a plant.** `PlantEditViewModel`
+built a fresh `Plant` from the form and handed it to `upsertPlant`, which writes
+the whole row. Every field the form does not show, the depletion trigger, the
+cover photo, the propagation stage, the pot measurements, was reset to its
+default on any save. Nothing had noticed because the plants edited so far
+happened to be sitting on the defaults. It now edits the stored plant with
+`copy` instead. Separately `upsertPlant` stamped `created_at` with "now" on
+every write, so editing a name reset the date the plant was added.
+
+**The backup manifest was undercounting itself.** It listed plants, events,
+photos and reminders while the archive also carried the weight readings and the
+room log, which are the two most recent additions and the least reconstructable
+things in it. The manifest is what you read to decide whether a backup is
+complete, so it now counts everything it holds.
+
+**F10.1 is exercised at last.** The SAF `CreateDocument` picker opens with the
+suggested filename, saving writes a 1.49 MB archive, the zip passes an integrity
+check, and the manifest's counts match the archive's actual contents including
+the new `weightTracked` field round-tripping. The one thing still not driven is
+import, which is F10.6 rather than F10.1.
+
 ### D25 — A stray synthetic tap deleted a care event again (2026-09-09)
 
 Same failure as D20, same cause, one day later. Verifying D24 on the device

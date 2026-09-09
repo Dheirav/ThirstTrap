@@ -56,6 +56,7 @@ data class PlantEditUiState(
     val medium: Medium = Medium.SOIL,
     val source: PlantSource = PlantSource.UNKNOWN,
     val status: PlantStatus = PlantStatus.ACTIVE,
+    val weightTracked: Boolean = true,
     val archived: Boolean = false,
     val lastWatered: LastWatered = LastWatered.UNKNOWN,
     val loading: Boolean = true,
@@ -94,6 +95,7 @@ class PlantEditViewModel @Inject constructor(
                         medium = p.medium,
                         source = p.source,
                         status = p.status,
+                        weightTracked = p.weightTracked,
                         archived = p.archived,
                         checkIntervalDays = existing?.intervalDays?.toString().orEmpty(),
                         loading = false,
@@ -108,6 +110,7 @@ class PlantEditViewModel @Inject constructor(
     fun onLocation(v: String) { _state.value = _state.value.copy(location = v) }
     fun onContainer(v: String) { _state.value = _state.value.copy(containerDesc = v) }
     fun onMedium(v: Medium) { _state.value = _state.value.copy(medium = v) }
+    fun onWeightTracked(v: Boolean) { _state.value = _state.value.copy(weightTracked = v) }
     fun onSource(v: PlantSource) { _state.value = _state.value.copy(source = v) }
     fun onLastWatered(v: LastWatered) { _state.value = _state.value.copy(lastWatered = v) }
     fun onTargetDryness(v: String) { _state.value = _state.value.copy(targetDryness = v) }
@@ -128,23 +131,29 @@ class PlantEditViewModel @Inject constructor(
         val plantId = s.id ?: newId()
         val isNew = s.isNew
         viewModelScope.launch {
-            repository.upsertPlant(
-                Plant(
-                    id = plantId,
-                    name = s.name.trim(),
-                    species = s.species.trim().takeIf { it.isNotEmpty() },
-                    medium = s.medium,
-                    location = s.location.trim().takeIf { it.isNotEmpty() },
-                    status = s.status,
-                    containerDesc = s.containerDesc.trim().takeIf { it.isNotEmpty() },
-                    defaultWaterMl = s.defaultWaterMl.toDoubleOrNull(),
-                    targetDryness = s.targetDryness.trim().takeIf { it.isNotEmpty() },
-                    lightNeeds = s.lightNeeds.trim().takeIf { it.isNotEmpty() },
-                    fertilizerCadenceDays = s.fertilizerCadenceDays.toIntOrNull(),
-                    source = s.source,
-                    archived = s.archived,
-                ),
+            // Edit what the form owns and leave the rest alone. Building a
+            // fresh Plant here reset every field the form does not show, so
+            // saving a name change would have quietly cleared the depletion
+            // trigger, the cover photo, the propagation stage and the pot
+            // measurements. Nothing had noticed because the plants that have
+            // been edited so far happened to be sitting on the defaults.
+            val existing = repository.observePlant(plantId).first()
+            val edited = (existing ?: Plant(id = plantId, name = s.name.trim())).copy(
+                name = s.name.trim(),
+                species = s.species.trim().takeIf { it.isNotEmpty() },
+                medium = s.medium,
+                location = s.location.trim().takeIf { it.isNotEmpty() },
+                status = s.status,
+                containerDesc = s.containerDesc.trim().takeIf { it.isNotEmpty() },
+                defaultWaterMl = s.defaultWaterMl.toDoubleOrNull(),
+                targetDryness = s.targetDryness.trim().takeIf { it.isNotEmpty() },
+                lightNeeds = s.lightNeeds.trim().takeIf { it.isNotEmpty() },
+                fertilizerCadenceDays = s.fertilizerCadenceDays.toIntOrNull(),
+                source = s.source,
+                weightTracked = s.weightTracked,
+                archived = s.archived,
             )
+            repository.upsertPlant(edited)
 
             // An explicit cadence, if the user gave one. Null means "work it
             // out from the log", which is what resolveIntervalDays does.

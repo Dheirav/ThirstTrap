@@ -73,10 +73,34 @@ class MigrationTest {
     }
 
     @Test
+    fun migrate9To10_defaultsExistingPotsToBeingWeighed() {
+        helper.createDatabase(TEST_DB, 9).use { db ->
+            db.execSQL(
+                """
+                INSERT INTO plants (
+                    id, name, source, medium, status, depletion_trigger,
+                    dry_anchor_provisional, needs_recalibration, archived,
+                    created_at, updated_at
+                ) VALUES ('p1', 'Peperomia', 'bought', 'soil', 'active', 0.5, 0, 0, 0, 1000, 1000)
+                """.trimIndent(),
+            )
+        }
+
+        val db = helper.runMigrationsAndValidate(TEST_DB, 10, true)
+
+        // The default has to be "yes", or an upgrade would silently take every
+        // existing pot out of the weighing round.
+        db.query("SELECT weight_tracked FROM plants WHERE id = 'p1'").use {
+            assertTrue("the plant did not survive the migration", it.moveToFirst())
+            assertEquals(1, it.getInt(0))
+        }
+    }
+
+    @Test
     fun migrateAll_fromTheOldestSchemaForward() {
         helper.createDatabase(TEST_DB, 1).close()
         // Every auto-migration in sequence, validated against the exported
         // schema at each step by runMigrationsAndValidate.
-        helper.runMigrationsAndValidate(TEST_DB, 7, true)
+        helper.runMigrationsAndValidate(TEST_DB, DATABASE_VERSION, true)
     }
 }

@@ -39,6 +39,11 @@ data class PlantEntity(
     @ColumnInfo(name = "dry_anchor_provisional") val dryAnchorProvisional: Boolean = true,
     @ColumnInfo(name = "slope_ewma_g_per_day") val slopeEwmaGPerDay: Double? = null,
     @ColumnInfo(name = "needs_recalibration") val needsRecalibration: Boolean = false,
+    /**
+     * Whether this pot is worth putting on a scale at all. Defaults true, so
+     * every existing plant keeps the behaviour it had.
+     */
+    @ColumnInfo(name = "weight_tracked", defaultValue = "1") val weightTracked: Boolean = true,
     @ColumnInfo(name = "cover_photo_id") val coverPhotoId: String? = null,
     /**
      * Where a cutting has got to, or null for a plant that was never one.

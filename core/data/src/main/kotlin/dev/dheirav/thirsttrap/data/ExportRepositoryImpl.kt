@@ -100,11 +100,17 @@ class ExportRepositoryImpl @Inject constructor(
             appVersionName = appVersionName,
             exportedAtMillis = now,
             tzOffsetMinutes = tzOffsetMinutesAt(now),
+            // Everything the archive holds, not a subset. The manifest is what
+            // you read to decide whether a backup is complete, and it was
+            // silently omitting the weight readings and the room log - the two
+            // things added most recently and the least reconstructable.
             counts = mapOf(
                 "plants" to plants.size,
                 "events" to events.size,
                 "photos" to photos.size,
                 "reminders" to reminders.size,
+                "weightReadings" to weightReadings.size,
+                "ambient" to ambient.size,
             ),
         )
 

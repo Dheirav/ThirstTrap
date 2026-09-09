@@ -423,6 +423,7 @@ private fun EventRow(
     onDelete: () -> Unit,
 ) {
     var menu by remember { mutableStateOf(false) }
+    var confirmingDelete by remember(event.id) { mutableStateOf(false) }
 
     // Events that changed the plant's nature get a heavier treatment, so they
     // are findable while scrolling fast. docs/UI-SPEC.md section 4.
@@ -486,10 +487,46 @@ private fun EventRow(
             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                 DropdownMenuItem(
                     text = { Text("Delete this entry") },
-                    onClick = { menu = false; onDelete() },
+                    onClick = { menu = false; confirmingDelete = true },
                 )
             }
         }
+    }
+
+    // Asks twice, like the weigh-in editor, and for a stronger reason. A tap on
+    // a row opens this menu, its only item is a delete, and a diary entry is
+    // not something you can work out again later: a weight can at least be
+    // re-measured, while "watered on the 6th" is gone the moment it is gone.
+    // The first version deleted on the tap, and a thumb in the wrong place cost
+    // a real entry within a day of the screen existing.
+    if (confirmingDelete) {
+        AlertDialog(
+            onDismissRequest = { confirmingDelete = false },
+            title = { Text("Delete this entry?") },
+            text = {
+                Text(
+                    buildString {
+                        append(label(event))
+                        append(", ")
+                        append(timeOf(event))
+                        append(". This cannot be undone.")
+                        if (photos.isNotEmpty()) {
+                            append(
+                                " The ${if (photos.size == 1) "photo" else "photos"} " +
+                                    "will stay with the plant.",
+                            )
+                        }
+                    },
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = { confirmingDelete = false; onDelete() }) { Text("Delete") }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmingDelete = false }) { Text("Keep it") }
+            },
+        )
     }
 }
 

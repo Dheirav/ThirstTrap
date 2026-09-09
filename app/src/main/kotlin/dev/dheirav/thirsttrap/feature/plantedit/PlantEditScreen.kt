@@ -3,6 +3,11 @@ package dev.dheirav.thirsttrap.feature.plantedit
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Switch
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -156,6 +161,32 @@ fun PlantEditScreen(
                         selected = state.medium == m,
                         onClick = { viewModel.onMedium(m) },
                         label = { Text(m.label) },
+                    )
+                }
+            }
+
+            // Only where the medium has not already settled it: a cutting in a
+            // jar of water weighs what the jar weighs, and that is not a choice.
+            if (state.medium != Medium.WATER) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Weigh this pot", style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            "Turn this off for a pot where weight says nothing, like a closed " +
+                                "terrarium that recycles its own water. It leaves the weighing " +
+                                "round and stops being asked about.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Spacer(Modifier.size(12.dp))
+                    Switch(
+                        checked = state.weightTracked,
+                        onCheckedChange = viewModel::onWeightTracked,
                     )
                 }
             }

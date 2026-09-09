@@ -92,7 +92,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] **F9.1** Verify: airplane mode, every M1 feature exercised, zero degradation
 
 ### F10 — Export *(req. item 10)*
-- [~] **F10.1** Zip written via SAF `CreateDocument` — user picks destination — **code path built; the SAF picker itself is the one thing not yet exercised**
+- [x] **F10.1** Zip written via SAF `CreateDocument` — user picks destination — *driven on device 2026-09-09: picker opens with the suggested name, 1.49 MB archive written, zip valid, manifest counts match its contents*
 - [x] **F10.2** `thirsttrap.json` — domain entities, not Room rows
 - [x] **F10.3** `manifest.json` — schema version, app version, timestamp, row counts
 - [x] **F10.4** Photos included at their relative paths
