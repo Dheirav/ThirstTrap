@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -77,6 +78,7 @@ class LogEventViewModel @Inject constructor(
     private val repository: PlantRepository,
     private val reminders: ReminderRepository,
     private val weights: WeightRepository,
+    fertilizers: dev.dheirav.thirsttrap.domain.FertilizerRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -84,6 +86,26 @@ class LogEventViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(LogEventUiState())
     val state: StateFlow<LogEventUiState> = _state.asStateFlow()
+
+    /**
+     * The cupboard, so a feed is picked rather than retyped. An inventory you
+     * have to copy out by hand at the moment of use is just a second place to
+     * keep the same string.
+     */
+    val cupboard: StateFlow<List<dev.dheirav.thirsttrap.domain.Fertilizer>> =
+        fertilizers.observeAll().stateIn(
+            viewModelScope,
+            kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5_000),
+            emptyList(),
+        )
+
+    /** Picking a bottle fills both fields; either can still be edited after. */
+    fun onPickFertilizer(f: dev.dheirav.thirsttrap.domain.Fertilizer) {
+        _state.value = _state.value.copy(
+            fertilizerName = f.name,
+            dilution = f.dilutionText.orEmpty(),
+        )
+    }
 
     init {
         viewModelScope.launch {

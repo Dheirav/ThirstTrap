@@ -20,6 +20,7 @@ object Routes {
     const val AMBIENT = "ambient"
     const val STATS = "stats"
     const val PLACES = "places"
+    const val FERTILIZER = "fertilizer"
     const val WEIGHING = "weighing"
     const val TIMELAPSE = "plant/timelapse"
     const val CARE = "plant/care"

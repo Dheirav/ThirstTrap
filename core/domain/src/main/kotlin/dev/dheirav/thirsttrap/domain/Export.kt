@@ -31,6 +31,12 @@ data class ExportBundle(
      */
     val weightReadings: List<WeightReading> = emptyList(),
     val ambient: List<AmbientReading> = emptyList(),
+    /**
+     * Added with the fertilizer inventory (F14). Same defaulting rule as the
+     * weight readings above: an older backup simply has none rather than
+     * failing to import.
+     */
+    val fertilizers: List<Fertilizer> = emptyList(),
 )
 
 @Serializable

@@ -97,6 +97,32 @@ class MigrationTest {
     }
 
     @Test
+    fun migrate10To11_addsTheFertilizerTableAndKeepsTheDiary() {
+        helper.createDatabase(TEST_DB, 10).use { db ->
+            db.execSQL(
+                """
+                INSERT INTO plants (
+                    id, name, source, medium, status, depletion_trigger,
+                    dry_anchor_provisional, needs_recalibration, weight_tracked,
+                    archived, created_at, updated_at
+                ) VALUES ('p1', 'Fittonia', 'bought', 'soil', 'active', 0.35, 0, 0, 1, 0, 1000, 1000)
+                """.trimIndent(),
+            )
+        }
+
+        val db = helper.runMigrationsAndValidate(TEST_DB, 11, true)
+
+        db.query("SELECT name FROM plants WHERE id = 'p1'").use {
+            assertTrue("the plant did not survive the migration", it.moveToFirst())
+            assertEquals("Fittonia", it.getString(0))
+        }
+        db.query("SELECT COUNT(*) FROM fertilizers").use {
+            assertTrue(it.moveToFirst())
+            assertEquals(0, it.getInt(0))
+        }
+    }
+
+    @Test
     fun migrateAll_fromTheOldestSchemaForward() {
         helper.createDatabase(TEST_DB, 1).close()
         // Every auto-migration in sequence, validated against the exported

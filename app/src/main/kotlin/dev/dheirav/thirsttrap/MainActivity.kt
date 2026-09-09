@@ -1,6 +1,7 @@
 package dev.dheirav.thirsttrap
 
 import dev.dheirav.thirsttrap.feature.ambient.AmbientScreen
+import dev.dheirav.thirsttrap.feature.fertilizer.FertilizerScreen
 import dev.dheirav.thirsttrap.feature.locations.LocationsScreen
 import dev.dheirav.thirsttrap.feature.weighing.WeighingScreen
 import dev.dheirav.thirsttrap.feature.stats.StatsScreen
@@ -183,6 +184,7 @@ class MainActivity : ComponentActivity() {
                                 onOpenAmbient = { nav.navigate(Routes.AMBIENT) },
                                 onOpenStats = { nav.navigate(Routes.STATS) },
                                 onOpenPlaces = { nav.navigate(Routes.PLACES) },
+                                onOpenFertilizer = { nav.navigate(Routes.FERTILIZER) },
                                 onOpenDebug = { nav.navigate(Routes.DEBUG) },
                             )
                         }
@@ -237,6 +239,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Routes.WEIGHING) {
                             WeighingScreen(onBack = { nav.popBackStack() })
+                        }
+                        composable(Routes.FERTILIZER) {
+                            FertilizerScreen(onBack = { nav.popBackStack() })
                         }
                         composable(Routes.PLACES) {
                             LocationsScreen(

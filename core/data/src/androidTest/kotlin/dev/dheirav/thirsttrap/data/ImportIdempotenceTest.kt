@@ -49,6 +49,8 @@ class ImportIdempotenceTest {
             db.reminderDao(),
             db.weightDao(),
             db.ambientDao(),
+            db.fertilizerDao(),
+            FertilizerRepositoryImpl(db.fertilizerDao()),
             PhotoStore(context),
         )
     }
@@ -59,7 +61,8 @@ class ImportIdempotenceTest {
     /** Every table, whole rows, so a rewritten column cannot hide behind a count. */
     private fun snapshot(): Map<String, List<String>> {
         val tables = listOf(
-            "plants", "care_events", "weight_readings", "photos", "reminders", "ambient_readings",
+            "plants", "care_events", "weight_readings", "photos", "reminders",
+            "ambient_readings", "fertilizers",
         )
         return tables.associateWith { table ->
             db.openHelper.readableDatabase.query("SELECT * FROM $table ORDER BY id").use { c ->
@@ -96,6 +99,11 @@ class ImportIdempotenceTest {
                 grams = 276.0,
                 context = ReadingContext.POST_WATER,
             ).toReadingEntity(createdAt = 1_000),
+        )
+        FertilizerRepositoryImpl(db.fertilizerDao()).upsert(
+            dev.dheirav.thirsttrap.domain.Fertilizer(
+                id = "f1", name = "Seaweed", dilutionText = "1:200", npk = "3-1-2",
+            ),
         )
         db.reminderDao().upsert(
             Reminder(

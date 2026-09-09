@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import dev.dheirav.thirsttrap.data.dao.CareEventDao
 import dev.dheirav.thirsttrap.data.dao.AmbientDao
+import dev.dheirav.thirsttrap.data.dao.FertilizerDao
 import dev.dheirav.thirsttrap.data.dao.LocationDao
 import dev.dheirav.thirsttrap.data.dao.PlantDao
 import dev.dheirav.thirsttrap.data.entity.CareEventEntity
@@ -12,6 +13,7 @@ import dev.dheirav.thirsttrap.data.dao.PhotoDao
 import dev.dheirav.thirsttrap.data.dao.WeightDao
 import dev.dheirav.thirsttrap.data.dao.ReminderDao
 import dev.dheirav.thirsttrap.data.entity.AmbientReadingEntity
+import dev.dheirav.thirsttrap.data.entity.FertilizerEntity
 import dev.dheirav.thirsttrap.data.entity.LocationNoteEntity
 import dev.dheirav.thirsttrap.data.entity.PlantEntity
 import dev.dheirav.thirsttrap.data.entity.PhotoEntity
@@ -34,10 +36,10 @@ import dev.dheirav.thirsttrap.data.entity.ReminderEntity
  * recorded the wrong schema version, and the importer's "written by a newer
  * version of the app" warning has been comparing against a stale number.
  */
-const val DATABASE_VERSION = 10
+const val DATABASE_VERSION = 11
 
 @Database(
-    entities = [PlantEntity::class, CareEventEntity::class, ReminderEntity::class, PhotoEntity::class, WeightReadingEntity::class, AmbientReadingEntity::class, LocationNoteEntity::class],
+    entities = [PlantEntity::class, CareEventEntity::class, ReminderEntity::class, PhotoEntity::class, WeightReadingEntity::class, AmbientReadingEntity::class, LocationNoteEntity::class, FertilizerEntity::class],
     version = DATABASE_VERSION,
     exportSchema = true,
     // v2 only adds the reminders table, so Room can generate the migration.
@@ -58,6 +60,8 @@ const val DATABASE_VERSION = 10
         // v10 adds one boolean column to plants with a default, so every
         // existing row keeps the behaviour it had.
         AutoMigration(from = 9, to = 10),
+        // v11 only adds the fertilizers table.
+        AutoMigration(from = 10, to = 11),
     ],
 )
 abstract class ThirstTrapDatabase : RoomDatabase() {
@@ -68,6 +72,7 @@ abstract class ThirstTrapDatabase : RoomDatabase() {
     abstract fun weightDao(): WeightDao
     abstract fun ambientDao(): AmbientDao
     abstract fun locationDao(): LocationDao
+    abstract fun fertilizerDao(): FertilizerDao
 
     companion object {
         const val NAME = "thirsttrap.db"

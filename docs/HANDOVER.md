@@ -20,7 +20,7 @@ Repo: https://github.com/Dheirav/ThirstTrap (branch `main`).
 - **13 instrumented tests** in `:core:data`, covering schema migrations, the
   reminder planning that gathers its own inputs, and the export/import round
   trip. These need a phone.
-- Schema is at **v10**, every step an auto-migration, `exportSchema` on and
+- Schema is at **v11**, every step an auto-migration, `exportSchema` on and
   `schemas/*.json` committed. `fallbackToDestructiveMigration` appears nowhere.
 - The app runs daily on a Redmi Note 15 Pro against four real plants. Most of
   the defects in the decisions log below were found that way rather than at the
@@ -30,9 +30,9 @@ Repo: https://github.com/Dheirav/ThirstTrap (branch `main`).
 
 Six features, all M4 Phase 2, plus one decision:
 
-- **F11** experiments, **F12** `[[plant]]` cross-links, **F14** fertiliser
-  dilution calculator, **F25c** offline plant identification with **F25b** as an
-  opt-in second tier. F25 itself is dropped, see D29.
+- **F11** experiments, **F12** `[[plant]]` cross-links, **F25c** offline plant
+  identification with **F25b** as an opt-in second tier. F25 itself is dropped,
+  see D29.
 - **F16 cloud backup** is unstarted *and undecided*. Every other feature was
   built on "nothing leaves this phone", and Settings says so in those words. An
   account changes what the app is, so it wants a conversation before code.
@@ -631,6 +631,39 @@ The keypad sheet also grew to 88% of the screen with keys that fill the space,
 and opens fully expanded. It is used standing at a windowsill holding a pot; a
 keypad you have to drag open first is worse than no sheet, and the save button
 had been reachable only by scrolling past twelve keys.
+
+### D31 — F14: the inventory and the calculator are one question (2026-09-09)
+
+Requirements item 14 asks for a fertiliser inventory and a dilution calculator,
+which sound like two screens. They are one question asked at one moment: you are
+standing at the sink holding a bottle and a can, and you want to know how much
+to pour. A calculator you have to feed a bottle into is a worse version of a
+table that already knows.
+
+So "Feeding" is the cupboard, with a can size chosen at the top and a Pour
+column. Change the can and the whole cupboard re-reads.
+
+**Two refusals, which are the part worth having.** `parseDilution` accepts 1:200
+and 5 ml/L and nothing else. "A capful", "1 tsp per gallon" and "as directed" are
+all real things printed on real bottles, and each would be a different number if
+guessed at, so they return null and the row says the dilution is not in a form
+it can work with. Separately, 1:2000 into a 250 ml can is 0.125 ml: arithmetically
+correct and useless, because nothing in a kitchen measures a tenth of a
+millilitre. That returns `TooSmall` carrying the volume that *would* be
+measurable, because "use a bigger can" without a number is not advice.
+
+The typed text is stored, not the parse. The text is the fact and the parse is a
+reading of it, so a bottle the parser cannot handle today still reads back
+unchanged and a better parser later reinterprets old rows for free.
+
+Wired into logging rather than left as an island: picking a fertiliser when
+logging a feed fills the name and the dilution, with the free-text fields still
+underneath, because a one-off feed is a real thing and not everything poured has
+to be inventoried first.
+
+Schema v11 adds the `fertilizers` table, and the backup carries it. That last
+part is deliberate: weight readings were once absent from the bundle and nobody
+noticed until an export/import round trip would have destroyed them.
 
 ### D30 — The call-site audit, and what it found (2026-09-09)
 

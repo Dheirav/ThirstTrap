@@ -49,6 +49,7 @@ import dev.dheirav.thirsttrap.domain.WateringMethod
 @Composable
 fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val cupboard by viewModel.cupboard.collectAsStateWithLifecycle()
     var showDatePicker by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -172,6 +173,21 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
             }
 
             if (state.showFertilizer) {
+                // Pick from the cupboard rather than retyping it. Free text
+                // stays underneath, because a one-off feed is a real thing and
+                // not everything you pour has to be inventoried first.
+                if (cupboard.isNotEmpty()) {
+                    Text("From the cupboard", style = MaterialTheme.typography.labelLarge)
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        cupboard.forEach { f ->
+                            FilterChip(
+                                selected = state.fertilizerName == f.name,
+                                onClick = { viewModel.onPickFertilizer(f) },
+                                label = { Text(f.name) },
+                            )
+                        }
+                    }
+                }
                 OutlinedTextField(
                     value = state.fertilizerName,
                     onValueChange = viewModel::onFertilizer,

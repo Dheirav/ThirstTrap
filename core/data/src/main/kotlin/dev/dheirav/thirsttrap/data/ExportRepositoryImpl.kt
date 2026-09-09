@@ -36,6 +36,8 @@ class ExportRepositoryImpl @Inject constructor(
     private val reminderDao: ReminderDao,
     private val weightDao: WeightDao,
     private val ambientDao: AmbientDao,
+    private val fertilizerDao: dev.dheirav.thirsttrap.data.dao.FertilizerDao,
+    private val fertilizers: dev.dheirav.thirsttrap.domain.FertilizerRepository,
     private val store: PhotoStore,
 ) {
 
@@ -93,7 +95,10 @@ class ExportRepositoryImpl @Inject constructor(
         val now = System.currentTimeMillis()
         val weightReadings = weightDao.all().map { it.toDomainReading() }
         val ambient = ambientDao.all().map { it.toDomain() }
-        val bundle = ExportBundle(plants, events, photos, reminders, weightReadings, ambient)
+        val fertilizers = fertilizerDao.all().map { it.toDomain() }
+        val bundle = ExportBundle(
+            plants, events, photos, reminders, weightReadings, ambient, fertilizers,
+        )
         val manifest = ExportManifest(
             formatVersion = CURRENT_EXPORT_FORMAT,
             databaseVersion = DATABASE_VERSION,
@@ -111,6 +116,7 @@ class ExportRepositoryImpl @Inject constructor(
                 "reminders" to reminders.size,
                 "weightReadings" to weightReadings.size,
                 "ambient" to ambient.size,
+                "fertilizers" to fertilizers.size,
             ),
         )
 
@@ -254,6 +260,7 @@ class ExportRepositoryImpl @Inject constructor(
                 weightDao.upsert(it.toReadingEntity(weightDao.createdAtOf(it.id) ?: now))
             }
             data.ambient.forEach { ambientDao.upsert(it.toEntity()) }
+            data.fertilizers.forEach { fertilizers.upsert(it) }
 
             val result = ImportResult(
                 plants = data.plants.size,

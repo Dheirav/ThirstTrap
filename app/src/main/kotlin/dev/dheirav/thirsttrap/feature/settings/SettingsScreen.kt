@@ -43,6 +43,7 @@ fun SettingsScreen(
     onOpenAmbient: () -> Unit,
     onOpenStats: () -> Unit,
     onOpenPlaces: () -> Unit,
+    onOpenFertilizer: () -> Unit,
     onOpenDebug: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
@@ -191,6 +192,10 @@ fun SettingsScreen(
                     )
                 }
             }
+
+            // Feeding sits under Watering because it is the same act: it is
+            // what goes in the can, and the dose depends on the can.
+            TextButton(onClick = onOpenFertilizer) { Text("Feeding") }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             SectionHeader("Your data")
