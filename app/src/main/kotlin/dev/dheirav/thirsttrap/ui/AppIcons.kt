@@ -40,6 +40,7 @@ object AppIcons {
     val qrCodeScanner: Painter @Composable get() = painterResource(R.drawable.ic_qr_code_scanner)
     val settings: Painter @Composable get() = painterResource(R.drawable.ic_settings)
     val spa: Painter @Composable get() = painterResource(R.drawable.ic_spa)
+    val weight: Painter @Composable get() = painterResource(R.drawable.ic_weight)
     val yard: Painter @Composable get() = painterResource(R.drawable.ic_yard)
 
     /** "I watered it." Outlined at rest. */

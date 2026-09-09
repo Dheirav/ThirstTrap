@@ -31,6 +31,7 @@ ICONS = [
     ("spa",               "ic_spa",               "default"),
     ("yard",              "ic_yard",              "default"),
     # The two log actions. Outlined is the resting state for both.
+    ("monitor_weight",    "ic_weight",            "default"),
     ("water_drop",        "ic_water_drop",        "default"),
     ("do_not_touch",      "ic_still_wet",         "default"),
     # The single filled icon in the app: a watering that has just been logged.

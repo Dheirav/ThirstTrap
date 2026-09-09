@@ -2,6 +2,7 @@ package dev.dheirav.thirsttrap
 
 import dev.dheirav.thirsttrap.feature.ambient.AmbientScreen
 import dev.dheirav.thirsttrap.feature.locations.LocationsScreen
+import dev.dheirav.thirsttrap.feature.weighing.WeighingScreen
 import dev.dheirav.thirsttrap.feature.stats.StatsScreen
 import dev.dheirav.thirsttrap.feature.timelapse.TimelapseScreen
 import dev.dheirav.thirsttrap.ui.AppIcons
@@ -149,6 +150,7 @@ class MainActivity : ComponentActivity() {
                                 onOpenPlant = { id -> nav.navigate(Routes.plantDetail(id)) },
                                 onLogMore = { id -> nav.navigate(Routes.logEvent(id)) },
                                 onOpenPropagation = { nav.navigate(Routes.PROPAGATION) },
+                                onOpenWeighing = { nav.navigate(Routes.WEIGHING) },
                                 onScanned = { id -> nav.navigate(Routes.logEvent(id)) },
                             )
                         }
@@ -232,6 +234,9 @@ class MainActivity : ComponentActivity() {
                             arguments = listOf(navArgument("id") { type = NavType.StringType }),
                         ) {
                             TimelapseScreen(onBack = { nav.popBackStack() })
+                        }
+                        composable(Routes.WEIGHING) {
+                            WeighingScreen(onBack = { nav.popBackStack() })
                         }
                         composable(Routes.PLACES) {
                             LocationsScreen(onBack = { nav.popBackStack() })

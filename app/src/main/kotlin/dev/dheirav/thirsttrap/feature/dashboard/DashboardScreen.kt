@@ -115,6 +115,7 @@ fun DashboardScreen(
     onOpenPlant: (String) -> Unit,
     onLogMore: (String) -> Unit,
     onOpenPropagation: () -> Unit,
+    onOpenWeighing: () -> Unit,
     onScanned: (String) -> Unit,
     viewModel: DashboardViewModel = hiltViewModel(),
 ) {
@@ -200,6 +201,11 @@ fun DashboardScreen(
                         )
                     }) {
                         Icon(AppIcons.qrCodeScanner, contentDescription = "Scan a pot sticker")
+                    }
+                    // Weighing is a round, not a per-plant errand, so it belongs
+                    // on the list rather than four taps inside one plant.
+                    IconButton(onClick = onOpenWeighing) {
+                        Icon(AppIcons.weight, contentDescription = "Weigh the plants")
                     }
                     IconButton(onClick = onOpenPropagation) {
                         Icon(AppIcons.spa, contentDescription = "Propagation board")

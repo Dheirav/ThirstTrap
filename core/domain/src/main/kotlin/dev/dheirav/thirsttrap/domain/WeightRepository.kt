@@ -27,6 +27,9 @@ interface WeightRepository {
 
     fun observeWeightState(plantId: String): Flow<WeightState>
 
+    /** Every reading, across every plant. For the weighing round. */
+    fun observeAllReadings(): Flow<List<WeightReading>>
+
     suspend fun addReading(
         plantId: String,
         grams: Double,

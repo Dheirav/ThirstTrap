@@ -55,6 +55,9 @@ class WeightRepositoryImpl @Inject constructor(
             )
         }
 
+    override fun observeAllReadings(): Flow<List<WeightReading>> =
+        weightDao.observeAll().map { rows -> rows.map { it.toDomainReading() } }
+
     override suspend fun addReading(plantId: String, grams: Double, context: ReadingContext) {
         val now = System.currentTimeMillis()
         weightDao.upsert(

@@ -623,6 +623,27 @@ and opens fully expanded. It is used standing at a windowsill holding a pot; a
 keypad you have to drag open first is worse than no sheet, and the save button
 had been reachable only by scrolling past twelve keys.
 
+### D22 — Weighing is a round, not a per-plant errand (2026-09-09)
+
+Reported after the first real weighing session: doing every pot meant plant,
+menu, weight, back, plant, menu, weight, four taps of navigation overhead per
+reading on the app's most-repeated action.
+
+The data is per-plant but the activity is not. The scale comes out once and
+every pot goes on it, so the round is the unit of work. "Weighing", from the
+plants list, is the running sheet: every weight-trackable pot, what it weighed
+last time, and what it weighs now. Saving advances to the next pot that has not
+been done this round, so you put one down, pick the next one up, and the app is
+already asking for the right number.
+
+"Done" means done in this round, not ever, which is why the view model records
+its own start time rather than looking at whether a reading exists. Otherwise
+the list would show everything as finished the moment a plant had ever been
+weighed.
+
+Plants in water are left out. Weight says nothing about a cutting in a jar, and
+the round should not ask for a number that means nothing.
+
 ### D9 — MIT licence (2026-09-06)
 
 `LICENSE` to be added at `git init`. Copyright holder: the repo owner, under
