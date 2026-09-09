@@ -57,9 +57,6 @@ interface WeightRepository {
 
     suspend fun deleteReading(readingId: String)
 
-    /** Records the wet anchor and starts the plant's first drying cycle. */
-    suspend fun calibrate(plantId: String, wetGrams: Double, depletionTrigger: Double)
-
     /** Clears the anchors after a repot or a change of medium. */
     suspend fun markNeedsRecalibration(plantId: String)
 }

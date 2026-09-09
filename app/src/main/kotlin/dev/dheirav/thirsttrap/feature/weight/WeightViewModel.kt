@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.dheirav.thirsttrap.domain.DEFAULT_DEPLETION_TRIGGER
 import dev.dheirav.thirsttrap.domain.Prediction
 import dev.dheirav.thirsttrap.domain.ReadingContext
 import dev.dheirav.thirsttrap.domain.ReminderRepository
@@ -128,13 +127,6 @@ class WeightViewModel @Inject constructor(
             } else {
                 _context.value = ReadingContext.ROUTINE
             }
-            onDone()
-        }
-    }
-
-    fun calibrate(wetGrams: Double, trigger: Double = DEFAULT_DEPLETION_TRIGGER, onDone: () -> Unit) {
-        viewModelScope.launch {
-            repository.calibrate(plantId, wetGrams, trigger)
             onDone()
         }
     }

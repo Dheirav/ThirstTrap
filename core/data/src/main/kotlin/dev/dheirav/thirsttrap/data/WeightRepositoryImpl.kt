@@ -96,27 +96,6 @@ class WeightRepositoryImpl @Inject constructor(
         weightDao.delete(readingId)
     }
 
-    override suspend fun calibrate(plantId: String, wetGrams: Double, depletionTrigger: Double) {
-        val plant = plantDao.observePlant(plantId).first() ?: return
-        val now = System.currentTimeMillis()
-
-        // The dry anchor starts as an estimate and improves itself. Forcing a
-        // plant to dry out just to calibrate a convenience feature would be
-        // backwards - docs/WATERING-MODEL.md section 2.
-        plantDao.upsert(
-            plant.copy(
-                wetAnchorG = wetGrams,
-                dryAnchorG = Anchors.fromWetAnchor(wetGrams).dryGrams,
-                dryAnchorProvisional = true,
-                depletionTrigger = depletionTrigger,
-                needsRecalibration = false,
-                updatedAt = now,
-            ),
-        )
-        addReading(plantId, wetGrams, ReadingContext.CALIBRATION)
-        TTLog.i(TTLog.DATA) { "calibrated $plantId wet=${wetGrams}g trigger=$depletionTrigger" }
-    }
-
     override suspend fun markNeedsRecalibration(plantId: String) {
         val plant = plantDao.observePlant(plantId).first() ?: return
         plantDao.upsert(

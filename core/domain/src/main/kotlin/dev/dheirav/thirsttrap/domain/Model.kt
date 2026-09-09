@@ -90,7 +90,13 @@ enum class ReadingContext(val label: String) {
      */
     POST_WATER("just watered"),
 
-    /** The initial wet-anchor capture during calibration. */
+    /**
+     * Legacy. Nothing writes this any more: calibration used to be a separate
+     * ceremony with its own dialog, and a post-water weigh does the same job
+     * from wherever you happen to take it. Kept because databases written
+     * before that change still contain these readings, and they are treated
+     * exactly like POST_WATER wherever the anchor is derived.
+     */
     CALIBRATION("calibration"),
 }
 

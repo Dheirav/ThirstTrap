@@ -94,7 +94,6 @@ fun WeightScreen(
     val hint by viewModel.hint.collectAsStateWithLifecycle()
     val ambient by viewModel.ambientExplanation.collectAsStateWithLifecycle()
     val dismissed by viewModel.dismissed.collectAsStateWithLifecycle()
-    var showCalibration by remember { mutableStateOf(false) }
     var showKeypad by remember { mutableStateOf(false) }
     var editingReading by remember { mutableStateOf<WeightReading?>(null) }
     // Skips the half-height stop: this sheet is a keypad, and a keypad you
@@ -416,16 +415,6 @@ fun WeightScreen(
         )
     }
 
-    if (showCalibration) {
-        CalibrationDialog(
-            enteredGrams = entry.toDoubleOrNull(),
-            onDismiss = { showCalibration = false },
-            onConfirm = { wet, trigger ->
-                viewModel.calibrate(wet, trigger) { }
-                showCalibration = false
-            },
-        )
-    }
 }
 
 @Composable
@@ -563,10 +552,13 @@ private fun NotCalibratedCard(needsRecalibration: Boolean, onStart: () -> Unit) 
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(vertical = 8.dp),
             )
+            // Not "set up" - there is no setup step any more. Weighing a pot
+            // just after watering is what makes the anchor, wherever you do
+            // it, so the button says what it does: it opens the keypad.
             FilledTonalButton(
                 onClick = onStart,
                 modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
-            ) { Text("Set the watered weight") }
+            ) { Text("Weigh it now") }
         }
     }
 }
@@ -604,51 +596,6 @@ private fun Keypad(
     }
 }
 
-@Composable
-private fun CalibrationDialog(
-    enteredGrams: Double?,
-    onDismiss: () -> Unit,
-    onConfirm: (Double, Double) -> Unit,
-) {
-    var trigger by remember { androidx.compose.runtime.mutableDoubleStateOf(0.5) }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { ScreenTitle("Set the watered weight") },
-        text = {
-            Column {
-                Text(
-                    if (enteredGrams == null) {
-                        "Type the weight on the keypad first - the pot just after watering " +
-                            "and half an hour of draining."
-                    } else {
-                        "${enteredGrams.toInt()} g becomes this plant's full mark. How dry " +
-                            "should it get before it wants water again?"
-                    },
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                if (enteredGrams != null) {
-                    Spacer(Modifier.height(12.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        listOf(0.3 to "ferns", 0.5 to "most", 0.75 to "succulents").forEach { (v, label) ->
-                            FilterChip(
-                                selected = kotlin.math.abs(trigger - v) < 0.01,
-                                onClick = { trigger = v },
-                                label = { Text("${(v * 100).toInt()}% · $label") },
-                            )
-                        }
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                enabled = enteredGrams != null,
-                onClick = { enteredGrams?.let { onConfirm(it, trigger) } },
-            ) { Text("Set it") }
-        },
-        dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } },
-    )
-}
 
 /**
  * Weight over time, with the anchors and the trigger drawn in.

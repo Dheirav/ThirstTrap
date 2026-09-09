@@ -623,6 +623,40 @@ and opens fully expanded. It is used standing at a windowsill holding a pot; a
 keypad you have to drag open first is worse than no sheet, and the save button
 had been reachable only by scrolling past twelve keys.
 
+### D28 — There is no calibration step any more, and there had not been for a while (2026-09-09)
+
+D21 made a pot weighable before it had anchors, by deriving the wet anchor from
+the most recent post-water reading. That quietly retired the calibration
+ceremony: "Set the watered weight" was repointed at the keypad, and the dialog
+behind it was left in place with nothing able to open it. `showCalibration` was
+declared, the `if (showCalibration)` block was there, and no line anywhere set
+it to true. `CalibrationDialog`, `WeightViewModel.calibrate` and
+`WeightRepository.calibrate` were all unreachable.
+
+That is the fifth instance of this project's recurring pattern and the first in
+the mirror: not logic nothing calls, but a whole screen nobody can open. Both
+shapes come from the same habit of changing one end of a path and not walking
+the other.
+
+Deleted, ninety lines of it. The "Not set up yet" card stays, because it is
+still the page explaining why there is no prediction and what to do about it,
+but its button now says "Weigh it now", which is what it does. There is no
+setup step to name any more: weighing a pot just after watering makes the
+anchor, from the plant page or from the weighing round, and D24's chip rule
+means the app suggests that context itself at the moment it applies.
+
+`ReadingContext.CALIBRATION` stays in the enum and is now documented as legacy.
+Nothing writes it, databases written before D21 still contain it, and every
+place that derives an anchor already treats it exactly like POST_WATER.
+
+**Left open on purpose.** That dialog was the only way to set a per-plant
+depletion trigger by hand. The trigger now comes from the global default at
+creation and from the species catalogue when curated care is applied, so a
+plant sitting on a non-default value cannot be changed from inside the app.
+Either it gets a control in Edit plant, next to the free-text "How dry before
+watering" that drives nothing, or the field stops pretending to be per-plant.
+Not decided yet.
+
 ### D27 — "Importing the same file twice changes nothing" was not true (2026-09-09)
 
 The restore screen makes that promise, F10.6 was ticked off on it, and the row
