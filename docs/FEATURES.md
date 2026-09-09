@@ -97,7 +97,7 @@ Status key: `[ ]` not started · `[~]` in progress · `[x]` done
 - [x] **F10.3** `manifest.json` — schema version, app version, timestamp, row counts
 - [x] **F10.4** Photos included at their relative paths
 - [x] **F10.5** Streaming write — never build the archive in memory
-- [x] **F10.6** ⊕ **Import** — idempotent upsert by UUID; re-importing changes nothing — *DATA-MODEL §Export format*
+- [x] **F10.6** ⊕ **Import** — idempotent upsert by UUID; re-importing changes nothing — *DATA-MODEL §Export format* — *driven on device 2026-09-09; it was not actually idempotent until then, see D27*
 
 ### X — Cross-cutting (M1)
 - [x] **X1** ⊕ Settings screen — theme, reminder hour, default trigger, API keys, export, storage

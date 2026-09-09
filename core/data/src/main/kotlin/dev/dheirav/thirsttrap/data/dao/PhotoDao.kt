@@ -27,6 +27,9 @@ interface PhotoDao {
     @Query("SELECT * FROM photos")
     suspend fun all(): List<PhotoEntity>
 
+    @Query("SELECT created_at FROM photos WHERE id = :id")
+    suspend fun createdAtOf(id: String): Long?
+
     @Upsert
     suspend fun upsert(photo: PhotoEntity)
 

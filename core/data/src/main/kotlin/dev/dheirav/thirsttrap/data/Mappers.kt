@@ -213,9 +213,9 @@ fun dev.dheirav.thirsttrap.data.entity.WeightReadingEntity.toDomainReading(): de
 /**
  * The reverse of [toDomainReading], for import.
  *
- * `createdAt` is the import's own clock rather than anything from the backup:
- * it records when this row entered *this* database, and the reading's real
- * timestamp is carried separately in [timestamp].
+ * `createdAt` records when this row entered *this* database; the reading's own
+ * timestamp is carried separately in [timestamp]. The caller passes the row's
+ * existing value when it already has one, so a re-import does not restamp it.
  */
 fun dev.dheirav.thirsttrap.domain.WeightReading.toReadingEntity(
     createdAt: Long,
@@ -226,7 +226,10 @@ fun dev.dheirav.thirsttrap.domain.WeightReading.toReadingEntity(
         timestamp = timestampMillis,
         tzOffsetMinutes = tzOffsetMinutes,
         grams = grams,
-        context = context.name.lowercase(),
+        // .name, matching what the app writes. Lowercasing here meant an
+        // export/import round trip silently rewrote every stored value into a
+        // different case, which reads back fine and compares as different.
+        context = context.name,
         excluded = excluded,
         createdAt = createdAt,
     )

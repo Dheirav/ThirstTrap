@@ -26,6 +26,9 @@ interface ReminderDao {
     )
     suspend fun dueNow(now: Long): List<ReminderEntity>
 
+    @Query("SELECT created_at FROM reminders WHERE id = :id")
+    suspend fun createdAtOf(id: String): Long?
+
     @Upsert
     suspend fun upsert(reminder: ReminderEntity)
 

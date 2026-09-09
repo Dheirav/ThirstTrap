@@ -219,11 +219,40 @@ class ExportRepositoryImpl @Inject constructor(
             }
 
             val now = System.currentTimeMillis()
-            data.plants.forEach { plantDao.upsert(it.toEntity(now, now)) }
-            data.events.forEach { eventDao.upsert(it.toEntity(now, now)) }
-            data.reminders.forEach { reminderDao.upsert(it.toReminderEntity(now)) }
-            data.photos.forEach { photoDao.upsert(it.toPhotoEntity(now)) }
-            data.weightReadings.forEach { weightDao.upsert(it.toReadingEntity(now)) }
+            // created_at means "when this row entered this database", so a row
+            // that is already here keeps the answer it already had. Stamping
+            // "now" unconditionally made a re-import rewrite the date every
+            // plant was added, which contradicts what the screen promises:
+            // importing the same file twice should change nothing.
+            //
+            // updated_at is kept for the same reason and one more: the backup
+            // does not carry it, so there is nothing in the file that says the
+            // row changed. Writing "now" would be inventing a modification.
+            data.plants.forEach {
+                plantDao.upsert(
+                    it.toEntity(
+                        createdAt = plantDao.createdAtOf(it.id) ?: now,
+                        updatedAt = plantDao.updatedAtOf(it.id) ?: now,
+                    ),
+                )
+            }
+            data.events.forEach {
+                eventDao.upsert(
+                    it.toEntity(
+                        createdAt = eventDao.createdAtOf(it.id) ?: now,
+                        updatedAt = eventDao.updatedAtOf(it.id) ?: now,
+                    ),
+                )
+            }
+            data.reminders.forEach {
+                reminderDao.upsert(it.toReminderEntity(reminderDao.createdAtOf(it.id) ?: now))
+            }
+            data.photos.forEach {
+                photoDao.upsert(it.toPhotoEntity(photoDao.createdAtOf(it.id) ?: now))
+            }
+            data.weightReadings.forEach {
+                weightDao.upsert(it.toReadingEntity(weightDao.createdAtOf(it.id) ?: now))
+            }
             data.ambient.forEach { ambientDao.upsert(it.toEntity()) }
 
             val result = ImportResult(

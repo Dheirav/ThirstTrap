@@ -623,6 +623,35 @@ and opens fully expanded. It is used standing at a windowsill holding a pot; a
 keypad you have to drag open first is worse than no sheet, and the save button
 had been reachable only by scrolling past twelve keys.
 
+### D27 — "Importing the same file twice changes nothing" was not true (2026-09-09)
+
+The restore screen makes that promise, F10.6 was ticked off on it, and the row
+counts backed it up: import the app's own backup and you still have 4 plants, 24
+entries, 12 photos. Hashing the whole table content rather than counting it
+showed three columns being rewritten on every import:
+
+- `created_at` was stamped with the import's clock for every row. On a restore
+  to a new phone that is right, since the row really is entering that database
+  for the first time. On a re-import it rewrote the date every plant was added.
+  It now keeps the value a row already has and only uses the clock for rows that
+  are genuinely new.
+- `updated_at` the same, with one more reason: the backup does not carry it, so
+  there is nothing in the file saying the row changed. Writing "now" was
+  inventing a modification.
+- `weight_readings.context` came back in a different case. The app writes
+  `ReadingContext.name`, while the import mapper wrote `.name.lowercase()`. It
+  reads back correctly because the reader uppercases, so nothing broke and
+  nothing showed, and a round trip quietly rewrote every stored value.
+
+None of the three is visible in the UI, which is why they survived a feature
+being marked done. The lesson is the assertion, not the bug: an idempotence
+claim has to be tested by comparing content, because counts are exactly what an
+upsert keyed by id will always get right.
+
+`ImportIdempotenceTest` exports, imports twice, and compares whole rows across
+every table. Verified on the device against the real diary as well: after the
+fix, two consecutive imports left all seven tables byte-identical.
+
 ### D26 — A delete that asks, a pot that opts out, and a save that stopped eating fields (2026-09-09)
 
 **Deleting a diary entry now asks.** It used to fire on the tap, with no

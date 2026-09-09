@@ -21,6 +21,9 @@ interface WeightDao {
     @Query("SELECT * FROM weight_readings")
     suspend fun all(): List<WeightReadingEntity>
 
+    @Query("SELECT created_at FROM weight_readings WHERE id = :id")
+    suspend fun createdAtOf(id: String): Long?
+
     @Upsert
     suspend fun upsert(reading: WeightReadingEntity)
 
