@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -189,6 +190,32 @@ fun PlantEditScreen(
                         onCheckedChange = viewModel::onWeightTracked,
                     )
                 }
+            }
+
+            // The per-plant depletion trigger, docs/WATERING-MODEL.md §2. This
+            // is its only control since the calibration dialog went (D28) - a
+            // field the model reads but no screen can set is the app lying
+            // about being configurable.
+            if (state.medium != Medium.WATER && state.weightTracked) {
+                Text(
+                    "Waters at ${state.depletionTriggerPct}% depleted",
+                    style = MaterialTheme.typography.labelLarge,
+                )
+                Text(
+                    "How much of the pot's water range is used up before this plant " +
+                        "wants watering. Around 30% for moisture-lovers like ferns and " +
+                        "fittonia, 50% for most foliage plants, 70% or more for " +
+                        "succulents and other drought-lovers.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Slider(
+                    value = state.depletionTriggerPct.toFloat(),
+                    onValueChange = { viewModel.onDepletionTrigger(it.toInt()) },
+                    valueRange = 20f..80f,
+                    steps = 11,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
 
             Text("Where it came from", style = MaterialTheme.typography.labelLarge)

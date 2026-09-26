@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 /**
  * When did you last water it?
@@ -56,6 +57,11 @@ data class PlantEditUiState(
     val medium: Medium = Medium.SOIL,
     val source: PlantSource = PlantSource.UNKNOWN,
     val status: PlantStatus = PlantStatus.ACTIVE,
+    /**
+     * Whole percent, because a slider over 0.05 steps of a Double invites
+     * 0.6499999 into the database. Converted at the edges.
+     */
+    val depletionTriggerPct: Int = 50,
     val weightTracked: Boolean = true,
     val archived: Boolean = false,
     val lastWatered: LastWatered = LastWatered.UNKNOWN,
@@ -96,12 +102,24 @@ class PlantEditViewModel @Inject constructor(
                         medium = p.medium,
                         source = p.source,
                         status = p.status,
+                        // roundToInt, not toInt: 0.29 * 100 is 28.999... in a
+                        // Double, and truncation would walk the trigger down a
+                        // percent on every open-and-save.
+                        depletionTriggerPct = (p.depletionTrigger * 100).roundToInt(),
                         weightTracked = p.weightTracked,
                         archived = p.archived,
                         checkIntervalDays = existing?.intervalDays?.toString().orEmpty(),
                         loading = false,
                     )
                 }
+            }
+        }
+        // A new plant's form starts on the settings default rather than the
+        // data-class 0.5, so what the user sees is what a plain save stores.
+        if (plantId == null) {
+            viewModelScope.launch {
+                val pct = (settings.settings.first().defaultDepletionTrigger * 100).roundToInt()
+                _state.value = _state.value.copy(depletionTriggerPct = pct)
             }
         }
     }
@@ -114,6 +132,9 @@ class PlantEditViewModel @Inject constructor(
     fun onWeightTracked(v: Boolean) { _state.value = _state.value.copy(weightTracked = v) }
     fun onSource(v: PlantSource) { _state.value = _state.value.copy(source = v) }
     fun onLastWatered(v: LastWatered) { _state.value = _state.value.copy(lastWatered = v) }
+    fun onDepletionTrigger(pct: Int) {
+        _state.value = _state.value.copy(depletionTriggerPct = pct.coerceIn(20, 80))
+    }
     fun onTargetDryness(v: String) { _state.value = _state.value.copy(targetDryness = v) }
     fun onLightNeeds(v: String) { _state.value = _state.value.copy(lightNeeds = v) }
     fun onFertilizerCadence(v: String) {
@@ -161,6 +182,7 @@ class PlantEditViewModel @Inject constructor(
                 lightNeeds = s.lightNeeds.trim().takeIf { it.isNotEmpty() },
                 fertilizerCadenceDays = s.fertilizerCadenceDays.toIntOrNull(),
                 source = s.source,
+                depletionTrigger = s.depletionTriggerPct / 100.0,
                 weightTracked = s.weightTracked,
                 archived = s.archived,
             )
@@ -172,6 +194,10 @@ class PlantEditViewModel @Inject constructor(
                 reminders.observeForPlant(plantId).first().firstOrNull()?.let { r ->
                     reminders.upsert(r.copy(intervalDays = s.checkIntervalDays.toIntOrNull()))
                 }
+                // The trigger moves the predicted watering date, and the check
+                // interval is derived from that prediction - so an edit here
+                // has to replan, or the reminder keeps the old trigger's date.
+                reminders.rescheduleFromModel(plantId, System.currentTimeMillis())
             }
 
             if (isNew) {

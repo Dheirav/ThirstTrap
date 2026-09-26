@@ -80,6 +80,7 @@ import dev.dheirav.thirsttrap.domain.WeightReading
 import dev.dheirav.thirsttrap.domain.WeightState
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
@@ -476,7 +477,7 @@ private fun PredictionHeadline(s: WeightState) {
 private fun DepletionLine(s: WeightState) {
     val depletion = s.depletion ?: return
     val pct = (depletion * 100).toInt()
-    val trigger = (s.plant.depletionTrigger * 100).toInt()
+    val trigger = (s.plant.depletionTrigger * 100).roundToInt()
     Text(
         buildString {
             append("$pct% down")

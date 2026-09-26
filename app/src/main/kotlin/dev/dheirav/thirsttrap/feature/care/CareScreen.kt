@@ -33,6 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.domain.CareDetail
 import dev.dheirav.thirsttrap.domain.LookupFailure
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -141,7 +142,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                "Sets how dry it should get before watering to ${(care.depletionTrigger * 100).toInt()}%" +
+                "Sets how dry it should get before watering to ${(care.depletionTrigger * 100).roundToInt()}%" +
                     " - the one number there is no way to guess - along with the light and " +
                     "watering notes above.",
                 style = MaterialTheme.typography.bodySmall,
