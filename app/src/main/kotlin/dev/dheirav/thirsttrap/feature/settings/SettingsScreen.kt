@@ -42,6 +42,7 @@ fun SettingsScreen(
     onOpenDiagnose: () -> Unit,
     onOpenAmbient: () -> Unit,
     onOpenStats: () -> Unit,
+    onOpenExperiments: () -> Unit,
     onOpenPlaces: () -> Unit,
     onOpenFertilizer: () -> Unit,
     onOpenDebug: () -> Unit,
@@ -171,6 +172,7 @@ fun SettingsScreen(
             TextButton(onClick = onOpenPlaces) { Text("Places") }
             TextButton(onClick = onOpenAmbient) { Text("Room conditions") }
             TextButton(onClick = onOpenStats) { Text("Figures") }
+            TextButton(onClick = onOpenExperiments) { Text("Experiments") }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             SectionHeader("Watering")

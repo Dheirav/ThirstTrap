@@ -69,6 +69,8 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.withLink
 
 /**
  * The per-plant timeline. Requirements item 3.
@@ -397,6 +399,8 @@ fun PlantDetailScreen(
                         photos = state.photosByEvent[event.id].orEmpty(),
                         pathOf = viewModel::pathOf,
                         onDelete = { viewModel.deleteEvent(event) },
+                        allPlants = state.allPlants,
+                        onOpenPlant = onOpenPlant,
                     )
                 }
             }
@@ -450,6 +454,8 @@ private fun EventRow(
     photos: List<Photo>,
     pathOf: (Photo) -> String,
     onDelete: () -> Unit,
+    allPlants: List<dev.dheirav.thirsttrap.domain.Plant> = emptyList(),
+    onOpenPlant: (String) -> Unit = {},
 ) {
     var menu by remember { mutableStateOf(false) }
     var confirmingDelete by remember(event.id) { mutableStateOf(false) }
@@ -490,7 +496,7 @@ private fun EventRow(
                     fontWeight = if (isLifeEvent) FontWeight.SemiBold else FontWeight.Normal,
                 )
                 event.note?.takeIf { it.isNotBlank() }?.let {
-                    Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    LinkedNote(it, allPlants, onOpenPlant)
                 }
                 if (photos.isNotEmpty()) {
                     LazyRow(
@@ -591,6 +597,46 @@ private fun CaptionDialog(
                 Text("Delete", color = MaterialTheme.colorScheme.error)
             }
         },
+    )
+}
+
+/**
+ * A note with [[plant]] links resolved (F12). Wiki semantics: a link that
+ * resolves is a tap-through; one that does not reads as the text it is.
+ */
+@Composable
+private fun LinkedNote(
+    note: String,
+    allPlants: List<dev.dheirav.thirsttrap.domain.Plant>,
+    onOpenPlant: (String) -> Unit,
+) {
+    val segments = dev.dheirav.thirsttrap.domain.parseNoteSegments(note, allPlants)
+    val linkColor = MaterialTheme.colorScheme.primary
+    val text = androidx.compose.ui.text.buildAnnotatedString {
+        for (s in segments) {
+            when (s) {
+                is dev.dheirav.thirsttrap.domain.NoteSegment.Text -> append(s.text)
+                is dev.dheirav.thirsttrap.domain.NoteSegment.Link -> {
+                    val link = androidx.compose.ui.text.LinkAnnotation.Clickable(
+                        tag = s.plantId,
+                        linkInteractionListener = { onOpenPlant(s.plantId) },
+                    )
+                    withLink(link) {
+                        withStyle(
+                            androidx.compose.ui.text.SpanStyle(
+                                color = linkColor,
+                                textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline,
+                            ),
+                        ) { append(s.display) }
+                    }
+                }
+            }
+        }
+    }
+    Text(
+        text,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }
 

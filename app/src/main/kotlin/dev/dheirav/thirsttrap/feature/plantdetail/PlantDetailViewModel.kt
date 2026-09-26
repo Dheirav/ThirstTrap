@@ -26,6 +26,8 @@ data class TimelineDay(val label: String, val events: List<CareEvent>)
 
 data class PlantDetailUiState(
     val plant: Plant? = null,
+    /** The living collection, for resolving [[plant]] links in notes (F12). */
+    val allPlants: List<Plant> = emptyList(),
     val days: List<TimelineDay> = emptyList(),
     val totalEvents: Int = 0,
     val photos: List<Photo> = emptyList(),
@@ -72,9 +74,11 @@ class PlantDetailViewModel @Inject constructor(
             repository.observePlant(plantId),
             repository.observeEvents(plantId),
             photos.observeForPlant(plantId),
-        ) { plant, events, plantPhotos ->
+            repository.observePlants(includeArchived = false),
+        ) { plant, events, plantPhotos, allPlants ->
             PlantDetailUiState(
                 plant = plant,
+                allPlants = allPlants,
                 days = groupByLocalDay(events),
                 totalEvents = events.size,
                 photos = plantPhotos,

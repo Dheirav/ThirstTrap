@@ -21,6 +21,8 @@ object Routes {
     const val STATS = "stats"
     const val PLACES = "places"
     const val FERTILIZER = "fertilizer"
+    const val EXPERIMENTS = "experiments"
+    const val EXPERIMENT = "experiment"
     const val WEIGHING = "weighing"
     const val TIMELAPSE = "plant/timelapse"
     const val CARE = "plant/care"
@@ -47,6 +49,7 @@ object Routes {
     fun sticker(plantId: String) = "$STICKER/$plantId"
 
     fun care(plantId: String) = "$CARE/$plantId"
+    fun experiment(id: String) = "$EXPERIMENT/$id"
 
     fun plantEdit(plantId: String? = null) =
         if (plantId == null) "$PLANT_EDIT?id=" else "$PLANT_EDIT?id=$plantId"
