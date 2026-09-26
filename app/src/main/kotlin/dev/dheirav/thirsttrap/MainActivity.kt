@@ -288,6 +288,15 @@ class MainActivity : ComponentActivity() {
                                 onMeasureLight = { id -> nav.navigate(Routes.light(id)) },
                                 onSticker = { id -> nav.navigate(Routes.sticker(id)) },
                                 onCare = { id -> nav.navigate(Routes.care(id)) },
+                                // A swipe replaces this detail page instead of
+                                // stacking on it: browse eight plants and Back
+                                // should mean the dashboard, not a re-tour of
+                                // the seven pages just swiped past.
+                                onOpenPlant = { id ->
+                                    nav.navigate(Routes.plantDetail(id)) {
+                                        popUpTo("${Routes.PLANT_DETAIL}/{id}") { inclusive = true }
+                                    }
+                                },
                             )
                         }
                         composable(

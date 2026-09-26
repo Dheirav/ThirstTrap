@@ -7,6 +7,7 @@ import dev.dheirav.thirsttrap.ui.fullBleed
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,6 +67,8 @@ import dev.dheirav.thirsttrap.domain.Photo
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 
 /**
  * The per-plant timeline. Requirements item 3.
@@ -84,9 +87,12 @@ fun PlantDetailScreen(
     onMeasureLight: (String) -> Unit,
     onSticker: (String) -> Unit,
     onCare: (String) -> Unit,
+    /** Replaces this page with a neighbour's, so Back still means the dashboard. */
+    onOpenPlant: (String) -> Unit,
     viewModel: PlantDetailViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val neighbors by viewModel.neighbors.collectAsStateWithLifecycle()
     val plant = state.plant
     val capture = dev.dheirav.thirsttrap.photo.rememberPhotoCapture { viewModel.addPhoto(it) }
     var captionFor by remember { mutableStateOf<Photo?>(null) }
@@ -218,12 +224,35 @@ fun PlantDetailScreen(
             )
         },
     ) { padding ->
+        // Swiping sideways walks the dashboard's line of plants. The gesture
+        // detector only claims drags that are horizontal past touch slop, so
+        // the list's own scrolling is untouched - and a horizontal strip
+        // inside the page (the photo row) consumes its drags first, which is
+        // the right precedence: content wins over navigation.
+        val swipeThresholdPx = with(LocalDensity.current) { 96.dp.toPx() }
         LazyColumn(
             // With a hero the list must start at the very top of the window so
             // the photo runs under the status bar and the app bar floats over
             // it; Scaffold's padding would otherwise push it below both.
             Modifier
                 .fillMaxSize()
+                .pointerInput(neighbors) {
+                    var dragged = 0f
+                    detectHorizontalDragGestures(
+                        onDragStart = { dragged = 0f },
+                        onHorizontalDrag = { _, amount -> dragged += amount },
+                        onDragEnd = {
+                            when {
+                                // Finger moved left: the page slides away
+                                // leftwards, the next plant comes in.
+                                dragged < -swipeThresholdPx ->
+                                    neighbors.nextId?.let(onOpenPlant)
+                                dragged > swipeThresholdPx ->
+                                    neighbors.previousId?.let(onOpenPlant)
+                            }
+                        },
+                    )
+                }
                 .padding(
                     if (hero != null) {
                         PaddingValues(bottom = padding.calculateBottomPadding())

@@ -45,6 +45,28 @@ class PlantDetailViewModel @Inject constructor(
 
     private val plantId: String = checkNotNull(savedStateHandle["id"])
 
+    /**
+     * Who is either side of this plant on the dashboard, captured once when
+     * the page opens. A snapshot, deliberately: logging a watering from this
+     * page re-ranks the plant in the live attention sort, and a browse order
+     * that reshuffles mid-swipe turns "next" into "somewhere". Each swipe
+     * lands on a fresh page, which takes a fresh snapshot - so the order
+     * self-corrects between steps without moving under the thumb within one.
+     */
+    private val _neighbors = kotlinx.coroutines.flow.MutableStateFlow(
+        dev.dheirav.thirsttrap.domain.Neighbors(),
+    )
+    val neighbors: StateFlow<dev.dheirav.thirsttrap.domain.Neighbors> = _neighbors
+
+    init {
+        viewModelScope.launch {
+            val order = repository.observeDashboard { System.currentTimeMillis() }
+                .first()
+                .map { it.plant.id }
+            _neighbors.value = dev.dheirav.thirsttrap.domain.neighborsOf(order, plantId)
+        }
+    }
+
     val state: StateFlow<PlantDetailUiState> =
         combine(
             repository.observePlant(plantId),
