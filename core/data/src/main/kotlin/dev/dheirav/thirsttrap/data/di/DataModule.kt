@@ -63,6 +63,8 @@ object DatabaseModule {
     @Provides fun provideWeightDao(db: ThirstTrapDatabase): WeightDao = db.weightDao()
 
     @Provides fun provideAmbientDao(db: ThirstTrapDatabase): AmbientDao = db.ambientDao()
+    @Provides fun provideUsageDao(db: ThirstTrapDatabase): dev.dheirav.thirsttrap.data.dao.UsageDao = db.usageDao()
+    @Provides fun provideExperimentDao(db: ThirstTrapDatabase): dev.dheirav.thirsttrap.data.dao.ExperimentDao = db.experimentDao()
 
     @Provides fun provideLocationDao(db: ThirstTrapDatabase): LocationDao = db.locationDao()
 
@@ -83,11 +85,14 @@ object DatabaseModule {
         weightDao: WeightDao,
         ambientDao: AmbientDao,
         fertilizerDao: FertilizerDao,
+        usageRepository: dev.dheirav.thirsttrap.domain.UsageRepository,
+        usageDao: dev.dheirav.thirsttrap.data.dao.UsageDao,
+        experimentDao: dev.dheirav.thirsttrap.data.dao.ExperimentDao,
         store: PhotoStore,
     ): ExportRepositoryImpl =
         ExportRepositoryImpl(
             context, plantDao, eventDao, photoDao, reminderDao, weightDao, ambientDao,
-            fertilizerDao, store,
+            fertilizerDao, usageRepository, usageDao, experimentDao, store,
         )
 
     @Provides
@@ -129,6 +134,16 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun bindAmbientRepository(impl: AmbientRepositoryImpl): AmbientRepository
+
+    @dagger.Binds
+    abstract fun bindUsageRepository(
+        impl: dev.dheirav.thirsttrap.data.UsageRepositoryImpl,
+    ): dev.dheirav.thirsttrap.domain.UsageRepository
+
+    @dagger.Binds
+    abstract fun bindExperimentRepository(
+        impl: dev.dheirav.thirsttrap.data.ExperimentRepositoryImpl,
+    ): dev.dheirav.thirsttrap.domain.ExperimentRepository
 
     @Binds
     abstract fun bindLocationRepository(impl: LocationRepositoryImpl): LocationRepository

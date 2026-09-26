@@ -37,6 +37,15 @@ data class ExportBundle(
      * failing to import.
      */
     val fertilizers: List<Fertilizer> = emptyList(),
+    /**
+     * Added with the usage instrumentation. Same defaulting rule again: an
+     * older backup simply has none. Actions only, never content - the same
+     * rule the table itself lives by.
+     */
+    val usageEvents: List<UsageEvent> = emptyList(),
+    /** Added with F11. Older backups simply have none. */
+    val experiments: List<Experiment> = emptyList(),
+    val experimentSubjects: List<ExperimentSubject> = emptyList(),
 )
 
 @Serializable

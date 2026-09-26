@@ -37,6 +37,9 @@ class ExportRepositoryImpl @Inject constructor(
     private val weightDao: WeightDao,
     private val ambientDao: AmbientDao,
     private val fertilizerDao: dev.dheirav.thirsttrap.data.dao.FertilizerDao,
+    private val usageRepository: dev.dheirav.thirsttrap.domain.UsageRepository,
+    private val usageDao: dev.dheirav.thirsttrap.data.dao.UsageDao,
+    private val experimentDao: dev.dheirav.thirsttrap.data.dao.ExperimentDao,
     private val store: PhotoStore,
 ) {
 
@@ -95,8 +98,12 @@ class ExportRepositoryImpl @Inject constructor(
         val weightReadings = weightDao.all().map { it.toDomainReading() }
         val ambient = ambientDao.all().map { it.toDomain() }
         val fertilizers = fertilizerDao.all().map { it.toDomain() }
+        val usageEvents = usageRepository.all()
+        val experiments = experimentDao.all().map { it.toDomain() }
+        val experimentSubjects = experimentDao.allSubjects().map { it.toDomain() }
         val bundle = ExportBundle(
             plants, events, photos, reminders, weightReadings, ambient, fertilizers,
+            usageEvents, experiments, experimentSubjects,
         )
         val manifest = ExportManifest(
             formatVersion = CURRENT_EXPORT_FORMAT,
@@ -116,6 +123,8 @@ class ExportRepositoryImpl @Inject constructor(
                 "weightReadings" to weightReadings.size,
                 "ambient" to ambient.size,
                 "fertilizers" to fertilizers.size,
+                "usageEvents" to usageEvents.size,
+                "experiments" to experiments.size,
             ),
         )
 
@@ -267,6 +276,18 @@ class ExportRepositoryImpl @Inject constructor(
                     ),
                 )
             }
+            data.usageEvents.forEach { usageDao.insert(it.toEntity()) }
+            data.experiments.forEach {
+                experimentDao.upsert(
+                    it.toEntity(
+                        createdAt = experimentDao.createdAtOf(it.id) ?: now,
+                        updatedAt = now,
+                    ),
+                )
+            }
+            // Subjects after experiments and plants: both foreign keys must
+            // already exist or the membership row has nothing to point at.
+            data.experimentSubjects.forEach { experimentDao.upsertSubject(it.toEntity()) }
 
             val result = ImportResult(
                 plants = data.plants.size,

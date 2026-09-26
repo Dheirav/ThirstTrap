@@ -99,6 +99,7 @@ import dev.dheirav.thirsttrap.domain.Prediction
 import dev.dheirav.thirsttrap.domain.SuppressionReason
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import dev.dheirav.thirsttrap.domain.Confidence
 
 /**
  * The dashboard, now on real data.
@@ -560,11 +561,23 @@ private fun relativeDays(now: Long, then: Long, verb: String): String =
 @Composable
 private fun predictionText(prediction: Prediction): String? = when (prediction) {
     is Prediction.WaterNow -> "Needs water now"
-    is Prediction.Eta -> when {
-        prediction.capped -> "More than 2 weeks"
-        prediction.days < 1.0 -> "Water today"
-        prediction.days < 2.0 -> "Water tomorrow"
-        else -> "Water in about ${prediction.days.toInt()} days"
+    is Prediction.Eta -> {
+        // The model's confidence tiers, said out loud (WATERING-MODEL §6). A
+        // measured fit and a guess from past cycles used to read identically
+        // here, which is precisely the false confidence the tiers exist to
+        // avoid: honest uncertainty is the product, not a caveat.
+        val whenText = when {
+            prediction.capped -> "more than 2 weeks"
+            prediction.days < 1.0 -> "today"
+            prediction.days < 2.0 -> "tomorrow"
+            else -> "in about ${prediction.days.toInt()} days"
+        }
+        when {
+            prediction.capped -> "More than 2 weeks"
+            prediction.confidence == Confidence.HIGH -> "Water $whenText"
+            prediction.confidence == Confidence.MEDIUM -> "Water $whenText - still learning"
+            else -> "Maybe $whenText, from past cycles"
+        }
     }
     is Prediction.NeedAnotherReading -> when (prediction.reason) {
         // Telling someone to weigh a cutting in a jar is nonsense.

@@ -185,6 +185,7 @@ class MainActivity : ComponentActivity() {
                                 onOpenStats = { nav.navigate(Routes.STATS) },
                                 onOpenPlaces = { nav.navigate(Routes.PLACES) },
                                 onOpenFertilizer = { nav.navigate(Routes.FERTILIZER) },
+                                onOpenExperiments = { nav.navigate(Routes.EXPERIMENTS) },
                                 onOpenDebug = { nav.navigate(Routes.DEBUG) },
                             )
                         }
@@ -239,6 +240,21 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Routes.WEIGHING) {
                             WeighingScreen(onBack = { nav.popBackStack() })
+                        }
+                        composable(Routes.EXPERIMENTS) {
+                            dev.dheirav.thirsttrap.feature.experiments.ExperimentsScreen(
+                                onBack = { nav.popBackStack() },
+                                onOpen = { id -> nav.navigate(Routes.experiment(id)) },
+                            )
+                        }
+                        composable(
+                            route = "${Routes.EXPERIMENT}/{id}",
+                            arguments = listOf(navArgument("id") { type = NavType.StringType }),
+                        ) {
+                            dev.dheirav.thirsttrap.feature.experiments.ExperimentDetailScreen(
+                                onBack = { nav.popBackStack() },
+                                onOpenPlant = { id -> nav.navigate(Routes.plantDetail(id)) },
+                            )
                         }
                         composable(Routes.FERTILIZER) {
                             FertilizerScreen(onBack = { nav.popBackStack() })

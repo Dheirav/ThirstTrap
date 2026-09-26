@@ -30,12 +30,13 @@ Repo: https://github.com/Dheirav/ThirstTrap (branch `main`).
 
 Six features, all M4 Phase 2, plus one decision:
 
-- **F11** experiments, **F12** `[[plant]]` cross-links, **F25c** offline plant
-  identification with **F25b** as an opt-in second tier. F25 itself is dropped,
-  see D29.
-- **F16 cloud backup** is unstarted *and undecided*. Every other feature was
-  built on "nothing leaves this phone", and Settings says so in those words. An
-  account changes what the app is, so it wants a conversation before code.
+- ~~**F11** experiments, **F12** `[[plant]]` cross-links~~ - both shipped
+  2026-09-27, see D34. Remaining: **F25c** offline plant identification with
+  **F25b** as an opt-in second tier (F25 itself dropped, see D29), the GMS
+  scanner replacement (see the dependency-audit note under D34), and the
+  widget ideas parked in the backlog section.
+- ~~**F16 cloud backup** is unstarted *and undecided*.~~ Decided no, 2026-09-27,
+  see D33. Local-only is the product, not a gap in it.
 - ~~The per-plant depletion trigger has no control since D28 removed the dialog
   that was its only one.~~ Resolved 2026-09-11, see D30: a slider in Edit
   plant, shown only where weight means anything. Saving an edit now also
@@ -723,6 +724,74 @@ that places never measured before still appear.
 methods that *look* wired from every angle except the one that counts. Grep for
 a name and it appears; read the screen and it works. Only counting the direction
 of the reference, produced versus consumed, separates them.
+
+### D34 — Five in one sitting: evaluation, instrumentation, F11, F12, honest confidence (2026-09-27)
+
+**Prediction evaluation (the mission statement, measured).** `evaluatePredictions`
+replays history to each past reading, takes the ETA the model would have given
+standing there with only the data it had, and scores it against when the pot
+really crossed the trigger (interpolated; cycles watered before the trigger are
+censored, not errors). Stats screen gains "Does the model work?" - median
+absolute error and lean. First real grade, on the live diary: the fig scored
+0.26 days median error with no bias across 7 predictions; the peperomia 1.75
+days, biased late - all from its provisional-anchor era, scored against the
+anchor measured later. Honest, and self-explaining.
+
+**Usage instrumentation (schema v12).** `usage_events`: actions only, never
+content. FLOW_OPENED/COMPLETED/ABANDONED on the log-event sheet (abandonment is
+the strongest friction signal and the one that leaves no other row), and
+SUGGESTION_OVERRIDDEN on both weighing keypads when the saved chip differs from
+the suggested one. Deliberately not on Edit plant - people open it to *read*,
+and counting that as abandonment would be noise. In the export bundle, and the
+friction report grew a section for it.
+
+**F11 experiments (schema v13).** Experiment + arm-labelled subject
+memberships; observations stay on the subject plants (the page is the index
+card, not the folder). Concluding is one-way on purpose - a conclusion that can
+be rewritten later is a lab notebook in pencil. In the export bundle.
+
+**F12 [[plant]] links.** Resolved by name at render time, case-insensitive,
+never rewritten into ids: the note is the user's text. Unresolved links read as
+the text they are, wiki-style. Rendered as tap-throughs on the timeline.
+
+**Confidence said out loud.** The dashboard flattened every ETA to "water in
+about N days"; a Theil-Sen fit and a prior-only guess read identically, which
+is the false confidence the tiers exist to avoid. Now: high = "Water in about
+3 days", medium = "- still learning", low = "Maybe 3 days, from past cycles".
+
+### The dependency audit found the one thing that phones home
+
+`com.google.android.gms:play-services-code-scanner` (pot QR *scanning*) pulls
+`transport-backend-cct` - Google's Clearcut telemetry uploader. ML Kit's
+scanner reports usage to Google, which "nothing leaves this phone" cannot
+honestly coexist with. QR *generation* is already pure zxing and offline.
+**Backlog: replace the GMS scanner with a CameraX + zxing analyzer** (zxing is
+already a dependency), then re-run the audit until the runtime classpath has no
+transport backend. Until then Settings' privacy line deserves an asterisk about
+the scanner.
+
+### Backlog: home-screen widgets (noted 2026-09-27, not started)
+
+Ideas only, parked deliberately:
+- A "due today" glance widget - which pots want checking, nothing else.
+- A one-tap deep link into the weighing round, for the scale-side ritual.
+- A per-plant depletion ring for the one plant someone worries about.
+- A next-prediction line ("Peperomia: water around Tuesday"), confidence
+  tier included, same wording rules as the dashboard.
+- The reminder-hygiene anti-goals apply doubly on a home screen: no counts of
+  overdue anything, no red badges, and the all-quiet state should look like
+  good news rather than an empty task list.
+
+### D33 — F16 cloud backup: decided no (2026-09-27)
+
+Every other feature was built on "nothing leaves this phone", Settings
+promises it in those words, and the market research found that trust position
+is the category's rarest asset - the Vera shutdown stranding its users is the
+standing cautionary tale on the other side. An account would change what the
+app is, to solve a problem the tested export/import round trip plus any
+user's own syncthing or Drive folder already solves. F16 is closed, not
+deferred: the README should say "local-only, by design", not "cloud sync
+coming".
 
 ### D32 — A weigh-in is an assessment, and archive silences the reminder (2026-09-27)
 
