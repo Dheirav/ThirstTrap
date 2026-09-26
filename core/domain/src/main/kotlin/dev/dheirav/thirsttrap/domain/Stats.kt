@@ -59,6 +59,12 @@ data class Stats(
     val waterings: List<MonthCount> = emptyList(),
     val outcomes: Outcomes = Outcomes(),
     val rooting: RootingStat = RootingStat(),
+    /**
+     * How the drying model has actually performed, scored against the diary.
+     * The one number that says whether the app's core claim holds - measured,
+     * not asserted, and shown even when it is unflattering.
+     */
+    val prediction: PredictionScore = PredictionScore(),
     val totalEvents: Int = 0,
     val plantCount: Int = 0,
 )
@@ -163,10 +169,31 @@ fun rootingStat(plants: List<Plant>, events: List<CareEvent>): RootingStat {
     return RootingStat(samples = days.size, medianDays = median, untracked = untracked)
 }
 
-fun computeStats(plants: List<Plant>, events: List<CareEvent>, nowMillis: Long): Stats = Stats(
-    waterings = wateringsByMonth(events, nowMillis = nowMillis),
-    outcomes = outcomesOf(plants),
-    rooting = rootingStat(plants, events),
-    totalEvents = events.size,
-    plantCount = plants.size,
-)
+fun computeStats(
+    plants: List<Plant>,
+    events: List<CareEvent>,
+    nowMillis: Long,
+    readingsByPlant: Map<String, List<WeightReading>> = emptyMap(),
+): Stats {
+    val byPlant = events.groupBy { it.plantId }
+    val samples = plants.flatMap { plant ->
+        val mine = byPlant[plant.id].orEmpty()
+        evaluatePredictions(
+            plant = plant,
+            readings = readingsByPlant[plant.id].orEmpty(),
+            wateringEventsMillis = mine
+                .filter { it.type == CareEventType.WATERED }.map { it.timestampMillis },
+            repotEventsMillis = mine
+                .filter { it.type == CareEventType.REPOTTED || it.type == CareEventType.MEDIUM_CHANGED }
+                .map { it.timestampMillis },
+        )
+    }
+    return Stats(
+        waterings = wateringsByMonth(events, nowMillis = nowMillis),
+        outcomes = outcomesOf(plants),
+        rooting = rootingStat(plants, events),
+        prediction = scorePredictions(samples),
+        totalEvents = events.size,
+        plantCount = plants.size,
+    )
+}

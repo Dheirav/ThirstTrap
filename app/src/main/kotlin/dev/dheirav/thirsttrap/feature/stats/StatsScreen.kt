@@ -82,6 +82,9 @@ fun StatsScreen(onBack: () -> Unit, viewModel: StatsViewModel = hiltViewModel())
             SectionHead("Cuttings")
             RootingTable(s.rooting)
 
+            SectionHead("Does the model work?")
+            PredictionTable(s.prediction)
+
             Text(
                 "Counts, not scores. Nothing here goes up because you opened the app, and " +
                     "a quiet month is a quiet month rather than a gap in a run.",
@@ -175,6 +178,59 @@ private fun OutcomeTable(o: Outcomes) {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 10.dp),
+        )
+    }
+}
+
+/**
+ * The model scored against the diary. The rest of this screen counts what the
+ * user did; this row is the app grading itself - measured, not asserted, and
+ * shown even when unflattering, because a tracker that hides its own error
+ * rate is asking to be trusted on vibes.
+ */
+@Composable
+private fun PredictionTable(p: dev.dheirav.thirsttrap.domain.PredictionScore) {
+    Column(Modifier.padding(top = 8.dp)) {
+        Row(
+            Modifier.fillMaxWidth().height(40.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Text("Typical prediction error", style = MaterialTheme.typography.bodyMedium)
+            Text(
+                p.medianAbsErrorDays?.let { "%.1f days".format(it) } ?: "-",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+        Rule()
+        Text(
+            buildString {
+                if (p.samples == 0) {
+                    append(
+                        "Nothing to score yet. Every drying cycle that reaches its trigger " +
+                            "weight becomes a test of the model's earlier predictions.",
+                    )
+                } else {
+                    append("Scored on ${p.samples} predictions replayed against what the pot ")
+                    append("actually did. ")
+                    val bias = p.biasDays
+                    when {
+                        bias == null -> Unit
+                        bias < -0.2 -> append(
+                            "It tends to run about %.1f days early, which is the safe direction."
+                                .format(-bias),
+                        )
+                        bias > 0.2 -> append(
+                            "It tends to run about %.1f days late - worth watching, because "
+                                .format(bias) + "late means a thirsty pot.",
+                        )
+                        else -> append("No consistent lean early or late.")
+                    }
+                }
+            },
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 6.dp),
         )
     }
 }

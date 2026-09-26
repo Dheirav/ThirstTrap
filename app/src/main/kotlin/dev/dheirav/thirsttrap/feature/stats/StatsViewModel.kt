@@ -15,6 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StatsViewModel @Inject constructor(
     plants: PlantRepository,
+    weights: dev.dheirav.thirsttrap.domain.WeightRepository,
 ) : ViewModel() {
 
     val state: StateFlow<Stats> =
@@ -24,7 +25,13 @@ class StatsViewModel @Inject constructor(
             // would make the outcomes table a lie.
             plants.observePlants(includeArchived = true),
             plants.observeAllEvents(),
-        ) { plantList, events ->
-            computeStats(plantList, events, System.currentTimeMillis())
+            weights.observeAllReadings(),
+        ) { plantList, events, readings ->
+            computeStats(
+                plantList,
+                events,
+                System.currentTimeMillis(),
+                readingsByPlant = readings.groupBy { it.plantId },
+            )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), Stats())
 }
