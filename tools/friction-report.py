@@ -255,6 +255,38 @@ def main():
         line = f"{name(pid)}: {len(mine)} readings over {span} days ({n_days} distinct days), last {gap:.1f} days ago"
         (rep.finding if gap > 3 else rep.ok)(line)
 
+    # 10. Usage instrumentation, when the table exists (schema v12+).
+    #     Abandonments and overrides are the signals the diary cannot show.
+    has_usage = con.execute(
+        "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='usage_events'"
+    ).fetchone()[0]
+    if has_usage:
+        rep.section("Flow friction (usage instrumentation)")
+        rows = [dict(r) for r in con.execute("SELECT * FROM usage_events ORDER BY timestamp")]
+        by_flow = {}
+        for u in rows:
+            by_flow.setdefault(u["flow"], []).append(u)
+        any_line = False
+        for flow, us in sorted(by_flow.items()):
+            opened = sum(1 for u in us if u["kind"] == "FLOW_OPENED")
+            done = sum(1 for u in us if u["kind"] == "FLOW_COMPLETED")
+            gone = sum(1 for u in us if u["kind"] == "FLOW_ABANDONED")
+            overrides = [u for u in us if u["kind"] == "SUGGESTION_OVERRIDDEN"]
+            if opened:
+                line = f"{flow}: {opened} opened, {done} completed, {gone} abandoned"
+                (rep.finding if opened and gone / max(opened, 1) > 0.25 else rep.ok)(line)
+                any_line = True
+            if overrides:
+                from collections import Counter
+                top = Counter(u["detail"] for u in overrides).most_common(3)
+                detail = ", ".join(f"{d} x{n}" for d, n in top)
+                (rep.finding if len(overrides) >= 5 else rep.ok)(
+                    f"{flow}: {len(overrides)} suggestion overrides ({detail})"
+                )
+                any_line = True
+        if not any_line:
+            rep.ok("instrumented, nothing recorded yet")
+
     print(f"\n{'=' * 50}")
     if rep.findings:
         print(f"{rep.findings} finding(s) - each one is a candidate improvement or a habit slipping.")

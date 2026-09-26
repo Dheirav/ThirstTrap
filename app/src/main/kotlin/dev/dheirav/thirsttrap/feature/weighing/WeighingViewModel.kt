@@ -55,6 +55,7 @@ data class WeighingUiState(
  */
 @HiltViewModel
 class WeighingViewModel @Inject constructor(
+    private val usage: dev.dheirav.thirsttrap.domain.UsageRepository,
     plants: PlantRepository,
     private val weights: WeightRepository,
     private val reminders: ReminderRepository,
@@ -132,6 +133,7 @@ class WeighingViewModel @Inject constructor(
                 nowMillis = System.currentTimeMillis(),
             )
         }
+        lastSuggested = _context.value
     }
 
     fun close() {
@@ -142,6 +144,8 @@ class WeighingViewModel @Inject constructor(
     fun onDigit(d: Char) { if (_entry.value.length < 6) _entry.value += d }
     fun onBackspace() { _entry.value = _entry.value.dropLast(1) }
     fun onContext(c: ReadingContext) { _context.value = c }
+
+    private var lastSuggested: ReadingContext? = null
 
     /**
      * Saves and moves to the next pot that has not been weighed this round.
@@ -157,6 +161,16 @@ class WeighingViewModel @Inject constructor(
         val grams = _entry.value.toDoubleOrNull() ?: return
         val context = _context.value
         viewModelScope.launch {
+            lastSuggested?.let { s ->
+                if (s != context) {
+                    usage.record(
+                        dev.dheirav.thirsttrap.domain.UsageKind.SUGGESTION_OVERRIDDEN,
+                        "weighing_round",
+                        row.plant.id,
+                        "${'$'}{s.name}->${'$'}{context.name}",
+                    )
+                }
+            }
             weights.addReading(row.plant.id, grams, context)
             // A reading changes the prediction, and the prediction is what the
             // reminder is made of. The per-plant weight screen already did this

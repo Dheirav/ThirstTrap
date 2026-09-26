@@ -75,6 +75,7 @@ data class LogEventUiState(
 
 @HiltViewModel
 class LogEventViewModel @Inject constructor(
+    private val usage: dev.dheirav.thirsttrap.domain.UsageRepository,
     private val repository: PlantRepository,
     private val reminders: ReminderRepository,
     private val weights: WeightRepository,
@@ -107,7 +108,15 @@ class LogEventViewModel @Inject constructor(
         )
     }
 
+    // Abandonment is the strongest friction signal the app can record, and it
+    // is exactly the event that leaves no other row. Opened is logged here,
+    // completed in save(), and onCleared() files the difference.
+    private var flowCompleted = false
+
     init {
+        viewModelScope.launch {
+            usage.record(dev.dheirav.thirsttrap.domain.UsageKind.FLOW_OPENED, FLOW, plantId)
+        }
         viewModelScope.launch {
             val plant = repository.observePlant(plantId).first() ?: return@launch
             // Pre-fill from the plant's standard, falling back to the last
@@ -193,7 +202,22 @@ class LogEventViewModel @Inject constructor(
             // check resets the clock, and a repot throws the anchors away so
             // the prediction that was driving the interval no longer exists.
             reminders.rescheduleFromModel(plantId, now)
+            flowCompleted = true
+            usage.record(dev.dheirav.thirsttrap.domain.UsageKind.FLOW_COMPLETED, FLOW, plantId)
             onDone()
         }
     }
+
+    override fun onCleared() {
+        if (!flowCompleted) {
+            // onCleared cannot launch in viewModelScope (it is already dead),
+            // so this write gets its own short-lived scope.
+            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                usage.record(dev.dheirav.thirsttrap.domain.UsageKind.FLOW_ABANDONED, FLOW, plantId)
+            }
+        }
+        super.onCleared()
+    }
+
+    private companion object { const val FLOW = "log_event" }
 }

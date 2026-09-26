@@ -23,6 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WeightViewModel @Inject constructor(
+    private val usage: dev.dheirav.thirsttrap.domain.UsageRepository,
     private val repository: WeightRepository,
     private val reminders: ReminderRepository,
     private val settings: dev.dheirav.thirsttrap.domain.SettingsRepository,
@@ -75,7 +76,9 @@ class WeightViewModel @Inject constructor(
     /** Only ever moves the chip when the user has not already chosen one. */
     fun suggestContext(s: WeightState) {
         if (_context.value != ReadingContext.ROUTINE) return
-        _context.value = suggestReadingContext(s, System.currentTimeMillis())
+        val suggested = suggestReadingContext(s, System.currentTimeMillis())
+        lastSuggested = suggested
+        _context.value = suggested
     }
 
     private val _dismissed = MutableStateFlow<Set<String>>(emptySet())
@@ -102,6 +105,8 @@ class WeightViewModel @Inject constructor(
         }
     }
 
+    private var lastSuggested: ReadingContext? = null
+
     private val _hint = MutableStateFlow<String?>(null)
     val hint: StateFlow<String?> = _hint.asStateFlow()
 
@@ -112,6 +117,18 @@ class WeightViewModel @Inject constructor(
         if (grams <= 0) return
         val saved = _context.value
         viewModelScope.launch {
+            // A changed chip is data about the suggestion, not about the plant:
+            // enum names only, never content.
+            lastSuggested?.let { s ->
+                if (s != saved) {
+                    usage.record(
+                        dev.dheirav.thirsttrap.domain.UsageKind.SUGGESTION_OVERRIDDEN,
+                        "weigh",
+                        plantId,
+                        "${'$'}{s.name}->${'$'}{saved.name}",
+                    )
+                }
+            }
             val backfilledWatering = repository.addReading(plantId, grams, saved)
             rescheduleFromPrediction()
             _entry.value = ""
