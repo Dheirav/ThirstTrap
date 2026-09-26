@@ -36,11 +36,23 @@ interface WeightRepository {
     /** Every reading, across every plant. For the weighing round. */
     fun observeAllReadings(): Flow<List<WeightReading>>
 
+    /**
+     * Records a weigh-in.
+     *
+     * A POST_WATER reading with no watering logged in the last day also writes
+     * the WATERED event the log is missing (see [impliesUnloggedWatering]) -
+     * weighing is the action people actually perform, so the watering rides
+     * along instead of staying a separate chore that quietly stops happening.
+     *
+     * @return true when a watering was backfilled, so the UI can say so - a
+     * silent write the user only discovers later on the timeline reads as the
+     * app inventing history.
+     */
     suspend fun addReading(
         plantId: String,
         grams: Double,
         context: ReadingContext,
-    )
+    ): Boolean
 
     suspend fun setExcluded(readingId: String, excluded: Boolean)
 

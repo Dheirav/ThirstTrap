@@ -166,3 +166,24 @@ fun suggestReadingContext(state: WeightState, nowMillis: Long): ReadingContext =
 
 /** How long after a watering a reading still counts as the wet anchor. */
 const val POST_WATER_WINDOW_MILLIS = 24 * 60 * 60 * 1000L
+
+/**
+ * A POST_WATER reading with no watering on the log is a watering the log
+ * missed. Eighteen days of real diary proved it: the user weighs every day
+ * because weighing is two taps, and stopped logging waterings because that is
+ * a separate chore - four waterings in a row arrived as bare POST_WATER
+ * readings. The drying model self-heals through jump segmentation, but the
+ * dashboard's "last watered", the average interval and the reminder clock all
+ * count from the event that was never written.
+ *
+ * So the weigh-in carries the watering with it. Same window as the anchor
+ * rule: a watering logged within the last day explains the reading; anything
+ * older (or nothing at all) means the log is missing one.
+ */
+fun impliesUnloggedWatering(
+    context: ReadingContext,
+    lastWateredMillis: Long?,
+    nowMillis: Long,
+): Boolean =
+    context == ReadingContext.POST_WATER &&
+        (lastWateredMillis == null || nowMillis - lastWateredMillis > POST_WATER_WINDOW_MILLIS)

@@ -112,7 +112,7 @@ class WeightViewModel @Inject constructor(
         if (grams <= 0) return
         val saved = _context.value
         viewModelScope.launch {
-            repository.addReading(plantId, grams, saved)
+            val backfilledWatering = repository.addReading(plantId, grams, saved)
             rescheduleFromPrediction()
             _entry.value = ""
 
@@ -126,6 +126,12 @@ class WeightViewModel @Inject constructor(
                 _hint.value = "Water it, then weigh again - I'll take that as the new full mark."
             } else {
                 _context.value = ReadingContext.ROUTINE
+            }
+            // Saying it here is what keeps the backfill honest: an event the
+            // user only discovers later on the timeline reads as the app
+            // inventing history.
+            if (backfilledWatering) {
+                _hint.value = "Logged the watering too - edit it on the timeline if that's wrong."
             }
             onDone()
         }

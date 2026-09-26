@@ -36,9 +36,11 @@ Six features, all M4 Phase 2, plus one decision:
 - **F16 cloud backup** is unstarted *and undecided*. Every other feature was
   built on "nothing leaves this phone", and Settings says so in those words. An
   account changes what the app is, so it wants a conversation before code.
-- The per-plant depletion trigger has no control since D28 removed the dialog
-  that was its only one. Either it gets one in Edit plant, or the field stops
-  pretending to be per-plant.
+- ~~The per-plant depletion trigger has no control since D28 removed the dialog
+  that was its only one.~~ Resolved 2026-09-11, see D30: a slider in Edit
+  plant, shown only where weight means anything. Saving an edit now also
+  replans the check reminder, because the trigger moves the prediction that
+  the interval is derived from.
 
 ### The habit worth keeping
 
@@ -48,6 +50,14 @@ reads properly, and is wired to nothing. `X4` reduce-motion, `CareEventType.MOVE
 nothing could open, and a duplicate button. It comes from changing one end of a
 path and not walking the other. A deliberate pass through `:core:domain` asking
 "who calls this, and with what" is worth more than the next feature.
+
+That pass was made on 2026-09-11 (see D30): every public domain function was
+checked for production callers, and every repository method, event type,
+route and reading context for a reachable entry point. No seventh instance
+found. The audit also replayed the phone's real diary through
+`assembleWeightState` and the pipeline computed correct anchors, slopes and
+ETAs end to end, which retired a suspicion that derived-on-read state was
+another unwired path - it is a design, and it works.
 
 ## What exists
 
@@ -713,6 +723,56 @@ that places never measured before still appear.
 methods that *look* wired from every angle except the one that counts. Grep for
 a name and it appears; read the screen and it works. Only counting the direction
 of the reference, produced versus consumed, separates them.
+
+### D31 — A post-water weigh-in logs the watering it implies (2026-09-27)
+
+Eighteen days of real diary showed the failure mode: weighing is two taps and
+happens daily, logging a watering is a separate chore, and it quietly stopped
+on Sep 14 - four waterings arrived as bare POST_WATER readings with no WATERED
+event. Segmentation self-heals through the jump rule, so predictions stayed
+right, but "last watered", the average interval and the reminder clock all
+count from events, and all three went stale without anything looking wrong.
+
+So the weigh-in now carries the watering: `addReading` with POST_WATER and no
+WATERED event inside the anchor window (24h, the same constant that decides
+whether a reading counts as the wet anchor - one definition, not two) writes
+the missing event. Decision function `impliesUnloggedWatering` in domain,
+tested. Details that matter: the backfilled event is timestamped between the
+previous reading and this one so segmentation keeps the boundary on the right
+side of a pre-water weigh taken moments earlier; the amount is the plant's
+default or the last poured amount, the watering sheet's own fallback; the note
+says where the event came from; and the per-plant screen announces the
+backfill in the existing hint slot, because a write the user only discovers
+later on the timeline reads as the app inventing history. The weighing round
+stays silent (no hint surface there) - the event's note covers it.
+
+### D30 — The depletion trigger gets its control back, and the audit came up clean (2026-09-11)
+
+D28 left the per-plant `depletionTrigger` readable everywhere and writable
+nowhere except the species-care apply flow. It now has a slider in Edit plant
+(20-80%, steps of 5), visible only when the plant is weight-tracked and not in
+water, because for those plants the number drives nothing and a control that
+does nothing is the defect this project keeps finding. A new plant's form
+starts on the settings default so what the user sees is what a plain save
+stores; an existing plant's form starts on its stored value. Saving an edit
+now calls `rescheduleFromModel`, because the trigger moves the predicted
+watering date and the check interval is derived from that prediction - without
+the replan an edited trigger kept the old date until the next watering.
+
+Two conversion details worth keeping: the form holds the trigger as a whole
+percent, not a Double, and every Double-to-percent conversion in the app now
+uses `roundToInt`. `(0.29 * 100).toInt()` is 28 - truncation walked 29%, 57%
+and 58% down one point per open-and-save cycle, and showed the same off-by-one
+in the two screens that print the percentage.
+
+The same session made the deliberate audit pass the previous entry asks for:
+every public `:core:domain` function checked for production callers, every
+repository method, care-event type, route and reading context checked for a
+reachable entry point, and the phone's real diary replayed through
+`assembleWeightState` (correct anchors, slopes and ETAs for all three
+weighed plants). No seventh wired-to-nothing instance. The one suspicion the
+replay retired: the NULL anchor and EWMA columns in the database are the
+derive-on-read design working as documented, not an unwired write path.
 
 ### D29 — Plant identification goes offline first, and F25 is dropped (2026-09-09)
 

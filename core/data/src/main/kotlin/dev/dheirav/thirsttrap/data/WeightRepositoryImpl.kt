@@ -5,6 +5,7 @@ import dev.dheirav.thirsttrap.data.dao.PlantDao
 import dev.dheirav.thirsttrap.data.dao.WeightDao
 import dev.dheirav.thirsttrap.data.entity.WeightReadingEntity
 import dev.dheirav.thirsttrap.domain.Anchors
+import dev.dheirav.thirsttrap.domain.CareEvent
 import dev.dheirav.thirsttrap.domain.CareEventType
 import dev.dheirav.thirsttrap.domain.ReadingContext
 import dev.dheirav.thirsttrap.domain.WeightReading
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import dev.dheirav.thirsttrap.domain.impliesUnloggedWatering
 
 @Singleton
 class WeightRepositoryImpl @Inject constructor(
@@ -58,8 +60,46 @@ class WeightRepositoryImpl @Inject constructor(
     override fun observeAllReadings(): Flow<List<WeightReading>> =
         weightDao.observeAll().map { rows -> rows.map { it.toDomainReading() } }
 
-    override suspend fun addReading(plantId: String, grams: Double, context: ReadingContext) {
+    override suspend fun addReading(plantId: String, grams: Double, context: ReadingContext): Boolean {
         val now = System.currentTimeMillis()
+
+        val events = eventDao.observeForPlant(plantId).first()
+        val lastWatered = events
+            .filter { it.type == CareEventType.WATERED.name }
+            .maxOfOrNull { it.timestamp }
+
+        var backfilled = false
+        if (impliesUnloggedWatering(context, lastWatered, now)) {
+            // The watering has to sort between the previous reading and this
+            // one, or segmentation puts the boundary on the wrong side of a
+            // pre-water weigh taken moments earlier.
+            val lastReading = weightDao.observeForPlant(plantId).first()
+                .maxOfOrNull { it.timestamp }
+            val wateredAt = maxOf(now - 60_000L, (lastReading ?: 0L) + 1_000L)
+                .coerceAtMost(now - 1L)
+
+            // The plant's set standard, or the last amount actually poured -
+            // the same fallback the watering sheet itself uses.
+            val amount = plantDao.observePlant(plantId).first()?.toDomain()?.defaultWaterMl
+                ?: events.firstOrNull {
+                    it.type == CareEventType.WATERED.name && it.amountMl != null
+                }?.amountMl
+
+            eventDao.insert(
+                CareEvent(
+                    id = newId(),
+                    plantId = plantId,
+                    timestampMillis = wateredAt,
+                    tzOffsetMinutes = tzOffsetMinutesAt(wateredAt),
+                    type = CareEventType.WATERED,
+                    amountMl = amount,
+                    note = "Logged from the post-water weigh-in",
+                ).toEntity(createdAt = now, updatedAt = now),
+            )
+            backfilled = true
+            TTLog.i(TTLog.DATA) { "backfilled watering (${amount ?: "?"} ml) for $plantId" }
+        }
+
         weightDao.upsert(
             WeightReadingEntity(
                 id = newId(),
@@ -72,6 +112,7 @@ class WeightRepositoryImpl @Inject constructor(
             ),
         )
         TTLog.i(TTLog.DATA) { "weight ${grams}g ($context) for $plantId" }
+        return backfilled
     }
 
     override suspend fun setExcluded(readingId: String, excluded: Boolean) {
