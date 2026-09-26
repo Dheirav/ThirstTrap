@@ -724,6 +724,24 @@ methods that *look* wired from every angle except the one that counts. Grep for
 a name and it appears; read the screen and it works. Only counting the direction
 of the reference, produced versus consumed, separates them.
 
+### D32 — A weigh-in is an assessment, and archive silences the reminder (2026-09-27)
+
+Two defects, both found by `tools/friction-report.py` on its first run against
+the live diary (the script generalises the D31 discovery method: compare
+parallel streams, report the gaps).
+
+First: the check clock counted only WATERED and CHECKED events, so reminders
+sat 3+ days overdue on plants that were being weighed every single morning.
+Nagging the most diligent user hardest is reminder fatigue by design.
+`latestAssessmentMillis` in domain now folds weigh-ins into "last assessed",
+used by both the reminder planner and the dashboard's attention sort.
+
+Second: archiving a plant left its reminder enabled - the binned flax cup was
+still scheduled for checks, 9.7 days overdue and climbing. `archivePlant` now
+disables the plant's reminders and re-enables them on unarchive (the stale due
+date self-corrects on the next replan). Existing archived plants need one
+unarchive-archive toggle to pick up the fix; the flax is the only one.
+
 ### D31 — A post-water weigh-in logs the watering it implies (2026-09-27)
 
 Eighteen days of real diary showed the failure mode: weighing is two taps and

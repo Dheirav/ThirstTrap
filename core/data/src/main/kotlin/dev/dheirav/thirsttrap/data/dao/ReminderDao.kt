@@ -41,6 +41,9 @@ interface ReminderDao {
     @Query("UPDATE reminders SET last_fired_at = :at WHERE id = :reminderId")
     suspend fun markFired(reminderId: String, at: Long)
 
+    @Query("UPDATE reminders SET enabled = :enabled WHERE plant_id = :plantId")
+    suspend fun setEnabledForPlant(plantId: String, enabled: Boolean)
+
     @Query("UPDATE reminders SET next_due_at = :nextDue, snoozed_until = NULL WHERE plant_id = :plantId")
     suspend fun reschedule(plantId: String, nextDue: Long)
 

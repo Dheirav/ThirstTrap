@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import dev.dheirav.thirsttrap.domain.latestAssessmentMillis
 
 @Singleton
 class PlantRepositoryImpl @Inject constructor(
@@ -96,9 +97,17 @@ class PlantRepositoryImpl @Inject constructor(
 
                 val lastWatered = events
                     .firstOrNull { it.type == CareEventType.WATERED.name }?.timestamp
-                val lastChecked = events.firstOrNull {
-                    it.type == CareEventType.WATERED.name || it.type == CareEventType.CHECKED.name
-                }?.timestamp
+                // A weigh-in counts as a check here too, or the dashboard's
+                // attention sort punishes the plants being weighed daily.
+                val lastChecked = latestAssessmentMillis(
+                    assessmentEventMillis = events
+                        .filter {
+                            it.type == CareEventType.WATERED.name ||
+                                it.type == CareEventType.CHECKED.name
+                        }
+                        .map { it.timestamp },
+                    weighInMillis = readingsByPlant[row.id].orEmpty().map { it.timestamp },
+                )
 
                 PlantAttention(
                     plant = plant,
@@ -167,8 +176,15 @@ class PlantRepositoryImpl @Inject constructor(
         TTLog.i(TTLog.DATA) { "upsert plant ${plant.id} '${plant.name}'" }
     }
 
-    override suspend fun archivePlant(plantId: String, archived: Boolean) =
+    override suspend fun archivePlant(plantId: String, archived: Boolean) {
         plantDao.setArchived(plantId, archived, System.currentTimeMillis())
+        // An archived plant's reminder kept firing about a pot no longer on
+        // the shelf - the friction report caught the binned flax cup still
+        // scheduled for checks. Archiving silences it; unarchiving re-enables,
+        // and the stale due date self-corrects on the next reading or edit,
+        // both of which replan.
+        reminderDao.setEnabledForPlant(plantId, enabled = !archived)
+    }
 
     override suspend fun setStatus(plantId: String, status: PlantStatus) =
         plantDao.setStatus(plantId, status.name, System.currentTimeMillis())

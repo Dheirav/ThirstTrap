@@ -71,3 +71,21 @@ fun computeNextDue(
     val from = lastAssessedMillis ?: nowMillis
     return from + intervalDays * 86_400_000L
 }
+
+/**
+ * When the plant was last assessed, for the check clock.
+ *
+ * A weigh-in is an assessment - it is a better look at the pot than a finger
+ * poke, and it is the action this app's whole method asks for daily. The clock
+ * used to count only WATERED and CHECKED events, which produced the absurdity
+ * the friction report caught: reminders 3+ days overdue on plants that had
+ * been weighed every single morning. Nagging the most diligent user hardest
+ * is reminder fatigue by design, and reminder hygiene is a requirement.
+ *
+ * Excluded readings still count: a mis-weigh means someone stood at the scale
+ * holding the pot, which is exactly what "assessed" means.
+ */
+fun latestAssessmentMillis(
+    assessmentEventMillis: List<Long>,
+    weighInMillis: List<Long>,
+): Long? = (assessmentEventMillis + weighInMillis).maxOrNull()

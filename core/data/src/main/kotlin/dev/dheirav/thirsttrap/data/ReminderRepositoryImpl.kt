@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
+import dev.dheirav.thirsttrap.domain.latestAssessmentMillis
 
 @Singleton
 class ReminderRepositoryImpl @Inject constructor(
@@ -62,11 +63,16 @@ class ReminderRepositoryImpl @Inject constructor(
             loggedAverageDays = checkIntervalFromLogDays(waterings.map { it.timestampMillis }),
         )
 
-        // An assessment is a watering or a check: both mean the pot was looked
-        // at, so both reset the clock.
-        val lastAssessed = events
-            .filter { it.type == CareEventType.WATERED || it.type == CareEventType.CHECKED }
-            .maxOfOrNull { it.timestampMillis }
+        // An assessment is a watering, a check, or a weigh-in: all three mean
+        // the pot was looked at, so all three reset the clock. Counting only
+        // the first two nagged the most diligent user hardest - reminders sat
+        // days overdue on plants that were being weighed every morning.
+        val lastAssessed = latestAssessmentMillis(
+            assessmentEventMillis = events
+                .filter { it.type == CareEventType.WATERED || it.type == CareEventType.CHECKED }
+                .map { it.timestampMillis },
+            weighInMillis = readings.map { it.timestampMillis },
+        )
 
         val due = computeNextDue(lastAssessed, interval, nowMillis)
         TTLog.i(TTLog.REMINDER) {
