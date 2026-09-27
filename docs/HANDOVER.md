@@ -32,8 +32,8 @@ Six features, all M4 Phase 2, plus one decision:
 
 - ~~**F11** experiments, **F12** `[[plant]]` cross-links~~ - both shipped
   2026-09-27, see D34. Remaining: **F25c** offline plant identification with
-  **F25b** as an opt-in second tier (F25 itself dropped, see D29), the GMS
-  scanner replacement (see the dependency-audit note under D34), and the
+  **F25b** as an opt-in second tier (F25 itself dropped, see D29), ~~the GMS
+  scanner replacement~~ (done, see D35), and the
   widget ideas parked in the backlog section.
 - ~~**F16 cloud backup** is unstarted *and undecided*.~~ Decided no, 2026-09-27,
   see D33. Local-only is the product, not a gap in it.
@@ -724,6 +724,26 @@ that places never measured before still appear.
 methods that *look* wired from every angle except the one that counts. Grep for
 a name and it appears; read the screen and it works. Only counting the direction
 of the reference, produced versus consumed, separates them.
+
+### D35 — The scanner comes home, and the export gets a clock (2026-09-27)
+
+**The GMS scanner is gone.** Scanning a pot sticker now runs entirely
+in-process: CameraX preview plus a zxing analyzer over the Y plane, decoding
+the same QR format zxing already generates for the stickers. The trade is one
+runtime CAMERA permission prompt (the GMS scanner ran the camera inside Play
+Services and needed none) for a scanner where no frame, and no fact about
+scanning, ever leaves the process. Verified the way the audit found it:
+`:app:dependencies` on the debug runtime classpath now matches zero lines for
+datatransport, firebase, mlkit or play-services. The
+`com.google.android.datatransport.events` file already in app data is inert
+leftover from the old dependency. INTERNET permission stays, for the
+off-by-default weather and species-lookup features only.
+
+**Last export, said quietly.** D33 made the user the backup system, so the app
+owes them the one fact that system runs on: Settings now shows "Last export:
+N days ago. The diary lives only on this phone." under the backup button.
+Stored in DataStore, written only by a successful export. Quiet text, never a
+badge or a notification - the anti-goals apply to guilt about backups too.
 
 ### D34 — Five in one sitting: evaluation, instrumentation, F11, F12, honest confidence (2026-09-27)
 

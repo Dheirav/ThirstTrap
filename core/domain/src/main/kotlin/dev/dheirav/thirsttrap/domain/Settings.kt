@@ -7,6 +7,13 @@ import kotlinx.coroutines.flow.Flow
  */
 data class AppSettings(
     /**
+     * When the diary was last exported, or null for never. D33 decided no
+     * cloud backup, which quietly makes the user the backup system - so the
+     * app owes them the one fact that system runs on. Displayed as quiet
+     * text, never a badge: the anti-goals apply to guilt about backups too.
+     */
+    val lastExportAtMillis: Long? = null,
+    /**
      * Material You. Off by default: dynamic colour means the app's own palette
      * is never actually seen, and that palette is the intended look. Switchable
      * for anyone who prefers their wallpaper theme to win.
@@ -51,6 +58,9 @@ interface SettingsRepository {
     suspend fun setOnlineSpeciesLookup(enabled: Boolean)
     suspend fun setWateringCanMl(ml: Double)
     suspend fun setWateringCanSizes(sizesMl: List<Double>)
+
+    /** Called by the export flow on success; nothing else writes it. */
+    suspend fun markExported(atMillis: Long)
 
     /** Dismissals are per drying cycle, so a new cycle can speak up again. */
     suspend fun dismissDiagnostic(key: String)

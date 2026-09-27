@@ -204,6 +204,26 @@ fun SettingsScreen(
             OutlinedButton(onClick = onOpenBackup, modifier = Modifier.fillMaxWidth()) {
                 Text("Backup and restore")
             }
+            // D33 made the user the backup system; this is the one fact that
+            // system runs on. Quiet text, never a badge - the diary is theirs
+            // to protect on their own schedule, and this just says when.
+            Text(
+                when (val at = settings.lastExportAtMillis) {
+                    null -> "Never exported. The diary lives only on this phone."
+                    else -> {
+                        val days = ((System.currentTimeMillis() - at) / 86_400_000L).toInt()
+                        when {
+                            days <= 0 -> "Last export: today."
+                            days == 1 -> "Last export: yesterday."
+                            else -> "Last export: $days days ago. The diary lives only on this phone."
+                        }
+                    }
+                },
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+
 
             storage?.let { s ->
                 Text(

@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import kotlinx.coroutines.flow.first
 import androidx.datastore.preferences.preferencesDataStore
@@ -32,9 +33,11 @@ class SettingsRepositoryImpl @Inject constructor(
     private val onlineLookupKey = booleanPreferencesKey("online_species_lookup")
     private val canMlKey = doublePreferencesKey("watering_can_ml")
     private val canSizesKey = stringSetPreferencesKey("watering_can_sizes_ml")
+    private val lastExportKey = longPreferencesKey("last_export_at")
 
     override val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
         AppSettings(
+            lastExportAtMillis = prefs[lastExportKey],
             dynamicColor = prefs[dynamicColorKey] ?: false,
             reminderHour = prefs[reminderHourKey] ?: 9,
             defaultDepletionTrigger = prefs[triggerKey] ?: DEFAULT_DEPLETION_TRIGGER,
@@ -68,6 +71,10 @@ class SettingsRepositoryImpl @Inject constructor(
 
     override suspend fun setWateringCanMl(ml: Double) {
         context.dataStore.edit { it[canMlKey] = ml.coerceIn(1.0, 100_000.0) }
+    }
+
+    override suspend fun markExported(atMillis: Long) {
+        context.dataStore.edit { it[lastExportKey] = atMillis }
     }
 
     override suspend fun setWateringCanSizes(sizesMl: List<Double>) {

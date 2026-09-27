@@ -25,6 +25,7 @@ sealed interface BackupStatus {
 @HiltViewModel
 class BackupViewModel @Inject constructor(
     private val exporter: ExportRepositoryImpl,
+    private val settings: dev.dheirav.thirsttrap.domain.SettingsRepository,
 ) : ViewModel() {
 
     private val _status = MutableStateFlow<BackupStatus>(BackupStatus.Idle)
@@ -36,7 +37,10 @@ class BackupViewModel @Inject constructor(
         _status.value = BackupStatus.Working
         viewModelScope.launch {
             exporter.exportTo(destination, BuildConfig.VERSION_NAME)
-                .onSuccess { _status.value = BackupStatus.Exported(it) }
+                .onSuccess {
+                    settings.markExported(System.currentTimeMillis())
+                    _status.value = BackupStatus.Exported(it)
+                }
                 .onFailure {
                     _status.value = BackupStatus.Failed("Export", it.message ?: it::class.simpleName.orEmpty())
                 }
