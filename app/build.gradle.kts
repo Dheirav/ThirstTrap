@@ -64,7 +64,9 @@ dependencies {
 
     implementation(libs.coil.compose)
     implementation(libs.zxing.core)
-    implementation(libs.mlkit.code.scanner)
+    implementation(libs.camerax.camera2)
+    implementation(libs.camerax.lifecycle)
+    implementation(libs.camerax.view)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.hilt.work)
     ksp(libs.androidx.hilt.compiler)

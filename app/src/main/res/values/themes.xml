@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.ThirstTrap" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- The window shows this before Compose draws a single frame. Stock
+         Material.Light meant a white flash into an off-white app - jarring in
+         the light theme and blinding in the dark one. The paper tone here is
+         the same 0xFFF5F0E2 the Compose theme paints, so launch reads as the
+         app appearing rather than a page being swapped. -->
+    <style name="Theme.ThirstTrap" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">#F5F0E2</item>
+        <item name="android:statusBarColor">#F5F0E2</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
 </resources>

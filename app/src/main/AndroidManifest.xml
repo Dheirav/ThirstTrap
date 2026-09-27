@@ -13,6 +13,12 @@
       it deliberately: species NAME lookup only, opt-in, off by default. No
       screen fetches anything on its own.
     -->
+    <!-- The QR scanner runs in-app (CameraX + zxing) so no frame ever
+         leaves the process - the GMS scanner it replaced shipped Google's
+         telemetry uploader. Camera hardware stays optional: everything else
+         works without one. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera.any" android:required="false" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />

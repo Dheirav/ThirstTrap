@@ -39,7 +39,6 @@ class ThirstTrapApplication : Application(), Configuration.Provider {
 
         // Fetch the scan module now rather than when someone is standing at a
         // pot waiting for it.
-        dev.dheirav.thirsttrap.feature.qr.ScanPot.prewarm(this)
         run {
         }
     }

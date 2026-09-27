@@ -22,6 +22,7 @@ object Routes {
     const val PLACES = "places"
     const val FERTILIZER = "fertilizer"
     const val EXPERIMENTS = "experiments"
+    const val SCAN = "scan"
     const val EXPERIMENT = "experiment"
     const val WEIGHING = "weighing"
     const val TIMELAPSE = "plant/timelapse"

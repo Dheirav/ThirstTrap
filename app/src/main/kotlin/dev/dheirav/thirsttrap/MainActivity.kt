@@ -152,7 +152,7 @@ class MainActivity : ComponentActivity() {
                                 onLogMore = { id -> nav.navigate(Routes.logEvent(id)) },
                                 onOpenPropagation = { nav.navigate(Routes.PROPAGATION) },
                                 onOpenWeighing = { nav.navigate(Routes.WEIGHING) },
-                                onScanned = { id -> nav.navigate(Routes.logEvent(id)) },
+                                onScanPot = { nav.navigate(Routes.SCAN) },
                             )
                         }
                         composable(Routes.DUE) {
@@ -240,6 +240,19 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Routes.WEIGHING) {
                             WeighingScreen(onBack = { nav.popBackStack() })
+                        }
+                        composable(Routes.SCAN) {
+                            dev.dheirav.thirsttrap.feature.qr.ScanPotScreen(
+                                onBack = { nav.popBackStack() },
+                                // The sticker's job is "log something for this
+                                // pot", so a hit lands on the quick-log screen
+                                // with the scanner popped off the stack.
+                                onPlantId = { id ->
+                                    nav.navigate(Routes.logEvent(id)) {
+                                        popUpTo(Routes.SCAN) { inclusive = true }
+                                    }
+                                },
+                            )
                         }
                         composable(Routes.EXPERIMENTS) {
                             dev.dheirav.thirsttrap.feature.experiments.ExperimentsScreen(

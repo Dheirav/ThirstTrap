@@ -117,7 +117,7 @@ fun DashboardScreen(
     onLogMore: (String) -> Unit,
     onOpenPropagation: () -> Unit,
     onOpenWeighing: () -> Unit,
-    onScanned: (String) -> Unit,
+    onScanPot: () -> Unit,
     viewModel: DashboardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -194,13 +194,7 @@ fun DashboardScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = {
-                        dev.dheirav.thirsttrap.feature.qr.ScanPot.scan(
-                            context = ctx,
-                            onPlantId = onScanned,
-                            onProblem = { scope.launch { snackbarHost.showSnackbar(it) } },
-                        )
-                    }) {
+                    IconButton(onClick = onScanPot) {
                         Icon(AppIcons.qrCodeScanner, contentDescription = "Scan a pot sticker")
                     }
                     // Weighing is a round, not a per-plant errand, so it belongs
