@@ -55,6 +55,7 @@ fun LocationsScreen(
     onBack: () -> Unit,
     onMeasure: (String) -> Unit,
     onOpenConditions: () -> Unit,
+    advanced: Boolean,
     viewModel: LocationsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -72,7 +73,9 @@ fun LocationsScreen(
                 // In the bar rather than only inside a row, because a row needs
                 // a place to exist and this screen has to work when empty.
                 actions = {
-                    TextButton(onClick = onOpenConditions) { Text("Conditions") }
+                    if (advanced) {
+                        TextButton(onClick = onOpenConditions) { Text("Conditions") }
+                    }
                 },
             )
         },
@@ -226,8 +229,10 @@ fun LocationsScreen(
                                 ?: "Measure the light here",
                         )
                     }
-                    TextButton(onClick = { editing = null; onOpenConditions() }) {
-                        Text("Temperature and humidity")
+                    if (advanced) {
+                        TextButton(onClick = { editing = null; onOpenConditions() }) {
+                            Text("Temperature and humidity")
+                        }
                     }
                 }
             },

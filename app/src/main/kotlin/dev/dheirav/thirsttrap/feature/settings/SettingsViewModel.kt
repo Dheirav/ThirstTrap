@@ -92,6 +92,9 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun setAdvancedFeatures(on: Boolean) =
+        viewModelScope.launch { settings.setAdvancedFeatures(on) }
+
     fun setDefaultTrigger(fraction: Double) =
         viewModelScope.launch { settings.setDefaultDepletionTrigger(fraction) }
 

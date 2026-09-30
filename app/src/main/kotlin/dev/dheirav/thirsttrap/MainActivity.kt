@@ -177,6 +177,8 @@ class MainActivity : ComponentActivity() {
                                 onOpenPlaces = { nav.navigate(Routes.PLACES) },
                                 onOpenFigures = { nav.navigate(Routes.STATS) },
                                 onOpenExperiments = { nav.navigate(Routes.EXPERIMENTS) },
+                                onWeighPlant = { id -> nav.navigate(Routes.weight(id)) },
+                                advanced = loaded.advancedFeatures,
                             )
                         }
                         composable(Routes.DUE) {
@@ -304,6 +306,7 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Routes.PLACES) {
                             LocationsScreen(
+                                advanced = loaded.advancedFeatures,
                                 onBack = { nav.popBackStack() },
                                 onMeasure = { nav.navigate(Routes.placeLight(it)) },
                                 onOpenConditions = { nav.navigate(Routes.AMBIENT) },
@@ -340,6 +343,7 @@ class MainActivity : ComponentActivity() {
                             deepLinks = listOf(navDeepLink { uriPattern = "thirsttrap://plant/{id}" }),
                         ) {
                             PlantDetailScreen(
+                                advanced = loaded.advancedFeatures,
                                 onBack = { nav.popBackStack() },
                                 onEdit = { id -> nav.navigate(Routes.plantEdit(id)) },
                                 onCompare = { id -> nav.navigate(Routes.compare(id)) },

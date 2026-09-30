@@ -34,6 +34,7 @@ class SettingsRepositoryImpl @Inject constructor(
     private val canMlKey = doublePreferencesKey("watering_can_ml")
     private val canSizesKey = stringSetPreferencesKey("watering_can_sizes_ml")
     private val introSeenKey = booleanPreferencesKey("intro_seen")
+    private val advancedKey = booleanPreferencesKey("advanced_features")
     private val lastExportKey = longPreferencesKey("last_export_at")
 
     override val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -52,6 +53,7 @@ class SettingsRepositoryImpl @Inject constructor(
             wateringCanSizesMl = prefs[canSizesKey]
                 .orEmpty().mapNotNull { it.toDoubleOrNull() }.sorted(),
             introSeen = prefs[introSeenKey] ?: false,
+            advancedFeatures = prefs[advancedKey] ?: false,
         )
     }
 
@@ -81,6 +83,10 @@ class SettingsRepositoryImpl @Inject constructor(
 
     override suspend fun setIntroSeen(seen: Boolean) {
         context.dataStore.edit { it[introSeenKey] = seen }
+    }
+
+    override suspend fun setAdvancedFeatures(enabled: Boolean) {
+        context.dataStore.edit { it[advancedKey] = enabled }
     }
 
     override suspend fun setWateringCanSizes(sizesMl: List<Double>) {

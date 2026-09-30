@@ -126,6 +126,9 @@ fun DashboardScreen(
     onOpenPlaces: () -> Unit,
     onOpenFigures: () -> Unit,
     onOpenExperiments: () -> Unit,
+    onWeighPlant: (String) -> Unit,
+    /** Settings' "show the specialist tools". Off hides the rarer entries. */
+    advanced: Boolean,
     viewModel: DashboardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -225,10 +228,12 @@ fun DashboardScreen(
                             text = { Text("Propagation board") },
                             onClick = { moreOpen = false; onOpenPropagation() },
                         )
-                        DropdownMenuItem(
-                            text = { Text("Scan a pot sticker") },
-                            onClick = { moreOpen = false; onScanPot() },
-                        )
+                        if (advanced) {
+                            DropdownMenuItem(
+                                text = { Text("Scan a pot sticker") },
+                                onClick = { moreOpen = false; onScanPot() },
+                            )
+                        }
                         HorizontalDivider()
                         DropdownMenuItem(
                             text = { Text("Places") },
@@ -238,10 +243,12 @@ fun DashboardScreen(
                             text = { Text("Figures") },
                             onClick = { moreOpen = false; onOpenFigures() },
                         )
-                        DropdownMenuItem(
-                            text = { Text("Experiments") },
-                            onClick = { moreOpen = false; onOpenExperiments() },
-                        )
+                        if (advanced) {
+                            DropdownMenuItem(
+                                text = { Text("Experiments") },
+                                onClick = { moreOpen = false; onOpenExperiments() },
+                            )
+                        }
                     }
                 },
             )
@@ -370,6 +377,8 @@ fun DashboardScreen(
                     sheetFor = null
                     capture.takePhoto()
                 },
+                onWeigh = { sheetFor = null; onWeighPlant(item.plant.id) },
+                weighable = item.plant.isWeightTrackable,
                 onMore = { sheetFor = null; onLogMore(item.plant.id) },
                 onHistory = { sheetFor = null; onOpenPlant(item.plant.id) },
                 onEdit = { sheetFor = null; onEditPlant(item.plant.id) },
@@ -733,9 +742,11 @@ private fun QuickLogSheet(
     onWatered: () -> Unit,
     onStillWet: () -> Unit,
     onPhoto: () -> Unit,
+    onWeigh: () -> Unit,
     onMore: () -> Unit,
     onHistory: () -> Unit,
     onEdit: () -> Unit,
+    weighable: Boolean,
 ) {
     Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 32.dp)) {
         // The sheet gets the same furniture as a page: a head, a rule, then
@@ -772,6 +783,14 @@ private fun QuickLogSheet(
         ) {
             OutlinedButton(onClick = onPhoto, modifier = Modifier.weight(1f).height(SheetBlock)) {
                 Text("Photo")
+            }
+            // The feature the app exists for was three taps inside a plant's
+            // overflow menu, named after its implementation. One tap from the
+            // list, and hidden only where weight means nothing.
+            if (weighable) {
+                OutlinedButton(onClick = onWeigh, modifier = Modifier.weight(1f).height(SheetBlock)) {
+                    Text("Weigh it")
+                }
             }
             OutlinedButton(onClick = onMore, modifier = Modifier.weight(1f).height(SheetBlock)) {
                 Text("More")

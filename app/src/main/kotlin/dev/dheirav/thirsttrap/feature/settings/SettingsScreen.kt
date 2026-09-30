@@ -176,6 +176,24 @@ fun SettingsScreen(
             }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            SectionHeader("Extras")
+            SettingRow(
+                title = "Show the specialist tools",
+                subtitle = "Pot stickers and the scanner, experiments, and logging room " +
+                    "temperature by hand. None of them is useless and none of them is for " +
+                    "everybody: stickers pay off at thirty pots and a printer, and " +
+                    "experiments assume you want to run a controlled test on a houseplant.",
+            ) {
+                Switch(
+                    checked = settings.advancedFeatures,
+                    onCheckedChange = viewModel::setAdvancedFeatures,
+                    modifier = Modifier.semantics {
+                        contentDescription = "Show the specialist tools"
+                    },
+                )
+            }
+
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
             SectionHeader("Help")
             OutlinedButton(onClick = onOpenHelpIndex, modifier = Modifier.fillMaxWidth()) {
                 Text("Something is not working")

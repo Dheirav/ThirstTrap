@@ -55,6 +55,17 @@ data class AppSettings(
      * never read by anything.
      */
     val introSeen: Boolean = false,
+    /**
+     * Reveals the specialist corners: pot stickers and the scanner, experiments,
+     * and logging room conditions by hand.
+     *
+     * Off by default. None of them is useless, and each is noise for somebody
+     * with four plants: stickers pay off at thirty pots and a printer,
+     * experiments assume you want a controlled test on a houseplant, and room
+     * conditions is a chore whose payoff is one explanatory sentence.
+     * docs/SHARING.md section 3.
+     */
+    val advancedFeatures: Boolean = false,
 )
 
 interface SettingsRepository {
@@ -67,6 +78,7 @@ interface SettingsRepository {
     suspend fun setWateringCanMl(ml: Double)
     suspend fun setWateringCanSizes(sizesMl: List<Double>)
     suspend fun setIntroSeen(seen: Boolean)
+    suspend fun setAdvancedFeatures(enabled: Boolean)
 
     /** Called by the export flow on success; nothing else writes it. */
     suspend fun markExported(atMillis: Long)

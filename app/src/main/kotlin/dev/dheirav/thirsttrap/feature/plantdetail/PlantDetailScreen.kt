@@ -81,6 +81,7 @@ import androidx.compose.ui.text.withLink
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun PlantDetailScreen(
+    advanced: Boolean,
     onBack: () -> Unit,
     onEdit: (String) -> Unit,
     onCompare: (String) -> Unit,
@@ -183,7 +184,7 @@ fun PlantDetailScreen(
                                 )
                                 if (p.isWeightTrackable) {
                                     DropdownMenuItem(
-                                        text = { Text("Weight and prediction") },
+                                        text = { Text("When it needs water") },
                                         onClick = { menuOpen = false; onWeigh(p.id) },
                                     )
                                 }
@@ -211,10 +212,12 @@ fun PlantDetailScreen(
                                     },
                                     onClick = { menuOpen = false; onCare(p.id) },
                                 )
-                                DropdownMenuItem(
-                                    text = { Text("Pot sticker") },
-                                    onClick = { menuOpen = false; onSticker(p.id) },
-                                )
+                                if (advanced) {
+                                    DropdownMenuItem(
+                                        text = { Text("Pot sticker") },
+                                        onClick = { menuOpen = false; onSticker(p.id) },
+                                    )
+                                }
                                 DropdownMenuItem(
                                     text = { Text("Edit plant") },
                                     onClick = { menuOpen = false; onEdit(p.id) },

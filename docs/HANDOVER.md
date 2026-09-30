@@ -749,6 +749,29 @@ N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
 
+### D39 — The feature the app exists for was three taps deep and named after its plumbing (2026-09-30)
+
+"Weight and prediction", in a plant's overflow menu. A screen title rather than
+an invitation, describing the mechanism instead of the question. It is now
+**"When it needs water"**, which is what someone actually wants to know.
+
+The name was the smaller half. The real fix is placement: **"Weigh it" is in the
+quick-log sheet**, one tap from the list, beside Photo and More. Weighing was
+reachable only by opening a plant, then its menu, then a screen named after an
+implementation detail, which is a strange place to put the one thing no other
+plant app does. It is hidden where `isWeightTrackable` is false, so the closed
+terrarium does not offer it.
+
+**The Advanced toggle** gates the three genuinely specialist things: pot stickers
+and the scanner, experiments, and logging room temperature by hand. Off by
+default. None of them is useless and none is for everybody, which is the
+distinction that matters: stickers pay off at thirty pots and a printer, and
+experiments assume you want to run a controlled test on a houseplant. Someone
+with four plants should not have to read past them.
+
+Read in three places and written in one, checked by grep rather than assumed,
+because a flag that gates nothing is the failure this codebase keeps producing.
+
 ### D38 — "Watered today" did not mean today (2026-09-30)
 
 Found by following up a remark rather than by looking for it. The user mentioned
