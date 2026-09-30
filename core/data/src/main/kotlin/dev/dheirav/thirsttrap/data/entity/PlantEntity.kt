@@ -44,6 +44,15 @@ data class PlantEntity(
      * every existing plant keeps the behaviour it had.
      */
     @ColumnInfo(name = "weight_tracked", defaultValue = "1") val weightTracked: Boolean = true,
+    /**
+     * How the pot reaches the scale, and the scale's step in grams. Defaults
+     * are the whole pot on a kitchen scale, which is what every plant written
+     * before these columns was implicitly using.
+     */
+    @ColumnInfo(name = "weighing_method", defaultValue = "'WHOLE_POT'")
+    val weighingMethod: String = "WHOLE_POT",
+    @ColumnInfo(name = "weighing_step_grams", defaultValue = "1.0")
+    val weighingStepGrams: Double = 1.0,
     @ColumnInfo(name = "cover_photo_id") val coverPhotoId: String? = null,
     /**
      * Where a cutting has got to, or null for a plant that was never one.

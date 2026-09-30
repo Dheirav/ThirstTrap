@@ -38,7 +38,7 @@ fun diagnoseDrying(
     val firstReading = readings.firstOrNull() ?: return null
     val daysSinceWatering = (nowMillis - firstReading.timestampMillis) / MILLIS_PER_DAY
 
-    val fit = fitSegmentSlope(segment, anchors)
+    val fit = fitSegmentSlope(segment, anchors, plant.weighingStepGrams)
 
     if (fit is SlopeFit.Fitted && readings.size >= 3 &&
         abs(fit.gramsPerDay) > FAST_DRYING_MULTIPLIER * abs(baseline)

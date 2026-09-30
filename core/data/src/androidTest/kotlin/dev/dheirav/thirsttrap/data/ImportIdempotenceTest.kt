@@ -50,6 +50,9 @@ class ImportIdempotenceTest {
             db.weightDao(),
             db.ambientDao(),
             db.fertilizerDao(),
+            UsageRepositoryImpl(db.usageDao()),
+            db.usageDao(),
+            db.experimentDao(),
             PhotoStore(context),
         )
     }

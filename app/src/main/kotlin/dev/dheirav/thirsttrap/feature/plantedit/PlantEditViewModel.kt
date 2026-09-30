@@ -63,12 +63,34 @@ data class PlantEditUiState(
      */
     val depletionTriggerPct: Int = 50,
     val weightTracked: Boolean = true,
+    val weighingMethod: dev.dheirav.thirsttrap.domain.WeighingMethod =
+        dev.dheirav.thirsttrap.domain.WeighingMethod.WHOLE_POT,
+    val weighingStep: String = "1",
+    /** What the plant had when the form opened, to spot a real change on save. */
+    val originalWeighingMethod: dev.dheirav.thirsttrap.domain.WeighingMethod? = null,
+    val originalWeighingStep: Double? = null,
     val archived: Boolean = false,
     val lastWatered: LastWatered = LastWatered.UNKNOWN,
     val loading: Boolean = true,
 ) {
     val isNew: Boolean get() = id == null
     val canSave: Boolean get() = name.isNotBlank()
+
+    /** The scale's step, or 1 g when the field is empty or nonsense. */
+    val weighingStepGrams: Double
+        get() = weighingStep.trim().toDoubleOrNull()?.takeIf { it > 0 } ?: 1.0
+
+    /**
+     * True only for an existing plant whose method or scale actually moved. A
+     * new plant has no anchors to invalidate, and reopening the form without
+     * touching anything must not throw a drying history away.
+     */
+    val weighingChanged: Boolean
+        get() = originalWeighingMethod != null &&
+            (
+                originalWeighingMethod != weighingMethod ||
+                    kotlin.math.abs((originalWeighingStep ?: 1.0) - weighingStepGrams) > 0.0001
+                )
 }
 
 @HiltViewModel
@@ -107,6 +129,12 @@ class PlantEditViewModel @Inject constructor(
                         // percent on every open-and-save.
                         depletionTriggerPct = (p.depletionTrigger * 100).roundToInt(),
                         weightTracked = p.weightTracked,
+                        weighingMethod = p.weighingMethod,
+                        weighingStep = p.weighingStepGrams.let {
+                            if (it % 1.0 == 0.0) it.toLong().toString() else it.toString()
+                        },
+                        originalWeighingMethod = p.weighingMethod,
+                        originalWeighingStep = p.weighingStepGrams,
                         archived = p.archived,
                         checkIntervalDays = existing?.intervalDays?.toString().orEmpty(),
                         loading = false,
@@ -130,6 +158,16 @@ class PlantEditViewModel @Inject constructor(
     fun onContainer(v: String) { _state.value = _state.value.copy(containerDesc = v) }
     fun onMedium(v: Medium) { _state.value = _state.value.copy(medium = v) }
     fun onWeightTracked(v: Boolean) { _state.value = _state.value.copy(weightTracked = v) }
+
+    fun onWeighingMethod(v: dev.dheirav.thirsttrap.domain.WeighingMethod) {
+        _state.value = _state.value.copy(weighingMethod = v)
+    }
+
+    fun onWeighingStep(v: String) {
+        _state.value = _state.value.copy(
+            weighingStep = v.filter { it.isDigit() || it == '.' }.take(6),
+        )
+    }
     fun onSource(v: PlantSource) { _state.value = _state.value.copy(source = v) }
     fun onLastWatered(v: LastWatered) { _state.value = _state.value.copy(lastWatered = v) }
     fun onDepletionTrigger(pct: Int) {
@@ -184,6 +222,14 @@ class PlantEditViewModel @Inject constructor(
                 source = s.source,
                 depletionTrigger = s.depletionTriggerPct / 100.0,
                 weightTracked = s.weightTracked,
+                weighingMethod = s.weighingMethod,
+                weighingStepGrams = s.weighingStepGrams,
+                // A change of method invalidates the anchors exactly as a repot
+                // does: they describe a measurement, not a plant. Tipping a pot
+                // that used to be lifted changes every number by a constant
+                // factor, so the old wet and dry ends describe nothing.
+                anchors = if (s.weighingChanged) null else start.anchors,
+                needsRecalibration = s.weighingChanged || start.needsRecalibration,
                 archived = s.archived,
             )
             repository.upsertPlant(edited)

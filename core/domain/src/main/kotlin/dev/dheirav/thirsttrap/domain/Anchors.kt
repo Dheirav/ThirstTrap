@@ -27,9 +27,19 @@ data class Anchors(
     fun triggerWeight(depletionTrigger: Double): Double =
         wetGrams - depletionTrigger * rangeGrams
 
-    /** Below this, drying is not distinguishable from scale noise. */
-    val minMeaningfulSlope: Double
-        get() = max(MIN_SLOPE_GRAMS_PER_DAY, MIN_SLOPE_RANGE_FRACTION * rangeGrams)
+    /**
+     * Below this, drying is not distinguishable from noise.
+     *
+     * Two floors, and they answer different questions. The fraction of the
+     * range asks whether the change matters for this pot, and scales with it.
+     * [stepGrams] asks whether the instrument could even have seen it, and does
+     * not scale: a daily loss smaller than one increment of the scale is a
+     * rounding artefact whatever the pot weighs. A bathroom scale in 100 g
+     * steps needs a floor a hundred times a kitchen scale's, or the model fits
+     * a curve to quantisation.
+     */
+    fun minMeaningfulSlope(stepGrams: Double = MIN_SLOPE_GRAMS_PER_DAY): Double =
+        max(max(stepGrams, MIN_SLOPE_GRAMS_PER_DAY), MIN_SLOPE_RANGE_FRACTION * rangeGrams)
 
     companion object {
         /**

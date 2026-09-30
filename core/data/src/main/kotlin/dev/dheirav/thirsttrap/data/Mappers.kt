@@ -56,6 +56,10 @@ fun PlantEntity.toDomain(): Plant = Plant(
     slopeEwmaGramsPerDay = slopeEwmaGPerDay,
     needsRecalibration = needsRecalibration,
     weightTracked = weightTracked,
+    weighingMethod = runCatching {
+        dev.dheirav.thirsttrap.domain.WeighingMethod.valueOf(weighingMethod.uppercase())
+    }.getOrDefault(dev.dheirav.thirsttrap.domain.WeighingMethod.WHOLE_POT),
+    weighingStepGrams = weighingStepGrams,
     archived = archived,
     coverPhotoId = coverPhotoId,
     propagationStage = propagationStage?.let {
@@ -87,6 +91,8 @@ fun Plant.toEntity(createdAt: Long, updatedAt: Long): PlantEntity = PlantEntity(
     slopeEwmaGPerDay = slopeEwmaGramsPerDay,
     needsRecalibration = needsRecalibration,
     weightTracked = weightTracked,
+    weighingMethod = weighingMethod.name,
+    weighingStepGrams = weighingStepGrams,
     archived = archived,
     coverPhotoId = coverPhotoId,
     propagationStage = propagationStage?.name,

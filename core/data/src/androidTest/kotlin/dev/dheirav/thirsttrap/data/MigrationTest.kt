@@ -123,6 +123,31 @@ class MigrationTest {
     }
 
     @Test
+    fun migrate13To14_defaultsEveryPotToAKitchenScale() {
+        helper.createDatabase(TEST_DB, 13).use { db ->
+            db.execSQL(
+                """
+                INSERT INTO plants (
+                    id, name, source, medium, status, depletion_trigger,
+                    dry_anchor_provisional, needs_recalibration, weight_tracked,
+                    archived, created_at, updated_at
+                ) VALUES ('p1', 'Monstera', 'bought', 'soil', 'active', 0.5, 0, 0, 1, 0, 1000, 1000)
+                """.trimIndent(),
+            )
+        }
+
+        val db = helper.runMigrationsAndValidate(TEST_DB, 14, true)
+
+        // The defaults have to describe what the plant was already doing, or an
+        // upgrade would silently change every existing prediction.
+        db.query("SELECT weighing_method, weighing_step_grams FROM plants WHERE id = 'p1'").use {
+            assertTrue("the plant did not survive the migration", it.moveToFirst())
+            assertEquals("WHOLE_POT", it.getString(0))
+            assertEquals(1.0, it.getDouble(1), 1e-9)
+        }
+    }
+
+    @Test
     fun migrateAll_fromTheOldestSchemaForward() {
         helper.createDatabase(TEST_DB, 1).close()
         // Every auto-migration in sequence, validated against the exported

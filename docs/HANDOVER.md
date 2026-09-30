@@ -15,7 +15,7 @@ all of it running on the target phone against a real plant diary.**
 
 Repo: https://github.com/Dheirav/ThirstTrap (branch `main`).
 
-- **214 JVM tests** across `:core:domain` and `:core:ui`, running in about a
+- **260 JVM tests** across `:core:domain` and `:core:ui`, running in about a
   second with no device attached.
 - **13 instrumented tests** in `:core:data`, covering schema migrations, the
   reminder planning that gathers its own inputs, and the export/import round
@@ -744,6 +744,47 @@ owes them the one fact that system runs on: Settings now shows "Last export:
 N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
+
+### D35 — Big pots are not excluded, because the model never needed real grams (2026-09-30)
+
+Weighing assumed a kitchen scale, which ruled out the plants people care most
+about: the floor-standing Monstera, the ficus, anything too heavy to lift or too
+wide for the platform. That looked like a hard limit on the differentiator.
+
+It is not, and the reason is arithmetic. Depletion is (wet - now) / (wet - dry)
+and the ETA is remaining over slope, so a constant factor cancels in both. Any
+measurement *proportional* to the pot's weight carries the same information as
+the weight. `PartialWeightInvarianceTest` runs the real assembly at 1.0, 0.6,
+0.38, 0.25 and 0.1 of the pot and gets the same predicted day to within a
+microsecond, so this is tested rather than argued.
+
+Which makes the practical method: tip the pot onto one edge with the scale under
+that edge and read whatever it says, roughly a third of the weight, lifting
+nothing. Tip it the same way each time and the number is comparable. A bathroom
+scale works too, and a luggage scale for anything hanging.
+
+**What does not cancel is the instrument.** `Anchors.minMeaningfulSlope` was
+`max(1 g, 0.5% of the range)`. The fraction scales with the pot; the 1 g is a
+claim about a kitchen scale's own noise and does not. For a bathroom scale in
+100 g steps it is about a hundred times too low, so the model would fit a drying
+curve to rounding. It now takes the instrument's step: `max(max(step, 1 g),
+0.5% of range)`. The test proves both directions, that 40 g a day is a real
+slope on a kitchen scale and unsupportable on a 100 g one, and that the same
+coarse scale works fine under a pot moving 400 g a day.
+
+So `Plant` gains `weighingMethod` and `weighingStepGrams`, schema v14, both
+defaulting to the whole pot on a 1 g scale, which is exactly what every existing
+plant was implicitly using. All 260 JVM tests passed unchanged after the
+threading, which is the evidence that the default is truly a no-op.
+
+A change of method invalidates the anchors exactly as a repot does, because they
+describe a measurement and not a plant, and the edit form says so before saving
+rather than letting it be discovered later. Same reasoning as D24.
+
+**Found on the way:** `ImportIdempotenceTest` had not compiled since the F11/F12
+commit, which added `usageDao`, `experimentDao` and a `UsageRepository` to
+`ExportRepositoryImpl` without updating the test's construction of it. The whole
+instrumented suite has therefore been unrunnable since then. Fixed here.
 
 ### D34 — Five in one sitting: evaluation, instrumentation, F11, F12, honest confidence (2026-09-27)
 

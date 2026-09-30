@@ -20,12 +20,13 @@ import org.junit.Test
  */
 class PartialWeightInvarianceTest {
 
-    private fun run(scale: Double, nowDays: Double): WeightState {
+    private fun run(scale: Double, nowDays: Double, stepGrams: Double = 1.0): WeightState {
         val readings = (0..4).map {
             reading(it.toDouble(), (1400.0 - 40.0 * it) * scale)
         }
         return assembleWeightState(
-            plant(anchors = Anchors(1400.0 * scale, 1000.0 * scale, dryIsProvisional = false)),
+            plant(anchors = Anchors(1400.0 * scale, 1000.0 * scale, dryIsProvisional = false))
+                .copy(weighingStepGrams = stepGrams),
             readings,
             emptyList(),
             emptyList(),
@@ -88,5 +89,41 @@ class PartialWeightInvarianceTest {
             SuppressionReason.NO_MEASURABLE_DRYING,
             (s.prediction as Prediction.NeedAnotherReading).reason,
         )
+    }
+
+    @Test
+    fun `a coarse scale raises the floor instead of fitting its own rounding`() {
+        // 40 g a day is a real slope on a kitchen scale and is indistinguishable
+        // from rounding on a bathroom scale that moves in 100 g steps. The pot
+        // and the readings are identical; only the instrument differs.
+        val kitchen = run(1.0, 3.0, stepGrams = 1.0)
+        assertTrue("got ${kitchen.prediction}", kitchen.prediction is Prediction.Eta)
+
+        val bathroom = run(1.0, 3.0, stepGrams = 100.0)
+        assertTrue(
+            "a 100 g step should not support a 40 g/day slope, got ${bathroom.prediction}",
+            bathroom.prediction is Prediction.NeedAnotherReading,
+        )
+        assertEquals(
+            SuppressionReason.NO_MEASURABLE_DRYING,
+            (bathroom.prediction as Prediction.NeedAnotherReading).reason,
+        )
+    }
+
+    @Test
+    fun `a coarse scale still works once the pot moves enough water`() {
+        // The same bathroom scale under a 20 kg pot holding 6 kg of available
+        // water and losing 400 g a day: four steps a day, which it can
+        // genuinely see, and still short of its trigger on day 4.
+        val readings = (0..4).map { reading(it.toDouble(), 20_000.0 - 400.0 * it) }
+        val s = assembleWeightState(
+            plant(anchors = Anchors(20_000.0, 14_000.0, dryIsProvisional = false))
+                .copy(weighingStepGrams = 100.0),
+            readings,
+            emptyList(),
+            emptyList(),
+            T0 + 3 * DAY,
+        )
+        assertTrue("got ${s.prediction}", s.prediction is Prediction.Eta)
     }
 }

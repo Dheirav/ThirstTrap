@@ -67,7 +67,7 @@ fun predictWatering(
     // Use the last measured weight, not an extrapolation, to decide "now".
     if (latest.grams <= triggerWeight) return Prediction.WaterNow
 
-    val fit = fitSegmentSlope(current, anchors)
+    val fit = fitSegmentSlope(current, anchors, plant.weighingStepGrams)
     val (slope, confidence) = when (fit) {
         is SlopeFit.Fitted -> {
             val c = when {
@@ -83,7 +83,7 @@ fun predictWatering(
         SlopeFit.Insufficient -> {
             val prior = plant.slopeEwmaGramsPerDay
                 ?: return Prediction.NeedAnotherReading(SuppressionReason.ONE_READING_NO_HISTORY)
-            if (prior > -anchors.minMeaningfulSlope) {
+            if (prior > -anchors.minMeaningfulSlope(plant.weighingStepGrams)) {
                 return Prediction.NeedAnotherReading(SuppressionReason.NO_MEASURABLE_DRYING)
             }
             prior to Confidence.LOW

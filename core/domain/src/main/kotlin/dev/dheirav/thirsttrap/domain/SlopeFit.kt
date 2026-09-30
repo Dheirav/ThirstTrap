@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.domain
 
+import kotlin.math.max
+
 import kotlin.math.abs
 
 sealed interface SlopeFit {
@@ -55,7 +57,11 @@ fun theilSenSlope(points: List<Pair<Double, Double>>): Double? {
  * includes any positive slope — pots do not gain weight on their own, so that
  * is either noise or a watering the segmentation missed.
  */
-fun fitSegmentSlope(segment: DryingSegment, anchors: Anchors?): SlopeFit {
+fun fitSegmentSlope(
+    segment: DryingSegment,
+    anchors: Anchors?,
+    stepGrams: Double = MIN_SLOPE_GRAMS_PER_DAY,
+): SlopeFit {
     val readings = segment.readings.filterNot { it.excluded }.takeLast(MAX_FIT_READINGS)
     if (readings.size < 2) return SlopeFit.Insufficient
 
@@ -65,7 +71,7 @@ fun fitSegmentSlope(segment: DryingSegment, anchors: Anchors?): SlopeFit {
     val slope = theilSenSlope(points) ?: return SlopeFit.Insufficient
     val method = if (readings.size == 2) SlopeMethod.TWO_POINT else SlopeMethod.THEIL_SEN
 
-    val deadBand = anchors?.minMeaningfulSlope ?: MIN_SLOPE_GRAMS_PER_DAY
+    val deadBand = anchors?.minMeaningfulSlope(stepGrams) ?: max(stepGrams, MIN_SLOPE_GRAMS_PER_DAY)
     if (slope > -deadBand) return SlopeFit.NoMeasurableDrying(slope)
 
     return SlopeFit.Fitted(slope, method, readings.size)

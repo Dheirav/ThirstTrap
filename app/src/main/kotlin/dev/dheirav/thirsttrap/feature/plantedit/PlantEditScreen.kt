@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.domain.Medium
+import dev.dheirav.thirsttrap.ui.Card
+import dev.dheirav.thirsttrap.domain.WeighingMethod
 import dev.dheirav.thirsttrap.domain.PlantSource
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -216,6 +218,63 @@ fun PlantEditScreen(
                     steps = 11,
                     modifier = Modifier.fillMaxWidth(),
                 )
+            }
+
+            // Only once the pot is actually being weighed. The method and the
+            // scale's step are what make one reading comparable to the next.
+            if (state.medium != Medium.WATER && state.weightTracked) {
+                Text("How you weigh it", style = MaterialTheme.typography.labelLarge)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    WeighingMethod.entries.forEach { m ->
+                        FilterChip(
+                            selected = state.weighingMethod == m,
+                            onClick = { viewModel.onWeighingMethod(m) },
+                            label = { Text(m.label) },
+                        )
+                    }
+                }
+                Text(
+                    state.weighingMethod.hint,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                OutlinedTextField(
+                    value = state.weighingStep,
+                    onValueChange = viewModel::onWeighingStep,
+                    label = { Text("Smallest step your scale shows") },
+                    placeholder = { Text("1 for a kitchen scale, 100 for a bathroom one") },
+                    suffix = { Text("g") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Text(
+                    "A daily loss smaller than one step is rounding, not drying, so this " +
+                        "decides when the app stays quiet rather than guessing.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                // Said before saving, not discovered afterwards. Same reasoning
+                // as the repot warning on the log form.
+                if (state.weighingChanged) {
+                    Card(Modifier.fillMaxWidth()) {
+                        Column(Modifier.padding(14.dp)) {
+                            Text(
+                                "This clears the weight setup",
+                                style = MaterialTheme.typography.titleSmall,
+                            )
+                            Text(
+                                "Measuring it a different way changes every reading by a " +
+                                    "constant, so the full and dry marks describe a " +
+                                    "measurement that no longer exists. Weigh it once after " +
+                                    "watering and they set themselves again.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 4.dp),
+                            )
+                        }
+                    }
+                }
             }
 
             Text("Where it came from", style = MaterialTheme.typography.labelLarge)

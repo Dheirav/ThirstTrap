@@ -91,7 +91,7 @@ fun assembleWeightState(
     var ewma: Double? = null
     var closed = 0
     for (segment in segments.dropLast(1)) {
-        val fit = fitSegmentSlope(segment, anchors)
+        val fit = fitSegmentSlope(segment, anchors, plant.weighingStepGrams)
         if (fit is SlopeFit.Fitted) {
             ewma = updateEwma(ewma, fit.gramsPerDay)
             closed++
@@ -103,7 +103,8 @@ fun assembleWeightState(
     val current = segments.lastOrNull()
     val latest = current?.readings?.lastOrNull { !it.excluded }
 
-    val slope = (current?.let { fitSegmentSlope(it, anchors) } as? SlopeFit.Fitted)?.gramsPerDay
+    val slope = (current?.let { fitSegmentSlope(it, anchors, plant.weighingStepGrams) }
+        as? SlopeFit.Fitted)?.gramsPerDay
 
     return WeightState(
         plant = withPrior,

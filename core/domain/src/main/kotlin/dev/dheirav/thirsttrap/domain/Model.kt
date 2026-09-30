@@ -135,6 +135,20 @@ data class Plant(
      * "not drying measurably" forever while the weighing round kept asking.
      */
     val weightTracked: Boolean = true,
+    /**
+     * How this pot gets onto a scale, and how coarse that scale is.
+     *
+     * The model never needed the pot's true weight, only a number proportional
+     * to it, because depletion is a ratio and the ETA is remaining over slope,
+     * so a constant factor cancels. That is what lets a heavy pot be tipped
+     * onto one edge instead of lifted. See PartialWeightInvarianceTest.
+     *
+     * What does not cancel is the instrument's own noise, which is why the step
+     * is recorded separately. 1 g is a kitchen scale and the default, so every
+     * plant that existed before this field behaves exactly as it did.
+     */
+    val weighingMethod: WeighingMethod = WeighingMethod.WHOLE_POT,
+    val weighingStepGrams: Double = 1.0,
     val archived: Boolean = false,
     /** Explicitly chosen cover. Null means "use the most recent photo". */
     val coverPhotoId: String? = null,
@@ -155,6 +169,29 @@ data class Plant(
 
     val isWeightTrackable: Boolean
         get() = weightTracked && medium != Medium.WATER
+}
+
+/**
+ * How a pot is put on the scale. Recorded because a change of method
+ * invalidates the anchors exactly as a repot does: they describe a measurement,
+ * not a plant.
+ */
+@Serializable
+enum class WeighingMethod(val label: String, val hint: String) {
+    WHOLE_POT(
+        "The whole pot",
+        "Lift it onto the scale. Fine until the pot is too heavy or too wide.",
+    ),
+    TIPPED(
+        "Tipped on one edge",
+        "Scale under one side, the other stays on the floor. Reads about a third " +
+            "of the weight, which is enough: only the change matters, so tip it " +
+            "the same way each time.",
+    ),
+    HANGING(
+        "Hanging",
+        "A luggage scale and a sling, for anything that hangs.",
+    ),
 }
 
 @Serializable
