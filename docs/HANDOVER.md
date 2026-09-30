@@ -10,9 +10,9 @@ Last updated: 2026-09-09
 
 ## Status
 
-**Phase: everything the product set out to do is built. 99 of 102 features, and
-the three that are not are one decision and two optional tiers of the same
-feature. Schema v14, running daily on the target phone.**
+**Phase: complete as specified. All 102 features are built or deliberately
+closed, and nothing is pending. Schema v14, 260 JVM tests and 15 instrumented
+tests passing, running daily on the target phone.**
 
 Repo: https://github.com/Dheirav/ThirstTrap (branch `main`).
 
@@ -749,6 +749,39 @@ owes them the one fact that system runs on: Settings now shows "Last export:
 N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
+
+### D42 — Plant identification closed entirely (2026-09-30)
+
+F25c was closed by measurement, D41. F25b is closed by choice, which is the
+user's call and the right one.
+
+It would have been cheap: a settings field for an API key, one HTTP call, no
+bundled model, no size cost. The reasons not to are about what the app is.
+
+**It sends a photo of someone's home to a third party.** The app transmits
+exactly one thing today, a plant name the user typed, off by default, and
+Settings says so in those words. A photograph is a different category of data
+and no amount of opt-in wording makes it the same promise.
+
+**It is the one feature every competitor has**, and ours would be the worse
+version: an API key the user has to go and get, which almost nobody will, in
+front of a result the app would then have to hedge.
+
+**The gap it leaves is smaller than it looks.** Identification answers "I have
+no idea what this is". The app already resolves a name you *type* against GBIF,
+which covers half-knowing, and the 164-species catalogue covers recognising it
+once named. Someone who genuinely has no idea is better served by asking a
+person or one of the many apps that specialise in it.
+
+**The through-line, now that three things have been closed the same way.** F16
+cloud backup, F25 identification, and gamification from the very beginning. This
+app is defined as much by what it refuses as by what it does: it will not keep
+score, it will not take your data off the phone, and it will not guess at a
+plant. The one thing it does that nothing else does, it does by measurement. An
+honest "I do not know" is the product, and every closure has been an instance of
+that rather than a gap in it.
+
+All 102 features are now either built or deliberately closed.
 
 ### D41 — Plant identification: evaluated, and closed (2026-09-30)
 

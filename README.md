@@ -79,6 +79,12 @@ it can see you watered recently.
 - No account, ever. No social feed. No sharing.
 - No moisture probes: the cheap resistive ones corrode within weeks and the app
   would be reporting their decay.
+- **No plant identification.** It was evaluated rather than assumed: the best
+  open offline classifier got 0 of 48 photos right here, because it is a
+  field guide for wild plants and 40 of 59 common indoor genera are simply
+  absent from its labels. The online version would send a photo of your home to
+  a third party to do a job every other app already does. You can type a name
+  and have it resolved; the app will not guess from a picture.
 - No sensor hardware for the weight model. A kitchen scale you already own is
   the whole apparatus.
 
