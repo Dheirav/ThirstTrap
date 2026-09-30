@@ -41,14 +41,28 @@ interface LocationRepository {
 }
 
 /**
- * Every place a plant currently lives, plus every place that has a note.
+ * Every place a plant lives, has a note, or has ever been measured.
  *
- * A location with no plants in it is still worth listing - it is usually the
+ * A location with no plants in it is still worth listing: it is usually the
  * spot somebody is deciding whether to move something to, which is the whole
  * point of writing down what the light is like there.
+ *
+ * [measuredIn] was the missing third source. A room temperature had been
+ * recorded for "Hostel Room" and no plant claimed that location, so the place
+ * did not exist as far as this function was concerned, and the reading was
+ * unreachable from the only screen that lists places. Measuring somewhere is as
+ * good a claim that it is a place as putting a plant there.
  */
-fun knownLocations(plants: List<Plant>, notes: List<LocationNote>): List<String> =
-    (plants.mapNotNull { it.location?.takeIf { l -> l.isNotBlank() } } + notes.map { it.name })
+fun knownLocations(
+    plants: List<Plant>,
+    notes: List<LocationNote>,
+    measuredIn: List<String> = emptyList(),
+): List<String> =
+    (
+        plants.mapNotNull { it.location?.takeIf { l -> l.isNotBlank() } } +
+            notes.map { it.name } +
+            measuredIn.filter { it.isNotBlank() }
+        )
         .distinctBy { it.lowercase() }
         .sortedBy { it.lowercase() }
 

@@ -50,7 +50,7 @@ class LocationsViewModel @Inject constructor(
             val counts = plantsPerLocation(plantList)
             val byKey = notes.associateBy { it.name.lowercase() }
             LocationsUiState(
-                rows = knownLocations(plantList, notes).map { name ->
+                rows = knownLocations(plantList, notes, readings.map { it.location }).map { name ->
                     LocationRow(
                         name = name,
                         note = byKey[name.lowercase()],

@@ -69,6 +69,11 @@ fun LocationsScreen(
                         Icon(AppIcons.arrowBack, contentDescription = "Back")
                     }
                 },
+                // In the bar rather than only inside a row, because a row needs
+                // a place to exist and this screen has to work when empty.
+                actions = {
+                    TextButton(onClick = onOpenConditions) { Text("Conditions") }
+                },
             )
         },
     ) { padding ->
@@ -83,8 +88,8 @@ fun LocationsScreen(
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Text(
-                    "Give a plant a location when you add or edit it, and the place appears " +
-                        "here to be described.",
+                    "Give a plant a location when you add or edit it, or record the room " +
+                        "conditions somewhere, and the place appears here to be described.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,

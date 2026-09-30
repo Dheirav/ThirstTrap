@@ -63,4 +63,28 @@ class LocationsTest {
         assertTrue(note("x", lux = 900f).hasAnything)
         assertFalse(note("x", text = "   ").hasAnything)
     }
+
+    @Test
+    fun `a place you have only measured is still a place`() {
+        // The real case: a room temperature recorded for "Hostel Room" with no
+        // plant claiming that location. The place did not exist as far as this
+        // function was concerned, so the reading was unreachable from the only
+        // screen that lists places.
+        val found = knownLocations(
+            plants = emptyList(),
+            notes = emptyList(),
+            measuredIn = listOf("Hostel Room"),
+        )
+        assertEquals(listOf("Hostel Room"), found)
+    }
+
+    @Test
+    fun `the three sources are one list, matched case-insensitively`() {
+        val found = knownLocations(
+            plants = listOf(plant().copy(location = "Windowsill")),
+            notes = listOf(LocationNote(name = "Balcony")),
+            measuredIn = listOf("windowsill", "Hostel Room", "", "  "),
+        )
+        assertEquals(listOf("Balcony", "Hostel Room", "Windowsill"), found)
+    }
 }
