@@ -17,7 +17,27 @@ data class Anchors(
     val dryGrams: Double,
     val dryIsProvisional: Boolean,
 ) {
-    val rangeGrams: Double get() = wetGrams - dryGrams
+    /**
+     * The usable span, floored so that it can always be divided by.
+     *
+     * A pair that spans nothing is not a real calibration and [isUsable] is the
+     * check that rejects one, but the floor sits here too because this is where
+     * every division happens. A stored row can carry anything (a hand-edited
+     * anchor, a truncated import), and the failure without the floor is not a
+     * wrong number, it is NaN reaching the dashboard ring.
+     */
+    val rangeGrams: Double get() = max(wetGrams - dryGrams, MIN_ANCHOR_RANGE_GRAMS)
+
+    /**
+     * Whether these anchors describe a pot that can be interpreted at all.
+     *
+     * A dry end at or above the wet end leaves no water to deplete, so every
+     * derived number would be fiction. Treated as no calibration rather than
+     * patched into one: the readings are still drawn, and the app asks for a
+     * post-water weigh instead of predicting from an impossible pair.
+     */
+    val isUsable: Boolean
+        get() = wetGrams > 0.0 && wetGrams - dryGrams >= MIN_ANCHOR_RANGE_GRAMS
 
     /** 0.0 = just watered, 1.0 = at the dry anchor. Past 1.0 is real and worth showing. */
     fun depletionAt(grams: Double): Double =
@@ -66,12 +86,26 @@ data class Anchors(
  */
 fun Anchors.withReading(reading: WeightReading): Anchors = when (reading.context) {
     ReadingContext.POST_WATER, ReadingContext.CALIBRATION ->
-        copy(wetGrams = reading.grams)
+        // A wet end at or below the dry end leaves nothing to deplete. It also
+        // means the pot itself got lighter than the dry weight already measured
+        // for it, which a watering cannot do: something physical changed (the
+        // plant was pruned back, soil came out with a division, the scale was
+        // tared differently). The measured dry end describes a pot that no
+        // longer exists, so it goes back to an estimate rather than being kept
+        // as half of an impossible pair.
+        if (reading.grams - dryGrams < MIN_ANCHOR_RANGE_GRAMS) Anchors.fromWetAnchor(reading.grams)
+        else copy(wetGrams = reading.grams)
 
     ReadingContext.PRE_WATER -> {
-        val implausible = reading.grams < DRY_ANCHOR_FLOOR_FRACTION * wetGrams
+        val tooLight = reading.grams < DRY_ANCHOR_FLOOR_FRACTION * wetGrams
+        // The floor's mirror. A pot weighed just before watering and still at
+        // container capacity says nothing about how dry this person lets it
+        // get; it is a mis-weigh or a reading filed under the wrong context,
+        // and believing it would collapse the range to nothing.
+        val tooHeavy = reading.grams > DRY_ANCHOR_CEILING_FRACTION * wetGrams ||
+            wetGrams - reading.grams < MIN_ANCHOR_RANGE_GRAMS
         when {
-            implausible -> this
+            tooLight || tooHeavy -> this
 
             // The provisional anchor is a guess (wet x 0.60). The first real
             // observation of "dry enough for this person and this plant"

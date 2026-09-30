@@ -28,13 +28,13 @@ class SettingsRepositoryImpl @Inject constructor(
     private val dynamicColorKey = booleanPreferencesKey("dynamic_color")
     private val reminderHourKey = intPreferencesKey("reminder_hour")
     private val triggerKey = doublePreferencesKey("default_depletion_trigger")
-    private val exactAlarmsKey = booleanPreferencesKey("use_exact_alarms")
     private val dismissedKey = stringSetPreferencesKey("dismissed_diagnostics")
     private val onlineLookupKey = booleanPreferencesKey("online_species_lookup")
     private val canMlKey = doublePreferencesKey("watering_can_ml")
     private val canSizesKey = stringSetPreferencesKey("watering_can_sizes_ml")
     private val introSeenKey = booleanPreferencesKey("intro_seen")
     private val advancedKey = booleanPreferencesKey("advanced_features")
+    private val offerCareKey = booleanPreferencesKey("offer_care_on_add")
     private val lastExportKey = longPreferencesKey("last_export_at")
 
     override val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -43,7 +43,6 @@ class SettingsRepositoryImpl @Inject constructor(
             dynamicColor = prefs[dynamicColorKey] ?: false,
             reminderHour = prefs[reminderHourKey] ?: 9,
             defaultDepletionTrigger = prefs[triggerKey] ?: DEFAULT_DEPLETION_TRIGGER,
-            useExactAlarms = prefs[exactAlarmsKey] ?: false,
             // Absent means off. A missing preference must never be read as
             // consent to use the network.
             onlineSpeciesLookup = prefs[onlineLookupKey] ?: false,
@@ -54,6 +53,8 @@ class SettingsRepositoryImpl @Inject constructor(
                 .orEmpty().mapNotNull { it.toDoubleOrNull() }.sorted(),
             introSeen = prefs[introSeenKey] ?: false,
             advancedFeatures = prefs[advancedKey] ?: false,
+            // Defaults true, so the absent key has to mean on.
+            offerCareOnAdd = prefs[offerCareKey] ?: true,
         )
     }
 
@@ -65,10 +66,9 @@ class SettingsRepositoryImpl @Inject constructor(
         context.dataStore.edit { it[reminderHourKey] = hour.coerceIn(0, 23) }
     }
 
-    override suspend fun setUseExactAlarms(enabled: Boolean) {
-        context.dataStore.edit { it[exactAlarmsKey] = enabled }
-    }
-
+    // use_exact_alarms was stored here and read by nothing. The key is left in
+    // anybody's DataStore and simply ignored, which costs one unread boolean
+    // and saves a migration. See the note in SettingsScreen.
     override suspend fun setOnlineSpeciesLookup(enabled: Boolean) {
         context.dataStore.edit { it[onlineLookupKey] = enabled }
     }
@@ -87,6 +87,10 @@ class SettingsRepositoryImpl @Inject constructor(
 
     override suspend fun setAdvancedFeatures(enabled: Boolean) {
         context.dataStore.edit { it[advancedKey] = enabled }
+    }
+
+    override suspend fun setOfferCareOnAdd(enabled: Boolean) {
+        context.dataStore.edit { it[offerCareKey] = enabled }
     }
 
     override suspend fun setWateringCanSizes(sizesMl: List<Double>) {

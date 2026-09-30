@@ -125,7 +125,7 @@ class WeightViewModel @Inject constructor(
                         dev.dheirav.thirsttrap.domain.UsageKind.SUGGESTION_OVERRIDDEN,
                         "weigh",
                         plantId,
-                        "${'$'}{s.name}->${'$'}{saved.name}",
+                        "${s.name}->${saved.name}",
                     )
                 }
             }

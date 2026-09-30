@@ -33,6 +33,7 @@ object AppIcons {
     val addAPhoto: Painter @Composable get() = painterResource(R.drawable.ic_add_a_photo)
     val backspace: Painter @Composable get() = painterResource(R.drawable.ic_backspace)
     val brokenImage: Painter @Composable get() = painterResource(R.drawable.ic_broken_image)
+    val close: Painter @Composable get() = painterResource(R.drawable.ic_close)
     val lock: Painter @Composable get() = painterResource(R.drawable.ic_lock)
     val lockOpen: Painter @Composable get() = painterResource(R.drawable.ic_lock_open)
     val moreVert: Painter @Composable get() = painterResource(R.drawable.ic_more_vert)

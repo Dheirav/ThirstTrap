@@ -88,11 +88,12 @@ object DatabaseModule {
         usageRepository: dev.dheirav.thirsttrap.domain.UsageRepository,
         usageDao: dev.dheirav.thirsttrap.data.dao.UsageDao,
         experimentDao: dev.dheirav.thirsttrap.data.dao.ExperimentDao,
+        locationDao: dev.dheirav.thirsttrap.data.dao.LocationDao,
         store: PhotoStore,
     ): ExportRepositoryImpl =
         ExportRepositoryImpl(
             context, plantDao, eventDao, photoDao, reminderDao, weightDao, ambientDao,
-            fertilizerDao, usageRepository, usageDao, experimentDao, store,
+            fertilizerDao, usageRepository, usageDao, experimentDao, locationDao, store,
         )
 
     @Provides

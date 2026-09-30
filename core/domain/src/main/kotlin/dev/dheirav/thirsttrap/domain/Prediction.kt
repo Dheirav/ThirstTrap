@@ -36,6 +36,17 @@ enum class SuppressionReason {
     ONE_READING_NO_HISTORY,
     NO_MEASURABLE_DRYING,
     WEIGHT_MEANINGLESS_FOR_MEDIUM,
+
+    /**
+     * Watered since the last weigh-in, so the last weight describes a pot that
+     * no longer exists.
+     *
+     * Segmentation cannot see this on its own: a watering only opens a new
+     * segment when it falls between two readings, so one logged after the most
+     * recent reading left the model predicting from the pre-watering weight and
+     * the card saying "needs water now" about a pot watered an hour ago.
+     */
+    WATERED_SINCE_LAST_READING,
 }
 
 /**
@@ -48,6 +59,12 @@ fun predictWatering(
     plant: Plant,
     segments: List<DryingSegment>,
     nowMillis: Long,
+    /**
+     * When the plant was last watered, if it is known. Only used to notice a
+     * watering that happened after the most recent reading; the drying curve
+     * itself comes from the segments.
+     */
+    lastWateredMillis: Long? = null,
 ): Prediction {
     if (!plant.isWeightTrackable) {
         return Prediction.NeedAnotherReading(SuppressionReason.WEIGHT_MEANINGLESS_FOR_MEDIUM)
@@ -55,12 +72,24 @@ fun predictWatering(
     if (plant.needsRecalibration) {
         return Prediction.NeedAnotherReading(SuppressionReason.NEEDS_RECALIBRATION)
     }
-    val anchors = plant.anchors
+    // A pair whose dry end sits at or above its wet end is not a calibration:
+    // there is no range to deplete, so the trigger weight and the depletion
+    // would both be fiction. Say "not calibrated" rather than predict from it.
+    val anchors = plant.anchors?.takeIf { it.isUsable }
         ?: return Prediction.NeedAnotherReading(SuppressionReason.NOT_CALIBRATED)
 
     val current = segments.lastOrNull()
     val latest = current?.readings?.lastOrNull { !it.excluded }
         ?: return Prediction.NeedAnotherReading(SuppressionReason.NO_READINGS)
+
+    // A watering after the last weigh-in makes that weight meaningless: the pot
+    // is heavier than the number the model is holding, and every answer derived
+    // from it is about the pot as it was before the can. Say so rather than
+    // predict, because the alternative is telling somebody to water a pot they
+    // have just watered.
+    if (lastWateredMillis != null && lastWateredMillis > latest.timestampMillis) {
+        return Prediction.NeedAnotherReading(SuppressionReason.WATERED_SINCE_LAST_READING)
+    }
 
     val triggerWeight = anchors.triggerWeight(plant.depletionTrigger)
 

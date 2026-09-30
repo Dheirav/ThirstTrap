@@ -183,4 +183,58 @@ class PredictionTest {
         }
         assertTrue("predicted ${p.days}, truth $trueDays", p.days <= trueDays + 0.01)
     }
+
+    @Test
+    fun `the eta counts down between weigh-ins`() {
+        // The whole suite asserted Eta values with now sitting exactly on the
+        // latest reading, so the wall-clock term was multiplied by zero every
+        // time. Replacing it with `+ 0.0 * elapsedSinceLatest` left all 256
+        // tests passing, which means nothing held the countdown the dashboard
+        // shows on every day the pot is not weighed.
+        val readings = linearRun(4, 1400.0, 20.0)
+        val segments = segmentReadings(readings, plant().anchors)
+
+        val onTheDay = predictWatering(plant(), segments, at(3.0)) as Prediction.Eta
+        val twoDaysLater = predictWatering(plant(), segments, at(5.0)) as Prediction.Eta
+        assertEquals(onTheDay.days - 2.0, twoDaysLater.days, 0.01)
+    }
+
+    @Test
+    fun `the countdown reaching zero is water now, not a negative eta`() {
+        val readings = linearRun(4, 1400.0, 20.0)
+        val segments = segmentReadings(readings, plant().anchors)
+        // 1340 g on day 3, 140 g above the 1200 g trigger at 20 g/day, so the
+        // crossing is day 10. Standing on day 11 without having weighed it.
+        assertTrue(predictWatering(plant(), segments, at(11.0)) is Prediction.WaterNow)
+    }
+
+    @Test
+    fun `a watering logged after the last reading suppresses the prediction`() {
+        // Segmentation only opens a new segment for a watering that falls
+        // between two readings, so one logged after the most recent reading was
+        // invisible and the card kept saying "needs water now" about a pot
+        // watered an hour ago.
+        val readings = linearRun(6, 1400.0, 40.0)
+        val segments = segmentReadings(readings, plant().anchors)
+        val pastTrigger = predictWatering(plant(), segments, at(5.0))
+        assertTrue("fixture should be due: $pastTrigger", pastTrigger is Prediction.WaterNow)
+
+        val watered = predictWatering(
+            plant(), segments, at(5.5), lastWateredMillis = at(5.2),
+        )
+        assertEquals(
+            SuppressionReason.WATERED_SINCE_LAST_READING,
+            (watered as Prediction.NeedAnotherReading).reason,
+        )
+    }
+
+    @Test
+    fun `a watering before the last reading is the segment boundary, not a suppression`() {
+        // The ordinary case must not be swallowed by the check above: here the
+        // reading is the newer fact and the model should use it.
+        val readings = linearRun(4, 1400.0, 20.0)
+        val segments = segmentReadings(readings, plant().anchors)
+        val p = predictWatering(plant(), segments, at(3.0), lastWateredMillis = at(0.5))
+        assertTrue("got $p", p is Prediction.Eta)
+    }
 }

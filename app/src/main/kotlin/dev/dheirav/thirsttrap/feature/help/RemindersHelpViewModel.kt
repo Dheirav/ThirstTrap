@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.reminder.ReminderNotifier
+import dev.dheirav.thirsttrap.reminder.ReminderScheduler
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -13,13 +14,19 @@ import javax.inject.Inject
 @HiltViewModel
 class RemindersHelpViewModel @Inject constructor(
     private val plants: PlantRepository,
+    private val scheduler: ReminderScheduler,
 ) : ViewModel() {
 
     /**
-     * Fires immediately rather than on a delay: the user is standing here
-     * waiting for it, and a test they have to wait for is a test they skip.
+     * Posts a notification directly, in this process.
+     *
+     * This exercises the permission and the channel and nothing else, so it can
+     * only answer "would a notification be shown", never "is background work
+     * allowed". The screen used to claim the second, which is a false all-clear
+     * on the one question the page exists to answer, and somebody acting on it
+     * leaves Autostart off.
      */
-    fun fireTestReminder(context: Context) {
+    fun fireTestNotification(context: Context) {
         viewModelScope.launch {
             val plant = plants.observePlants().first().firstOrNull()
             ReminderNotifier.showCheckReminder(
@@ -30,4 +37,13 @@ class RemindersHelpViewModel @Inject constructor(
             )
         }
     }
+
+    /**
+     * Runs the real sweep through WorkManager, which is the only thing that
+     * actually tests whether the OEM is letting background work through.
+     *
+     * Nothing arrives if no plant is due, which is the honest outcome and why
+     * the screen says so rather than promising a notification.
+     */
+    fun runTheRealSweep(context: Context) = scheduler.runSweepNow(context)
 }

@@ -22,6 +22,26 @@ const val PROVISIONAL_DEPLETION_FRACTION = 0.40
 const val DRY_ANCHOR_FLOOR_FRACTION = 0.30
 
 /**
+ * And a pre-water reading above this fraction of the wet anchor is rejected for
+ * the mirror reason: a pot still at container capacity is not evidence about
+ * its dry end, it is a reading filed under the wrong context or taken after the
+ * watering rather than before it. Believing it would leave almost no range to
+ * deplete, and every consumer of the anchors divides by that range. §2
+ */
+const val DRY_ANCHOR_CEILING_FRACTION = 0.95
+
+/**
+ * The smallest range the anchors are allowed to span.
+ *
+ * Absolute where [DRY_ANCHOR_CEILING_FRACTION] is relative, on the same
+ * reasoning as the two slope floors: the fraction asks whether the range means
+ * anything for this pot, while one gram asks whether it can be divided by at
+ * all. A range of zero makes depletion NaN, and NaN survives coerceIn, because
+ * every comparison against it is false. §2
+ */
+const val MIN_ANCHOR_RANGE_GRAMS = 1.0
+
+/**
  * A reading this much of the range above its predecessor is a watering. The
  * requirements say 5-10%; 8% is the midpoint and far above scale noise. §3
  */

@@ -1,6 +1,9 @@
 package dev.dheirav.thirsttrap.feature.compare
 
+import dev.dheirav.thirsttrap.ui.ColumnHead
+import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
+import dev.dheirav.thirsttrap.ui.VerticalRule
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,8 +13,8 @@ import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -46,6 +50,7 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -124,10 +129,7 @@ fun CompareScreen(onBack: () -> Unit, viewModel: CompareViewModel = hiltViewMode
         val rightPhoto = viewModel.photoById(rightId)
 
         Column(Modifier.fillMaxSize().padding(padding)) {
-            Row(
-                Modifier.fillMaxWidth().weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
+            Row(Modifier.fillMaxWidth().weight(1f)) {
                 ZoomPane(
                     path = leftPhoto?.let(viewModel::pathOf),
                     scale = if (sync) scale else leftScale,
@@ -137,6 +139,7 @@ fun CompareScreen(onBack: () -> Unit, viewModel: CompareViewModel = hiltViewMode
                     },
                     modifier = Modifier.weight(1f).fillMaxSize(),
                 )
+                VerticalRule(Modifier.fillMaxHeight())
                 ZoomPane(
                     path = rightPhoto?.let(viewModel::pathOf),
                     scale = if (sync) scale else rightScale,
@@ -148,8 +151,12 @@ fun CompareScreen(onBack: () -> Unit, viewModel: CompareViewModel = hiltViewMode
                 )
             }
 
-            // The number the whole screen is for.
+            // The number the whole screen is for, on its own band between the
+            // panes and the picker, because it belongs to neither. The rule
+            // goes inside the let, or a plant with no elapsed time to show
+            // would get two hairlines stacked into one thick line.
             viewModel.elapsedLabel()?.let {
+                Rule()
                 Text(
                     it,
                     style = MaterialTheme.typography.titleMedium,
@@ -160,8 +167,15 @@ fun CompareScreen(onBack: () -> Unit, viewModel: CompareViewModel = hiltViewMode
                 )
             }
 
+            // Two adjacent LazyRows of identical thumbnails read as one strip
+            // with a gap in it, and nothing said which half drove which pane.
+            // A rule between them and a heading over each: the picker is a
+            // two-column table, so it is set like one.
+            Rule()
             Row(Modifier.fillMaxWidth()) {
-                Filmstrip(
+                StripColumn(
+                    head = "Left",
+                    date = dateOf(leftPhoto),
                     photos = photos,
                     selectedId = leftId,
                     pathOf = viewModel::pathOf,
@@ -169,24 +183,17 @@ fun CompareScreen(onBack: () -> Unit, viewModel: CompareViewModel = hiltViewMode
                     side = "left",
                     modifier = Modifier.weight(1f),
                 )
-                Filmstrip(
+                StripColumn(
+                    head = "Right",
+                    date = dateOf(rightPhoto),
                     photos = photos,
                     selectedId = rightId,
                     pathOf = viewModel::pathOf,
                     onSelect = viewModel::selectRight,
                     side = "right",
+                    leadingRule = true,
                     modifier = Modifier.weight(1f),
                 )
-            }
-
-            // 16dp, like every other gutter in the app. These sat at 8 and read
-            // as jammed against the edges next to the rest of the page.
-            Row(
-                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(dateOf(leftPhoto), style = MaterialTheme.typography.labelMedium)
-                Text(dateOf(rightPhoto), style = MaterialTheme.typography.labelMedium)
             }
         }
     }
@@ -256,6 +263,64 @@ private fun ZoomPane(
     }
 }
 
+/**
+ * One column of the picker: which pane it feeds, what is in it now, and the
+ * strip itself.
+ *
+ * The date used to sit in a separate row under both strips, which put the two
+ * dates next to each other and the labels nowhere. Keeping all three in one
+ * column is what makes it obvious at a glance.
+ */
+@Composable
+private fun StripColumn(
+    head: String,
+    date: String,
+    photos: List<Photo>,
+    selectedId: String?,
+    side: String,
+    pathOf: (Photo) -> String,
+    onSelect: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    leadingRule: Boolean = false,
+) {
+    // Drawn on this column's own leading edge rather than placed as a sibling
+    // divider, because a filmstrip is a LazyRow: it has no intrinsic height, so
+    // neither IntrinsicSize.Min on the row nor fillMaxHeight on a divider can
+    // measure against it. The first would throw, the second would resolve
+    // against the screen and swallow the panes above.
+    val ruleColor = MaterialTheme.colorScheme.outlineVariant
+    val edge = if (!leadingRule) Modifier else Modifier.drawBehind {
+        drawLine(
+            color = ruleColor,
+            start = Offset.Zero,
+            end = Offset(0f, size.height),
+            strokeWidth = 1.dp.toPx(),
+        )
+    }
+    Column(modifier.then(edge).padding(horizontal = 10.dp, vertical = 8.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            ColumnHead(head)
+            Text(
+                date,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.End,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f).padding(start = 6.dp),
+            )
+        }
+        Filmstrip(
+            photos = photos,
+            selectedId = selectedId,
+            pathOf = pathOf,
+            onSelect = onSelect,
+            side = side,
+            modifier = Modifier.padding(top = 6.dp),
+        )
+    }
+}
+
 /** Each pane picks independently - that is the point of two strips. */
 @Composable
 private fun Filmstrip(
@@ -267,8 +332,7 @@ private fun Filmstrip(
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
-        modifier = modifier.height(72.dp),
-        contentPadding = PaddingValues(horizontal = 6.dp),
+        modifier = modifier.height(64.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         items(photos, key = { it.id }) { photo ->

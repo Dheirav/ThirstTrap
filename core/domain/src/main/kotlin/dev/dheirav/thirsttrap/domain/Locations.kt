@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
  * exchange for solving a problem nobody has reported. Renaming a location still
  * orphans its note, and that is written down rather than hidden.
  */
+@kotlinx.serialization.Serializable
 data class LocationNote(
     /** The location string as typed on a plant. Matched case-insensitively. */
     val name: String,

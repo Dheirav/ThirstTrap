@@ -16,8 +16,23 @@ import dev.dheirav.thirsttrap.R
 object ReminderNotifier {
 
     const val CHANNEL_CHECKS = "watering_checks"
-    const val CHANNEL_TASKS = "task_reminders"
-    const val CHANNEL_HEALTH = "health_alerts"
+
+    /**
+     * Channels this app used to create and never posted to.
+     *
+     * Task reminders could not be created at all: both `Reminder` constructions
+     * in the app pass `CHECK`, so `TASK` only ever came out of a stored row.
+     * Health alerts were specified in docs/NOTIFICATIONS.md but the drying
+     * diagnostic is only ever rendered in the weight screen, so the category
+     * existed and nothing could ever arrive in it.
+     *
+     * Deleted rather than left in place. A category sitting in the system
+     * notification settings, with a description promising notifications that
+     * cannot happen, is a small lie told in a place the user went looking for
+     * the truth. If either feature arrives later it re-creates its channel,
+     * and Android brings the user's old settings for it back with it.
+     */
+    private val RETIRED_CHANNELS = listOf("task_reminders", "health_alerts")
 
     fun createChannels(context: Context) {
         val manager = context.getSystemService(NotificationManager::class.java) ?: return
@@ -25,14 +40,8 @@ object ReminderNotifier {
             NotificationChannel(CHANNEL_CHECKS, "Watering checks", NotificationManager.IMPORTANCE_DEFAULT)
                 .apply { description = "A nudge to lift the pot and see how it feels." },
         )
-        manager.createNotificationChannel(
-            NotificationChannel(CHANNEL_TASKS, "Task reminders", NotificationManager.IMPORTANCE_DEFAULT)
-                .apply { description = "One-off jobs you asked to be reminded about." },
-        )
-        manager.createNotificationChannel(
-            NotificationChannel(CHANNEL_HEALTH, "Plant health alerts", NotificationManager.IMPORTANCE_LOW)
-                .apply { description = "Quiet notes when a pot's drying rate changes." },
-        )
+        // Cleans up the installs that already have them, not just new ones.
+        RETIRED_CHANNELS.forEach { manager.deleteNotificationChannel(it) }
     }
 
     /**
@@ -45,8 +54,15 @@ object ReminderNotifier {
     fun showCheckReminder(context: Context, plantId: String, plantName: String, daysSince: Int) {
         // Asks the user to assess. Never instructs them to water.
         val title = "Time to check the $plantName"
-        val body = if (daysSince > 0) {
-            "It's been $daysSince days since you checked. Lift the pot - does it feel light?"
+        // Always-plural read "It's been 1 days" on the commonest case of all,
+        // which the council spotted while confirming the day-count bug.
+        val since = when (daysSince) {
+            0 -> null
+            1 -> "It's been a day since you checked."
+            else -> "It's been $daysSince days since you checked."
+        }
+        val body = if (since != null) {
+            "$since Lift the pot - does it feel light?"
         } else {
             "Lift the pot - does it feel light?"
         }

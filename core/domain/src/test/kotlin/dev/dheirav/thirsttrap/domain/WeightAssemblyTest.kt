@@ -1,6 +1,7 @@
 package dev.dheirav.thirsttrap.domain
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -119,6 +120,69 @@ class WeightAssemblyTest {
         )
         assertEquals(
             SuppressionReason.NEEDS_RECALIBRATION,
+            (s.prediction as Prediction.NeedAnotherReading).reason,
+        )
+    }
+
+    @Test
+    fun `a pre-water weigh from the old pot does not set the new pot's dry anchor`() {
+        // The repot cutoff was applied to the derived wet anchor but not to the
+        // replay, so the old pot's dry end survived and pushed the trigger
+        // weight down: the app then waited until the new pot was nearly at the
+        // old pot's dry weight before prompting.
+        val repotAt = at(10.0)
+        val readings = listOf(
+            reading(0.0, 1200.0, ReadingContext.POST_WATER),  // old pot, watered
+            reading(4.0, 800.0),
+            reading(6.0, 700.0, ReadingContext.PRE_WATER),    // old pot, dry at 700 g
+            reading(12.0, 3000.0, ReadingContext.POST_WATER), // new pot, watered
+            reading(14.0, 2900.0),
+        )
+        val s = assembleWeightState(
+            plant(anchors = Anchors.fromWetAnchor(1200.0), needsRecalibration = true),
+            readings, emptyList(), listOf(repotAt), at(14.0),
+        )
+        val a = s.plant.anchors!!
+        assertEquals(3000.0, a.wetGrams, 1e-9)
+        assertEquals(1800.0, a.dryGrams, 1e-9)
+        assertTrue("the old pot's dry end is a guess for this one", a.dryIsProvisional)
+        assertEquals(2400.0, a.triggerWeight(0.5), 1e-9)
+        assertEquals(0.0833, s.depletion!!, 1e-4)
+    }
+
+    @Test
+    fun `a pre-water weigh at the wet weight does not make the depletion NaN`() {
+        // The app suggests PRE_WATER whenever it thinks a plant is thirsty, so
+        // a reading filed at the full weight is two taps away. Believed, it put
+        // the dry anchor on top of the wet one, and dividing by that zero range
+        // gave a NaN that coerceIn passed straight through to the ring.
+        val readings = listOf(
+            reading(0.0, 1000.0, ReadingContext.POST_WATER),
+            reading(2.0, 900.0),
+            reading(4.0, 790.0),
+            reading(5.0, 1000.0, ReadingContext.PRE_WATER),
+        )
+        val s = assembleWeightState(plant(anchors = null), readings, emptyList(), emptyList(), at(5.0))
+        val a = s.plant.anchors!!
+        assertTrue(a.isUsable)
+        assertEquals(600.0, a.dryGrams, 1e-9)
+        assertFalse("got ${s.depletion}", s.depletion!!.isNaN())
+    }
+
+    @Test
+    fun `an impossible stored pair is treated as no calibration at all`() {
+        // Anchors also arrive from a database row, so the guards on the folding
+        // path are not the only way in. Predicting from a pair that spans
+        // nothing is worse than saying there is nothing to predict from.
+        val s = assembleWeightState(
+            plant(anchors = Anchors(1000.0, 1000.0, dryIsProvisional = false)),
+            listOf(reading(0.0, 950.0), reading(2.0, 900.0)),
+            emptyList(), emptyList(), at(2.0),
+        )
+        assertFalse(s.isCalibrated)
+        assertNull(s.depletion)
+        assertEquals(
+            SuppressionReason.NOT_CALIBRATED,
             (s.prediction as Prediction.NeedAnotherReading).reason,
         )
     }

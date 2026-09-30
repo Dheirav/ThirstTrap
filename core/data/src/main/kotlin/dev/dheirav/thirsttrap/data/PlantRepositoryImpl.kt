@@ -192,6 +192,16 @@ class PlantRepositoryImpl @Inject constructor(
     override suspend fun deletePlant(plantId: String) {
         TTLog.i(TTLog.DATA) { "DELETE plant $plantId (cascades to its events and photos)" }
         plantDao.delete(plantId)
+        // The SQLite cascade cannot touch the filesystem, so the JPEGs went on
+        // living with no row pointing at them. PhotoStore.deleteForPlant was
+        // written for exactly this and had no caller anywhere in the repo; the
+        // Maintenance orphan sweep would eventually recover the space, but
+        // "eventually, if somebody runs it" is not deleting a plant.
+        //
+        // After the row, not before: if the delete fails the files are still
+        // wanted, and an orphaned file is recoverable while a missing one is
+        // not.
+        photoStore.deleteForPlant(plantId)
     }
 
     override suspend fun logEvent(event: CareEvent): String {

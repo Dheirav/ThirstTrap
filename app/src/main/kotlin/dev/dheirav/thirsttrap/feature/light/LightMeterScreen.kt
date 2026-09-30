@@ -216,16 +216,12 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
 
             Spacer(Modifier.height(24.dp))
             Button(
-                onClick = viewModel::save,
-                enabled = state.lux != null && !state.saved,
+                onClick = { viewModel.save(onBack) },
+                enabled = state.lux != null,
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    when {
-                        state.saved && placeMode -> "Saved to this place"
-                        state.saved -> "Saved to its history"
-                        else -> "Save this reading"
-                    },
+                    if (placeMode) "Save to this place" else "Save to its history",
                 )
             }
 

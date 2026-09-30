@@ -3,6 +3,7 @@ package dev.dheirav.thirsttrap.feature.plantedit
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
@@ -17,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import dev.dheirav.thirsttrap.ui.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import dev.dheirav.thirsttrap.ui.FilterChip
@@ -40,7 +40,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.dheirav.thirsttrap.ui.AlmanacDialog
+import dev.dheirav.thirsttrap.ui.DialogText
 import dev.dheirav.thirsttrap.domain.Medium
+import dev.dheirav.thirsttrap.domain.hasSpeciesCare
 import dev.dheirav.thirsttrap.ui.Card
 import dev.dheirav.thirsttrap.domain.WeighingMethod
 import dev.dheirav.thirsttrap.domain.PlantSource
@@ -51,9 +54,13 @@ fun PlantEditScreen(
     onDone: () -> Unit,
     onPlantGone: () -> Unit,
     onMarkDied: (String) -> Unit,
+    onOpenCare: (String) -> Unit,
     viewModel: PlantEditViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val offerCare by viewModel.offerCareOnAdd.collectAsStateWithLifecycle()
+    // The plant that was just added, held only long enough to ask about it.
+    var justAdded by remember { mutableStateOf<String?>(null) }
     var confirmDelete by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -76,10 +83,23 @@ fun PlantEditScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            // The name is the only thing save is gated on, and seven labels
+            // reading "(optional)" said that seven times without ever saying
+            // which one was not. One asterisk and one line at the top says it
+            // once, and the rest of the form stops looking like a form.
+            if (state.isNew) {
+                Text(
+                    "Only the name is needed. Everything else can wait, or stay empty, " +
+                        "because the app fills most of it in from what you log.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
             OutlinedTextField(
                 value = state.name,
                 onValueChange = viewModel::onName,
-                label = { Text("Name") },
+                label = { Text("Name *") },
                 placeholder = { Text("marbled pothos") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -87,7 +107,7 @@ fun PlantEditScreen(
             OutlinedTextField(
                 value = state.species,
                 onValueChange = viewModel::onSpecies,
-                label = { Text("Species (optional)") },
+                label = { Text("Species") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
             )
@@ -102,7 +122,7 @@ fun PlantEditScreen(
             OutlinedTextField(
                 value = state.containerDesc,
                 onValueChange = viewModel::onContainer,
-                label = { Text("Container (optional)") },
+                label = { Text("Container") },
                 placeholder = { Text("6-inch terracotta") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -111,7 +131,7 @@ fun PlantEditScreen(
             OutlinedTextField(
                 value = state.checkIntervalDays,
                 onValueChange = viewModel::onCheckInterval,
-                label = { Text("Remind me to check every N days (optional)") },
+                label = { Text("Remind me to check every N days") },
                 placeholder = { Text("leave empty and it works this out from your log") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true,
@@ -121,7 +141,7 @@ fun PlantEditScreen(
             OutlinedTextField(
                 value = state.defaultWaterMl,
                 onValueChange = viewModel::onDefaultWater,
-                label = { Text("Usual amount of water (ml, optional)") },
+                label = { Text("Usual amount of water (ml)") },
                 placeholder = { Text("75") },
                 supportingText = {
                     Text("Watering logs this by default, so you never retype it.")
@@ -134,7 +154,7 @@ fun PlantEditScreen(
             OutlinedTextField(
                 value = state.targetDryness,
                 onValueChange = viewModel::onTargetDryness,
-                label = { Text("How dry before watering (optional)") },
+                label = { Text("How dry before watering") },
                 placeholder = { Text("top 2-3 cm dry, nearly weightless, keep damp") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -142,7 +162,7 @@ fun PlantEditScreen(
             OutlinedTextField(
                 value = state.lightNeeds,
                 onValueChange = viewModel::onLightNeeds,
-                label = { Text("Light (optional)") },
+                label = { Text("Light") },
                 placeholder = { Text("bright indirect, shade") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -150,7 +170,7 @@ fun PlantEditScreen(
             OutlinedTextField(
                 value = state.fertilizerCadenceDays,
                 onValueChange = viewModel::onFertilizerCadence,
-                label = { Text("How often to feed, in days (optional)") },
+                label = { Text("How often to feed, in days") },
                 placeholder = { Text("30") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true,
@@ -315,7 +335,16 @@ fun PlantEditScreen(
             }
 
             Button(
-                onClick = { viewModel.save(onDone) },
+                onClick = {
+                    viewModel.save { plantId, wasNew ->
+                        // Only for a new plant, only when the catalogue has
+                        // something to show, and only while the user has not
+                        // said stop. Anything else and saving just closes the
+                        // form, which is what it has always done.
+                        val hasNotes = hasSpeciesCare(state.species) || hasSpeciesCare(state.name)
+                        if (wasNew && hasNotes && offerCare) justAdded = plantId else onDone()
+                    }
+                },
                 enabled = state.canSave,
                 modifier = Modifier.fillMaxWidth(),
             ) { Text(if (state.isNew) "Add plant" else "Save") }
@@ -343,24 +372,65 @@ fun PlantEditScreen(
         }
     }
 
+    justAdded?.let { plantId ->
+        val what = state.species.trim().ifEmpty { state.name.trim() }
+        AlmanacDialog(
+            title = what,
+            onDismissRequest = { justAdded = null; onDone() },
+            body = {
+                DialogText(
+                    "There are care notes on file for this one: how much light it wants, " +
+                        "how dry to let it get, and what usually goes wrong.",
+                )
+                // The opt-out reads as a line of the page rather than a third
+                // button competing with the two that matter.
+                TextButton(
+                    onClick = {
+                        // Turning it off should also not show this one, or the
+                        // switch would look like it had not worked.
+                        viewModel.stopOfferingCare()
+                        justAdded = null
+                        onDone()
+                    },
+                    contentPadding = PaddingValues(vertical = 4.dp),
+                    modifier = Modifier.padding(top = 4.dp),
+                ) {
+                    Text(
+                        "Don't offer this again",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.outline,
+                    )
+                }
+            },
+            dismiss = {
+                TextButton(onClick = { justAdded = null; onDone() }) { Text("Not now") }
+            },
+            confirm = {
+                TextButton(onClick = { justAdded = null; onOpenCare(plantId) }) {
+                    Text("Read them")
+                }
+            },
+        )
+    }
+
     if (confirmDelete) {
-        AlertDialog(
+        AlmanacDialog(
+            title = "Delete ${state.name}?",
             onDismissRequest = { confirmDelete = false },
-            title = { ScreenTitle("Delete ${state.name}?") },
-            // Archiving is the reversible option and is offered first, because
-            // a plant's history is the thing that is expensive to lose.
-            text = {
-                Text(
+            // Archiving is the reversible option and is said first, because a
+            // plant's history is the thing that is expensive to lose.
+            body = {
+                DialogText(
                     "This removes the plant and every event logged against it. " +
                         "Archiving keeps the history instead.",
                 )
             },
-            confirmButton = {
+            dismiss = { TextButton(onClick = { confirmDelete = false }) { Text("Cancel") } },
+            confirm = {
                 TextButton(onClick = { confirmDelete = false; viewModel.delete(onPlantGone) }) {
                     Text("Delete", color = MaterialTheme.colorScheme.error)
                 }
             },
-            dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text("Cancel") } },
         )
     }
 }

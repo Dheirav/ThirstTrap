@@ -9,8 +9,9 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import dev.dheirav.thirsttrap.ui.AlmanacDialog
+import dev.dheirav.thirsttrap.ui.DialogText
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.FilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -45,28 +46,6 @@ fun SettingsScreen(
     val settings by viewModel.state.collectAsStateWithLifecycle()
     val storage by viewModel.storage.collectAsStateWithLifecycle()
     val cleanup by viewModel.cleanupMessage.collectAsStateWithLifecycle()
-    val needsExact by viewModel.needsExactPermission.collectAsStateWithLifecycle()
-
-    if (needsExact) {
-        AlertDialog(
-            onDismissRequest = viewModel::dismissExactPermissionPrompt,
-            title = { ScreenTitle("Android has to allow this") },
-            text = {
-                Text(
-                    "Precise reminders need the \"Alarms & reminders\" permission. Android " +
-                        "withholds it by default, and can take it back later - if that " +
-                        "happens the app quietly falls back to loose scheduling rather than " +
-                        "going silent.",
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = viewModel::openExactAlarmSettings) { Text("Open settings") }
-            },
-            dismissButton = {
-                TextButton(onClick = viewModel::dismissExactPermissionPrompt) { Text("Not now") }
-            },
-        )
-    }
 
     Scaffold(topBar = { TopAppBar(title = { ScreenTitle("Settings") }) }) { padding ->
         Column(
@@ -82,6 +61,23 @@ fun SettingsScreen(
                     checked = settings.dynamicColor,
                     onCheckedChange = viewModel::setDynamicColor,
                     modifier = Modifier.semantics { contentDescription = "Use system colours" },
+                )
+            }
+
+            SettingRow(
+                title = "Offer care notes for a new plant",
+                subtitle = "Just after you add a plant, if there are notes on file for its " +
+                    "species, the app offers them. On by default: the moment you have typed " +
+                    "the species name is the moment they are worth reading, and nobody goes " +
+                    "looking in a menu for something they do not know is there. It only ever " +
+                    "asks once per plant, and \"Don't ask again\" in that prompt turns this off.",
+            ) {
+                Switch(
+                    checked = settings.offerCareOnAdd,
+                    onCheckedChange = viewModel::setOfferCareOnAdd,
+                    modifier = Modifier.semantics {
+                        contentDescription = "Offer care notes for a new plant"
+                    },
                 )
             }
 
@@ -134,25 +130,16 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            SettingRow(
-                title = "Remind me at a precise time",
-                subtitle = if (viewModel.canScheduleExact()) {
-                    "Off keeps reminders loose and battery-cheap. On makes them land on " +
-                        "the minute."
-                } else {
-                    "Needs the \"Alarms & reminders\" permission, which Android withholds " +
-                        "by default. Turning this on will ask for it."
-                },
-            ) {
-                Switch(
-                    checked = settings.useExactAlarms,
-                    onCheckedChange = viewModel::setUseExactAlarms,
-                    modifier = Modifier.semantics { contentDescription = "Remind me at a precise time" },
-                )
-            }
+            // "Remind me at a precise time" used to sit here. D30a left it open
+            // with "either honour the setting or remove the toggle", and it could
+            // not be honoured: nothing read useExactAlarms, the scheduler takes no
+            // settings dependency, and neither manifest declares
+            // SCHEDULE_EXACT_ALARM, so canScheduleExactAlarms() cannot return true
+            // on API 31+. A switch that could not latch on, would have gated
+            // nothing if it had, and sent the user to a system page this app cannot
+            // appear on. The loose scheduling described above is the decision, D4,
+            // and it is now the only thing the screen claims.
 
-
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             SectionHeader("Watering")

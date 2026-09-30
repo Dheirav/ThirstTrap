@@ -6,6 +6,7 @@ import dev.dheirav.thirsttrap.ui.EventColors
 import dev.dheirav.thirsttrap.ui.fullBleed
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +24,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.Row
@@ -56,11 +56,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
 import dev.dheirav.thirsttrap.domain.hasSpeciesCare
 import dev.dheirav.thirsttrap.domain.CareEvent
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.layout.ContentScale
 import dev.dheirav.thirsttrap.ui.PlantPhoto
+import dev.dheirav.thirsttrap.ui.AlmanacMenu
+import dev.dheirav.thirsttrap.ui.AlmanacDialog
+import dev.dheirav.thirsttrap.ui.DialogText
+import dev.dheirav.thirsttrap.ui.PhotoViewer
 import dev.dheirav.thirsttrap.domain.CareEventType
 import dev.dheirav.thirsttrap.domain.CheckResult
 import dev.dheirav.thirsttrap.domain.Photo
@@ -85,7 +87,6 @@ fun PlantDetailScreen(
     onBack: () -> Unit,
     onEdit: (String) -> Unit,
     onCompare: (String) -> Unit,
-    onTimelapse: (String) -> Unit,
     onWeigh: (String) -> Unit,
     onMeasureLight: (String) -> Unit,
     onSticker: (String) -> Unit,
@@ -98,333 +99,355 @@ fun PlantDetailScreen(
     val neighbors by viewModel.neighbors.collectAsStateWithLifecycle()
     val plant = state.plant
     val capture = dev.dheirav.thirsttrap.photo.rememberPhotoCapture { viewModel.addPhoto(it) }
-    var captionFor by remember { mutableStateOf<Photo?>(null) }
+    var viewing by remember { mutableStateOf<Photo?>(null) }
     var menuOpen by remember { mutableStateOf(false) }
 
     val hero = state.photos.firstOrNull()?.let(viewModel::pathOf)
 
-    Scaffold(
-        // The hero runs under the status bar, so this screen draws its own
-        // insets rather than being pushed below them.
-        contentWindowInsets = if (hero != null) WindowInsets(0, 0, 0, 0) else ScaffoldDefaults.contentWindowInsets,
-        topBar = {
-            TopAppBar(
-                // The name lives on the photo when there is one; repeating it in
-                // the bar would put the same four words on screen twice.
-                title = { if (hero == null) Text(plant?.name ?: "") },
-                colors = if (hero != null) {
-                    TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent,
-                        scrolledContainerColor = Color.Transparent,
-                        navigationIconContentColor = Color.White,
-                        actionIconContentColor = Color.White,
-                    )
-                } else {
-                    TopAppBarDefaults.topAppBarColors()
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(AppIcons.arrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    // Two inline, the rest behind an overflow. Six icons plus a
-                    // back arrow is 336dp of chrome on a 360dp phone, which left
-                    // the plant's name - the screen's only identifier - with a
-                    // few dp, and nothing at all at large font sizes.
-                    if (plant != null) {
-                        IconButton(onClick = capture.takePhoto) {
-                            Icon(AppIcons.addAPhoto, contentDescription = "Take a photo")
-                        }
-                    }
-                    Box {
-                        IconButton(onClick = { menuOpen = true }) {
-                            Icon(AppIcons.moreVert, contentDescription = "More actions")
-                        }
-                        DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
-                            plant?.let { p ->
-                                DropdownMenuItem(
-                                    text = { Text("Add from gallery") },
-                                    onClick = { menuOpen = false; capture.pickFromGallery() },
-                                )
-                                // Shown always, disabled with a reason. Hiding it
-                                // meant the feature vanished exactly when someone
-                                // would go looking for it.
-                                DropdownMenuItem(
-                                    text = { Text("Compare photos") },
-                                    enabled = state.photos.size >= 2,
-                                    trailingIcon = {
-                                        if (state.photos.size < 2) {
-                                            Text(
-                                                "needs 2",
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            )
-                                        }
-                                    },
-                                    onClick = { menuOpen = false; onCompare(p.id) },
-                                )
-                                // Same gating as Compare, and for the same
-                                // reason: shown always, disabled with a stated
-                                // cause, because hiding it makes the feature
-                                // vanish exactly when somebody goes looking.
-                                DropdownMenuItem(
-                                    text = { Text("Timelapse") },
-                                    enabled = state.photos.size >= 2,
-                                    trailingIcon = {
-                                        if (state.photos.size < 2) {
-                                            Text(
-                                                "needs 2",
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            )
-                                        }
-                                    },
-                                    onClick = { menuOpen = false; onTimelapse(p.id) },
-                                )
-                                if (p.isWeightTrackable) {
-                                    DropdownMenuItem(
-                                        text = { Text("When it needs water") },
-                                        onClick = { menuOpen = false; onWeigh(p.id) },
-                                    )
-                                }
-                                DropdownMenuItem(
-                                    text = { Text("Measure the light here") },
-                                    onClick = { menuOpen = false; onMeasureLight(p.id) },
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("Care notes") },
-                                    // Deliberately NOT disabled when the
-                                    // catalogue has nothing. The care screen's
-                                    // empty state is the only route to the
-                                    // online name lookup, and disabling this
-                                    // made it unreachable for exactly the
-                                    // plants it exists for. The hint below
-                                    // still sets the expectation.
-                                    trailingIcon = {
-                                        if (!hasSpeciesCare(p.species) && !hasSpeciesCare(p.name)) {
-                                            Text(
-                                                "not on file",
-                                                style = MaterialTheme.typography.labelSmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            )
-                                        }
-                                    },
-                                    onClick = { menuOpen = false; onCare(p.id) },
-                                )
-                                if (advanced) {
-                                    DropdownMenuItem(
-                                        text = { Text("Pot sticker") },
-                                        onClick = { menuOpen = false; onSticker(p.id) },
-                                    )
-                                }
-                                DropdownMenuItem(
-                                    text = { Text("Edit plant") },
-                                    onClick = { menuOpen = false; onEdit(p.id) },
-                                )
-                            }
-                        }
-                    }
-                },
-            )
-        },
-    ) { padding ->
-        // Swiping sideways walks the dashboard's line of plants. The gesture
-        // detector only claims drags that are horizontal past touch slop, so
-        // the list's own scrolling is untouched - and a horizontal strip
-        // inside the page (the photo row) consumes its drags first, which is
-        // the right precedence: content wins over navigation.
-        val swipeThresholdPx = with(LocalDensity.current) { 96.dp.toPx() }
-        LazyColumn(
-            // With a hero the list must start at the very top of the window so
-            // the photo runs under the status bar and the app bar floats over
-            // it; Scaffold's padding would otherwise push it below both.
-            Modifier
-                .fillMaxSize()
-                .pointerInput(neighbors) {
-                    var dragged = 0f
-                    detectHorizontalDragGestures(
-                        onDragStart = { dragged = 0f },
-                        onHorizontalDrag = { _, amount -> dragged += amount },
-                        onDragEnd = {
-                            when {
-                                // Finger moved left: the page slides away
-                                // leftwards, the next plant comes in.
-                                dragged < -swipeThresholdPx ->
-                                    neighbors.nextId?.let(onOpenPlant)
-                                dragged > swipeThresholdPx ->
-                                    neighbors.previousId?.let(onOpenPlant)
-                            }
-                        },
-                    )
-                }
-                .padding(
-                    if (hero != null) {
-                        PaddingValues(bottom = padding.calculateBottomPadding())
+    // One Box so the viewer overlays the whole page. Two siblings in a
+    // composable body only stack because the caller happens to place them
+    // in a Box, which is not a contract worth depending on for a full-screen
+    // overlay.
+    Box(Modifier.fillMaxSize()) {
+        Scaffold(
+            // The hero runs under the status bar, so this screen draws its own
+            // insets rather than being pushed below them.
+            contentWindowInsets = if (hero != null) WindowInsets(0, 0, 0, 0) else ScaffoldDefaults.contentWindowInsets,
+            topBar = {
+                TopAppBar(
+                    // The name lives on the photo when there is one; repeating it in
+                    // the bar would put the same four words on screen twice.
+                    title = { if (hero == null) Text(plant?.name ?: "") },
+                    colors = if (hero != null) {
+                        TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color.Transparent,
+                            scrolledContainerColor = Color.Transparent,
+                            navigationIconContentColor = Color.White,
+                            actionIconContentColor = Color.White,
+                        )
                     } else {
-                        padding
+                        TopAppBarDefaults.topAppBarColors()
                     },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            Icon(AppIcons.arrowBack, contentDescription = "Back")
+                        }
+                    },
+                    actions = {
+                        // Two inline, the rest behind an overflow. Six icons plus a
+                        // back arrow is 336dp of chrome on a 360dp phone, which left
+                        // the plant's name - the screen's only identifier - with a
+                        // few dp, and nothing at all at large font sizes.
+                        if (plant != null) {
+                            IconButton(onClick = capture.takePhoto) {
+                                Icon(AppIcons.addAPhoto, contentDescription = "Take a photo")
+                            }
+                        }
+                        Box {
+                            IconButton(onClick = { menuOpen = true }) {
+                                Icon(AppIcons.moreVert, contentDescription = "More actions")
+                            }
+                            AlmanacMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                                plant?.let { p ->
+                                    DropdownMenuItem(
+                                        text = { Text("Add from gallery") },
+                                        onClick = { menuOpen = false; capture.pickFromGallery() },
+                                    )
+                                    // Shown always, disabled with a reason. Hiding it
+                                    // meant the feature vanished exactly when someone
+                                    // would go looking for it.
+                                    DropdownMenuItem(
+                                        text = { Text("Compare photos") },
+                                        enabled = state.photos.size >= 2,
+                                        trailingIcon = {
+                                            if (state.photos.size < 2) {
+                                                Text(
+                                                    "needs 2",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                )
+                                            }
+                                        },
+                                        onClick = { menuOpen = false; onCompare(p.id) },
+                                    )
+                                    // Same gating as Compare, and for the same
+                                    // reason: shown always, disabled with a stated
+                                    // cause, because hiding it makes the feature
+                                    // vanish exactly when somebody goes looking.
+                                    DropdownMenuItem(
+                                        text = { Text("Timelapse") },
+                                        enabled = state.photos.size >= 2,
+                                        trailingIcon = {
+                                            if (state.photos.size < 2) {
+                                                Text(
+                                                    "needs 2",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                )
+                                            }
+                                        },
+                                        // The viewer is the timelapse now, so
+                                        // this opens it at the oldest photo and
+                                        // Play walks forward from there.
+                                        onClick = {
+                                            menuOpen = false
+                                            viewing = state.photos.minByOrNull { it.takenAtMillis }
+                                        },
+                                    )
+                                    if (p.isWeightTrackable) {
+                                        DropdownMenuItem(
+                                            text = { Text("When it needs water") },
+                                            onClick = { menuOpen = false; onWeigh(p.id) },
+                                        )
+                                    }
+                                    DropdownMenuItem(
+                                        text = { Text("Measure the light here") },
+                                        onClick = { menuOpen = false; onMeasureLight(p.id) },
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("Care notes") },
+                                        // Deliberately NOT disabled when the
+                                        // catalogue has nothing. The care screen's
+                                        // empty state is the only route to the
+                                        // online name lookup, and disabling this
+                                        // made it unreachable for exactly the
+                                        // plants it exists for. The hint below
+                                        // still sets the expectation.
+                                        trailingIcon = {
+                                            if (!hasSpeciesCare(p.species) && !hasSpeciesCare(p.name)) {
+                                                Text(
+                                                    "not on file",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                )
+                                            }
+                                        },
+                                        onClick = { menuOpen = false; onCare(p.id) },
+                                    )
+                                    if (advanced) {
+                                        DropdownMenuItem(
+                                            text = { Text("Pot sticker") },
+                                            onClick = { menuOpen = false; onSticker(p.id) },
+                                        )
+                                    }
+                                    DropdownMenuItem(
+                                        text = { Text("Edit plant") },
+                                        onClick = { menuOpen = false; onEdit(p.id) },
+                                    )
+                                }
+                            }
+                        }
+                    },
+                )
+            },
+        ) { padding ->
+            // Swiping sideways walks the dashboard's line of plants. The gesture
+            // detector only claims drags that are horizontal past touch slop, so
+            // the list's own scrolling is untouched - and a horizontal strip
+            // inside the page (the photo row) consumes its drags first, which is
+            // the right precedence: content wins over navigation.
+            val swipeThresholdPx = with(LocalDensity.current) { 96.dp.toPx() }
+            LazyColumn(
+                // With a hero the list must start at the very top of the window so
+                // the photo runs under the status bar and the app bar floats over
+                // it; Scaffold's padding would otherwise push it below both.
+                Modifier
+                    .fillMaxSize()
+                    .pointerInput(neighbors) {
+                        var dragged = 0f
+                        detectHorizontalDragGestures(
+                            onDragStart = { dragged = 0f },
+                            onHorizontalDrag = { _, amount -> dragged += amount },
+                            onDragEnd = {
+                                when {
+                                    // Finger moved left: the page slides away
+                                    // leftwards, the next plant comes in.
+                                    dragged < -swipeThresholdPx ->
+                                        neighbors.nextId?.let(onOpenPlant)
+                                    dragged > swipeThresholdPx ->
+                                        neighbors.previousId?.let(onOpenPlant)
+                                }
+                            },
+                        )
+                    }
+                    .padding(
+                        if (hero != null) {
+                            PaddingValues(bottom = padding.calculateBottomPadding())
+                        } else {
+                            padding
+                        },
+                    ),
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = if (hero != null) 0.dp else 16.dp,
+                    bottom = 16.dp,
                 ),
-            contentPadding = PaddingValues(
-                start = 16.dp,
-                end = 16.dp,
-                top = if (hero != null) 0.dp else 16.dp,
-                bottom = 16.dp,
-            ),
-        ) {
-            if (hero != null) {
-                item {
-                    // Full-bleed, under the status bar, per UI-SPEC section 4.
-                    // fullBleed measures past the list's 16dp gutter rather than
-                    // negating it - Compose rejects negative padding at runtime.
-                    PlantHero(
-                        path = hero,
-                        name = plant?.name.orEmpty(),
-                        chips = plantChips(plant),
-                        modifier = Modifier.fullBleed(16.dp),
-                    )
+            ) {
+                if (hero != null) {
+                    item {
+                        // Full-bleed, under the status bar, per UI-SPEC section 4.
+                        // fullBleed measures past the list's 16dp gutter rather than
+                        // negating it - Compose rejects negative padding at runtime.
+                        PlantHero(
+                            path = hero,
+                            name = plant?.name.orEmpty(),
+                            chips = plantChips(plant),
+                            // The cover photo is the largest image on the screen
+                            // and tapping it did nothing at all.
+                            onOpen = { state.photos.firstOrNull()?.let { viewing = it } },
+                            modifier = Modifier.fullBleed(16.dp),
+                        )
+                    }
                 }
-            }
 
-            item {
-                Column(Modifier.padding(bottom = 16.dp)) {
-                    if (hero == null) {
-                        plant?.species?.let {
+                item {
+                    Column(Modifier.padding(bottom = 16.dp)) {
+                        if (hero == null) {
+                            plant?.species?.let {
+                                Text(
+                                    it,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
                             Text(
-                                it,
-                                style = MaterialTheme.typography.bodyMedium,
+                                plantChips(plant).joinToString(" · "),
+                                style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
+
+                        plant?.let { p ->
+                            if (hasSpeciesCare(p.species) || hasSpeciesCare(p.name)) {
+                                // A real 48dp target. contentPadding = 0 collapsed
+                                // it to the text's own height, which is both hard
+                                // to hit and under the accessibility floor.
+                                FilledTonalButton(
+                                    onClick = { onCare(p.id) },
+                                    modifier = Modifier
+                                        .padding(top = 8.dp)
+                                        .heightIn(min = 48.dp),
+                                ) { Text("Care notes for this species") }
+                            }
+                        }
+
+                        // Requirements item 8. Only shown once there are two
+                        // waterings to measure between - one is not a cadence.
+                        state.averageIntervalDays?.let { avg ->
+                            Text(
+                                cadenceLabel(avg),
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                                modifier = Modifier.padding(top = 8.dp),
+                            )
+                        }
                         Text(
-                            plantChips(plant).joinToString(" · "),
+                            "${state.totalEvents} ${if (state.totalEvents == 1) "entry" else "entries"}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 2.dp),
                         )
                     }
+                }
 
-                    plant?.let { p ->
-                        if (hasSpeciesCare(p.species) || hasSpeciesCare(p.name)) {
-                            // A real 48dp target. contentPadding = 0 collapsed
-                            // it to the text's own height, which is both hard
-                            // to hit and under the accessibility floor.
-                            FilledTonalButton(
-                                onClick = { onCare(p.id) },
-                                modifier = Modifier
-                                    .padding(top = 8.dp)
-                                    .heightIn(min = 48.dp),
-                            ) { Text("Care notes for this species") }
+                if (state.loaded && state.photos.isEmpty()) {
+                    item {
+                        Text(
+                            "No photos yet. The camera button above starts a record you can " +
+                                "compare against later.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 16.dp),
+                        )
+                    }
+                }
+
+                if (state.photos.isNotEmpty()) {
+                    item {
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.padding(bottom = 16.dp),
+                        ) {
+                            items(state.photos, key = { it.id }) { photo ->
+                                PhotoThumb(
+                                    path = viewModel.pathOf(photo),
+                                    caption = photo.caption,
+                                    onOpen = { viewing = photo },
+                                )
+                            }
                         }
                     }
-
-                    // Requirements item 8. Only shown once there are two
-                    // waterings to measure between - one is not a cadence.
-                    state.averageIntervalDays?.let { avg ->
-                        Text(
-                            cadenceLabel(avg),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(top = 8.dp),
-                        )
-                    }
-                    Text(
-                        "${state.totalEvents} ${if (state.totalEvents == 1) "entry" else "entries"}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 2.dp),
-                    )
                 }
-            }
 
-            if (state.loaded && state.photos.isEmpty()) {
-                item {
-                    Text(
-                        "No photos yet. The camera button above starts a record you can " +
-                            "compare against later.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(bottom = 16.dp),
-                    )
-                }
-            }
-
-            if (state.photos.isNotEmpty()) {
-                item {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.padding(bottom = 16.dp),
-                    ) {
-                        items(state.photos, key = { it.id }) { photo ->
-                            PhotoThumb(
-                                path = viewModel.pathOf(photo),
-                                caption = photo.caption,
-                                onLongPress = { captionFor = photo },
+                if (state.loaded && state.days.isEmpty()) {
+                    item {
+                        Column(
+                            Modifier.fillMaxWidth().padding(top = 48.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            Text("No history yet", style = MaterialTheme.typography.titleMedium)
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                "Log a watering or a check and it will show up here.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
                             )
                         }
                     }
                 }
-            }
 
-            if (state.loaded && state.days.isEmpty()) {
-                item {
-                    Column(
-                        Modifier.fillMaxWidth().padding(top = 48.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text("No history yet", style = MaterialTheme.typography.titleMedium)
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            "Log a watering or a check and it will show up here.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            textAlign = TextAlign.Center,
+                state.days.forEach { day ->
+                    stickyHeader(key = day.label) {
+                        Box(
+                            Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
+                                .padding(vertical = 8.dp),
+                        ) {
+                            Text(
+                                day.label,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                        }
+                    }
+                    items(day.events, key = { it.id }) { event ->
+                        EventRow(
+                            event = event,
+                            photos = state.photosByEvent[event.id].orEmpty(),
+                            pathOf = viewModel::pathOf,
+                            onOpenPhoto = { viewing = it },
+                            onDelete = { viewModel.deleteEvent(event) },
+                            allPlants = state.allPlants,
+                            onOpenPlant = onOpenPlant,
                         )
                     }
-                }
-            }
-
-            state.days.forEach { day ->
-                stickyHeader(key = day.label) {
-                    Box(
-                        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
-                            .padding(vertical = 8.dp),
-                    ) {
-                        Text(
-                            day.label,
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                    }
-                }
-                items(day.events, key = { it.id }) { event ->
-                    EventRow(
-                        event = event,
-                        photos = state.photosByEvent[event.id].orEmpty(),
-                        pathOf = viewModel::pathOf,
-                        onDelete = { viewModel.deleteEvent(event) },
-                        allPlants = state.allPlants,
-                        onOpenPlant = onOpenPlant,
-                    )
                 }
             }
         }
+
+        // Outside the Scaffold, not inside its content: an overlay that stopped at
+        // the app bar would be a photo with a toolbar on top of it.
+        viewing?.let { photo ->
+            PhotoViewer(
+                // The whole set rather than the one tapped, because the reason
+                // to open a photo is usually to put it next to an older one,
+                // and from here that is a swipe.
+                photos = state.photos,
+                startId = photo.id,
+                pathOf = viewModel::pathOf,
+                onDismiss = { viewing = null },
+                onSaveCaption = viewModel::setCaption,
+                onSetCover = viewModel::setCover,
+                onDelete = viewModel::deletePhoto,
+            )
+        }
     }
 
-    captionFor?.let { photo ->
-        CaptionDialog(
-            photo = photo,
-            initial = photo.caption.orEmpty(),
-            onDismiss = { captionFor = null },
-            onSave = { viewModel.setCaption(photo.id, it) },
-            onCover = { viewModel.setCover(photo.id) },
-            onDelete = { viewModel.deletePhoto(photo.id) },
-        )
-    }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun PhotoThumb(path: String, caption: String?, onLongPress: () -> Unit) {
+private fun PhotoThumb(path: String, caption: String?, onOpen: () -> Unit) {
     Column {
         PlantPhoto(
             path = path,
@@ -432,11 +455,12 @@ private fun PhotoThumb(path: String, caption: String?, onLongPress: () -> Unit) 
             modifier = Modifier
                 .size(120.dp)
                 .clip(MaterialTheme.shapes.small)
-                .combinedClickable(
-                    onClick = onLongPress,
-                    onClickLabel = "Caption or delete this photo",
-                    onLongClick = onLongPress,
-                ),
+                // One gesture. A tap used to open the caption-and-delete menu,
+                // so the one thing you could not do with a photo was look at
+                // it; those actions now live on the photo's own page, where
+                // Delete is a visible control that asks rather than a hidden
+                // long press drawn over the thumbnail it belongs to.
+                .clickable(onClickLabel = "View this photo", onClick = onOpen),
         )
         caption?.takeIf { it.isNotBlank() }?.let {
             Text(
@@ -455,6 +479,7 @@ private fun PhotoThumb(path: String, caption: String?, onLongPress: () -> Unit) 
 private fun EventRow(
     event: CareEvent,
     photos: List<Photo>,
+    onOpenPhoto: (Photo) -> Unit,
     pathOf: (Photo) -> String,
     onDelete: () -> Unit,
     allPlants: List<dev.dheirav.thirsttrap.domain.Plant> = emptyList(),
@@ -510,7 +535,12 @@ private fun EventRow(
                             PlantPhoto(
                                 path = pathOf(photo),
                                 contentDescription = photo.caption ?: "Photo",
-                                modifier = Modifier.size(64.dp).clip(MaterialTheme.shapes.small),
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .clip(MaterialTheme.shapes.small)
+                                    .clickable(onClickLabel = "View this photo") {
+                                        onOpenPhoto(photo)
+                                    },
                             )
                         }
                     }
@@ -522,7 +552,7 @@ private fun EventRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+            AlmanacMenu(expanded = menu, onDismissRequest = { menu = false }) {
                 DropdownMenuItem(
                     text = { Text("Delete this entry") },
                     onClick = { menu = false; confirmingDelete = true },
@@ -538,11 +568,11 @@ private fun EventRow(
     // The first version deleted on the tap, and a thumb in the wrong place cost
     // a real entry within a day of the screen existing.
     if (confirmingDelete) {
-        AlertDialog(
+        AlmanacDialog(
+            title = "Delete this entry?",
             onDismissRequest = { confirmingDelete = false },
-            title = { Text("Delete this entry?") },
-            text = {
-                Text(
+            body = {
+                DialogText(
                     buildString {
                         append(label(event))
                         append(", ")
@@ -555,53 +585,20 @@ private fun EventRow(
                             )
                         }
                     },
-                    style = MaterialTheme.typography.bodyMedium,
                 )
             },
-            confirmButton = {
-                TextButton(onClick = { confirmingDelete = false; onDelete() }) { Text("Delete") }
-            },
-            dismissButton = {
+            dismiss = {
                 TextButton(onClick = { confirmingDelete = false }) { Text("Keep it") }
+            },
+            confirm = {
+                TextButton(onClick = { confirmingDelete = false; onDelete() }) {
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                }
             },
         )
     }
 }
 
-@Composable
-private fun CaptionDialog(
-    photo: Photo,
-    initial: String,
-    onDismiss: () -> Unit,
-    onSave: (String) -> Unit,
-    onCover: () -> Unit,
-    onDelete: () -> Unit,
-) {
-    var text by remember { mutableStateOf(initial) }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { ScreenTitle("Photo") },
-        text = {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
-                label = { Text("Caption") },
-                placeholder = { Text("brown spot on the lower leaf") },
-            )
-        },
-        confirmButton = {
-            Row {
-                TextButton(onClick = { onCover(); onDismiss() }) { Text("Set as cover") }
-                TextButton(onClick = { onSave(text); onDismiss() }) { Text("Save") }
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = { onDelete(); onDismiss() }) {
-                Text("Delete", color = MaterialTheme.colorScheme.error)
-            }
-        },
-    )
-}
 
 /**
  * A note with [[plant]] links resolved (F12). Wiki semantics: a link that
@@ -698,13 +695,15 @@ private fun PlantHero(
     path: String,
     name: String,
     chips: List<String>,
+    onOpen: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val surface = MaterialTheme.colorScheme.surface
     Box(
         modifier
             .fillMaxWidth()
-            .height(300.dp),
+            .height(300.dp)
+            .clickable(onClickLabel = "View this photo", onClick = onOpen),
     ) {
         PlantPhoto(
             path = path,

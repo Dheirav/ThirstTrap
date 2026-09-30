@@ -84,9 +84,19 @@ class SlopeFitTest {
 
     @Test
     fun `only the last five readings are used`() {
-        val long = linearRun(20, 1400.0, 5.0)
-        val fit = fitSegmentSlope(segmentOf(long), plant().anchors) as SlopeFit.Fitted
+        // A count is not a recency claim. Over a straight line any five
+        // readings give the same slope, so the old fixture passed just as
+        // happily with take() as with takeLast() - checked by mutation, and it
+        // did. The run has to bend for the two to disagree: 40 g/day for the
+        // first fifteen days, then 5 g/day for the last five.
+        val slowTail = buildList {
+            addAll((0..14).map { reading(it.toDouble(), 2000.0 - 40.0 * it) })
+            addAll((15..19).map { reading(it.toDouble(), 1400.0 - 5.0 * (it - 15)) })
+        }
+        val fit = fitSegmentSlope(segmentOf(slowTail), plant().anchors) as SlopeFit.Fitted
         assertEquals(MAX_FIT_READINGS, fit.readingCount)
+        // The recent five, not the first five and not all twenty.
+        assertEquals(-5.0, fit.gramsPerDay, 0.5)
     }
 
     @Test
@@ -113,5 +123,22 @@ class SlopeFitTest {
         var ewma: Double? = -10.0
         repeat(3) { ewma = updateEwma(ewma, -30.0) }
         assertTrue("ewma was $ewma", ewma!! < -20.0)
+    }
+
+    @Test
+    fun `the smoothing weight itself is pinned, not just its direction`() {
+        // Both tests above are blind to alpha. The first sits on the fixed
+        // point, where a*x + (1-a)*x = x for every alpha, and the second
+        // asserts a bound that holds for any alpha above about 0.206. Setting
+        // EWMA_ALPHA = 1.0, meaning no smoothing at all, left all 256 tests
+        // passing - which is the whole reason this test exists.
+        //
+        // One step from a known prior is the smallest thing that can see it:
+        // 0.3 x (-30) + 0.7 x (-10) = -16.0, and no other alpha gives that.
+        assertEquals(-16.0, updateEwma(-10.0, -30.0)!!, 1e-9)
+        // And the inertia section 5 of WATERING-MODEL is arguing for: a single
+        // odd segment must not drag the prior most of the way to it.
+        val oneOddWeek = updateEwma(-10.0, -40.0)!!
+        assertTrue("moved $oneOddWeek of the way", oneOddWeek > -20.0)
     }
 }

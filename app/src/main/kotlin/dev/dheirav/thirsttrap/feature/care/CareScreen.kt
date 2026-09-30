@@ -39,7 +39,6 @@ import kotlin.math.roundToInt
 @Composable
 fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val applied by viewModel.applied.collectAsStateWithLifecycle()
     val lookup by viewModel.lookup.collectAsStateWithLifecycle()
     val care = state.care
 
@@ -150,15 +149,15 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
                 modifier = Modifier.padding(vertical = 8.dp),
             )
             FilledTonalButton(
-                onClick = viewModel::applySuggestions,
-                enabled = !applied && !state.alreadyApplied,
+                onClick = { viewModel.applySuggestions(onBack) },
+                enabled = !state.alreadyApplied,
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    when {
-                        applied -> "Applied"
-                        state.alreadyApplied -> "Already using these"
-                        else -> "Apply to ${state.plant?.name.orEmpty()}"
+                    if (state.alreadyApplied) {
+                        "Already using these"
+                    } else {
+                        "Apply to ${state.plant?.name.orEmpty()}"
                     },
                 )
             }

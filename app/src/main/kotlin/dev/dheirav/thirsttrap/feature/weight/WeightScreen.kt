@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import dev.dheirav.thirsttrap.ui.Button
 import dev.dheirav.thirsttrap.ui.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +41,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.material3.Switch
 import androidx.compose.material3.OutlinedTextField
+import dev.dheirav.thirsttrap.ui.AlmanacDialog
+import dev.dheirav.thirsttrap.ui.DialogText
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -442,6 +443,10 @@ private fun PredictionHeadline(s: WeightState) {
                 "Give it another day and weigh again."
             SuppressionReason.NEEDS_RECALIBRATION -> "Needs recalibrating" to
                 "The pot changed, so earlier readings no longer apply."
+            SuppressionReason.WATERED_SINCE_LAST_READING ->
+                "Weigh it to start the new cycle" to
+                    "It has been watered since the last reading, so that weight " +
+                        "is about the pot before the can."
             else -> "Not calibrated" to null
         }
     }
@@ -821,16 +826,15 @@ private fun ReadingEditor(
 
     val parsed = grams.trim().toDoubleOrNull()
 
-    AlertDialog(
+    AlmanacDialog(
+        title = if (confirmingDelete) "Delete this reading?" else "Edit reading",
         onDismissRequest = onDismiss,
-        title = { Text(if (confirmingDelete) "Delete this reading?" else "Edit reading") },
-        text = {
+        body = {
             if (confirmingDelete) {
-                Text(
+                DialogText(
                     "${reading.grams.toInt()} g, ${readingDate(reading.timestampMillis, reading.tzOffsetMinutes)}. " +
                         "This cannot be undone, and a weight is the one thing here that cannot " +
                         "be remembered back.",
-                    style = MaterialTheme.typography.bodyMedium,
                 )
             } else {
                 Column {
@@ -884,9 +888,18 @@ private fun ReadingEditor(
                 }
             }
         },
-        confirmButton = {
+        dismiss = {
             if (confirmingDelete) {
-                TextButton(onClick = onDelete) { Text("Delete") }
+                TextButton(onClick = { confirmingDelete = false }) { Text("Keep it") }
+            } else {
+                TextButton(onClick = { confirmingDelete = true }) { Text("Delete") }
+            }
+        },
+        confirm = {
+            if (confirmingDelete) {
+                TextButton(onClick = onDelete) {
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                }
             } else {
                 TextButton(
                     enabled = parsed != null && parsed > 0,
@@ -900,13 +913,6 @@ private fun ReadingEditor(
                         )
                     },
                 ) { Text("Save") }
-            }
-        },
-        dismissButton = {
-            if (confirmingDelete) {
-                TextButton(onClick = { confirmingDelete = false }) { Text("Keep it") }
-            } else {
-                TextButton(onClick = { confirmingDelete = true }) { Text("Delete") }
             }
         },
     )

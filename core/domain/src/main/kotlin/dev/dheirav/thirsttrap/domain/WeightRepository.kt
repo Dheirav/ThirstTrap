@@ -24,7 +24,8 @@ data class WeightState(
      */
     val lastWateredMillis: Long? = null,
 ) {
-    val isCalibrated: Boolean get() = plant.anchors != null && !plant.needsRecalibration
+    val isCalibrated: Boolean
+        get() = plant.anchors?.isUsable == true && !plant.needsRecalibration
     val currentSegment: DryingSegment? get() = segments.lastOrNull()
     val latest: WeightReading? get() = currentSegment?.readings?.lastOrNull { !it.excluded }
 }

@@ -1,12 +1,20 @@
 package dev.dheirav.thirsttrap.ui
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,6 +45,19 @@ fun Rule(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.outlineVariant,
 ) = HorizontalDivider(modifier, thickness = 1.dp, color = color)
+
+/**
+ * The same hairline turned on its side, for a column boundary.
+ *
+ * A printed table separates its columns with a rule, not with whitespace,
+ * because whitespace between two lists of the same thing reads as one list with
+ * a gap in it. That is exactly what two adjacent filmstrips looked like.
+ */
+@Composable
+fun VerticalRule(
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.outlineVariant,
+) = VerticalDivider(modifier, thickness = 1.dp, color = color)
 
 /**
  * The double rule under a masthead.
@@ -140,5 +161,104 @@ fun ScreenTitle(text: String) {
         color = MaterialTheme.colorScheme.onSurface,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
+    )
+}
+
+/**
+ * A dialog set like a page of the same book.
+ *
+ * Material's `AlertDialog` is a lifted tonal container with a shadow, a
+ * sentence-case headline and no rules, which is three of the four things the
+ * rest of this app deliberately does not do. Next to a screen built from paper,
+ * hairlines and letterspaced caps it reads as a different application, and
+ * prompts are where people actually stop and read.
+ *
+ * So: the surface colour of the page rather than a raised one, a hairline
+ * border instead of a shadow, the title in the running-head voice over a double
+ * rule, and a rule above the actions. Built on [BasicAlertDialog] because
+ * `AlertDialog` gives no way to turn its shadow off.
+ *
+ * [dismiss] is drawn first and to the left of [confirm], which is the order the
+ * platform uses, so muscle memory still works.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AlmanacDialog(
+    title: String,
+    onDismissRequest: () -> Unit,
+    confirm: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    dismiss: @Composable (() -> Unit)? = null,
+    body: @Composable ColumnScope.() -> Unit,
+) {
+    BasicAlertDialog(onDismissRequest = onDismissRequest, modifier = modifier) {
+        Surface(
+            shape = MaterialTheme.shapes.small,
+            color = MaterialTheme.colorScheme.surface,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            tonalElevation = 0.dp,
+            shadowElevation = 0.dp,
+        ) {
+            // Less at the bottom than the top, because the action row carries
+            // its own button padding and a symmetric 20 left the dialog looking
+            // bottom-heavy.
+            Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 10.dp)) {
+                ScreenTitle(title)
+                DoubleRule(Modifier.padding(top = 8.dp, bottom = 12.dp))
+                body()
+                Rule(Modifier.padding(top = 16.dp))
+                Row(
+                    Modifier.fillMaxWidth().padding(top = 4.dp),
+                    horizontalArrangement = Arrangement.End,
+                ) {
+                    dismiss?.invoke()
+                    confirm()
+                }
+            }
+        }
+    }
+}
+
+/**
+ * The body of a prompt: one paragraph, in the voice the pages use.
+ *
+ * A convenience, because every dialog wants exactly this and passing the style
+ * at twelve call sites is how twelve call sites drift apart.
+ */
+@Composable
+fun DialogText(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = modifier,
+    )
+}
+
+/**
+ * A menu set like the rest of the app, for the same reason as [AlmanacDialog].
+ *
+ * Material's menu is a raised tonal container with a shadow. Against a page
+ * made of paper and hairlines that reads as a panel from somewhere else, and a
+ * menu is a list of lines, which is exactly what this app already knows how to
+ * set: the page's own surface, a hairline round it, and no lift.
+ */
+@Composable
+fun AlmanacMenu(
+    expanded: Boolean,
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismissRequest,
+        modifier = modifier,
+        shape = MaterialTheme.shapes.small,
+        containerColor = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp,
+        content = content,
     )
 }

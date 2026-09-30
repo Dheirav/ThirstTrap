@@ -53,6 +53,16 @@ class LocationRepositoryImpl @Inject constructor(
 /** "Windowsill" and "windowsill" are one place. */
 private fun String.key(): String = trim().lowercase()
 
+/** For the backup: the same key rule the repository uses on the way in. */
+internal fun LocationNote.toLocationEntity() = LocationNoteEntity(
+    nameKey = name.trim().lowercase(),
+    name = name.trim(),
+    note = note,
+    lux = lux,
+    luxMeasuredAt = luxMeasuredAtMillis,
+    updatedAt = updatedAtMillis,
+)
+
 internal fun LocationNoteEntity.toDomain() = LocationNote(
     name = name,
     note = note,

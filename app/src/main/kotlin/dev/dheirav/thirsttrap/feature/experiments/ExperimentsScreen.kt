@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -16,6 +15,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import dev.dheirav.thirsttrap.ui.AlmanacDialog
+import dev.dheirav.thirsttrap.ui.DialogText
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -108,10 +109,10 @@ fun ExperimentsScreen(
     if (creating) {
         var name by remember { mutableStateOf("") }
         var variable by remember { mutableStateOf("") }
-        AlertDialog(
+        AlmanacDialog(
+            title = "New experiment",
             onDismissRequest = { creating = false },
-            title = { ScreenTitle("New experiment") },
-            text = {
+            body = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedTextField(
                         value = name,
@@ -129,7 +130,8 @@ fun ExperimentsScreen(
                     )
                 }
             },
-            confirmButton = {
+            dismiss = { TextButton(onClick = { creating = false }) { Text("Cancel") } },
+            confirm = {
                 TextButton(
                     enabled = name.isNotBlank() && variable.isNotBlank(),
                     onClick = {
@@ -140,7 +142,6 @@ fun ExperimentsScreen(
                     },
                 ) { Text("Start") }
             },
-            dismissButton = { TextButton(onClick = { creating = false }) { Text("Cancel") } },
         )
     }
 }

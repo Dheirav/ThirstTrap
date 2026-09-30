@@ -53,6 +53,7 @@ class ImportIdempotenceTest {
             UsageRepositoryImpl(db.usageDao()),
             db.usageDao(),
             db.experimentDao(),
+            db.locationDao(),
             PhotoStore(context),
         )
     }
@@ -60,14 +61,31 @@ class ImportIdempotenceTest {
     @After
     fun tearDown() = db.close()
 
-    /** Every table, whole rows, so a rewritten column cannot hide behind a count. */
+    /**
+     * Every table, whole rows, so a rewritten column cannot hide behind a count.
+     *
+     * It used to list seven of the eleven, and experiments was one of the four
+     * it missed, which is exactly why the importer stamping `updated_at = now`
+     * on that table went unnoticed. Ordered by the primary key each table
+     * actually has: `location_notes` is keyed by the place name, not by an id,
+     * so a blanket ORDER BY id could not have included it.
+     */
     private fun snapshot(): Map<String, List<String>> {
-        val tables = listOf(
-            "plants", "care_events", "weight_readings", "photos", "reminders",
-            "ambient_readings", "fertilizers",
+        val tables = mapOf(
+            "plants" to "id",
+            "care_events" to "id",
+            "weight_readings" to "id",
+            "photos" to "id",
+            "reminders" to "id",
+            "ambient_readings" to "id",
+            "fertilizers" to "id",
+            "experiments" to "id",
+            "experiment_subjects" to "experiment_id, plant_id",
+            "usage_events" to "id",
+            "location_notes" to "name_key",
         )
-        return tables.associateWith { table ->
-            db.openHelper.readableDatabase.query("SELECT * FROM $table ORDER BY id").use { c ->
+        return tables.mapValues { (table, order) ->
+            db.openHelper.readableDatabase.query("SELECT * FROM $table ORDER BY $order").use { c ->
                 buildList {
                     while (c.moveToNext()) {
                         add((0 until c.columnCount).joinToString("|") { c.getString(it) ?: "null" })
@@ -115,6 +133,39 @@ class ImportIdempotenceTest {
                 nextDueAtMillis = 9_000,
             ).toReminderEntity(createdAt = 1_000),
         )
+        // The four tables the snapshot could not see. Without rows in them the
+        // widened snapshot above would still be comparing empty lists, which is
+        // how a test grows a hole: experiments was stamped with `now` on every
+        // import and nothing failed because seed() never made one.
+        db.experimentDao().upsert(
+            dev.dheirav.thirsttrap.domain.Experiment(
+                id = "x1",
+                name = "banana water",
+                variable = "1:10 vs plain",
+                startedAtMillis = 3_000,
+                tzOffsetMinutes = 330,
+            ).toEntity(createdAt = 1_000, updatedAt = 2_000),
+        )
+        db.experimentDao().upsertSubject(
+            dev.dheirav.thirsttrap.domain.ExperimentSubject(
+                experimentId = "x1", plantId = "p1", label = "treated",
+            ).toEntity(),
+        )
+        db.usageDao().insert(
+            dev.dheirav.thirsttrap.domain.UsageEvent(
+                id = "u1",
+                timestampMillis = 7_000,
+                tzOffsetMinutes = 330,
+                kind = dev.dheirav.thirsttrap.domain.UsageKind.SUGGESTION_OVERRIDDEN,
+                flow = "weighing_round",
+                plantId = "p1",
+                detail = "PRE_WATER->ROUTINE",
+            ).toEntity(),
+        )
+        // A place with both halves of what the table holds, because the note
+        // and the lux value arrive from two different screens.
+        LocationRepositoryImpl(db.locationDao()).setNote("Windowsill", "north, morning sun")
+        LocationRepositoryImpl(db.locationDao()).recordLight("Windowsill", 820f, 8_000)
     }
 
     @Test
@@ -132,6 +183,26 @@ class ImportIdempotenceTest {
 
         assertEquals("the first import changed the data it had just exported", before, afterFirst)
         assertEquals("the second import was not a no-op", afterFirst, afterSecond)
+    }
+
+    @Test
+    fun aRoundTripKeepsThePlaceNotesAndTheirLight() = runBlocking {
+        // location_notes was the one table the bundle never carried: the dao
+        // was not even a constructor argument, so an export could not include
+        // it by accident and a restore reported success with the notes gone.
+        seed()
+        val file = repo.exportToFileForDebug("test").getOrThrow()
+
+        db.locationDao().delete("windowsill")
+        assertEquals(0, db.locationDao().all().size)
+
+        repo.importFrom(Uri.fromFile(file)).getOrThrow()
+
+        val restored = db.locationDao().all().single()
+        assertEquals("Windowsill", restored.name)
+        assertEquals("north, morning sun", restored.note)
+        assertEquals(820f, restored.lux!!, 0.01f)
+        assertEquals(8_000L, restored.luxMeasuredAt)
     }
 
     @Test

@@ -46,6 +46,21 @@ data class ExportBundle(
     /** Added with F11. Older backups simply have none. */
     val experiments: List<Experiment> = emptyList(),
     val experimentSubjects: List<ExperimentSubject> = emptyList(),
+    /**
+     * Added 2026-09-30, and absent from every backup written before that.
+     *
+     * `location_notes` was the one table the bundle never carried.
+     * `LocationDao` was not even a constructor argument of the export
+     * repository, so the rows could not reach the archive by accident, and
+     * `LocationDao.all()` had no caller anywhere in the app. The data is typed
+     * and measured by hand, the note about a place and the last light reading
+     * taken in it, and neither is reconstructable from anything else: the
+     * exported ambient readings carry temperature and humidity but no lux.
+     *
+     * Export, reinstall, import reported success and the notes were gone. Same
+     * defaulting rule as the fields above, so an older backup simply has none.
+     */
+    val locations: List<LocationNote> = emptyList(),
 )
 
 @Serializable
@@ -63,7 +78,11 @@ data class ExportManifest(
     }
 }
 
-const val CURRENT_EXPORT_FORMAT = 1
+/**
+ * 2 adds `locations`. A version 1 archive still imports and simply has none,
+ * which is why the reader only warns about formats *newer* than this one.
+ */
+const val CURRENT_EXPORT_FORMAT = 2
 const val EXPORT_DATA_FILE = "thirsttrap.json"
 const val EXPORT_PHOTO_DIR = "photos"
 

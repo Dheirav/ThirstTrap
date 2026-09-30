@@ -76,16 +76,21 @@ class StatsTest {
 
     @Test
     fun `the rate is computed only over plants that have actually left`() {
+        // Asymmetric on purpose. Two given away against two dead made 0.5 the
+        // answer for either numerator, so swapping givenAway for died went
+        // uncaught - confirmed by mutation. Three against one can only be 0.75
+        // if the rate counts the ones that lived.
         val o = outcomesOf(
             listOf(
                 plant(PlantStatus.ACTIVE), plant(PlantStatus.ACTIVE), plant(PlantStatus.ACTIVE),
                 plant(PlantStatus.GIVEN_AWAY), plant(PlantStatus.GIVEN_AWAY),
-                plant(PlantStatus.DEAD), plant(PlantStatus.DEAD),
+                plant(PlantStatus.GIVEN_AWAY),
+                plant(PlantStatus.DEAD),
             ),
         )
         // A living plant is not a pending failure, so it is not in the divisor.
         assertEquals(4, o.departed)
-        assertEquals(0.5, o.survivalRate!!, 0.0001)
+        assertEquals(0.75, o.survivalRate!!, 0.0001)
         assertEquals(3, o.stillHere)
     }
 

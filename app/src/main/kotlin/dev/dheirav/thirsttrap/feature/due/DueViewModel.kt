@@ -3,6 +3,8 @@ package dev.dheirav.thirsttrap.feature.due
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.dheirav.thirsttrap.domain.calendarDaysAgo
+import dev.dheirav.thirsttrap.domain.tzOffsetMinutesAt
 import dev.dheirav.thirsttrap.domain.CareEvent
 import dev.dheirav.thirsttrap.domain.CareEventType
 import dev.dheirav.thirsttrap.domain.CheckResult
@@ -52,8 +54,12 @@ class DueViewModel @Inject constructor(
                             DueItem(
                                 reminder = r,
                                 plant = att.plant,
+                                // Calendar days rather than elapsed time, so
+                                // "checked today already" means today and not
+                                // "within the last 24 hours". D38, the two
+                                // sites it missed.
                                 daysSinceChecked = att.lastCheckedMillis
-                                    ?.let { ((now - it) / 86_400_000L).toInt() },
+                                    ?.let { calendarDaysAgo(now, it, tzOffsetMinutesAt(now)) },
                                 suggestedWaterMl = att.suggestedWaterMl,
                             )
                         }

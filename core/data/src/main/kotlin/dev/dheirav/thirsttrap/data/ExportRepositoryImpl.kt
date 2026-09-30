@@ -40,6 +40,7 @@ class ExportRepositoryImpl @Inject constructor(
     private val usageRepository: dev.dheirav.thirsttrap.domain.UsageRepository,
     private val usageDao: dev.dheirav.thirsttrap.data.dao.UsageDao,
     private val experimentDao: dev.dheirav.thirsttrap.data.dao.ExperimentDao,
+    private val locationDao: dev.dheirav.thirsttrap.data.dao.LocationDao,
     private val store: PhotoStore,
 ) {
 
@@ -101,9 +102,10 @@ class ExportRepositoryImpl @Inject constructor(
         val usageEvents = usageRepository.all()
         val experiments = experimentDao.all().map { it.toDomain() }
         val experimentSubjects = experimentDao.allSubjects().map { it.toDomain() }
+        val locations = locationDao.all().map { it.toDomain() }
         val bundle = ExportBundle(
             plants, events, photos, reminders, weightReadings, ambient, fertilizers,
-            usageEvents, experiments, experimentSubjects,
+            usageEvents, experiments, experimentSubjects, locations,
         )
         val manifest = ExportManifest(
             formatVersion = CURRENT_EXPORT_FORMAT,
@@ -125,6 +127,7 @@ class ExportRepositoryImpl @Inject constructor(
                 "fertilizers" to fertilizers.size,
                 "usageEvents" to usageEvents.size,
                 "experiments" to experiments.size,
+                "locations" to locations.size,
             ),
         )
 
@@ -214,8 +217,27 @@ class ExportRepositoryImpl @Inject constructor(
                                 skipped++
                             } else {
                                 target.parentFile?.mkdirs()
-                                target.outputStream().use { zip.copyTo(it) }
-                                photoFiles++
+                                // Staged, then renamed. Writing straight to the
+                                // live path truncated the existing file on open,
+                                // so a damaged entry or a process death mid-copy
+                                // left the photo row pointing at an empty JPEG -
+                                // and orphanFiles only finds files with no row,
+                                // so maintenance would never flag it either.
+                                // Harmless for a clean archive, unrecoverable
+                                // for a bad one, and the export side by contrast
+                                // never touches an original.
+                                val staged = File(target.parentFile, "${target.name}.part")
+                                staged.outputStream().use { zip.copyTo(it) }
+                                if (staged.renameTo(target)) {
+                                    photoFiles++
+                                } else {
+                                    // Same filesystem, so this should not
+                                    // happen; if it does the original is still
+                                    // intact, which is the point.
+                                    staged.delete()
+                                    warnings += "could not replace $name"
+                                    skipped++
+                                }
                             }
                         }
                     }
@@ -281,13 +303,24 @@ class ExportRepositoryImpl @Inject constructor(
                 experimentDao.upsert(
                     it.toEntity(
                         createdAt = experimentDao.createdAtOf(it.id) ?: now,
-                        updatedAt = now,
+                        // Was an unconditional `now`, the only table in this
+                        // loop that did not preserve it, which broke D27's
+                        // idempotence rule for the table added after the fix.
+                        // The reason was mechanical rather than deliberate:
+                        // ExperimentDao had createdAtOf and no updatedAtOf, so
+                        // there was nothing to call.
+                        updatedAt = experimentDao.updatedAtOf(it.id) ?: now,
                     ),
                 )
             }
             // Subjects after experiments and plants: both foreign keys must
             // already exist or the membership row has nothing to point at.
             data.experimentSubjects.forEach { experimentDao.upsertSubject(it.toEntity()) }
+            // Keyed by the lowercased name rather than an id, so the upsert is
+            // by place. updated_at comes from the file here, because unlike
+            // every other table this row carries its own and D27's reasoning
+            // (the backup does not say the row changed) does not apply.
+            data.locations.forEach { locationDao.upsert(it.toLocationEntity()) }
 
             val result = ImportResult(
                 plants = data.plants.size,

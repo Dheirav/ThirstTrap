@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.propagation
 
+import dev.dheirav.thirsttrap.ui.ColumnHead
+import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.background
@@ -14,9 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import dev.dheirav.thirsttrap.ui.Card
@@ -42,8 +42,16 @@ import dev.dheirav.thirsttrap.domain.PropagationStage
 import dev.dheirav.thirsttrap.domain.stageIsStale
 
 /**
- * Requirements item 20. Columns scroll sideways rather than cramming five
- * stages onto a phone width; each column is readable on its own.
+ * Requirements item 20.
+ *
+ * One page that scrolls down, not five columns that scroll sideways. A board
+ * of columns is a desktop shape: on a phone it showed one 260dp column at a
+ * time, so the pipeline it exists to display was the one thing you could not
+ * see, and a card list inside a sideways-scrolling row fights the gesture the
+ * rest of the app uses for everything.
+ *
+ * Read top to bottom the stages are in order, which is the same information
+ * the columns were carrying, in the direction a phone is held.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,39 +94,71 @@ fun PropagationScreen(
             return@Scaffold
         }
 
-        LazyRow(
+        // Flattened into one list rather than a LazyColumn per stage: a lazy
+        // list inside a lazy list of the same orientation has no height to
+        // measure against, so the stages become items and their cards follow.
+        LazyColumn(
             Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(PropagationStage.entries, key = { it.name }) { stage ->
+            PropagationStage.entries.forEach { stage ->
                 val cards = state.columns[stage].orEmpty()
-                Column(Modifier.width(260.dp)) {
-                    Text(
-                        "${stage.label}  ${cards.size}",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    Text(
-                        stage.hint,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 2.dp, bottom = 8.dp),
-                    )
-                    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        items(cards, key = { it.plant.id }) { card ->
-                            CuttingCard(
-                                card = card,
-                                nowMillis = now,
-                                onOpen = { onOpenPlant(card.plant.id) },
-                                onForward = { stage.next?.let { viewModel.move(card, it) } },
-                                onBack = { stage.previous?.let { viewModel.move(card, it) } },
-                            )
-                        }
+
+                item(key = "head-${stage.name}") {
+                    StageHead(label = stage.label, count = cards.size, hint = stage.hint)
+                }
+
+                if (cards.isEmpty()) {
+                    item(key = "empty-${stage.name}") {
+                        Text(
+                            "Nothing at this stage.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.outline,
+                        )
                     }
+                }
+
+                items(cards, key = { it.plant.id }) { card ->
+                    CuttingCard(
+                        card = card,
+                        nowMillis = now,
+                        onOpen = { onOpenPlant(card.plant.id) },
+                        onForward = { stage.next?.let { viewModel.move(card, it) } },
+                        onBack = { stage.previous?.let { viewModel.move(card, it) } },
+                    )
                 }
             }
         }
+    }
+}
+
+/**
+ * A stage divider: what this stage is, how many are in it, what it means.
+ *
+ * Letterspaced caps over a hairline is the app's section grammar, and it is
+ * what replaces the column edge now that the stages are stacked. The count
+ * sits on the same line because "4" under "WATER" reads as a card.
+ */
+@Composable
+private fun StageHead(label: String, count: Int, hint: String) {
+    Column(Modifier.fillMaxWidth().padding(top = 12.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            ColumnHead(label, modifier = Modifier.weight(1f))
+            Text(
+                count.toString(),
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Rule(Modifier.padding(top = 4.dp))
+        Text(
+            hint,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = 6.dp),
+        )
     }
 }
 
@@ -133,48 +173,52 @@ private fun CuttingCard(
     val days = card.daysInStage(nowMillis)
     val stale = days != null && stageIsStale(card.stage, days)
 
+    // A row, not a box with the arrows parked underneath. In a 260dp column
+    // the stacked layout was the only thing that fitted; at full width it
+    // became a tall card with the plant's name in one corner and an arrow in
+    // the other, and a page of those reads as five empty boxes.
     Card(Modifier.fillMaxWidth().clickable(onClick = onOpen)) {
-        Column(Modifier.padding(12.dp)) {
-            Text(card.plant.name, fontWeight = FontWeight.SemiBold)
-            Text(
-                when {
-                    days == null -> "just added"
-                    days == 0 -> "moved here today"
-                    days == 1 -> "1 day here"
-                    else -> "$days days here"
-                },
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            if (stale) {
-                // A nudge, not a telling-off. A cutting that has sat in water
-                // for six weeks may be perfectly fine.
+        Row(
+            Modifier.padding(start = 12.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(card.plant.name, fontWeight = FontWeight.SemiBold)
                 Text(
-                    "Worth a look",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.padding(top = 2.dp),
+                    when {
+                        days == null -> "just added"
+                        days == 0 -> "moved here today"
+                        days == 1 -> "1 day here"
+                        else -> "$days days here"
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-            }
-            Row(
-                Modifier.fillMaxWidth().padding(top = 8.dp),
-                horizontalArrangement = Arrangement.End,
-            ) {
-                if (card.stage.previous != null) {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            AppIcons.arrowBack,
-                            contentDescription = "Move back to ${card.stage.previous!!.label}",
-                        )
-                    }
+                if (stale) {
+                    // A nudge, not a telling-off. A cutting that has sat in
+                    // water for six weeks may be perfectly fine.
+                    Text(
+                        "Worth a look",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.padding(top = 2.dp),
+                    )
                 }
-                if (card.stage.next != null) {
-                    IconButton(onClick = onForward) {
-                        Icon(
-                            AppIcons.arrowForward,
-                            contentDescription = "Move on to ${card.stage.next!!.label}",
-                        )
-                    }
+            }
+            if (card.stage.previous != null) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        AppIcons.arrowBack,
+                        contentDescription = "Move back to ${card.stage.previous!!.label}",
+                    )
+                }
+            }
+            if (card.stage.next != null) {
+                IconButton(onClick = onForward) {
+                    Icon(
+                        AppIcons.arrowForward,
+                        contentDescription = "Move on to ${card.stage.next!!.label}",
+                    )
                 }
             }
         }

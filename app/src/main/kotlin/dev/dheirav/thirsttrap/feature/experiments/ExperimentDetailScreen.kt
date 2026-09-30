@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
@@ -18,6 +17,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import dev.dheirav.thirsttrap.ui.AlmanacDialog
+import dev.dheirav.thirsttrap.ui.DialogText
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -180,19 +181,21 @@ fun ExperimentDetailScreen(
 
     addingFor?.let { plantId ->
         var label by remember { mutableStateOf("") }
-        AlertDialog(
+        AlmanacDialog(
+            title = "Which arm?",
             onDismissRequest = { addingFor = null },
-            title = { ScreenTitle("Which arm?") },
-            text = {
+            body = {
                 OutlinedTextField(
                     value = label,
                     onValueChange = { label = it },
                     label = { Text("Arm") },
                     placeholder = { Text("banana water / control") },
                     singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
                 )
             },
-            confirmButton = {
+            dismiss = { TextButton(onClick = { addingFor = null }) { Text("Cancel") } },
+            confirm = {
                 TextButton(
                     enabled = label.isNotBlank(),
                     onClick = {
@@ -201,23 +204,25 @@ fun ExperimentDetailScreen(
                     },
                 ) { Text("Add") }
             },
-            dismissButton = { TextButton(onClick = { addingFor = null }) { Text("Cancel") } },
         )
     }
 
     if (confirmDelete) {
-        AlertDialog(
+        AlmanacDialog(
+            title = "Delete this experiment?",
             onDismissRequest = { confirmDelete = false },
-            title = { ScreenTitle("Delete this experiment?") },
-            text = {
-                Text("The subjects are plants and stay exactly as they are - only the experiment and its arm labels go.")
+            body = {
+                DialogText(
+                    "The subjects are plants and stay exactly as they are. Only the " +
+                        "experiment and its arm labels go.",
+                )
             },
-            confirmButton = {
+            dismiss = { TextButton(onClick = { confirmDelete = false }) { Text("Cancel") } },
+            confirm = {
                 TextButton(onClick = { confirmDelete = false; viewModel.delete(onBack) }) {
                     Text("Delete", color = MaterialTheme.colorScheme.error)
                 }
             },
-            dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text("Cancel") } },
         )
     }
 }

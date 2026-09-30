@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +33,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.ColumnHead
 import dev.dheirav.thirsttrap.ui.Rule
+import dev.dheirav.thirsttrap.ui.AlmanacDialog
+import dev.dheirav.thirsttrap.ui.DialogText
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -191,16 +192,14 @@ fun LocationsScreen(
 
     editing?.let { row ->
         var text by remember(row.name) { mutableStateOf(row.note?.note.orEmpty()) }
-        AlertDialog(
+        AlmanacDialog(
+            title = row.name,
             onDismissRequest = { editing = null },
-            title = { Text(row.name) },
-            text = {
+            body = {
                 Column {
-                    Text(
+                    DialogText(
                         "What is this spot like? Which way it faces, when the sun reaches it, " +
                             "whether the radiator is under it.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     OutlinedTextField(
                         value = text,
@@ -236,13 +235,13 @@ fun LocationsScreen(
                     }
                 }
             },
-            confirmButton = {
+            dismiss = { TextButton(onClick = { editing = null }) { Text("Cancel") } },
+            confirm = {
                 TextButton(onClick = {
                     viewModel.setNote(row.name, text)
                     editing = null
                 }) { Text("Save") }
             },
-            dismissButton = { TextButton(onClick = { editing = null }) { Text("Cancel") } },
         )
     }
 }

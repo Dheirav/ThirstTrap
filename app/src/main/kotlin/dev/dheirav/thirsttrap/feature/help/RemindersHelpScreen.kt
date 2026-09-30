@@ -103,16 +103,35 @@ fun RemindersHelpScreen(
                 )
             }
 
+            // Two buttons, because they answer two different questions and the
+            // page used to conflate them. The first posts a notification in
+            // this process: it proves the permission and the channel work and
+            // says nothing at all about background work. Only the second goes
+            // through WorkManager, which is the thing an OEM blocks.
             Section(
                 "Then test it",
-                "Use the button below. A reminder should arrive within a few seconds. " +
-                    "If it does, background work is allowed.",
+                "The first button posts a notification straight away. If it arrives, " +
+                    "notifications are allowed, which is worth knowing but is not the " +
+                    "same question.",
             )
 
             FilledTonalButton(
-                onClick = { viewModel.fireTestReminder(context) },
+                onClick = { viewModel.fireTestNotification(context) },
                 modifier = Modifier.fillMaxWidth(),
-            ) { Text("Send a test reminder now") }
+            ) { Text("Check notifications work") }
+
+            Section(
+                "Then the one that matters",
+                "This queues the real daily sweep through the system's work scheduler, " +
+                    "which is what an aggressive battery saver blocks. If a plant is due " +
+                    "you will get its reminder within a minute or so. If nothing is due " +
+                    "nothing arrives, and that is not a failure.",
+            )
+
+            FilledTonalButton(
+                onClick = { viewModel.runTheRealSweep(context) },
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text("Run the real check now") }
 
             Spacer(Modifier.height(16.dp))
 

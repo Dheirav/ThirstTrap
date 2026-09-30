@@ -22,6 +22,7 @@ ICONS = [
     ("add_a_photo",       "ic_add_a_photo",       "default"),
     ("backspace",         "ic_backspace",         "default"),
     ("broken_image",      "ic_broken_image",      "default"),
+    ("close",             "ic_close",             "default"),
     ("lock",              "ic_lock",              "default"),
     ("lock_open",         "ic_lock_open",         "default"),
     ("more_vert",         "ic_more_vert",         "default"),

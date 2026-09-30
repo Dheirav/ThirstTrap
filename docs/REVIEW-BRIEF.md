@@ -12,7 +12,7 @@ tells you the day the plant actually needs water instead of nagging you against
 a calendar.
 
 Kotlin, Compose, Room, Hilt, WorkManager. Four modules: `:app`, `:core:domain`
-(pure JVM, no Android), `:core:data`, `:core:ui`. 260 JVM tests and 15
+(pure JVM, no Android), `:core:data`, `:core:ui`. 272 JVM tests and 15
 instrumented, all passing. Schema at v14, every step an auto-migration with the
 exported JSON committed.
 

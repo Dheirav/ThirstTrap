@@ -7,7 +7,6 @@ import dev.dheirav.thirsttrap.feature.intro.IntroScreen
 import dev.dheirav.thirsttrap.feature.locations.LocationsScreen
 import dev.dheirav.thirsttrap.feature.weighing.WeighingScreen
 import dev.dheirav.thirsttrap.feature.stats.StatsScreen
-import dev.dheirav.thirsttrap.feature.timelapse.TimelapseScreen
 import dev.dheirav.thirsttrap.ui.AppIcons
 import android.Manifest
 import android.content.pm.PackageManager
@@ -263,12 +262,6 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.DIAGNOSE) {
                             DiagnoseScreen(onBack = { nav.popBackStack() })
                         }
-                        composable(
-                            "${Routes.TIMELAPSE}/{id}",
-                            arguments = listOf(navArgument("id") { type = NavType.StringType }),
-                        ) {
-                            TimelapseScreen(onBack = { nav.popBackStack() })
-                        }
                         composable(Routes.WEIGHING) {
                             WeighingScreen(onBack = { nav.popBackStack() })
                         }
@@ -346,7 +339,6 @@ class MainActivity : ComponentActivity() {
                                 onBack = { nav.popBackStack() },
                                 onEdit = { id -> nav.navigate(Routes.plantEdit(id)) },
                                 onCompare = { id -> nav.navigate(Routes.compare(id)) },
-                                onTimelapse = { id -> nav.navigate(Routes.timelapse(id)) },
                                 onWeigh = { id -> nav.navigate(Routes.weight(id)) },
                                 onMeasureLight = { id -> nav.navigate(Routes.light(id)) },
                                 onSticker = { id -> nav.navigate(Routes.sticker(id)) },
@@ -370,6 +362,15 @@ class MainActivity : ComponentActivity() {
                         ) {
                             PlantEditScreen(
                                 onDone = { nav.popBackStack() },
+                                // Replaces the form rather than stacking on it:
+                                // Back from the care notes should be the plant
+                                // list, not the form for a plant that is
+                                // already saved.
+                                onOpenCare = { id ->
+                                    nav.navigate(Routes.care(id)) {
+                                        popUpTo(Routes.PLANT_EDIT + "?id={id}") { inclusive = true }
+                                    }
+                                },
                                 // A deleted or archived plant has no detail
                                 // screen to go back to - popping one step would
                                 // land on a ghost.

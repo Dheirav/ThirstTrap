@@ -167,7 +167,7 @@ class WeighingViewModel @Inject constructor(
                         dev.dheirav.thirsttrap.domain.UsageKind.SUGGESTION_OVERRIDDEN,
                         "weighing_round",
                         row.plant.id,
-                        "${'$'}{s.name}->${'$'}{context.name}",
+                        "${s.name}->${context.name}",
                     )
                 }
             }

@@ -7,6 +7,8 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import dev.dheirav.thirsttrap.domain.calendarDaysAgo
+import dev.dheirav.thirsttrap.domain.tzOffsetMinutesAt
 import dev.dheirav.thirsttrap.domain.CareEventType
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.ReminderRepository
@@ -38,8 +40,12 @@ class ReminderWorker @AssistedInject constructor(
                 it.type == CareEventType.WATERED || it.type == CareEventType.CHECKED
             }?.timestampMillis
 
+            // Calendar days. Dividing the elapsed time made a check at 22:00
+            // read as "0 days" at 09:00 the next morning, which the
+            // notification then rendered as "It's been 0 days since you
+            // checked". D38 fixed the dashboard and not this.
             val daysSince = lastAssessed
-                ?.let { ((now - it) / 86_400_000L).toInt() }
+                ?.let { calendarDaysAgo(now, it, tzOffsetMinutesAt(now)) }
                 ?: 0
 
             ReminderNotifier.showCheckReminder(applicationContext, plant.id, plant.name, daysSince)

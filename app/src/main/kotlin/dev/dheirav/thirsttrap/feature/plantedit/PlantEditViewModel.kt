@@ -19,8 +19,11 @@ import dev.dheirav.thirsttrap.domain.newId
 import dev.dheirav.thirsttrap.domain.resolveIntervalDays
 import dev.dheirav.thirsttrap.domain.tzOffsetMinutesAt
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -185,7 +188,21 @@ class PlantEditViewModel @Inject constructor(
         _state.value = _state.value.copy(defaultWaterMl = v.filter { it.isDigit() }.take(5))
     }
 
-    fun save(onDone: () -> Unit) {
+    /** Whether to offer the care notes after adding, and whether there are any. */
+    val offerCareOnAdd: StateFlow<Boolean> = settings.settings
+        .map { it.offerCareOnAdd }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
+
+    fun stopOfferingCare() {
+        viewModelScope.launch { settings.setOfferCareOnAdd(false) }
+    }
+
+    /**
+     * [onSaved] receives the plant's id and whether this was a new plant, so
+     * the screen can offer the species care notes at the one moment they are
+     * worth reading: just after somebody typed the species in.
+     */
+    fun save(onSaved: (plantId: String, wasNew: Boolean) -> Unit) {
         val s = _state.value
         if (!s.canSave) return
         val plantId = s.id ?: newId()
@@ -289,7 +306,7 @@ class PlantEditViewModel @Inject constructor(
                 )
                 reminders.rescheduleFromModel(plantId, now)
             }
-            onDone()
+            onSaved(plantId, isNew)
         }
     }
 

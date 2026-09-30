@@ -24,11 +24,6 @@ data class AppSettings(
     /** Starting depletion trigger for newly added plants. */
     val defaultDepletionTrigger: Double = DEFAULT_DEPLETION_TRIGGER,
     /**
-     * Off by default - handover D4. SCHEDULE_EXACT_ALARM is denied by default
-     * on Android 13+, and a watering check does not need to land at 09:00:00.
-     */
-    val useExactAlarms: Boolean = false,
-    /**
      * Off by default, and the only setting in the app that can cause a packet
      * to leave the phone. The requirements call offline-first a promise rather
      * than a default, so this asks first and stays asked.
@@ -66,6 +61,15 @@ data class AppSettings(
      * docs/SHARING.md section 3.
      */
     val advancedFeatures: Boolean = false,
+    /**
+     * Offer a plant's species care notes right after it is added.
+     *
+     * On by default, because the moment you have just typed a species name is
+     * the moment the notes are worth reading, and nobody goes looking in a
+     * menu for something they do not know is there. Switchable because it is
+     * an interruption, and the second time you add a pothos you know.
+     */
+    val offerCareOnAdd: Boolean = true,
 )
 
 interface SettingsRepository {
@@ -73,12 +77,12 @@ interface SettingsRepository {
     suspend fun setDynamicColor(enabled: Boolean)
     suspend fun setReminderHour(hour: Int)
     suspend fun setDefaultDepletionTrigger(fraction: Double)
-    suspend fun setUseExactAlarms(enabled: Boolean)
     suspend fun setOnlineSpeciesLookup(enabled: Boolean)
     suspend fun setWateringCanMl(ml: Double)
     suspend fun setWateringCanSizes(sizesMl: List<Double>)
     suspend fun setIntroSeen(seen: Boolean)
     suspend fun setAdvancedFeatures(enabled: Boolean)
+    suspend fun setOfferCareOnAdd(enabled: Boolean)
 
     /** Called by the export flow on success; nothing else writes it. */
     suspend fun markExported(atMillis: Long)

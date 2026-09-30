@@ -4,19 +4,25 @@
 is the pitch and may lag; `plant-tracker-requirements.md` is the *what and
 why*; this file is the *where we are*.
 
-Last updated: 2026-09-09
+Last updated: 2026-09-30
 
 ---
 
 ## Status
 
-**Phase: complete as specified. All 102 features are built or deliberately
-closed, and nothing is pending. Schema v14, 260 JVM tests and 15 instrumented
-tests passing, running daily on the target phone.**
+**Phase: feature-complete, not defect-free. All 102 features are built or
+deliberately closed. Schema v14, 277 JVM tests and 16 instrumented tests
+passing, running daily on the target phone.**
+
+**The council review is closed.** A twelve-agent council confirmed 21 findings
+on 2026-09-30 (19 distinct, two pairs being the same defect found twice) and all
+19 are now fixed: D43, D46 and D47. `docs/COUNCIL-REVIEW.md` keeps the full list
+with its evidence, because the reasoning is the useful part and several findings
+corrected their own original claim.
 
 Repo: https://github.com/Dheirav/ThirstTrap (branch `main`).
 
-- **260 JVM tests** across `:core:domain` and `:core:ui`, running in about a
+- **277 JVM tests** across `:core:domain` and `:core:ui`, running in about a
   second with no device attached.
 - **13 instrumented tests** in `:core:data`, covering schema migrations, the
   reminder planning that gathers its own inputs, and the export/import round
@@ -750,6 +756,470 @@ N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
 
+### D47 — The rest of the council list, all sixteen (2026-09-30)
+
+The remaining findings, closed in one pass. Grouped by what they turned out to
+be rather than by severity, because the grouping is the finding.
+
+**Logic wired to nothing.** Six of the sixteen, which is the pattern this
+project keeps producing.
+
+- *The notification's "Snooze 1 day" never wrote anything.* `ACTION_SNOOZE`
+  mapped to a null event type and `if (type == null) return` sat above the only
+  coroutine block in the file, so the receiver dismissed the notification, said
+  "Snoozed for a day", and left `snoozed_until` null. The row was still due on
+  the next sweep and the notification came back the next morning. The reason it
+  needed more than a one-line fix is that the receiver carries a plant id while
+  `snooze()` takes a reminder id, so it does a lookup and snoozes every reminder
+  the plant has, since the notification speaks for all of them.
+- *The exact-alarm switch is gone.* D30a left it open with "honour the setting
+  or remove the toggle" and it could not be honoured: nothing read
+  `useExactAlarms`, the scheduler takes no settings dependency, and neither
+  manifest declares `SCHEDULE_EXACT_ALARM`, so `canScheduleExactAlarms()` cannot
+  return true on API 31+. It was a switch that could not latch on, would have
+  gated nothing if it had, and sent the user to a system page this app cannot
+  appear on. The field, the setter, the permission prompt and
+  `openExactAlarmSettings` went with it rather than being left as dead API. The
+  DataStore key stays in anybody's store and is ignored, which costs one unread
+  boolean and saves a migration.
+- *Two notification channels promised categories that could not deliver.* Task
+  reminders cannot be created at all, because both `Reminder` constructions in
+  the app pass `CHECK`, and the health diagnostic is only ever rendered in the
+  weight screen. Both are deleted, and `createChannels` now deletes them from
+  installs that already have them. A category in the system settings whose
+  description promises notifications that cannot arrive is a small lie told in
+  the one place somebody went looking for the truth.
+- *Deleting a plant left its photos on disk.* `PhotoStore.deleteForPlant` was
+  written for exactly this and had no caller anywhere. Called after the row, not
+  before: if the delete fails the files are still wanted, and an orphaned file
+  is recoverable while a missing one is not.
+- *`LocationDao.all()` had zero callers*, which is the backup finding below.
+- *The reminders troubleshooter gave a false all-clear.* `fireTestReminder`
+  posted in-process, so it proved the permission and the channel and nothing
+  about background work, while the screen said "if it does, background work is
+  allowed". `ReminderScheduler.runSweepNow` already existed and the help screen
+  did not even inject the scheduler. There are two buttons now, because they
+  answer two different questions: one posts a notification, the other queues the
+  real sweep through WorkManager, which is the thing an OEM blocks. The second
+  says plainly that nothing arrives if no plant is due, and that this is not a
+  failure.
+
+**The backup carries the places now.** The high one. `location_notes` was the
+one table `ExportBundle` never had, and `LocationDao` was not a constructor
+argument of the export repository, so the rows could not reach the archive even
+by accident. Added the field, injected the dao, put the count in the manifest
+(which is what you read to decide whether a backup is whole), and wrote the rows
+back on import. `CURRENT_EXPORT_FORMAT` is 2; a version 1 archive still imports
+and simply has no places, which is what every defaulted field in that bundle is
+for.
+
+The import keys by the lowercased place name rather than an id, and unlike every
+other table it takes `updated_at` from the file, because this row actually
+carries one and D27's reasoning (the backup does not say the row changed) does
+not apply.
+
+**The idempotence test could not see four of the eleven tables.** Which is
+exactly why the experiments import stamping `updated_at = now` went unnoticed
+for a whole feature: `snapshot()` listed seven tables and experiments was not
+one, and `seed()` never created an experiment, so even widening the snapshot
+would have compared two empty lists. It now covers all eleven, ordered by the
+key each table actually has, because `location_notes` is keyed by name and a
+blanket `ORDER BY id` could never have included it. `seed()` creates a row in
+each of the four it was missing. `ExperimentDao` got the `updatedAtOf` its
+siblings all had, which is why the importer had been stamping `now`.
+
+**Import no longer truncates a live photo.** It wrote straight to the live path,
+and `FileOutputStream` truncates on open, so a damaged entry or a process death
+mid-copy left the photo row pointing at an empty JPEG, which `orphanFiles` would
+never flag because the row still exists. It stages to `.part` and renames.
+Harmless for a clean archive, unrecoverable for a bad one, and the export side
+by contrast never touches an original.
+
+**A watering logged after the last weigh-in is no longer invisible.**
+Segmentation only opens a new segment for a watering between two readings, so
+one logged after the most recent reading left the model predicting from the
+pre-watering weight and the card reading "Needs water now" about a pot watered
+an hour ago. Rather than teach segmentation about it, the prediction refuses:
+`predictWatering` takes the last watering time and returns a new
+`WATERED_SINCE_LAST_READING` suppression when it is newer than the latest
+reading. The weight the model is holding describes the pot before the can, so
+the honest answer is "weigh it to start the new cycle", not a number.
+
+**Three surviving D38 sites**, all dividing elapsed time by 86,400,000 where
+they should difference two local day indices: the Due list's "checked today
+already", the notification body, and the dashboard's dim context line, which the
+original claim missed and the skeptic found. While in there, the notification
+also stopped saying "It's been 1 days".
+
+**A capped ETA now keeps its confidence.** `prediction.capped` was the first arm
+of the whole `when`, so it swallowed the confidence entirely and a capped ETA
+from a low-confidence prior read exactly like one from a high-confidence fit,
+while the weight screen went on calling the same object "estimated from past
+cycles". Capped decides the phrase, confidence decides the qualifier, and both
+always apply. Worth noting the obvious fix was wrong: simply reordering the arms
+produced "Water more than 2 weeks".
+
+**The override instrumentation recorded a placeholder.** Both call sites read
+`"${'$'}{s.name}->${'$'}{saved.name}"`, where `${'$'}` yields one dollar sign
+and the rest is ordinary text, so every row in `usage_events` stored the literal
+string instead of the two enum names. They agreed with each other, which is why
+nothing looked wrong. D34's instrumentation knew a chip had been overridden and
+not to what.
+
+**Four tests that did not hold the code they were named for.** All four were
+found by the council mutating a line and watching all 256 tests pass, and all
+four are now checked the same way. Planting all five mutants at once fails
+exactly six tests, each the one written for it:
+
+- the ETA's wall-clock decay term: every test asserting an `Eta` put `now` on
+  the latest reading, so the term was multiplied by zero every time. Two tests
+  now, one for the countdown and one for it reaching zero.
+- the slope fit's recency rule: the fixture was a straight 20-reading line, so
+  any five gave the same answer and `take` passed as happily as `takeLast`. The
+  run bends now, 40 g/day then 5 g/day, so the two disagree.
+- `EWMA_ALPHA`: one test sat on the fixed point, where `a*x + (1-a)*x = x` for
+  every alpha, and the other asserted a bound satisfied by any alpha above
+  0.206. One step from a known prior pins it: `0.3 x -30 + 0.7 x -10 = -16.0`
+  and no other alpha gives that.
+- the survival rate: two given away against two dead made 0.5 the answer for
+  either numerator. Three against one can only be 0.75 if the rate counts the
+  ones that lived.
+
+**Where it stands.** 267 JVM tests in `:core:domain` and 10 in `:core:ui`, all
+passing. 16 instrumented tests in `:core:data`, run on the phone, all passing,
+which is the only thing that can prove the backup fix: the new test deletes the
+place row, asserts it is gone, imports, and reads it back with its note and its
+lux value.
+
+One honest gap. I meant to mutation-check the backup fix as well, by removing
+the import line and watching the new test fail, and MIUI refused to install the
+test APK for that run (`INSTALL_FAILED_USER_RESTRICTED`). The mutant was removed
+from the tree immediately and the suite re-run green. The test still cannot pass
+without the fix, because it calls `.single()` on the restored rows and that
+throws on an empty list, but that is an argument rather than an observation and
+should be recorded as one.
+
+### D46 — The photo button did crash, and the backup gap is real but harmless so far (2026-09-30)
+
+The two remaining high findings from the council, both tested rather than
+argued, because the council itself flagged one as reasoned-only and the other
+was cheap to check against a real file.
+
+**The camera crash is real.** Reproduced by revoking the runtime permission,
+which puts the app in exactly the state a fresh install is in and touches no
+data at all. One tap on the photo button:
+
+```
+FATAL EXCEPTION: main
+java.lang.SecurityException: Permission Denial: starting Intent
+  { act=android.media.action.IMAGE_CAPTURE ... } with revoked permission
+  android.permission.CAMERA
+    at ...PhotoCaptureKt.rememberPhotoCapture$lambda(PhotoCapture.kt:66)
+```
+
+`PROCESS GONE`, phone back on the launcher, stack trace ending on the exact line
+the council named. The reason nobody had seen it is that the QR scanner had
+already been opened on this phone, so CAMERA was granted; anyone installing
+fresh and attaching a photo first hits it immediately.
+
+Android's rule is asymmetric, which is what made this so easy to get wrong:
+`ACTION_IMAGE_CAPTURE` is refused for a caller that *declares* CAMERA without
+holding it, and allowed for one that never declares it at all. So D35 adding the
+declaration for the scanner broke the photo path without touching a line of it,
+and the comment in `PhotoCapture.kt` saying "needs no camera permission" stayed
+true-looking and became false.
+
+The fix asks on the photo path rather than relying on the scanner to have asked
+first. A refusal is not a crash and not a nagging second dialog: it logs and
+stops, because the gallery import needs no permission and is the better answer
+for somebody who has just said no to a camera. `awaitingPermission` is
+`rememberSaveable` for the same reason `pendingUri` is, since MIUI will destroy
+the Activity behind the permission dialog too.
+
+Verified the whole path on the device: revoked gives the system prompt instead
+of a crash, granting opens `com.android.camera.OneShotImageCapture`, and Back
+returns to the app with `I/TTPhoto: capture cancelled`. The permission was left
+granted, which is where it started.
+
+One nice accident: `docs/REVIEW-BRIEF.md` already told the reviewer the app
+"will ask for the camera only when you first attach a photo". That was a
+description of the intent and was false about the code. It is now true, so the
+brief needed no edit.
+
+**The friend's APK is the one that crashes.** It predates this fix, so he should
+be sent a new build before he spends time on it.
+
+**The backup gap is confirmed, and has cost nothing yet.** Proved from the real
+export sitting in Downloads rather than by restoring anything, which is the
+cheap way: if the table is not in the archive, opening the zip is the whole
+proof. Its `thirsttrap.json` carries ten keys, `plants, events, photos,
+reminders, weightReadings, ambient, fertilizers, usageEvents, experiments,
+experimentSubjects`, and no locations, and the manifest's `counts` map lists
+nine tables with locations absent, so the archive cannot even report the gap.
+
+The correction to the finding is the impact, not the mechanism: `location_notes`
+currently holds **zero rows**. No place note has ever been saved and no light
+reading has ever been filed against a place, so an export-wipe-import cycle
+today would lose nothing. `ambient_readings` has one row and that one is in the
+bundle. So this is a bug waiting for the first use of the Places screen rather
+than damage already done, which makes it the right thing to fix and not the
+urgent thing, and means it can be fixed and verified with nothing at risk.
+
+Still to do for it: a field on `ExportBundle`, `LocationDao` injected into
+`ExportRepositoryImpl`, the import path writing rows, the archive format version
+bumped, and a row in the idempotence test's snapshot, which orders by id and
+would need a different key for a name-keyed table.
+
+### D45 — Prompts and menus set like the pages they interrupt (2026-09-30)
+
+The user's observation, and it was right: the screens look like an almanac and
+the dialogs looked like Material. A prompt is where somebody actually stops and
+reads, so it is the worst place for the app to change voice.
+
+What made them different was not the shape, which was already square from
+`AppShapes`. It was everything else Material does and this app deliberately does
+not: a raised tonal container, a shadow, a sentence-case headline, and no rules
+at all. Next to a page built from paper, hairlines and letterspaced caps that
+reads as a panel from another application.
+
+`AlmanacDialog` in `core/ui/Almanac.kt` is the answer, and all **twelve**
+`AlertDialog` call sites use it:
+
+- the page's own `surface` colour rather than a lifted one
+- a hairline border instead of a shadow, the same decision the FAB already made
+  ("a ruled block, not a floating one")
+- the title in the running-head voice over a `DoubleRule`, so a prompt is set
+  like a title block
+- a `Rule` above the actions, and `dismiss` drawn left of `confirm` so muscle
+  memory still works
+
+It is built on `BasicAlertDialog`, because `AlertDialog` exposes `tonalElevation`
+and no way at all to turn its shadow off. `DialogText` came with it, because
+every dialog body wants the same style and passing it at twelve call sites is
+how twelve call sites drift apart.
+
+`AlmanacMenu` does the same for the four `DropdownMenu`s. M3 1.3's overload
+takes `shape`, `containerColor`, `border` and both elevations, so this one is a
+wrapper rather than a rebuild.
+
+Two things fell out of the conversion that were not styling. The fertiliser
+dialog's "Remove" and the weight dialog's "Delete" were rendering in the default
+colour while every other destructive confirm in the app uses `error`; they
+match now. And the care prompt was rewritten rather than restyled: the title is
+the species on its own over the rule instead of a headline sentence, the body
+lost "Worth a minute now" (the app telling somebody what to feel, which the
+anti-goals are against), and "Don't ask again" stopped being a third button
+competing with the two that matter. It is a quiet line inside the body.
+
+**Applying care notes now closes the page.** `applySuggestions` takes an
+`onDone` and the screen passes `onBack`. Applying is the last thing anybody
+comes to that screen to do, so staying put and turning the button into
+"Applied" left the user pressing Back for no reason. No acknowledgement is lost:
+the page they land on shows the plant with its new trigger, which is a better
+confirmation than a greyed-out button. The `_applied` flow went with it rather
+than being left behind as state nothing could observe.
+
+Verified on the device: the dashboard menu and the caption dialog. The dialog's
+bottom padding is 10 against 20 at the top, because the action row carries its
+own button padding and a symmetric 20 looked bottom-heavy.
+
+**The light meter got the same treatment**, after a pass over every screen with
+a terminal action. Saving is the only reason to open the meter, so it now
+returns and the button reads "Save to this place" rather than becoming "Saved".
+Its `saved` flag went the way of `_applied`.
+
+Three screens already did this and were left alone: logging an event, the post
+mortem, and the QR scanner, which navigates on the first frame that decodes.
+
+Three should not, and the reasons are worth keeping so nobody "fixes" them:
+
+- **Ambient conditions** is a log page. The list of readings under the form is
+  the point, and the new row appearing in it is the acknowledgement.
+- **The weighing round** is a worksheet you work down. Saving already advances to
+  the next pot, and at the end "All weighed. Tap any row to change one." plus
+  the column of numbers you just wrote is the useful state, not a dead end.
+- **Backup** and **Diagnose** produce a result to read. Leaving would throw away
+  the output.
+
+### D44 — A photo is a page, and five screens got tidier (2026-09-30)
+
+A session of small things the user found by using the app, which is the pattern
+this project keeps proving: the defects that matter are found by opening a
+screen, not by reasoning about one.
+
+**Tapping a photo now shows the photo.** It did not. In the plant's photo strip
+a tap and a long press both opened the caption-and-delete dialog, so the one
+thing a tap could not do was look at the picture, and a mis-aimed tap landed on
+Delete. That is how three real diary entries were lost during development, D20,
+D25 and again this session. Diary-row photos were inert and the cover photo,
+the largest image on the screen, was not clickable at all.
+
+`ui/PhotoViewer.kt` is the page: full screen, pinch and double-tap to zoom, and
+it pages across the whole set because the reason to open a photo is usually to
+put it next to an older one. Caption, cover and delete moved onto it, behind an
+overflow menu, and Delete asks. There is no long press on a photo anywhere any
+more, which was the user's call and the right one: one gesture, and the
+destructive action is a visible control on a page you meant to open.
+
+Two things about it were wrong until the device said so, and neither would have
+shown up in a compile.
+
+As a `Dialog` the caption band was invisible. The window manager fits a dialog
+window inside the system bars whatever `DialogProperties` says: the frame came
+back as `[0,152][1280,2619]` and a bottom-aligned child of a `fillMaxSize` box
+inside it landed where nothing could draw it. `decorFitsSystemWindows = false`
+did not change it. It is now an overlay in the activity's own window, which is
+already edge to edge, with a `BackHandler` instead of dialog dismissal.
+
+And the swipe did nothing. `detectTransformGestures` consumes a one-finger drag
+as a pan whether or not there is anything to pan, so the pager never saw a
+horizontal drag. The gesture handling is hand-rolled now and consumes a drag
+only when it has work to do: two fingers, or one finger while zoomed in.
+
+**The timelapse screen is gone.** Two full-screen photo viewers is one too many.
+`TimelapseScreen.kt` and `TimelapseViewModel.kt` are deleted, the route with
+them, and the menu entry opens the viewer at the oldest photo. What came across:
+chronological order from the domain's `buildTimelapse`, so a restored backup
+cannot play a plant's life back in file order, the "day 22" label, and Play.
+
+What did not come across is the scrubber, deliberately. A slider is a second way
+to do what the swipe already does and over a photo it is the heaviest thing on
+screen, a thick white bar across the picture the page exists to show. The user
+asked for it out, then pointed out the hole that leaves: a swipe moves one
+frame, so the first photo is twenty-one swipes away. So the band has "Oldest"
+and "Latest" jumps, which are the two positions anybody actually names, dimmed
+rather than hidden at the end they point at so the row does not move.
+
+The bottom band is a gradient scrim rather than a flat 0.55 black. Flat was
+legible over soil and marginal over a bright wall; a scrim that deepens
+downward reads at any exposure. Same treatment as the hero on the plant page.
+
+**Add a plant asks for one thing.** `canSave` is `name.isNotBlank()` and nothing
+else in the form is validated at all, but seven labels read "(optional)", which
+said so seven times without ever saying which one was not. The name is `Name *`,
+the suffixes are gone, and one line at the top says it once.
+
+**Care notes are offered when a plant is added.** On by default, and only when
+the catalogue has something for that species. The moment you have just typed a
+species name is the moment the notes are worth reading, and nobody goes looking
+in a menu for something they do not know is there. "Don't ask again" in the
+prompt turns it off, and Settings can turn it back on: `offerCareOnAdd` in
+`AppSettings`, defaulting true, so the absent key has to mean on.
+
+Note on the two care-notes entry points, which looked like a duplicate and is
+not: the in-page button appears only when there are notes, while the overflow
+item is deliberately never disabled, because the care screen's empty state is
+the only route to the online species lookup. Disabling it made the lookup
+unreachable for exactly the plants it exists for. Both stay.
+
+**The compare screen's two filmstrips were one strip with a gap in it.** Two
+adjacent `LazyRow`s of identical thumbnails, no boundary, and nothing saying
+which half drove which pane, with both dates in a shared row underneath where
+they sat next to each other and the labels sat nowhere. It is a two-column table
+now: a rule down the middle, `LEFT` and `RIGHT` over each column in the
+column-head voice, and each date in its own column beside its heading. The
+elapsed time is on its own band between the panes and the picker.
+
+The separator is drawn on the right column's leading edge rather than placed as
+a sibling divider, because a filmstrip is a `LazyRow` and has no intrinsic
+height: `IntrinsicSize.Min` on the row would throw at runtime and a
+`fillMaxHeight` divider would resolve against the screen and swallow the panes
+above. Both compile.
+
+**The propagation board grows down, not sideways.** A board of columns is a
+desktop shape. On a phone it showed one 260dp column at a time, so the pipeline
+it exists to display was the one thing you could not see. It is one `LazyColumn`
+with the stages flattened into it, because a lazy list inside a lazy list of the
+same orientation has no height to measure against. Read top to bottom the stages
+are in order, which is the information the columns were carrying, in the
+direction a phone is held. The cutting card became a row at the same time: at
+full width the stacked layout was a tall box with a name in one corner and an
+arrow in the other.
+
+`VerticalRule` joined `Rule` in `Almanac.kt`, and `ic_close` was added through
+`tools/fetch-icons.py` rather than by hand.
+
+**Verified on the device**, which is the only reason two of these are right: the
+viewer opening, its caption band, the swipe, the "Oldest" jump landing on "the
+first photo, 8 Sept 2026", the compare screen's columns and that "8 Sept, 01:53"
+fits on one line at half width, the propagation board, and the add-plant form.
+
+**Not verified:** the care-notes prompt after adding a plant. Seeing it needs a
+plant actually created in the live diary, and after three accidental deletions
+this session that is not a thing to do on the user's own data for a screenshot.
+It compiles and the pieces are wired; it wants one throwaway plant to confirm.
+
+### D43 — Both anchor bugs the council found (2026-09-30)
+
+A twelve-agent review across six dimensions, every claim handed to a separate
+skeptic to refute: 21 confirmed, 5 refuted. The full list is in
+`docs/COUNCIL-REVIEW.md`. These are the two high findings in the watering model,
+and they are the same shape: a guard that exists at one end of the range and not
+the other.
+
+**The dry anchor survived a repot.** `WeightAssembly.kt` filters readings to
+those after the last repot, which is what stops an old weigh re-anchoring the
+new pot. That filter was applied to the derived wet anchor only. The replay loop
+below it folded every non-excluded reading with no timestamp predicate, so a
+PRE_WATER reading from the old pot kept setting the new pot's dry end, and
+because a measured anchor is a running minimum, the old pot's lighter value won
+forever.
+
+The visible cost was the trigger weight, not the number on the screen. In the
+scenario the skeptic ran, `Anchors(3000, 700)` instead of `Anchors(3000, 1800)`,
+which puts the trigger at 1850 g rather than 2400 g: the app waits until the pot
+is about 96 percent down its true range before saying anything. Late is the
+unsafe direction, section 9 of WATERING-MODEL says so, and the code's own
+comment three lines above says the filter exists for exactly this. The existing
+repot regression test passed because all its pre-repot readings are POST_WATER,
+so the dry end was never touched.
+
+The fix is the same predicate in the replay loop. Removing it again fails two of
+the three new tests, which is how I know they hold it.
+
+**Nothing stopped the dry anchor being set at or above the wet one.** The
+PRE_WATER branch guarded the low side (`0.30 x W`, a mis-weigh) and not the
+high side, and the provisional branch replaces the guess outright even upward,
+which is the route in: file a PRE_WATER at the pot's full weight and
+`dryGrams == wetGrams`. Then `rangeGrams` is 0, depletion is NaN, and NaN
+survives `coerceIn` because every comparison against it is false, so it reaches
+the dashboard ring sweep and prints as 0 percent. The trigger equals the wet
+weight, so WaterNow is permanent. That breaks the section 9 property "ETA is
+never NaN or infinite for any input".
+
+It is two taps away rather than exotic: `suggestReadingContext` proposes
+PRE_WATER whenever the state is WaterNow.
+
+Three changes, because a reading is not the only way in:
+
+- `DRY_ANCHOR_CEILING_FRACTION = 0.95`, the floor's mirror. A pot weighed just
+  before watering and still at container capacity is a reading filed under the
+  wrong context, not evidence about how dry this person lets a pot get. Paired
+  with an absolute `MIN_ANCHOR_RANGE_GRAMS = 1.0` on the same two-floor
+  reasoning as the slope guards: the fraction asks whether the range means
+  anything for this pot, the gram asks whether it can be divided by at all.
+- The POST_WATER branch had the same hole from the other end. A post-water
+  weight below the measured dry anchor cannot happen by watering, so the pot
+  itself changed (pruned back, soil lost in a division, a different tare) and
+  the measured dry end describes a pot that no longer exists. It goes back to a
+  provisional estimate rather than being kept as half of an impossible pair.
+- `Anchors.isUsable`, checked where anchors are read rather than only where they
+  are written, because a pair also arrives straight from a database row. An
+  unusable pair now counts as no calibration: readings are still drawn, the
+  prediction says NOT_CALIBRATED, and the app asks for a post-water weigh. The
+  floor inside `rangeGrams` stays as a backstop, since that is where every
+  division happens.
+
+`isCalibrated` moved with it, or the screen would have claimed a calibration the
+prediction was refusing to use.
+
+262 JVM tests in `:core:domain`, all passing. Seven are new, and I checked them
+by mutation rather than by reading: reverting either fix fails three of them.
+
+The Status count above was wrong before this, not just stale. It read 260 for
+`:core:domain` plus `:core:ui` together, while the two actually held 256 and 10.
+It now reads 272, which is 262 and 10 as measured.
+
 ### D42 — Plant identification closed entirely (2026-09-30)
 
 F25c was closed by measurement, D41. F25b is closed by choice, which is the
@@ -1460,20 +1930,54 @@ the round should not ask for a number that means nothing.
 
 ## Next actions
 
-In order, and only the first is uncontroversial.
+The council review is closed, all 19 findings fixed across D43, D46 and D47,
+and the four items that stood here before it are done or closed too: the
+call-site audit (D30a), F14, F11 and F12, and F16 with F25 (D41, D42).
 
-1. **The call-site audit** described under Status. Six instances of one defect
-   is a pattern, not bad luck, and it is cheaper to find the seventh on purpose
-   than to have a plant find it.
-2. **F14, the fertiliser dilution calculator.** Small, self-contained, no new
-   concepts, and the last easy win in M4.
-3. **F11, experiments.** The largest remaining piece and the one that pays off
-   the weight model: "does the north window dry it slower" becomes a measured
-   answer rather than an impression.
-4. **Decide F16 and F25 before writing either.** Both cross the line the app has
-   held since the first commit. F16 wants an account; F25 and F25b send a photo
-   off the device. F25c, the offline classifier, does not, which is the whole
-   reason it is listed separately.
+What is left is the things code cannot settle by itself, plus the UI work the
+user has been finding by using the app.
+
+**The diary row is the photo problem, untouched.** `PlantDetailScreen.kt`: a tap
+and a long press both open a menu whose only real item is Delete, drawn over the
+row it belongs to. That is the shape D44 removed from photos, and it is the
+mechanism that destroyed three real diary entries during development. It should
+become a page: tap an entry, get the entry, with its actions on it. That also
+gives a home to editing a note or a wrong timestamp, which has none today.
+
+**On the dashboard, tap does the surprising thing.** Tap a plant row and you get
+the quick-log sheet; long press opens the plant. Opening a plant should be the
+tap, and it is currently the hidden gesture. The watering icon has the same
+split.
+
+**Bottom sheets are still Material.** Four of them, in the dashboard, Due,
+weight and weighing screens, with the raised container and drag handle that
+D45 removed from the dialogs. An `AlmanacSheet` finishes that work.
+
+**Compare and the viewer are two photo screens again.** D44 folded the timelapse
+in; Compare still does the same job with two panes and its own picker. Pinning
+the current photo in the viewer and then swiping would fold it away.
+
+**Required fields, everywhere else.** Add-plant is marked (D44). The new
+experiment, fertiliser and experiment-arm dialogs all have required fields with
+no marker, and the fertiliser form still says "NPK (optional)", which is the
+inconsistency add-plant just lost.
+
+**Signing.** Parked at the user's request, D39. The keystore needs a password
+only the user can choose, and until it exists there is no upgradeable install
+and no Play listing.
+
+**A week of ordinary use.** The one thing still genuinely unverified. Every
+prediction property is tested against synthetic curves, and `PredictionEvaluation`
+replays real readings, but nobody has yet watched the app say "four days" and
+counted four days. The model's accuracy is a claim, not a measurement.
+
+**The friend's review.** The debug APK and `docs/REVIEW-BRIEF.md` are with an
+Android dev, along with a restore of real data. His feedback is the first
+outside read the app has had.
+
+**The landing page.** The user chose both halves of the tutorial question. The
+in-app half is built (D36's intro page and the help screens); the page with a
+scripted demo is not.
 
 ## Conventions
 

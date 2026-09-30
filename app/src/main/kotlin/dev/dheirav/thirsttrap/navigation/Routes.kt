@@ -27,7 +27,6 @@ object Routes {
     const val SCAN = "scan"
     const val EXPERIMENT = "experiment"
     const val WEIGHING = "weighing"
-    const val TIMELAPSE = "plant/timelapse"
     const val CARE = "plant/care"
     const val PLANT_EDIT = "plant/edit"
     const val PLANT_DETAIL = "plant/detail"
@@ -40,7 +39,6 @@ object Routes {
 
     fun weight(plantId: String) = "$WEIGHT/$plantId"
 
-    fun timelapse(plantId: String) = "$TIMELAPSE/$plantId"
 
     fun light(plantId: String) = "$LIGHT/$plantId"
 

@@ -28,6 +28,10 @@ interface ExperimentDao {
     @Query("SELECT created_at FROM experiments WHERE id = :id")
     suspend fun createdAtOf(id: String): Long?
 
+    /** The sibling every other table had, which is why the importer stamped now. */
+    @Query("SELECT updated_at FROM experiments WHERE id = :id")
+    suspend fun updatedAtOf(id: String): Long?
+
     @Upsert
     suspend fun upsert(experiment: ExperimentEntity)
 

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -19,6 +18,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import dev.dheirav.thirsttrap.ui.AlmanacDialog
+import dev.dheirav.thirsttrap.ui.DialogText
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -278,23 +279,18 @@ private fun FertilizerDialog(
     var note by remember(existing?.id) { mutableStateOf(existing?.note.orEmpty()) }
     var confirmingDelete by remember(existing?.id) { mutableStateOf(false) }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text(
-                when {
-                    confirmingDelete -> "Remove this fertiliser?"
-                    existing == null -> "Add a fertiliser"
-                    else -> existing.name
-                },
-            )
+    AlmanacDialog(
+        title = when {
+            confirmingDelete -> "Remove this fertiliser?"
+            existing == null -> "Add a fertiliser"
+            else -> existing.name
         },
-        text = {
+        onDismissRequest = onDismiss,
+        body = {
             if (confirmingDelete) {
-                Text(
+                DialogText(
                     "It leaves the cupboard. Entries that already record using it are not " +
                         "touched.",
-                    style = MaterialTheme.typography.bodyMedium,
                 )
             } else {
                 Column {
@@ -330,17 +326,7 @@ private fun FertilizerDialog(
                 }
             }
         },
-        confirmButton = {
-            if (confirmingDelete) {
-                TextButton(onClick = { onDelete?.invoke() }) { Text("Remove") }
-            } else {
-                TextButton(
-                    enabled = name.isNotBlank(),
-                    onClick = { onSave(name, dilution, npk, note) },
-                ) { Text("Save") }
-            }
-        },
-        dismissButton = {
+        dismiss = {
             Row {
                 if (onDelete != null && !confirmingDelete) {
                     TextButton(onClick = { confirmingDelete = true }) { Text("Remove") }
@@ -348,6 +334,18 @@ private fun FertilizerDialog(
                 TextButton(onClick = { if (confirmingDelete) confirmingDelete = false else onDismiss() }) {
                     Text(if (confirmingDelete) "Keep it" else "Cancel")
                 }
+            }
+        },
+        confirm = {
+            if (confirmingDelete) {
+                TextButton(onClick = { onDelete?.invoke() }) {
+                    Text("Remove", color = MaterialTheme.colorScheme.error)
+                }
+            } else {
+                TextButton(
+                    enabled = name.isNotBlank(),
+                    onClick = { onSave(name, dilution, npk, note) },
+                ) { Text("Save") }
             }
         },
     )

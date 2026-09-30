@@ -92,17 +92,20 @@ class CareViewModel @Inject constructor(
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), CareUiState())
 
-    private val _applied = MutableStateFlow(false)
-    val applied: StateFlow<Boolean> = _applied.asStateFlow()
-
     /**
-     * Copies the suggestions onto the plant.
+     * Copies the suggestions onto the plant, then calls [onDone].
      *
      * The depletion trigger is the valuable one: it is the single number a user
      * has no way to guess, and getting it wrong makes every later prediction
      * wrong in the same direction.
+     *
+     * [onDone] is how the screen closes itself. Applying is the last thing
+     * anybody comes here to do, so staying put and turning the button into
+     * "Applied" left the user to press Back for no reason. There is no
+     * acknowledgement to lose either: the page they land on shows the plant
+     * with the new trigger, which is a better answer than a greyed-out button.
      */
-    fun applySuggestions() {
+    fun applySuggestions(onDone: () -> Unit) {
         val s = state.value
         val plant = s.plant ?: return
         val care = s.care ?: return
@@ -122,7 +125,7 @@ class CareViewModel @Inject constructor(
                     ),
                 )
             }
-            _applied.value = true
+            onDone()
         }
     }
 }

@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.dashboard
 
+import dev.dheirav.thirsttrap.ui.AlmanacMenu
 import dev.dheirav.thirsttrap.ui.Motion
 import dev.dheirav.thirsttrap.ui.DoubleRule
 import dev.dheirav.thirsttrap.ui.OutlinedButton
@@ -43,7 +44,6 @@ import dev.dheirav.thirsttrap.ui.FilledTonalButton
 import dev.dheirav.thirsttrap.ui.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -216,7 +216,7 @@ fun DashboardScreen(
                     IconButton(onClick = { moreOpen = true }) {
                         Icon(AppIcons.moreVert, contentDescription = "More")
                     }
-                    DropdownMenu(expanded = moreOpen, onDismissRequest = { moreOpen = false }) {
+                    AlmanacMenu(expanded = moreOpen, onDismissRequest = { moreOpen = false }) {
                         // Jobs first, then the record, with a rule between. These
                         // seven lived behind the gear icon, where nobody looks
                         // for a feature.
@@ -531,7 +531,12 @@ private fun PlantCard(
                     // Restraint deserves visible credit, not silence - so this
                     // one fragment keeps its colour even in the dim row.
                     if (checked != null && checked > (watered ?: 0L)) {
-                        val days = ((nowMillis - checked) / 86_400_000L).toInt()
+                        // Calendar days, not elapsed hours. D38 fixed this on
+                        // the answer row and missed the line directly under it,
+                        // so a check at 22:00 still read "checked today" at
+                        // 09:00 the next morning.
+                        val tz = java.util.TimeZone.getDefault().getOffset(nowMillis) / 60_000
+                        val days = calendarDaysAgo(nowMillis, checked, tz)
                         parts += (
                             if (days == 0) "checked today, not thirsty"
                             else relativeDays(nowMillis, checked, "Checked").lowercase()
@@ -614,16 +619,26 @@ private fun predictionText(prediction: Prediction): String? = when (prediction) 
         // here, which is precisely the false confidence the tiers exist to
         // avoid: honest uncertainty is the product, not a caveat.
         val whenText = when {
-            prediction.capped -> "more than 2 weeks"
             prediction.days < 1.0 -> "today"
             prediction.days < 2.0 -> "tomorrow"
             else -> "in about ${prediction.days.toInt()} days"
         }
-        when {
+        // Capped decides the phrase, confidence decides the qualifier, and both
+        // always apply. Capped used to be the first arm of the whole when, so
+        // it swallowed the confidence entirely: a capped ETA from a
+        // low-confidence EWMA prior read exactly like one from a
+        // high-confidence fit, while the weight screen went on saying
+        // "estimated from past cycles" about the same Prediction. Two screens
+        // disagreeing about one value is what the tiers exist to prevent.
+        val head = when {
             prediction.capped -> "More than 2 weeks"
-            prediction.confidence == Confidence.HIGH -> "Water $whenText"
-            prediction.confidence == Confidence.MEDIUM -> "Water $whenText - still learning"
-            else -> "Maybe $whenText, from past cycles"
+            prediction.confidence == Confidence.LOW -> "Maybe $whenText"
+            else -> "Water $whenText"
+        }
+        head + when (prediction.confidence) {
+            Confidence.HIGH -> ""
+            Confidence.MEDIUM -> " - still learning"
+            Confidence.LOW -> ", from past cycles"
         }
     }
     is Prediction.NeedAnotherReading -> when (prediction.reason) {
@@ -632,6 +647,9 @@ private fun predictionText(prediction: Prediction): String? = when (prediction) 
         SuppressionReason.NOT_CALIBRATED -> null
         SuppressionReason.NEEDS_RECALIBRATION -> "Needs recalibrating"
         SuppressionReason.NO_MEASURABLE_DRYING -> "Not drying measurably yet"
+        // The fact line under this already says "watered today", so the answer
+        // row only has to stop claiming the pot is thirsty.
+        SuppressionReason.WATERED_SINCE_LAST_READING -> "Weigh it to start the new cycle"
         SuppressionReason.NO_READINGS,
         SuppressionReason.ONE_READING_NO_HISTORY -> "Weigh once more to predict"
     }

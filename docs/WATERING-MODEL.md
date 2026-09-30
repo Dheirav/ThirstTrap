@@ -57,12 +57,30 @@ minimum:
 D ← min(D_current, w_pre_water)
 ```
 
-with two guards:
+with three guards:
 - **Reject implausible readings**: ignore any `w_pre_water < 0.30 × W`. That is
   almost certainly a mis-weigh (pot lifted off the scale, wrong plant), not a
   genuinely bone-dry pot.
+- **And the mirror of it**: ignore any `w_pre_water > 0.95 × W`, or any reading
+  leaving `W − w_pre_water < 1 g`. A pot weighed just before watering and still
+  at container capacity says nothing about how dry this person lets a pot get,
+  so it is a reading filed under the wrong context. The guard is not cosmetic:
+  the provisional branch below replaces its guess outright even upward, so
+  without a ceiling one such reading puts `D` on top of `W`, `R` becomes 0 and
+  depletion becomes NaN. See D43.
 - Once at least one real `pre_water` reading has been folded in, set
   `dry_anchor_provisional = 0`. The UI can then stop hedging its language.
+
+The wet end needs the same protection from the other side. A `post_water`
+reading below the measured `D` cannot be the result of watering, so the pot
+itself changed weight (pruned back, soil lost in a division, a different tare)
+and the measured `D` describes a pot that no longer exists. Re-derive `D₀` from
+the new `W` rather than keep an impossible pair.
+
+A pair with `W − D < 1 g` is **not a calibration**. Treat it as none at all:
+draw the readings, suppress the prediction with `not_calibrated`, and ask for a
+post-water weigh. Anchors also arrive straight from a stored row, so this is
+checked where they are read and not only where they are folded.
 
 ### Range and depletion
 
@@ -331,8 +349,14 @@ Pure functions, so this is cheap and there is no excuse for skipping it.
 
 **Anchors**
 - Adaptive `D` decreases monotonically and never below `0.30 × W`.
+- `D` is never raised to `0.95 × W` or above, including from the provisional
+  state, and `R` is never 0 or negative for any sequence of readings.
 - `W` updates on each `post_water` reading.
-- Repot clears both and sets `needs_recalibration`.
+- Repot clears both and sets `needs_recalibration`. Assert this for the **dry**
+  end specifically, with a pre-repot `pre_water` reading in the fixture: a
+  fixture of post-water readings only cannot see the bug D43 fixed.
+- A stored pair spanning no range suppresses the prediction rather than
+  producing one.
 
 **Suppression**
 - Each row of the suppression table gets a test asserting no ETA is produced.

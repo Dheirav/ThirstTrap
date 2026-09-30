@@ -15,6 +15,7 @@ import dev.dheirav.thirsttrap.domain.newId
 import dev.dheirav.thirsttrap.domain.tzOffsetMinutesAt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -56,11 +57,27 @@ class ReminderActionReceiver : BroadcastReceiver() {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         ReminderNotifier.dismiss(context, plantId)
 
-        if (type == null) return
+        // This used to be `if (type == null) return`, sitting above the only
+        // coroutine block in the file. Snooze maps to a null type, so the
+        // receiver dismissed the notification, told the user it was snoozed for
+        // a day, and never touched the database. snoozed_until stayed null, the
+        // row was still due on the next sweep, and the notification came back
+        // the next morning. docs/NOTIFICATIONS.md section 7 specifies the
+        // opposite, so it was a gap rather than a decision.
         val pending = goAsync()
         val now = System.currentTimeMillis()
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                if (type == null) {
+                    // The receiver carries a plant id and snooze() takes a
+                    // reminder id, which is why this needs a lookup rather
+                    // than a one-line call. A plant can hold more than one
+                    // reminder, and the notification speaks for all of them.
+                    val rows = reminders.observeForPlant(plantId).first()
+                    rows.forEach { reminders.snooze(it.id, now + SNOOZE_MILLIS) }
+                    Log.i(TAG, "snoozed ${rows.size} reminder(s) for $plantId")
+                    return@launch
+                }
                 repository.logEvent(
                     CareEvent(
                         id = newId(),
@@ -90,5 +107,8 @@ class ReminderActionReceiver : BroadcastReceiver() {
         const val ACTION_SNOOZE = "dev.dheirav.thirsttrap.SNOOZE"
         const val EXTRA_PLANT_ID = "plant_id"
         const val EXTRA_PLANT_NAME = "plant_name"
+
+        /** One day, the same figure the in-app "Snooze a day" button uses. */
+        private const val SNOOZE_MILLIS = 86_400_000L
     }
 }

@@ -23,7 +23,7 @@ fun assembleWeightState(
         return WeightState(
             plant = plant,
             readings = readings,
-            prediction = predictWatering(plant, emptyList(), nowMillis),
+            prediction = predictWatering(plant, emptyList(), nowMillis, lastWatered),
             lastWateredMillis = lastWatered,
         )
     }
@@ -52,10 +52,16 @@ fun assembleWeightState(
             (it.context == ReadingContext.POST_WATER || it.context == ReadingContext.CALIBRATION)
     }
 
+    // A stored pair that spans no range cannot be interpreted, so it counts as
+    // no calibration at all and gets re-derived from the readings below. The
+    // anchors are guarded where they are folded, but a row can also arrive from
+    // an import or an older schema, and predicting from an impossible pair is
+    // worse than admitting there is nothing to predict from.
+    val stored = plant.anchors?.takeIf { it.isUsable }
     val startingAnchors: Anchors? = when {
-        plant.anchors != null && !plant.needsRecalibration -> plant.anchors
+        stored != null && !plant.needsRecalibration -> stored
         derivedWet != null -> Anchors.fromWetAnchor(derivedWet.grams)
-        else -> plant.anchors.takeIf { !plant.needsRecalibration }
+        else -> null
     }
 
     if (startingAnchors == null) {
@@ -67,7 +73,7 @@ fun assembleWeightState(
             plant = plant,
             readings = readings,
             segments = segments,
-            prediction = predictWatering(plant, segments, nowMillis),
+            prediction = predictWatering(plant, segments, nowMillis, lastWatered),
             lastWateredMillis = lastWatered,
         )
     }
@@ -77,7 +83,16 @@ fun assembleWeightState(
     // actually waters. Replaying them in order is what keeps both honest.
     var anchors: Anchors = startingAnchors
     for (reading in ordered) {
-        if (!reading.excluded) anchors = anchors.withReading(reading)
+        if (reading.excluded) continue
+        // The same cutoff the derived wet anchor uses, and for the same reason.
+        // A repot replaces the pot, so a pre-water reading from the old one is
+        // evidence about a dry weight that no longer exists; folding it in
+        // anyway let the old pot's lighter dry end win forever, which pushed
+        // the trigger weight down and delayed the prompt. The wet end was
+        // already protected by the filter above, which is why this only showed
+        // up at the dry end.
+        if (reading.timestampMillis < sinceRepot) continue
+        anchors = anchors.withReading(reading)
     }
 
     // needsRecalibration is cleared here rather than written back: a post-water
@@ -99,7 +114,7 @@ fun assembleWeightState(
     }
 
     val withPrior = adapted.copy(slopeEwmaGramsPerDay = ewma)
-    val prediction = predictWatering(withPrior, segments, nowMillis)
+    val prediction = predictWatering(withPrior, segments, nowMillis, lastWatered)
     val current = segments.lastOrNull()
     val latest = current?.readings?.lastOrNull { !it.excluded }
 

@@ -42,7 +42,6 @@ data class LightUiState(
     val verdict: String? = null,
     /** Populated only when measuring a place rather than a single plant. */
     val here: List<PlantHere> = emptyList(),
-    val saved: Boolean = false,
 )
 
 @HiltViewModel
@@ -123,7 +122,6 @@ class LightMeterViewModel @Inject constructor(
             level = level,
             verdict = assessLightFor(plant.value?.lightNeeds, level),
             here = residents.value.map { PlantHere(it.name, lightFitFor(it.lightNeeds, level)) },
-            saved = false,
         )
     }
 
@@ -134,7 +132,16 @@ class LightMeterViewModel @Inject constructor(
      * timeline when a plant is what you came from, because that is the record
      * of where that pot was standing at the time.
      */
-    fun save() {
+    /**
+     * Records the reading, then calls [onDone].
+     *
+     * Same reasoning as the care screen, D45: saving is the only thing anybody
+     * opens the meter to do, so turning the button into "Saved" and sitting
+     * there left the user pressing Back for nothing. The place or the plant
+     * they land on now carries the lux, which is a better acknowledgement than
+     * a greyed-out button they are about to leave anyway.
+     */
+    fun save(onDone: () -> Unit) {
         val s = _state.value
         val lux = s.lux ?: return
         val level = s.level ?: return
@@ -160,7 +167,7 @@ class LightMeterViewModel @Inject constructor(
             // that vanishes when the screen closes is no use when you are
             // deciding where to put the next pot.
             where?.let { locations.recordLight(it, lux, now) }
-            _state.value = _state.value.copy(saved = true)
+            onDone()
         }
     }
 
