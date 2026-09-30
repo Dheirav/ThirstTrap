@@ -776,6 +776,15 @@ that shows everything every day is wallpaper. And when nothing is due it says
 because the app does not keep score and neither should the thing on the home
 screen.
 
+Painted in the app's own palette, not the system widget grey: `LightScheme` and
+`DarkScheme` in `core:ui` became public and the widget wraps itself in
+`ColorProviders(light, dark)`. One source of truth, because a second copy of the
+hex values here would drift from the app within a month. Aged paper, ink, the
+spot green for the reason line, and a hairline rule under a caps running head,
+which is most of what makes the app look printed. Glance's `TextStyle` has no
+letter spacing, so the caps carry it alone. Two cells by two rather than three
+by two, which fits three plants without scrolling.
+
 Glance does not observe flows, so something has to tell it the world moved. The
 Application collects the dashboard, distinct-until-changed on the ids, due times
 and predictions, and calls `updateAll`. The 30-minute `updatePeriodMillis` is

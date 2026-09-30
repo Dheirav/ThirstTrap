@@ -15,9 +15,11 @@ import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
 import androidx.glance.background
-import androidx.glance.layout.Alignment
+import androidx.glance.layout.Box
+import androidx.glance.material3.ColorProviders
+import dev.dheirav.thirsttrap.ui.DarkScheme
+import dev.dheirav.thirsttrap.ui.LightScheme
 import androidx.glance.layout.Column
-import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.fillMaxWidth
@@ -69,7 +71,10 @@ class WateringWidget : GlanceAppWidget() {
         ).filter { it.wantsAttention(now) }
 
         provideContent {
-            GlanceTheme {
+            // The app's own paper and ink, not the system widget grey. The
+            // schemes are the same ones the app is painted in, so the widget
+            // cannot drift away from it.
+            GlanceTheme(colors = ColorProviders(light = LightScheme, dark = DarkScheme)) {
                 Body(wanted)
             }
         }
@@ -93,69 +98,82 @@ private fun Body(wanted: List<PlantAttention>) {
     Column(
         GlanceModifier
             .fillMaxSize()
-            .background(GlanceTheme.colors.widgetBackground)
-            .cornerRadius(16.dp)
-            .padding(14.dp),
+            .background(GlanceTheme.colors.surface)
+            .cornerRadius(14.dp)
+            .padding(horizontal = 12.dp, vertical = 10.dp),
     ) {
+        // Uppercase rather than letterspaced: Glance's TextStyle has no
+        // letterSpacing, and caps is the half of the almanac running head that
+        // survives the translation.
         Text(
-            if (wanted.isEmpty()) "Nothing needs water" else "Wants water",
+            if (wanted.isEmpty()) "THIRSTTRAP" else "WANTS WATER",
             style = TextStyle(
-                color = GlanceTheme.colors.onSurface,
-                fontSize = 13.sp(),
+                color = GlanceTheme.colors.onSurfaceVariant,
+                fontSize = 10.sp(),
                 fontWeight = FontWeight.Medium,
             ),
+            maxLines = 1,
         )
+        Spacer(GlanceModifier.height(5.dp))
+        Rule()
+        Spacer(GlanceModifier.height(7.dp))
 
         if (wanted.isEmpty()) {
-            Spacer(GlanceModifier.height(6.dp))
-            // Not "all done", not a tick, no count of anything. The app does
-            // not keep score and neither does its widget.
             Text(
-                "Nothing is asking for you today.",
-                style = TextStyle(color = GlanceTheme.colors.onSurfaceVariant, fontSize = 12.sp()),
+                "Nothing is asking for you.",
+                style = TextStyle(color = GlanceTheme.colors.onSurface, fontSize = 13.sp()),
             )
             return@Column
         }
 
-        Spacer(GlanceModifier.height(8.dp))
-        // Four is what fits the smallest useful size without scrolling, and a
-        // widget that scrolls is a list, which is what the app already is.
-        wanted.take(4).forEach { item ->
-            Row(
+        // Three at this size. A widget that scrolls is a list, and the app is
+        // already the list.
+        wanted.take(3).forEachIndexed { i, item ->
+            if (i > 0) Spacer(GlanceModifier.height(6.dp))
+            Column(
                 GlanceModifier
                     .fillMaxWidth()
-                    .padding(vertical = 5.dp)
                     .clickable(actionStartActivity(openPlantIntent(item.plant.id))),
-                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Column(GlanceModifier.defaultWeight()) {
-                    Text(
-                        item.plant.name,
-                        style = TextStyle(
-                            color = GlanceTheme.colors.onSurface,
-                            fontSize = 14.sp(),
-                        ),
-                        maxLines = 1,
-                    )
-                    Text(
-                        reason(item),
-                        style = TextStyle(
-                            color = GlanceTheme.colors.onSurfaceVariant,
-                            fontSize = 11.sp(),
-                        ),
-                        maxLines = 1,
-                    )
-                }
+                Text(
+                    item.plant.name,
+                    style = TextStyle(
+                        color = GlanceTheme.colors.onSurface,
+                        fontSize = 14.sp(),
+                        fontWeight = FontWeight.Medium,
+                    ),
+                    maxLines = 1,
+                )
+                Text(
+                    reason(item),
+                    style = TextStyle(
+                        color = GlanceTheme.colors.primary,
+                        fontSize = 11.sp(),
+                    ),
+                    maxLines = 1,
+                )
             }
         }
 
-        if (wanted.size > 4) {
+        if (wanted.size > 3) {
+            Spacer(GlanceModifier.height(5.dp))
             Text(
-                "and ${wanted.size - 4} more",
-                style = TextStyle(color = GlanceTheme.colors.onSurfaceVariant, fontSize = 11.sp()),
+                "and ${wanted.size - 3} more",
+                style = TextStyle(color = GlanceTheme.colors.onSurfaceVariant, fontSize = 10.sp()),
             )
         }
     }
+}
+
+/** The almanac's hairline, which is most of what makes the app look printed. */
+@androidx.compose.runtime.Composable
+private fun Rule() {
+    Box(
+        GlanceModifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(GlanceTheme.colors.outline),
+    ) {}
 }
 
 /**

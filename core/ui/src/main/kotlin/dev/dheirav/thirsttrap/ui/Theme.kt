@@ -74,7 +74,12 @@ private val Bark = Color(0xFF5A5342)
 // Was #C0603F, which measured 4.02:1 on the light background and failed AA.
 private val Terracotta = Color(0xFF8C3A2A)
 
-internal val LightScheme = lightColorScheme(
+/**
+ * Public so the home-screen widget can be painted in the app's own palette
+ * rather than the system's widget grey. One source of truth for the paper and
+ * the ink; a second copy of the hex values in the widget would drift.
+ */
+val LightScheme = lightColorScheme(
     primary = Color(0xFF2F5D3A),
     onPrimary = Color(0xFFFFFFFF),
     primaryContainer = Color(0xFFCFE0CC),
@@ -117,7 +122,7 @@ internal val LightScheme = lightColorScheme(
     onErrorContainer = Color(0xFF2E0603),
 )
 
-internal val DarkScheme = darkColorScheme(
+val DarkScheme = darkColorScheme(
     // Dropped from #7DDB9C (OKLCH L 82) to L 76: on a near-black screen the
     // depletion bar made the old value the brightest object in the room.
     primary = Color(0xFF8FBF93),
