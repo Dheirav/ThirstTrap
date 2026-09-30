@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,6 +8,25 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
+
+/**
+ * Release signing, read from local.properties, which is gitignored.
+ *
+ * Absent means an unsigned release build rather than a broken one: someone who
+ * clones this repo has no keystore and should still be able to compile. An
+ * unsigned APK will not install, which is the correct and obvious failure.
+ *
+ * Losing this keystore means never being able to ship an update that upgrades
+ * an existing install. For a diary whose data cannot be reconstructed, that is
+ * not an inconvenience, so it belongs backed up somewhere that is not this
+ * machine.
+ */
+private val signingProps = Properties().apply {
+    val f = rootProject.file("local.properties")
+    if (f.exists()) FileInputStream(f).use { load(it) }
+}
+private val keystorePath: String? = signingProps.getProperty("releaseKeystore")
+private val hasKeystore = keystorePath != null && rootProject.file(keystorePath).exists()
 
 android {
     namespace = "dev.dheirav.thirsttrap"
@@ -19,6 +41,17 @@ android {
         versionCode = 1
         versionName = "0.1.0-M0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        if (hasKeystore) {
+            create("release") {
+                storeFile = rootProject.file(keystorePath!!)
+                storePassword = signingProps.getProperty("releaseStorePassword")
+                keyAlias = signingProps.getProperty("releaseKeyAlias")
+                keyPassword = signingProps.getProperty("releaseKeyPassword")
+            }
+        }
     }
 
     buildTypes {
@@ -37,6 +70,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            if (hasKeystore) signingConfig = signingConfigs.getByName("release")
         }
     }
 
