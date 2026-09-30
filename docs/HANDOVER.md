@@ -749,6 +749,42 @@ N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
 
+### D38 — "Watered today" did not mean today (2026-09-30)
+
+Found by following up a remark rather than by looking for it. The user mentioned
+being in Oman (+04) for a break while normally in India (+05:30), which turns
+the app's timezone handling from a design principle into a live case. Checking
+what actually reads the stored per-entry offset turned up two bugs, one of them
+nothing to do with travel.
+
+**The plant card computed elapsed time and called it a calendar day.**
+
+    when (val d = ((now - then) / 86_400_000L).toInt()) { 0 -> "$verb today"
+
+That is 0 for anything inside 24 hours, so a plant watered at 23:00 read
+"Watered today" at 08:00 the next morning. It is the most-read line in the app
+and it was wrong for most of every day. It survived because it is right whenever
+you happen to open the app at the same hour you watered, which is often enough
+to feel correct.
+
+Now `calendarDaysAgo(now, then, offsetMinutes)`, which differences two day
+indices instead of dividing a duration. `CalendarDaysTest` pins the disagreement
+directly: the old division returns 0 where the answer is 1.
+
+**The timeline compared two day numbers from different frames.** Events were
+grouped by `localDayIndex(timestamp, entry's own offset)`, which is right,
+because the honest answer to "which day did this happen" is the day where you
+were standing. But "Today" was then decided against `localDayIndex(now, the
+phone's current offset)`. Two day indices in different reference frames are not
+the same kind of number, and the difference between them is not a count of days.
+Invisible while the phone stays in one place, off by one for entries near
+midnight as soon as the diary moves. Each group is now labelled in its own
+frame.
+
+Both fixes are one line of arithmetic each, which is the point: this class of
+bug is cheap to make, invisible in a screenshot, and only shows up if you ask
+what a number actually means.
+
 ### D37 — A first-run page, and Settings stops being a junk drawer (2026-09-30)
 
 docs/NAVIGATION.md has the flow analysis written before any code, which was the

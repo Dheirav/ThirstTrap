@@ -97,6 +97,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.layout.ContentScale
 import dev.dheirav.thirsttrap.ui.PlantPhoto
 import dev.dheirav.thirsttrap.domain.CareEvent
+import dev.dheirav.thirsttrap.domain.calendarDaysAgo
 import dev.dheirav.thirsttrap.domain.PlantAttention
 import dev.dheirav.thirsttrap.domain.Prediction
 import dev.dheirav.thirsttrap.domain.SuppressionReason
@@ -582,12 +583,18 @@ private fun PlantCard(
 private fun wateredMessage(name: String, ml: Double?): String =
     if (ml != null) "Logged - $name watered ${ml.toInt()} ml" else "Logged - $name watered"
 
-private fun relativeDays(now: Long, then: Long, verb: String): String =
-    when (val d = ((now - then) / 86_400_000L).toInt()) {
+/**
+ * Read in the reader's own frame: the card is a statement about now, so "today"
+ * means the day it is where the phone is, not where the entry was logged.
+ */
+private fun relativeDays(now: Long, then: Long, verb: String): String {
+    val offset = java.util.TimeZone.getDefault().getOffset(now) / 60_000
+    return when (val d = calendarDaysAgo(now, then, offset)) {
         0 -> "$verb today"
         1 -> "$verb yesterday"
         else -> "$verb $d days ago"
     }
+}
 
 @Composable
 private fun predictionText(prediction: Prediction): String? = when (prediction) {

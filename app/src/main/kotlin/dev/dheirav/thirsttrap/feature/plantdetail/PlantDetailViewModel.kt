@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.dheirav.thirsttrap.domain.CareEvent
 import dev.dheirav.thirsttrap.domain.CareEventType
+import dev.dheirav.thirsttrap.domain.localDayIndex
 import dev.dheirav.thirsttrap.domain.Plant
 import android.net.Uri
 import dev.dheirav.thirsttrap.data.PhotoRepositoryImpl
@@ -138,29 +139,30 @@ class PlantDetailViewModel @Inject constructor(
      */
     private fun groupByLocalDay(events: List<CareEvent>): List<TimelineDay> {
         val now = System.currentTimeMillis()
-        val todayIndex = localDayIndex(now, offsetMinutesNow())
 
         return events
             .groupBy { localDayIndex(it.timestampMillis, it.tzOffsetMinutes) }
             .toSortedMap(compareByDescending { it })
             .map { (dayIndex, dayEvents) ->
+                // Compared in the group's own frame, not the phone's current
+                // one. A group is indexed by the offset its entries were logged
+                // in, so "today" has to be computed in that same offset or the
+                // two numbers are not the same kind of thing. It shows up when
+                // the diary moves between timezones: entries logged in India
+                // read against a day boundary in Oman and land off by one.
+                val frame = dayEvents.first().tzOffsetMinutes
+                val elapsed = localDayIndex(now, frame) - dayIndex
                 TimelineDay(
-                    label = when (todayIndex - dayIndex) {
+                    label = when (elapsed) {
                         0L -> "Today"
                         1L -> "Yesterday"
-                        in 2L..6L -> "${todayIndex - dayIndex} days ago"
+                        in 2L..6L -> "$elapsed days ago"
                         else -> formatDate(dayEvents.first())
                     },
                     events = dayEvents.sortedByDescending { it.timestampMillis },
                 )
             }
     }
-
-    private fun offsetMinutesNow(): Int =
-        java.util.TimeZone.getDefault().getOffset(System.currentTimeMillis()) / 60_000
-
-    private fun localDayIndex(utcMillis: Long, offsetMinutes: Int): Long =
-        Math.floorDiv(utcMillis + offsetMinutes * 60_000L, 86_400_000L)
 
     private fun formatDate(event: CareEvent): String {
         val zone = java.time.ZoneOffset.ofTotalSeconds(event.tzOffsetMinutes * 60)

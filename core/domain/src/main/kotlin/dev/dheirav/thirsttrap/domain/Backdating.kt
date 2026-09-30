@@ -48,3 +48,25 @@ fun resolveLoggedAt(
         ?.let { middayOf(it, offsetMinutes).coerceAtMost(nowMillis) }
         ?: nowMillis
 }
+
+/**
+ * Which local day an instant falls on, as a day number.
+ *
+ * The offset is a parameter rather than read from the clock because the same
+ * instant is a different day depending on where you were standing, and this app
+ * stores an offset per entry precisely so that question has an answer.
+ */
+fun localDayIndex(utcMillis: Long, offsetMinutes: Int): Long =
+    Math.floorDiv(utcMillis + offsetMinutes * 60_000L, MILLIS_PER_DAY.toLong())
+
+/**
+ * Whole calendar days between two instants, read in one frame.
+ *
+ * Not `(now - then) / MILLIS_PER_DAY`, which is elapsed time and a different
+ * question. Dividing gives 0 for anything inside 24 hours, so a plant watered
+ * at 23:00 last night read "Watered today" at 08:00 this morning. That is the
+ * single most-read line on a plant card and it was wrong for nine hours of
+ * every day.
+ */
+fun calendarDaysAgo(nowMillis: Long, thenMillis: Long, offsetMinutes: Int): Int =
+    (localDayIndex(nowMillis, offsetMinutes) - localDayIndex(thenMillis, offsetMinutes)).toInt()
