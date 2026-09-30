@@ -174,6 +174,10 @@ complete before any UI is written.*
 - [ ] **F25b** Kindwise plant.health — bring-your-own-API-key settings field, costs the app nothing. Opt-in second tier, only if F25c proves too weak to be useful
 - [x] ~~**F25** Pl@ntNet ID~~ — **dropped 2026-09-09, D29.** A shared key shipped in the APK gets extracted and its quota burned, so in practice the user must bring their own key, at which point F25 and F25b are the same feature
 
+- [x] **F27** Home-screen widget — "what wants water", read-only, reusing the
+  `thirsttrap://plant/{id}` deep link the reminder notification already uses.
+  Not in the original 101: added 2026-09-30, D40
+
 ---
 
 ## 6. Explicit non-goals

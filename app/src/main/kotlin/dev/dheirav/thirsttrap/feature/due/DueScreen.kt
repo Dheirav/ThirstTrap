@@ -40,7 +40,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.dheirav.thirsttrap.BuildConfig
 
 /**
  * The in-app due list. It exists because HyperOS may kill the notification
@@ -53,7 +52,6 @@ import dev.dheirav.thirsttrap.BuildConfig
 @Composable
 fun DueScreen(
     onOpenHelp: () -> Unit,
-    onOpenDebug: () -> Unit,
     viewModel: DueViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -92,9 +90,6 @@ fun DueScreen(
                 )
                 Spacer(Modifier.height(24.dp))
                 TextButton(onClick = onOpenHelp) { Text("Reminders not arriving?") }
-                if (BuildConfig.DEBUG) {
-                    TextButton(onClick = onOpenDebug) { Text("Debug") }
-                }
             }
             return@Scaffold
         }
@@ -159,9 +154,6 @@ fun DueScreen(
             }
             item {
                 TextButton(onClick = onOpenHelp) { Text("Reminders not arriving?") }
-                if (BuildConfig.DEBUG) {
-                    TextButton(onClick = onOpenDebug) { Text("Debug") }
-                }
             }
         }
     }

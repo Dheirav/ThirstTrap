@@ -749,6 +749,44 @@ N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
 
+### D40 — A widget, and the one thing it deliberately will not do (2026-09-30)
+
+Never specified: not in the requirements, not among the 101 features, no
+receiver in the manifest. It came up because Luna has one, so its absence read
+as a gap.
+
+It earns a place because the daily loop is a single question, "does anything
+need me today", and answering it cost three actions: unlock, find the app, read
+the list. A widget answers it at zero. Everything it needs already existed,
+`observeDashboard` for the sorted attention list and a working
+`thirsttrap://plant/{id}` deep link, so the widget reuses the path the reminder
+notification has been using for weeks rather than inventing a second way in.
+
+**Read-only, on purpose, and this is the interesting decision.** Logging from
+outside the app already exists on the reminder notification, which offers
+"Watered" and "Still wet" as equals, deliberately identical in weight. A widget
+row cannot carry both, and carrying only "Watered" would teach that watering is
+the correct answer and restraint is not. That is the exact conflation this app
+was built to prevent, so the widget shows and does not act.
+
+Two smaller choices in the same spirit. It lists only what is genuinely due or
+past its measured trigger, rather than every plant sorted, because a widget
+that shows everything every day is wallpaper. And when nothing is due it says
+"Nothing is asking for you today" rather than a tick, a count or "all done",
+because the app does not keep score and neither should the thing on the home
+screen.
+
+Glance does not observe flows, so something has to tell it the world moved. The
+Application collects the dashboard, distinct-until-changed on the ids, due times
+and predictions, and calls `updateAll`. The 30-minute `updatePeriodMillis` is
+the fallback, not the mechanism: a widget half an hour stale after you water
+something teaches people not to trust it.
+
+**Also removed:** the Debug entry on the Due page, which appeared twice and sat
+directly under a real help link so a developer tool and "Reminders not
+arriving?" read as siblings. It was already gated on `BuildConfig.DEBUG` and so
+never shipped, but Settings is the one place it belongs.
+
 ### D39 — The feature the app exists for was three taps deep and named after its plumbing (2026-09-30)
 
 "Weight and prediction", in a plant's overflow menu. A screen title rather than

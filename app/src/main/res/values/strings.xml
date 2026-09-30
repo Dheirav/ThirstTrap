@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ThirstTrap</string>
+    <string name="widget_watering">Wants water</string>
+    <string name="widget_description">What wants water, without opening the app.</string>
 </resources>

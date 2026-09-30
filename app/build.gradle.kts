@@ -57,6 +57,11 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:ui"))
 
+    // The home-screen widget. Glance is Compose for RemoteViews, so the widget
+    // is written the same way as the rest of the app rather than in XML.
+    implementation(libs.glance.appwidget)
+    implementation(libs.glance.material3)
+
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)

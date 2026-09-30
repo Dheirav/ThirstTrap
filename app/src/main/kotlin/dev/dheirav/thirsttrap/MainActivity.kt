@@ -184,7 +184,6 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.DUE) {
                             DueScreen(
                                 onOpenHelp = { nav.navigate(Routes.HELP_REMINDERS) },
-                                onOpenDebug = { nav.navigate(Routes.DEBUG) },
                             )
                         }
                         composable(Routes.HELP_REMINDERS) {
