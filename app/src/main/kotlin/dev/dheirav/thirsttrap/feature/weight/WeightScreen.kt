@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.weight
 
+import dev.dheirav.thirsttrap.ui.AlmanacSheet
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.ColumnHead
@@ -34,7 +35,6 @@ import dev.dheirav.thirsttrap.ui.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.Scaffold
 import androidx.compose.foundation.text.KeyboardOptions
@@ -293,11 +293,9 @@ fun WeightScreen(
 
     if (showKeypad && state != null) {
         val s = state!!
-        ModalBottomSheet(
+        AlmanacSheet(
             onDismissRequest = { showKeypad = false },
             sheetState = keypadState,
-            shape = MaterialTheme.shapes.large,
-            dragHandle = null,
         ) {
             // The save button is pinned outside the scroll. Everything above it
             // scrolls; it does not. Making the one action the sheet exists for

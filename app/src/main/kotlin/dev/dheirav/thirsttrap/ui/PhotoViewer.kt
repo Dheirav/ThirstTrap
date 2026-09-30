@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.dheirav.thirsttrap.ui.AlmanacMenu
 import dev.dheirav.thirsttrap.domain.Photo
+import dev.dheirav.thirsttrap.domain.TimelapseFrame
 import dev.dheirav.thirsttrap.domain.buildTimelapse
 import dev.dheirav.thirsttrap.domain.isPlayable
 import dev.dheirav.thirsttrap.domain.spanDays
@@ -93,6 +95,11 @@ fun PhotoViewer(
     startId: String,
     pathOf: (Photo) -> String,
     onDismiss: () -> Unit,
+    /**
+     * Opens already comparing against this photo, for the "Compare photos"
+     * entry point. Null is the ordinary single view.
+     */
+    pinnedId: String? = null,
     onSaveCaption: (photoId: String, caption: String) -> Unit,
     onSetCover: (photoId: String) -> Unit,
     onDelete: (photoId: String) -> Unit,
@@ -110,6 +117,10 @@ fun PhotoViewer(
     var playing by remember { mutableStateOf(false) }
     var editingCaption by remember { mutableStateOf<Photo?>(null) }
     var confirmingDelete by remember { mutableStateOf<Photo?>(null) }
+    // The fixed half of a comparison. Null means the ordinary single view.
+    var pinned by remember(pinnedId) {
+        mutableStateOf(frames.firstOrNull { it.photo.id == pinnedId })
+    }
 
     LaunchedEffect(pager.settledPage) {
         scale = 1f
@@ -148,27 +159,62 @@ fun PhotoViewer(
             // paper-coloured background tints everything warm.
             .background(Color.Black),
     ) {
-        HorizontalPager(
-            state = pager,
-            // A swipe and a pan are the same gesture, so the pager only owns it
-            // while the photo is unzoomed. Zoomed in, the drag has to move the
-            // picture or there is no way to look at a corner of it.
-            userScrollEnabled = scale <= 1f,
-            modifier = Modifier.fillMaxSize(),
-        ) { page ->
-            // getOrNull, not an index: the list is live state, so a delete can
-            // shrink it under a page that is still composing.
-            frames.getOrNull(page)?.photo?.let { photo ->
-                // Only the settled page holds the shared transform; a page
-                // still sliding past must not be drawn at someone else's zoom.
-                val live = page == pager.settledPage
+        // The moving half of the view: the whole screen normally, one column of
+        // two while something is pinned.
+        val pages: @Composable (Modifier) -> Unit = { mod ->
+            HorizontalPager(
+                state = pager,
+                // A swipe and a pan are the same gesture, so the pager only
+                // owns it while the photo is unzoomed. Zoomed in, the drag has
+                // to move the picture or there is no way to look at a corner.
+                userScrollEnabled = scale <= 1f,
+                modifier = mod,
+            ) { page ->
+                // getOrNull, not an index: the list is live state, so a delete
+                // can shrink it under a page that is still composing.
+                frames.getOrNull(page)?.photo?.let { photo ->
+                    // Only the settled page holds the shared transform; a page
+                    // still sliding past must not be drawn at someone else's
+                    // zoom.
+                    val live = page == pager.settledPage
+                    ZoomableImage(
+                        path = pathOf(photo),
+                        caption = photo.caption,
+                        scale = if (live) scale else 1f,
+                        offset = if (live) offset else Offset.Zero,
+                        onTransform = { s, o -> if (live) { scale = s; offset = o } },
+                    )
+                }
+            }
+        }
+
+        val held = pinned
+        if (held == null) {
+            pages(Modifier.fillMaxSize())
+        } else {
+            // Side by side, never stacked. Plants are taller than they are
+            // wide, so stacking wastes the axis that carries the growth.
+            //
+            // This is what the Compare screen was for, and it is now here
+            // instead: pin one photo, swipe the other. That loses nothing,
+            // because picking two photos from two filmstrips was only ever a
+            // way to reach this state, and it drops a whole screen, its view
+            // model, its route and the picker.
+            //
+            // Both panes share one transform, which is the move the comparison
+            // exists for: pinching into the same leaf on both at once. The old
+            // screen made that a lock you had to find and turn on.
+            Row(Modifier.fillMaxSize()) {
                 ZoomableImage(
-                    path = pathOf(photo),
-                    caption = photo.caption,
-                    scale = if (live) scale else 1f,
-                    offset = if (live) offset else Offset.Zero,
-                    onTransform = { s, o -> if (live) { scale = s; offset = o } },
+                    path = pathOf(held.photo),
+                    caption = held.photo.caption,
+                    scale = scale,
+                    offset = offset,
+                    onTransform = { s, o -> scale = s; offset = o },
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
                 )
+                VerticalRule(Modifier.fillMaxHeight())
+                pages(Modifier.weight(1f).fillMaxHeight())
             }
         }
 
@@ -197,6 +243,19 @@ fun PhotoViewer(
                 DropdownMenuItem(
                     text = { Text("Edit caption") },
                     onClick = { menu = false; editingCaption = current?.photo },
+                )
+                DropdownMenuItem(
+                    text = { Text(if (pinned == null) "Compare with this" else "Stop comparing") },
+                    onClick = {
+                        menu = false
+                        // Pinning the photo you are looking at, then swiping the
+                        // other half, is the whole interaction. Unpinning also
+                        // clears the zoom, or you land back on one photo framed
+                        // on a corner of it.
+                        pinned = if (pinned == null) current else null
+                        scale = 1f
+                        offset = Offset.Zero
+                    },
                 )
                 DropdownMenuItem(
                     text = { Text("Make cover photo") },
@@ -236,6 +295,21 @@ fun PhotoViewer(
             ) {
                 current.photo.caption?.takeIf { it.isNotBlank() }?.let {
                     Text(it, style = MaterialTheme.typography.bodyMedium, color = Color.White)
+                }
+                held?.let {
+                    val apart = kotlin.math.abs(current.daysSinceFirst - it.daysSinceFirst)
+                    Text(
+                        // The number the comparison is for, said once, above the
+                        // two dates it is the gap between.
+                        if (apart == 1) "1 day apart" else "$apart days apart",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    Text(
+                        "${dateOf(it.photo)}  against  ${dateOf(current.photo)}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.White.copy(alpha = 0.6f),
+                    )
                 }
                 Row(Modifier.fillMaxWidth()) {
                     Text(
@@ -374,6 +448,7 @@ private fun ZoomableImage(
     scale: Float,
     offset: Offset,
     onTransform: (Float, Offset) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     // rememberUpdatedState, because pointerInput(Unit) starts its suspend block
     // once and would otherwise keep multiplying against the first scale it saw.
@@ -383,7 +458,7 @@ private fun ZoomableImage(
     val onTransformNow by rememberUpdatedState(onTransform)
 
     Box(
-        Modifier
+        modifier
             .fillMaxSize()
             .clipToBounds()
             // Hand-rolled rather than detectTransformGestures, which consumes a

@@ -18,7 +18,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.dheirav.thirsttrap.ui.AlmanacSheet
 import dev.dheirav.thirsttrap.domain.ReadingContext
 import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.Button
@@ -174,11 +174,9 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
 
     cursor?.let { index ->
         val row = state.rows.getOrNull(index) ?: return@let
-        ModalBottomSheet(
+        AlmanacSheet(
             onDismissRequest = viewModel::close,
             sheetState = sheetState,
-            shape = MaterialTheme.shapes.large,
-            dragHandle = null,
         ) {
             Column(
                 Modifier

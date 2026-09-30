@@ -57,7 +57,6 @@ import dev.dheirav.thirsttrap.feature.propagation.PropagationScreen
 import dev.dheirav.thirsttrap.feature.settings.SettingsScreen
 import dev.dheirav.thirsttrap.feature.weight.ScaleHelpScreen
 import dev.dheirav.thirsttrap.feature.weight.WeightScreen
-import dev.dheirav.thirsttrap.feature.compare.CompareScreen
 import dev.dheirav.thirsttrap.feature.logevent.LogEventScreen
 import dev.dheirav.thirsttrap.feature.plantdetail.PlantDetailScreen
 import dev.dheirav.thirsttrap.feature.plantedit.PlantEditScreen
@@ -193,12 +192,6 @@ class MainActivity : ComponentActivity() {
                             arguments = listOf(navArgument("id") { type = NavType.StringType }),
                         ) {
                             LogEventScreen(onDone = { nav.popBackStack() })
-                        }
-                        composable(
-                            route = "${Routes.COMPARE}/{id}",
-                            arguments = listOf(navArgument("id") { type = NavType.StringType }),
-                        ) {
-                            CompareScreen(onBack = { nav.popBackStack() })
                         }
                         composable(Routes.SETTINGS) {
                             SettingsScreen(
@@ -338,7 +331,7 @@ class MainActivity : ComponentActivity() {
                                 advanced = loaded.advancedFeatures,
                                 onBack = { nav.popBackStack() },
                                 onEdit = { id -> nav.navigate(Routes.plantEdit(id)) },
-                                onCompare = { id -> nav.navigate(Routes.compare(id)) },
+                                onLogMore = { id -> nav.navigate(Routes.logEvent(id)) },
                                 onWeigh = { id -> nav.navigate(Routes.weight(id)) },
                                 onMeasureLight = { id -> nav.navigate(Routes.light(id)) },
                                 onSticker = { id -> nav.navigate(Routes.sticker(id)) },

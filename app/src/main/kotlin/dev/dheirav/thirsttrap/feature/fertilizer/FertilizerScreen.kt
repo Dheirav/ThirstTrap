@@ -297,7 +297,7 @@ private fun FertilizerDialog(
                     OutlinedTextField(
                         value = name,
                         onValueChange = { name = it },
-                        label = { Text("Name") },
+                        label = { Text("Name *") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -312,7 +312,7 @@ private fun FertilizerDialog(
                     OutlinedTextField(
                         value = npk,
                         onValueChange = { npk = it },
-                        label = { Text("NPK (optional)") },
+                        label = { Text("NPK") },
                         placeholder = { Text("3-1-2") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
@@ -320,7 +320,7 @@ private fun FertilizerDialog(
                     OutlinedTextField(
                         value = note,
                         onValueChange = { note = it },
-                        label = { Text("Note (optional)") },
+                        label = { Text("Note") },
                         modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
                     )
                 }

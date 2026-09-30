@@ -117,14 +117,14 @@ fun ExperimentsScreen(
                     OutlinedTextField(
                         value = name,
                         onValueChange = { name = it },
-                        label = { Text("Name") },
+                        label = { Text("Name *") },
                         placeholder = { Text("flax germination") },
                         singleLine = true,
                     )
                     OutlinedTextField(
                         value = variable,
                         onValueChange = { variable = it },
-                        label = { Text("What varies") },
+                        label = { Text("What varies *") },
                         placeholder = { Text("banana water 1:10 vs plain") },
                         singleLine = true,
                     )

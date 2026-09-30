@@ -102,6 +102,17 @@ class PlantDetailViewModel @Inject constructor(
         }
     }
 
+    /**
+     * The only caller `PlantRepository.updateEvent` has ever had.
+     *
+     * It was written, implemented, exposed on the interface and never called,
+     * so until the entry editor existed there was no way to fix a note or a
+     * timestamp at all.
+     */
+    fun updateEvent(event: CareEvent) {
+        viewModelScope.launch { repository.updateEvent(event) }
+    }
+
     fun addPhoto(uri: Uri) {
         viewModelScope.launch {
             (photos as? PhotoRepositoryImpl)?.importPhoto(plantId, uri)

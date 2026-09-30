@@ -188,7 +188,7 @@ fun ExperimentDetailScreen(
                 OutlinedTextField(
                     value = label,
                     onValueChange = { label = it },
-                    label = { Text("Arm") },
+                    label = { Text("Arm *") },
                     placeholder = { Text("banana water / control") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),

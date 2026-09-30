@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.dashboard
 
+import dev.dheirav.thirsttrap.ui.AlmanacSheet
 import dev.dheirav.thirsttrap.ui.AlmanacMenu
 import dev.dheirav.thirsttrap.ui.Motion
 import dev.dheirav.thirsttrap.ui.DoubleRule
@@ -49,7 +50,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -336,8 +336,8 @@ fun DashboardScreen(
                             }
                         },
                         onDetailedWater = { onLogMore(item.plant.id) },
+                        onOpen = { onOpenPlant(item.plant.id) },
                         onOpenSheet = { sheetFor = item },
-                        onLongPress = { onOpenPlant(item.plant.id) },
                     )
                 }
             }
@@ -345,14 +345,9 @@ fun DashboardScreen(
     }
 
     sheetFor?.let { item ->
-        ModalBottomSheet(
+        AlmanacSheet(
             onDismissRequest = { sheetFor = null },
             sheetState = sheetState,
-            shape = MaterialTheme.shapes.large,
-            // A drag handle is a screen affordance; a printed page does not have
-            // one. The rule under the plant's name does the same job of saying
-            // "this panel starts here".
-            dragHandle = null,
         ) {
             QuickLogSheet(
                 plantName = item.plant.name,
@@ -417,8 +412,8 @@ private fun PlantCard(
     onQuickWater: () -> Unit,
     onQuickCheck: () -> Unit,
     onDetailedWater: () -> Unit,
+    onOpen: () -> Unit,
     onOpenSheet: () -> Unit,
-    onLongPress: () -> Unit,
 ) {
     val plant = item.plant
     // An entry on a page, not a card. A card says "separate object"; a rule says
@@ -428,11 +423,21 @@ private fun PlantCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            // Tapping a plant opens the plant. It used to open the quick-log
+            // sheet, with the plant's own page behind a long press, which is
+            // backwards from what every list on the phone does and made the
+            // page the undiscoverable half.
+            //
+            // The sheet keeps the long press. That is defensible where the
+            // hidden menu on a diary row was not, because nothing in the sheet
+            // is only in the sheet: the two commonest actions are visible icons
+            // on this row, and everything else is on the page the tap now
+            // opens - which is why "Log something" had to be added there first.
             .combinedClickable(
-                onClick = onOpenSheet,
-                onClickLabel = "Quick log for ${plant.name}",
-                onLongClick = onLongPress,
-                onLongClickLabel = "Open ${plant.name}",
+                onClick = onOpen,
+                onClickLabel = "Open ${plant.name}",
+                onLongClick = onOpenSheet,
+                onLongClickLabel = "Quick log for ${plant.name}",
             ),
     ) {
         Row(

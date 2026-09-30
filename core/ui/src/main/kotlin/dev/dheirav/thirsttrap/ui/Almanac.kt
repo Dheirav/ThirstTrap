@@ -13,6 +13,8 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.Text
@@ -261,4 +263,40 @@ fun AlmanacMenu(
         shadowElevation = 0.dp,
         content = content,
     )
+}
+
+/**
+ * A bottom sheet in the same voice as [AlmanacDialog].
+ *
+ * The three sheets in the app had already given up their drag handles, on the
+ * grounds that a printed page does not have one, and then kept Material's
+ * raised tonal container, its shadow and a rounded top. This finishes the job:
+ * the page's own surface, a hairline along the top edge where the rule belongs,
+ * and no lift.
+ *
+ * Square, because `shapes.large` was the one place in the app still rounding a
+ * corner by choice rather than by Material's default.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AlmanacSheet(
+    onDismissRequest: () -> Unit,
+    sheetState: SheetState,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        sheetState = sheetState,
+        modifier = modifier,
+        shape = MaterialTheme.shapes.small,
+        containerColor = MaterialTheme.colorScheme.surface,
+        tonalElevation = 0.dp,
+        // A printed page has no drag handle; the rule below says "this panel
+        // starts here", which is the same job done in the app's own grammar.
+        dragHandle = null,
+    ) {
+        Rule()
+        content()
+    }
 }

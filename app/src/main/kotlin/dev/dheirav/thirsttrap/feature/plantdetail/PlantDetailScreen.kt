@@ -32,7 +32,12 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Scaffold
@@ -61,6 +66,7 @@ import androidx.compose.ui.layout.ContentScale
 import dev.dheirav.thirsttrap.ui.PlantPhoto
 import dev.dheirav.thirsttrap.ui.AlmanacMenu
 import dev.dheirav.thirsttrap.ui.AlmanacDialog
+import dev.dheirav.thirsttrap.ui.OutlinedButton
 import dev.dheirav.thirsttrap.ui.DialogText
 import dev.dheirav.thirsttrap.ui.PhotoViewer
 import dev.dheirav.thirsttrap.domain.CareEventType
@@ -86,7 +92,7 @@ fun PlantDetailScreen(
     advanced: Boolean,
     onBack: () -> Unit,
     onEdit: (String) -> Unit,
-    onCompare: (String) -> Unit,
+    onLogMore: (String) -> Unit,
     onWeigh: (String) -> Unit,
     onMeasureLight: (String) -> Unit,
     onSticker: (String) -> Unit,
@@ -100,6 +106,8 @@ fun PlantDetailScreen(
     val plant = state.plant
     val capture = dev.dheirav.thirsttrap.photo.rememberPhotoCapture { viewModel.addPhoto(it) }
     var viewing by remember { mutableStateOf<Photo?>(null) }
+    // Set only by "Compare photos", which opens the viewer already split.
+    var comparingAgainst by remember { mutableStateOf<Photo?>(null) }
     var menuOpen by remember { mutableStateOf(false) }
 
     val hero = state.photos.firstOrNull()?.let(viewModel::pathOf)
@@ -149,13 +157,15 @@ fun PlantDetailScreen(
                             }
                             AlmanacMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
                                 plant?.let { p ->
-                                    DropdownMenuItem(
-                                        text = { Text("Add from gallery") },
-                                        onClick = { menuOpen = false; capture.pickFromGallery() },
-                                    )
-                                    // Shown always, disabled with a reason. Hiding it
-                                    // meant the feature vanished exactly when someone
-                                    // would go looking for it.
+                                    // First, because it is the app's central
+                                    // action and this page did not have it at
+                                    // all: logging a watering with an amount, a
+                                    // check, a repot or a feed was reachable
+                                    // only through the dashboard's quick sheet.
+                                    // That mattered once the dashboard's tap
+                                    // started opening this page instead of the
+                                    // sheet, or the full log screen would have
+                                    // been left behind a long press.
                                     DropdownMenuItem(
                                         text = { Text("Compare photos") },
                                         enabled = state.photos.size >= 2,
@@ -168,7 +178,19 @@ fun PlantDetailScreen(
                                                 )
                                             }
                                         },
-                                        onClick = { menuOpen = false; onCompare(p.id) },
+                                        // Opens the viewer already comparing,
+                                        // with the first photo pinned and the
+                                        // latest in the moving half, which is
+                                        // the pair the old Compare screen
+                                        // defaulted to. Swiping walks the right
+                                        // half forward against a fixed
+                                        // reference.
+                                        onClick = {
+                                            menuOpen = false
+                                            comparingAgainst =
+                                                state.photos.minByOrNull { it.takenAtMillis }
+                                            viewing = state.photos.maxByOrNull { it.takenAtMillis }
+                                        },
                                     )
                                     // Same gating as Compare, and for the same
                                     // reason: shown always, disabled with a stated
@@ -418,6 +440,7 @@ fun PlantDetailScreen(
                             pathOf = viewModel::pathOf,
                             onOpenPhoto = { viewing = it },
                             onDelete = { viewModel.deleteEvent(event) },
+                            onSave = viewModel::updateEvent,
                             allPlants = state.allPlants,
                             onOpenPlant = onOpenPlant,
                         )
@@ -436,7 +459,8 @@ fun PlantDetailScreen(
                 photos = state.photos,
                 startId = photo.id,
                 pathOf = viewModel::pathOf,
-                onDismiss = { viewing = null },
+                pinnedId = comparingAgainst?.id,
+                onDismiss = { viewing = null; comparingAgainst = null },
                 onSaveCaption = viewModel::setCaption,
                 onSetCover = viewModel::setCover,
                 onDelete = viewModel::deletePhoto,
@@ -482,11 +506,11 @@ private fun EventRow(
     onOpenPhoto: (Photo) -> Unit,
     pathOf: (Photo) -> String,
     onDelete: () -> Unit,
+    onSave: (CareEvent) -> Unit,
     allPlants: List<dev.dheirav.thirsttrap.domain.Plant> = emptyList(),
     onOpenPlant: (String) -> Unit = {},
 ) {
-    var menu by remember { mutableStateOf(false) }
-    var confirmingDelete by remember(event.id) { mutableStateOf(false) }
+    var editing by remember(event.id) { mutableStateOf(false) }
 
     // Events that changed the plant's nature get a heavier treatment, so they
     // are findable while scrolling fast. docs/UI-SPEC.md section 4.
@@ -500,11 +524,15 @@ private fun EventRow(
         Row(
             Modifier
                 .fillMaxWidth()
-                .combinedClickable(
-                    onClick = { menu = true },
-                    onClickLabel = "Options for this entry",
-                    onLongClick = { menu = true },
-                )
+                // One gesture, and it opens the entry rather than a menu.
+                //
+                // A tap and a long press both used to open a dropdown whose
+                // only item was Delete, drawn over the row it belonged to.
+                // That is the same shape D44 took off the photos, and it is
+                // the mechanism that destroyed three real diary entries during
+                // development: a mis-aimed tap landing on a destructive item in
+                // a menu positioned above the thing it was about.
+                .clickable(onClickLabel = "Open this entry") { editing = true }
                 .padding(vertical = 10.dp),
             verticalAlignment = Alignment.Top,
         ) {
@@ -552,32 +580,67 @@ private fun EventRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            AlmanacMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                DropdownMenuItem(
-                    text = { Text("Delete this entry") },
-                    onClick = { menu = false; confirmingDelete = true },
-                )
-            }
+
         }
     }
 
-    // Asks twice, like the weigh-in editor, and for a stronger reason. A tap on
-    // a row opens this menu, its only item is a delete, and a diary entry is
-    // not something you can work out again later: a weight can at least be
-    // re-measured, while "watered on the 6th" is gone the moment it is gone.
-    // The first version deleted on the tap, and a thumb in the wrong place cost
-    // a real entry within a day of the screen existing.
-    if (confirmingDelete) {
-        AlmanacDialog(
-            title = "Delete this entry?",
-            onDismissRequest = { confirmingDelete = false },
-            body = {
+    if (editing) {
+        EntryEditor(
+            event = event,
+            photos = photos,
+            pathOf = pathOf,
+            onOpenPhoto = onOpenPhoto,
+            onDismiss = { editing = false },
+            onSave = { onSave(it); editing = false },
+            onDelete = { editing = false; onDelete() },
+        )
+    }
+}
+
+/**
+ * A diary entry, opened.
+ *
+ * Nothing could edit one before. A wrong note or a timestamp an hour out had no
+ * home at all, and `PlantRepository.updateEvent` had existed with zero callers
+ * since it was written: this is the only thing that has ever called it.
+ *
+ * Laid out and worded like the weigh-in editor, including the way Delete flips
+ * the same dialog into a confirmation rather than opening a second one. Two
+ * editors for two rows in two lists should not be two different interactions.
+ *
+ * Only the note and the day are editable. The type is not, because "this was a
+ * watering, not a check" is a different entry rather than an edit of this one,
+ * and the clock time is not, because an entry backdated to a day carries no
+ * claim about the minute.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EntryEditor(
+    event: CareEvent,
+    photos: List<Photo>,
+    pathOf: (Photo) -> String,
+    onOpenPhoto: (Photo) -> Unit,
+    onDismiss: () -> Unit,
+    onSave: (CareEvent) -> Unit,
+    onDelete: () -> Unit,
+) {
+    var note by remember(event.id) { mutableStateOf(event.note.orEmpty()) }
+    var day by remember(event.id) { mutableStateOf(event.timestampMillis) }
+    var confirmingDelete by remember(event.id) { mutableStateOf(false) }
+    var picking by remember(event.id) { mutableStateOf(false) }
+
+    AlmanacDialog(
+        title = if (confirmingDelete) "Delete this entry?" else label(event),
+        onDismissRequest = onDismiss,
+        body = {
+            if (confirmingDelete) {
                 DialogText(
                     buildString {
                         append(label(event))
                         append(", ")
-                        append(timeOf(event))
-                        append(". This cannot be undone.")
+                        append(entryDate(day, event.tzOffsetMinutes))
+                        append(". This cannot be undone, and unlike a weight it cannot be ")
+                        append("measured again either.")
                         if (photos.isNotEmpty()) {
                             append(
                                 " The ${if (photos.size == 1) "photo" else "photos"} " +
@@ -586,17 +649,109 @@ private fun EventRow(
                         }
                     },
                 )
-            },
-            dismiss = {
+            } else {
+                OutlinedButton(onClick = { picking = true }) {
+                    Text(entryDate(day, event.tzOffsetMinutes))
+                }
+                OutlinedTextField(
+                    value = note,
+                    onValueChange = { note = it },
+                    label = { Text("Note") },
+                    placeholder = { Text("what you noticed") },
+                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                )
+                if (photos.isNotEmpty()) {
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.padding(top = 12.dp),
+                    ) {
+                        items(photos, key = { it.id }) { photo ->
+                            PlantPhoto(
+                                path = pathOf(photo),
+                                contentDescription = photo.caption ?: "Photo",
+                                modifier = Modifier
+                                    .size(56.dp)
+                                    .clip(MaterialTheme.shapes.small)
+                                    .clickable(onClickLabel = "View this photo") {
+                                        onOpenPhoto(photo)
+                                    },
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        dismiss = {
+            if (confirmingDelete) {
                 TextButton(onClick = { confirmingDelete = false }) { Text("Keep it") }
-            },
-            confirm = {
-                TextButton(onClick = { confirmingDelete = false; onDelete() }) {
+            } else {
+                TextButton(onClick = { confirmingDelete = true }) { Text("Delete") }
+            }
+        },
+        confirm = {
+            if (confirmingDelete) {
+                TextButton(onClick = onDelete) {
                     Text("Delete", color = MaterialTheme.colorScheme.error)
                 }
+            } else {
+                TextButton(
+                    onClick = {
+                        onSave(
+                            event.copy(
+                                note = note.trim().takeIf { it.isNotEmpty() },
+                                timestampMillis = day,
+                            ),
+                        )
+                    },
+                ) { Text("Save") }
+            }
+        },
+    )
+
+    if (picking) {
+        val picker = rememberDatePickerState(
+            initialSelectedDateMillis = day,
+            // Nothing in a diary happened tomorrow.
+            selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long) =
+                    utcTimeMillis <= System.currentTimeMillis() + 86_400_000L
             },
         )
+        DatePickerDialog(
+            onDismissRequest = { picking = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    // Keeps the clock time and moves the day, so an entry
+                    // corrected from Tuesday to Monday stays at 18:40 rather
+                    // than jumping to midnight.
+                    picker.selectedDateMillis?.let { day = keepTimeOfDay(day, it, event.tzOffsetMinutes) }
+                    picking = false
+                }) { Text("Use this day") }
+            },
+            dismissButton = { TextButton(onClick = { picking = false }) { Text("Cancel") } },
+        ) { DatePicker(state = picker) }
     }
+}
+
+/** The day and the clock time, in the offset the entry was recorded in. */
+private fun entryDate(millis: Long, tzOffsetMinutes: Int): String {
+    val zone = ZoneOffset.ofTotalSeconds(tzOffsetMinutes * 60)
+    return Instant.ofEpochMilli(millis).atZone(zone)
+        .format(DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm"))
+}
+
+/**
+ * Moves an instant onto a different day without moving it within the day.
+ *
+ * The picker hands back UTC midnight for the chosen date, which would drop the
+ * time of day. Both halves are read in the entry's own offset, because that is
+ * the wall clock the entry was written against.
+ */
+private fun keepTimeOfDay(original: Long, pickedUtcMidnight: Long, tzOffsetMinutes: Int): Long {
+    val zone = ZoneOffset.ofTotalSeconds(tzOffsetMinutes * 60)
+    val time = Instant.ofEpochMilli(original).atZone(zone).toLocalTime()
+    val date = Instant.ofEpochMilli(pickedUtcMidnight).atZone(ZoneOffset.UTC).toLocalDate()
+    return date.atTime(time).toInstant(zone).toEpochMilli()
 }
 
 

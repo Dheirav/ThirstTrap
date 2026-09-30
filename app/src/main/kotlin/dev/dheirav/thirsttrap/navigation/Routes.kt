@@ -10,7 +10,6 @@ object Routes {
     const val BACKUP = "backup"
     const val SETTINGS = "settings"
     const val LOG_EVENT = "plant/log"
-    const val COMPARE = "plant/compare"
     const val WEIGHT = "plant/weight"
     const val SCALE_HELP = "help/scale"
     const val LIGHT = "plant/light"
@@ -35,7 +34,6 @@ object Routes {
 
     fun logEvent(plantId: String) = "$LOG_EVENT/$plantId"
 
-    fun compare(plantId: String) = "$COMPARE/$plantId"
 
     fun weight(plantId: String) = "$WEIGHT/$plantId"
 

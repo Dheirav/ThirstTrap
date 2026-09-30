@@ -756,6 +756,84 @@ N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
 
+### D48 — The five UI items, and two things they uncovered (2026-09-30)
+
+The list that stood under Next actions, cleared. Each came from the user using
+the app rather than from reading it, and two of them turned up defects that were
+not part of the ask.
+
+**A diary entry opens.** A tap and a long press both opened a dropdown whose
+only item was Delete, drawn over the row it belonged to. That is the shape D44
+took off the photos and it is the mechanism that destroyed three real entries
+during development: a mis-aimed tap landing on a destructive item in a menu
+positioned above the thing it was about.
+
+Now a tap opens the entry: its note, its day, its photos (tappable through to
+the viewer), and Delete inside it, flipping the same dialog into a confirmation
+the way the weigh-in editor already does. Two editors for two rows in two lists
+should not be two different interactions.
+
+Only the note and the day are editable. Not the type, because "this was a
+watering, not a check" is a different entry rather than an edit of this one, and
+not the clock time, because an entry backdated to a day carries no claim about
+the minute. Moving the day keeps the time of day, so Tuesday corrected to Monday
+stays at 18:40 rather than jumping to midnight.
+
+Two things fell out of it, neither part of the ask.
+`PlantRepository.updateEvent` had been written, implemented, exposed on the
+interface and never called, which is why there was no way to fix a wrong note or
+a timestamp at all: the entry editor is the first caller it has ever had. And
+once something finally called it, it had a bug. It passed `createdAt = now`, so
+every edit would have reset the row's age, and an entry backdated to last week
+and corrected today would have looked like it was added today. It reads
+`createdAtOf` now, which is D27's rule and the one the importer already follows.
+
+**Tapping a plant opens the plant.** It opened the quick-log sheet, with the
+plant's own page behind a long press, which is backwards from every list on the
+phone and made the page the undiscoverable half.
+
+The swap needed one thing first, which is why it was not just a swap: **the
+plant's own page had no way to log anything.** Logging a watering with an amount,
+a check, a repot or a feed was reachable only through that sheet, so swapping the
+gestures would have moved the full log screen behind a hidden one. "Log
+something" is now the first item in the plant page's menu, where the app's
+central action arguably belonged anyway.
+
+The sheet keeps the long press, and that is defensible where the diary row's was
+not: nothing in the sheet is only in the sheet. The two commonest actions are
+visible icons on the row and everything else is on the page the tap now opens.
+
+**`AlmanacSheet`, and there were three sheets rather than four.** The Due screen
+matched the search on `Snackbar`, not on a sheet, and Next actions said four on
+the strength of that. The three real ones, the dashboard's quick log, the weight
+keypad and the weighing round, now use the page's own surface with a hairline
+along the top edge and no lift. They had already given up their drag handles on
+the grounds that a printed page has none; they were still rounding a corner
+through `shapes.large`, which was the last place in the app rounding one by
+choice rather than by Material's default.
+
+**Compare folded into the viewer.** `CompareScreen.kt` and `CompareViewModel.kt`
+are deleted with their route, the second screen to go this way after the
+timelapse. "Compare with this" pins the photo on screen and swiping moves the
+other half against that fixed reference.
+
+Both panes share one transform, so a pinch goes into the same leaf on both at
+once. That is the move the whole feature exists for and the old screen made it a
+lock you had to find and switch on. The two filmstrips are gone, which also
+retires the picker whose missing separation started this session's UI work: the
+tidiest version of that fix turned out to be not having the screen.
+
+"Compare photos" on the plant page opens the viewer already split, oldest pinned
+and latest in the moving half, which is the pair the old screen defaulted to.
+
+**Required fields marked** in the fertiliser form, the new-experiment dialog and
+the arm dialog, and the fertiliser form's "NPK (optional)" and "Note (optional)"
+suffixes are gone. Same rule add-plant adopted in D44: mark what save is gated
+on, say nothing about the rest.
+
+Built and installed; the entry editor and the pinned comparison are for the user
+to look at on the phone.
+
 ### D47 — The rest of the council list, all sixteen (2026-09-30)
 
 The remaining findings, closed in one pass. Grouped by what they turned out to
@@ -1937,30 +2015,9 @@ call-site audit (D30a), F14, F11 and F12, and F16 with F25 (D41, D42).
 What is left is the things code cannot settle by itself, plus the UI work the
 user has been finding by using the app.
 
-**The diary row is the photo problem, untouched.** `PlantDetailScreen.kt`: a tap
-and a long press both open a menu whose only real item is Delete, drawn over the
-row it belongs to. That is the shape D44 removed from photos, and it is the
-mechanism that destroyed three real diary entries during development. It should
-become a page: tap an entry, get the entry, with its actions on it. That also
-gives a home to editing a note or a wrong timestamp, which has none today.
-
-**On the dashboard, tap does the surprising thing.** Tap a plant row and you get
-the quick-log sheet; long press opens the plant. Opening a plant should be the
-tap, and it is currently the hidden gesture. The watering icon has the same
-split.
-
-**Bottom sheets are still Material.** Four of them, in the dashboard, Due,
-weight and weighing screens, with the raised container and drag handle that
-D45 removed from the dialogs. An `AlmanacSheet` finishes that work.
-
-**Compare and the viewer are two photo screens again.** D44 folded the timelapse
-in; Compare still does the same job with two panes and its own picker. Pinning
-the current photo in the viewer and then swiping would fold it away.
-
-**Required fields, everywhere else.** Add-plant is marked (D44). The new
-experiment, fertiliser and experiment-arm dialogs all have required fields with
-no marker, and the fertiliser form still says "NPK (optional)", which is the
-inconsistency add-plant just lost.
+The five UI items that stood here are done, D48. Two of them uncovered defects
+that were not part of the ask, which is the argument for doing this kind of work
+by using the app rather than by reading it.
 
 **Signing.** Parked at the user's request, D39. The keystore needs a password
 only the user can choose, and until it exists there is no upgradeable install
@@ -1978,6 +2035,29 @@ outside read the app has had.
 **The landing page.** The user chose both halves of the tutorial question. The
 in-app half is built (D36's intro page and the help screens); the page with a
 scripted demo is not.
+
+## Features worth considering
+
+Not committed to, and deliberately after the list above, because the accuracy
+panel is already built and has nothing in it yet: every idea here is a guess
+until the core claim has been measured once.
+
+**An away sheet.** The model knows each pot's ETA, so it can answer the question
+somebody actually has before a trip: over the next N days, which plants will
+need water, roughly when, and how much. Shareable as text for whoever is looking
+after them. No calendar-based app can do this well, which is the point.
+
+**Make the prediction arguable.** Tap the ETA and see why: the readings it
+fitted, the slope, the trigger weight, and why the confidence tier is what it
+is. The weight screen has the chart but the number itself is not tappable. It
+suits an app whose stance is honest uncertainty, and it needs no new data.
+
+**Decide about ambient conditions.** `Ambient.kt` holds real logic for "this pot
+is drying faster than the room explains" and the live database has one ambient
+reading in it. So either the manual form is too much friction or the payoff is
+invisible. That is a decision to make, not code to write: reduce the friction or
+close the feature the way F16 and F25 were closed. Half-used is the worst of the
+three.
 
 ## Conventions
 

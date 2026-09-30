@@ -246,6 +246,18 @@ class PlantRepositoryImpl @Inject constructor(
 
     override suspend fun updateEvent(event: CareEvent) {
         val now = System.currentTimeMillis()
-        eventDao.upsert(event.toEntity(createdAt = now, updatedAt = now))
+        // created_at means "when this row entered this database", so an edit
+        // must not rewrite it - the same rule the importer follows, D27. This
+        // had no caller until the entry editor, so nothing had ever exercised
+        // it: every edit would have reset the row's age to the moment of the
+        // edit, and a backdated entry corrected a week later would have looked
+        // like it was added that day.
+        eventDao.upsert(
+            event.toEntity(
+                createdAt = eventDao.createdAtOf(event.id) ?: now,
+                updatedAt = now,
+            ),
+        )
+        TTLog.i(TTLog.DATA) { "edit event ${event.id}" }
     }
 }
