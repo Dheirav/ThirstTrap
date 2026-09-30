@@ -102,13 +102,18 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            ThirstTrapTheme(dynamicColor = settings.dynamicColor) {
+            // Nothing is drawn until the stored settings have answered. The
+            // alternative is drawing from defaults and correcting a frame later,
+            // which is what made the first-run page flash on every launch.
+            val loaded = settings ?: return@setContent
+
+            ThirstTrapTheme(dynamicColor = loaded.dynamicColor) {
                 // The first-run page sits in front of everything rather than
                 // being a route, because it is not somewhere you navigate to and
                 // there must be no way to reach it again by accident. Read where
                 // it is written: D30a found a setting nothing consulted.
                 var introDone by remember { mutableStateOf(false) }
-                if (!settings.introSeen && !introDone) {
+                if (!loaded.introSeen && !introDone) {
                     IntroScreen(onDone = { introDone = true })
                     return@ThirstTrapTheme
                 }

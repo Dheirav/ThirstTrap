@@ -14,6 +14,14 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     settings: SettingsRepository,
 ) : ViewModel() {
-    val settings: StateFlow<AppSettings> =
-        settings.settings.stateIn(viewModelScope, SharingStarted.Eagerly, AppSettings())
+    /**
+     * Null until DataStore has actually answered.
+     *
+     * It used to start at `AppSettings()`, whose `introSeen` is false, so every
+     * cold launch flashed the first-run page for the few frames before the real
+     * value arrived. A default is a guess, and a guess about whether the user
+     * has already read something is one the UI must not act on.
+     */
+    val settings: StateFlow<AppSettings?> =
+        settings.settings.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 }
