@@ -750,6 +750,57 @@ N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
 
+### D41 — Plant identification: evaluated, and closed (2026-09-30)
+
+D29 chose the offline classifier and said the first task was an evaluation
+rather than a feature, because a genus-level guesser has to earn its place in an
+app whose character is refusing to guess. The evaluation is done and the answer
+is no. Full write-up in `docs/PLANT-ID-EVALUATION.md`, tooling in
+`tools/plantid/`.
+
+**0 of 48 identifiable photos.** Google's AIY `plants_V1` against this diary's
+own 55 photos, ground truth taken from the plant each is attached to. Not one
+correct.
+
+**The cheapest check was the decisive one, and it cost nothing.** Before running
+any inference: does the label set contain houseplants? Its largest genera are
+*Quercus*, *Pinus*, *Asclepias*, *Viola*, *Acer*. It is a North American field
+guide. Of 59 common indoor genera, 40 are absent, including Philodendron,
+Sansevieria, Dracaena, Epipremnum and Peperomia. Two of this diary's four plants
+cannot be named by it at any accuracy whatsoever.
+
+**Inference then answered the question that actually mattered.** Coverage rules
+out two thirds of the shelf; the remaining question was whether the model knows
+when it does not know, because a reliable abstention would still leave a usable
+feature for the third it covers. It does abstain: 38 of 55 photos came back
+"background", and exactly one photo was named at 70% confidence or above and
+wrong. So it is honest and unusable, which are separate properties, and the
+honesty is why a confidence threshold cannot rescue it. There is nothing correct
+underneath to threshold.
+
+**Domain, not just labels.** For `Ficus`, which it does have, it abstained on all
+18 photos of a Ficus. A seedling in a terracotta pot on a desk beside a kitchen
+scale is out of distribution for a model trained on plants growing outdoors. Our
+own photo habit compounds it: the app encourages photographing the pot on the
+scale, which is the least identifiable framing available.
+
+**Why this generalises past one model.** Open pretrained plant classifiers come
+from citizen science, and citizen science photographs wild plants. Houseplants
+are a smaller, separate, far less open domain. So this is not "pick a better
+model", it is "train one", which is a different project.
+
+**I was wrong about the numbers first.** My first read was "confidently wrong on
+the plant it had a class for", from a median top-1 confidence of 0.87 on Creeping
+fig. That 0.87 was confidence in *background*, which is the opposite of
+overconfidence. Recorded because the corrected finding is the better one.
+
+**What remains:** F25b, online identification with the user's own API key, which
+is little work and no size cost but sends a photo off the device and requires the
+user to go and get a key. Or close identification entirely the way F16 was
+closed. The app already resolves names you *type* against GBIF, which covers
+half-knowing what you have, and "it does not guess at plants either" is a
+coherent position.
+
 ### D40 — A widget, and the one thing it deliberately will not do (2026-09-30)
 
 Never specified: not in the requirements, not among the 101 features, no

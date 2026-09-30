@@ -1,0 +1,4 @@
+# The venv and the 4.8 MB model are reproducible from setup.sh, so they are not
+# worth carrying in a repo whose whole point is being small.
+.venv/
+model/
