@@ -38,13 +38,7 @@ import dev.dheirav.thirsttrap.BuildConfig
 @Composable
 fun SettingsScreen(
     onOpenBackup: () -> Unit,
-    onOpenHelp: () -> Unit,
-    onOpenDiagnose: () -> Unit,
-    onOpenAmbient: () -> Unit,
-    onOpenStats: () -> Unit,
-    onOpenExperiments: () -> Unit,
-    onOpenPlaces: () -> Unit,
-    onOpenFertilizer: () -> Unit,
+    onOpenHelpIndex: () -> Unit,
     onOpenDebug: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
@@ -157,22 +151,8 @@ fun SettingsScreen(
                 )
             }
 
-            TextButton(onClick = onOpenHelp) { Text("Reminders not arriving?") }
-            TextButton(onClick = onOpenDiagnose) { Text("Something looks wrong with a plant") }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
-            SectionHeader("The room")
-            Text(
-                "A pot dries faster in a warm dry room than a cool damp one. Recording room " +
-                    "conditions now and then lets the app tell a plant that changed from a " +
-                    "season that changed - it explains a drying rate, it never predicts one.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            TextButton(onClick = onOpenPlaces) { Text("Places") }
-            TextButton(onClick = onOpenAmbient) { Text("Room conditions") }
-            TextButton(onClick = onOpenStats) { Text("Figures") }
-            TextButton(onClick = onOpenExperiments) { Text("Experiments") }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             SectionHeader("Watering")
@@ -195,9 +175,11 @@ fun SettingsScreen(
                 }
             }
 
-            // Feeding sits under Watering because it is the same act: it is
-            // what goes in the can, and the dose depends on the can.
-            TextButton(onClick = onOpenFertilizer) { Text("Feeding") }
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            SectionHeader("Help")
+            OutlinedButton(onClick = onOpenHelpIndex, modifier = Modifier.fillMaxWidth()) {
+                Text("Something is not working")
+            }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             SectionHeader("Your data")

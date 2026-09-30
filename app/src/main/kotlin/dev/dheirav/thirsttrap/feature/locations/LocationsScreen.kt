@@ -54,6 +54,7 @@ private val measured = SimpleDateFormat("d MMM", Locale.getDefault())
 fun LocationsScreen(
     onBack: () -> Unit,
     onMeasure: (String) -> Unit,
+    onOpenConditions: () -> Unit,
     viewModel: LocationsViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -99,8 +100,9 @@ fun LocationsScreen(
         ) {
             item {
                 Text(
-                    "Tap a place to describe it, or to measure the light standing there. " +
-                        "Measuring from a plant that lives here records it against the place too.",
+                    "Everything the app knows about a spot: what the light is, what the room " +
+                        "has been doing, and what lives there. Tap a place to describe it or " +
+                        "to measure it.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 16.dp),
@@ -149,6 +151,21 @@ fun LocationsScreen(
                             color = MaterialTheme.colorScheme.outline,
                             modifier = Modifier.padding(top = 2.dp),
                         )
+                    }
+                    row.latestAmbient?.let { a ->
+                        val bits = listOfNotNull(
+                            a.temperatureC?.let { t -> "${t.toInt()} C" },
+                            a.humidityPercent?.let { h -> "${h.toInt()}% humidity" },
+                        )
+                        if (bits.isNotEmpty()) {
+                            Text(
+                                bits.joinToString(", ") +
+                                    ", ${measured.format(Date(a.timestampMillis))}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.outline,
+                                modifier = Modifier.padding(top = 2.dp),
+                            )
+                        }
                     }
                     row.note?.note?.takeIf { it.isNotBlank() }?.let {
                         Text(
@@ -203,6 +220,9 @@ fun LocationsScreen(
                             row.note?.lux?.let { "Measure the light again" }
                                 ?: "Measure the light here",
                         )
+                    }
+                    TextButton(onClick = { editing = null; onOpenConditions() }) {
+                        Text("Temperature and humidity")
                     }
                 }
             },

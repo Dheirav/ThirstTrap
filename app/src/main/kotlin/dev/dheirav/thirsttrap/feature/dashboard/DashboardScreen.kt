@@ -43,6 +43,9 @@ import dev.dheirav.thirsttrap.ui.FilledTonalButton
 import dev.dheirav.thirsttrap.ui.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -118,6 +121,10 @@ fun DashboardScreen(
     onOpenPropagation: () -> Unit,
     onOpenWeighing: () -> Unit,
     onScanPot: () -> Unit,
+    onOpenFeeding: () -> Unit,
+    onOpenPlaces: () -> Unit,
+    onOpenFigures: () -> Unit,
+    onOpenExperiments: () -> Unit,
     viewModel: DashboardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -130,6 +137,7 @@ fun DashboardScreen(
     val ctx = androidx.compose.ui.platform.LocalContext.current
 
     var sheetFor by remember { mutableStateOf<PlantAttention?>(null) }
+    var moreOpen by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
 
     // The sort order is frozen while an undo is pending. Re-sorting on the log
@@ -194,16 +202,45 @@ fun DashboardScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = onScanPot) {
-                        Icon(AppIcons.qrCodeScanner, contentDescription = "Scan a pot sticker")
-                    }
-                    // Weighing is a round, not a per-plant errand, so it belongs
-                    // on the list rather than four taps inside one plant.
+                    // One icon, not four. Weighing is the recurring job and the
+                    // reason the app exists, so it gets the bar; everything else
+                    // gets a word, because a glyph nobody can read is worse than
+                    // a menu. docs/NAVIGATION.md.
                     IconButton(onClick = onOpenWeighing) {
                         Icon(AppIcons.weight, contentDescription = "Weigh the plants")
                     }
-                    IconButton(onClick = onOpenPropagation) {
-                        Icon(AppIcons.spa, contentDescription = "Propagation board")
+                    IconButton(onClick = { moreOpen = true }) {
+                        Icon(AppIcons.moreVert, contentDescription = "More")
+                    }
+                    DropdownMenu(expanded = moreOpen, onDismissRequest = { moreOpen = false }) {
+                        // Jobs first, then the record, with a rule between. These
+                        // seven lived behind the gear icon, where nobody looks
+                        // for a feature.
+                        DropdownMenuItem(
+                            text = { Text("Feeding") },
+                            onClick = { moreOpen = false; onOpenFeeding() },
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Propagation board") },
+                            onClick = { moreOpen = false; onOpenPropagation() },
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Scan a pot sticker") },
+                            onClick = { moreOpen = false; onScanPot() },
+                        )
+                        HorizontalDivider()
+                        DropdownMenuItem(
+                            text = { Text("Places") },
+                            onClick = { moreOpen = false; onOpenPlaces() },
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Figures") },
+                            onClick = { moreOpen = false; onOpenFigures() },
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Experiments") },
+                            onClick = { moreOpen = false; onOpenExperiments() },
+                        )
                     }
                 },
             )

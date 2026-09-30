@@ -19,6 +19,8 @@ data class LocationRow(
     val name: String,
     val note: LocationNote?,
     val plantCount: Int,
+    /** The most recent room reading taken here, if any. */
+    val latestAmbient: dev.dheirav.thirsttrap.domain.AmbientReading? = null,
 )
 
 data class LocationsUiState(
@@ -30,13 +32,21 @@ data class LocationsUiState(
 class LocationsViewModel @Inject constructor(
     private val locations: LocationRepository,
     plants: PlantRepository,
+    ambient: dev.dheirav.thirsttrap.domain.AmbientRepository,
 ) : ViewModel() {
 
     val state: StateFlow<LocationsUiState> =
         combine(
             plants.observePlants(includeArchived = false),
             locations.observeAll(),
-        ) { plantList, notes ->
+            // Light and room conditions are the same subject, both facts about
+            // a location, and they used to be two screens neither of which read
+            // as useful on its own. docs/NAVIGATION.md.
+            ambient.observeAll(),
+        ) { plantList, notes, readings ->
+            val latestByPlace = readings
+                .groupBy { it.location.lowercase() }
+                .mapValues { (_, rs) -> rs.maxByOrNull { it.timestampMillis } }
             val counts = plantsPerLocation(plantList)
             val byKey = notes.associateBy { it.name.lowercase() }
             LocationsUiState(
@@ -45,6 +55,7 @@ class LocationsViewModel @Inject constructor(
                         name = name,
                         note = byKey[name.lowercase()],
                         plantCount = counts[name.lowercase()] ?: 0,
+                        latestAmbient = latestByPlace[name.lowercase()],
                     )
                 },
                 loaded = true,

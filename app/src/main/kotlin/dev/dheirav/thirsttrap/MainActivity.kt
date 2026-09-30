@@ -2,6 +2,7 @@ package dev.dheirav.thirsttrap
 
 import dev.dheirav.thirsttrap.feature.ambient.AmbientScreen
 import dev.dheirav.thirsttrap.feature.fertilizer.FertilizerScreen
+import dev.dheirav.thirsttrap.feature.help.HelpScreen
 import dev.dheirav.thirsttrap.feature.locations.LocationsScreen
 import dev.dheirav.thirsttrap.feature.weighing.WeighingScreen
 import dev.dheirav.thirsttrap.feature.stats.StatsScreen
@@ -153,6 +154,10 @@ class MainActivity : ComponentActivity() {
                                 onOpenPropagation = { nav.navigate(Routes.PROPAGATION) },
                                 onOpenWeighing = { nav.navigate(Routes.WEIGHING) },
                                 onScanPot = { nav.navigate(Routes.SCAN) },
+                                onOpenFeeding = { nav.navigate(Routes.FERTILIZER) },
+                                onOpenPlaces = { nav.navigate(Routes.PLACES) },
+                                onOpenFigures = { nav.navigate(Routes.STATS) },
+                                onOpenExperiments = { nav.navigate(Routes.EXPERIMENTS) },
                             )
                         }
                         composable(Routes.DUE) {
@@ -179,14 +184,16 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.SETTINGS) {
                             SettingsScreen(
                                 onOpenBackup = { nav.navigate(Routes.BACKUP) },
-                                onOpenHelp = { nav.navigate(Routes.HELP_REMINDERS) },
-                                onOpenDiagnose = { nav.navigate(Routes.DIAGNOSE) },
-                                onOpenAmbient = { nav.navigate(Routes.AMBIENT) },
-                                onOpenStats = { nav.navigate(Routes.STATS) },
-                                onOpenPlaces = { nav.navigate(Routes.PLACES) },
-                                onOpenFertilizer = { nav.navigate(Routes.FERTILIZER) },
-                                onOpenExperiments = { nav.navigate(Routes.EXPERIMENTS) },
+                                onOpenHelpIndex = { nav.navigate(Routes.HELP) },
                                 onOpenDebug = { nav.navigate(Routes.DEBUG) },
+                            )
+                        }
+                        composable(Routes.HELP) {
+                            HelpScreen(
+                                onBack = { nav.popBackStack() },
+                                onOpenReminderHelp = { nav.navigate(Routes.HELP_REMINDERS) },
+                                onOpenDiagnose = { nav.navigate(Routes.DIAGNOSE) },
+                                onOpenScaleHelp = { nav.navigate(Routes.SCALE_HELP) },
                             )
                         }
                         composable(Routes.BACKUP) {
@@ -276,6 +283,7 @@ class MainActivity : ComponentActivity() {
                             LocationsScreen(
                                 onBack = { nav.popBackStack() },
                                 onMeasure = { nav.navigate(Routes.placeLight(it)) },
+                                onOpenConditions = { nav.navigate(Routes.AMBIENT) },
                             )
                         }
                         composable(
