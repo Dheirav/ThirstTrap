@@ -198,21 +198,39 @@ would use rather than building the scroll machinery from scratch.
 
 ## 6. Order of work
 
-**Stage one, GitHub and a signed APK:**
+**Stage one, GitHub and a signed APK.** Everything below is done except the
+last two, which need the user rather than the code.
 
-1. Weighing method per plant, and the noise floor derived from it. Without this
-   the differentiator only works on small pots, and the first person with a
-   Monstera concludes the app does not work.
-2. Keystore, `signingConfig`, and a real `versionName`. Back the keystore up off
-   this laptop before anything else touches it.
-3. Navigation: get the seven features out of Settings.
-4. First-run walkthrough, three cards.
-5. Make weighing discoverable from the plants list rather than a plant's
-   overflow menu.
-6. Advanced toggle, and put stickers, QR, experiments and room conditions
-   behind it.
-7. Tag a release, attach the APK, write install notes that mention Obtainium for
-   anyone who wants updates without a store.
+1. ~~Weighing method per plant, and the noise floor derived from it.~~ Done,
+   D36. Also proved the model is invariant under a proportional measurement, so
+   a heavy pot can be tipped rather than lifted.
+2. ~~Navigation: get the seven features out of Settings.~~ Done, D37. Three tabs
+   kept; the Plants overflow is ordered jobs-then-record. Places absorbed room
+   conditions and the three help doors became one.
+3. ~~First-run page.~~ Done, D37. One page, three points, one button, and
+   re-readable from Help because it carries the tipping trick.
+4. ~~Make weighing discoverable.~~ Done, D39. "Weigh it" is in the quick-log
+   sheet, one tap from the list, and the menu entry is "When it needs water"
+   rather than "Weight and prediction".
+5. ~~Advanced toggle for stickers, QR, experiments and room conditions.~~ Done,
+   D39. Off by default.
+6. **Keystore, `signingConfig`, and a real `versionName`.** Not started, and the
+   one step that cannot be done for the user: a password must not be invented or
+   committed. Generate the keystore, keep it out of the repo, and back it up
+   somewhere that is not the laptop, because losing it means never being able to
+   update an existing install. `versionCode` must increment on every build handed
+   out.
+7. **Tag a release, attach the APK, write install notes** mentioning Obtainium
+   for anyone who wants updates without a store.
+
+Found along the way rather than planned, each written up in the decisions log:
+`ImportIdempotenceTest` had not compiled since the F11/F12 commit so the whole
+instrumented suite was unrunnable; `Routes.AMBIENT` became unreachable when the
+Settings links were stripped; `knownLocations` ignored places that only had a
+room reading; the first-run page flashed on every launch because the settings
+flow started from defaults; and "Watered today" meant "within 24 hours" rather
+than today, which was wrong for most of every day on the most-read line in the
+app.
 
 **Stage two, Play:** a privacy policy page, a store listing with screenshots, a
 content rating questionnaire, and the versioning discipline that comes with an
