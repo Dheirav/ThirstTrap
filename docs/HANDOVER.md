@@ -10,8 +10,9 @@ Last updated: 2026-09-09
 
 ## Status
 
-**Phase: M0 through M3 complete. M4 partly done. 95 of 101 features built,
-all of it running on the target phone against a real plant diary.**
+**Phase: everything the product set out to do is built. 99 of 102 features, and
+the three that are not are one decision and two optional tiers of the same
+feature. Schema v14, running daily on the target phone.**
 
 Repo: https://github.com/Dheirav/ThirstTrap (branch `main`).
 

@@ -164,12 +164,12 @@ complete before any UI is written.*
 
 ## 5. M4 — Phase 2
 
-- [ ] **F11** Experiments module *(req. 11)* — subjects, start date, variable tested, per-day notes/photos, conclusion
-- [ ] **F12** Notes with `[[plant]]` cross-links *(req. 12)*
+- [x] **F11** Experiments module *(req. 11)* — subjects, start date, variable tested, per-day notes/photos, conclusion. Built 2026-09-27, D34
+- [x] **F12** Notes with `[[plant]]` cross-links *(req. 12)* — `PlantLinks.kt` in the domain, rendered in the plant timeline. Built 2026-09-27, D34
 - [x] **F13** Location light/placement notes + `moved` event *(req. 13)* — "Places": a gazetteer of the spots plants live in, with a note and the last light reading, which the F22 meter now records instead of discarding. `CareEventType.MOVED` had existed since the first schema and was **never emitted by anything**; a plant's location changing now writes one
 - [x] **F14** Fertilizer inventory + dilution calculator *(req. 14)* — "Feeding": the cupboard and the arithmetic on one page. Pick a can size and every bottle shows its dose. Refuses on a dilution it cannot parse and on a dose too small to pour, rather than printing a number nobody can act on
 - [x] **F15** Stats *(req. 15)* — "Figures": waterings by month, what became of them, days-to-root. Tables with column heads and rules; the only chart is a proportional rule. The survival rate is computed **only over plants that have actually left** and is written as a sentence, not a percentage on its own line — a living plant is not a pending failure
-- [ ] **F16** Cloud backup *(req. 16)* — optional account, **never required for core use**
+- [x] ~~**F16** Cloud backup~~ — **closed, not deferred (2026-09-27, D33).** Every other feature was built on "nothing leaves this phone" and Settings promises it in those words. An account would change what the app is, to solve a problem the tested export/import round trip already solves. Local-only is the product, not a gap in it
 - [ ] **F25c** Offline TFLite classifier — AIY `plants_V1` (~7 MB) or MobileNet on Pl@ntNet-300K; labelled "rough guess", genus-level trust at best. **The chosen route (2026-09-09, D29)**
 - [ ] **F25b** Kindwise plant.health — bring-your-own-API-key settings field, costs the app nothing. Opt-in second tier, only if F25c proves too weak to be useful
 - [x] ~~**F25** Pl@ntNet ID~~ — **dropped 2026-09-09, D29.** A shared key shipped in the APK gets extracted and its quota burned, so in practice the user must bring their own key, at which point F25 and F25b are the same feature
