@@ -749,6 +749,49 @@ N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
 
+### D37 — A first-run page, and Settings stops being a junk drawer (2026-09-30)
+
+docs/NAVIGATION.md has the flow analysis written before any code, which was the
+right order: the conclusion was not the one I expected going in.
+
+**The per-plant group was already correct** and nothing changed there. A thing
+lives where you are when you want it, which is why logging is on the plant.
+Everything else was wrong in one identical way: Feeding, Places, Room
+conditions, Figures, Experiments, Diagnose and the reminders help were all
+reached from Settings, where nobody looks for a feature.
+
+Three tabs kept rather than four, which was the user's call against my
+recommendation. The mitigation for the discoverability objection is that the
+overflow is ordered and divided, jobs then a rule then the record, and the
+first-run page points at it in one line.
+
+**Two merges removed screens instead of moving them.** Places absorbed Room
+conditions, because light and temperature are both facts about a location and
+splitting them across two screens is why neither read as useful alone. The three
+help doors became one Help screen.
+
+**Caught by looking rather than by building.** Stripping the Settings links left
+`Routes.AMBIENT` unreachable, this project's signature defect, about to be
+committed. And then Places itself was empty while a reading of 23 C existed for
+"Hostel Room", because `knownLocations` drew on plants and notes only. Since
+Places had just become the only door to conditions, an empty Places meant the
+readings were unreachable entirely. Measuring somewhere is as good a claim that
+it is a place as putting a plant there, so it takes a third source now, and
+Places carries the action in its bar rather than only inside a row.
+
+**The first-run page is one page, three points, one button.** Not a carousel,
+because those get skipped and the thing that has to land is a premise rather
+than a feature tour: this app weighs pots. It also carries the tipping trick,
+which nobody will invent themselves. That makes it reference rather than a
+greeting, so Help can open it again with `markSeen = false`.
+
+Its button first read "Add your first plant", which was wrong twice: it only
+dismisses, and anyone seeing the page after an update already has plants.
+
+`introSeen` is read where it is written, which is worth stating in this codebase
+because D30a found a setting that was written, shown back, and consulted by
+nothing.
+
 ### D36 — Big pots are not excluded, because the model never needed real grams (2026-09-30)
 
 Weighing assumed a kitchen scale, which ruled out the plants people care most

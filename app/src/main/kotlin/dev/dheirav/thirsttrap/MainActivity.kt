@@ -3,6 +3,7 @@ package dev.dheirav.thirsttrap
 import dev.dheirav.thirsttrap.feature.ambient.AmbientScreen
 import dev.dheirav.thirsttrap.feature.fertilizer.FertilizerScreen
 import dev.dheirav.thirsttrap.feature.help.HelpScreen
+import dev.dheirav.thirsttrap.feature.intro.IntroScreen
 import dev.dheirav.thirsttrap.feature.locations.LocationsScreen
 import dev.dheirav.thirsttrap.feature.weighing.WeighingScreen
 import dev.dheirav.thirsttrap.feature.stats.StatsScreen
@@ -36,6 +37,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import dev.dheirav.thirsttrap.feature.dashboard.DashboardScreen
@@ -99,6 +103,16 @@ class MainActivity : ComponentActivity() {
             }
 
             ThirstTrapTheme(dynamicColor = settings.dynamicColor) {
+                // The first-run page sits in front of everything rather than
+                // being a route, because it is not somewhere you navigate to and
+                // there must be no way to reach it again by accident. Read where
+                // it is written: D30a found a setting nothing consulted.
+                var introDone by remember { mutableStateOf(false) }
+                if (!settings.introSeen && !introDone) {
+                    IntroScreen(onDone = { introDone = true })
+                    return@ThirstTrapTheme
+                }
+
                 val nav = rememberNavController()
                 val backStack by nav.currentBackStackEntryAsState()
                 val route = backStack?.destination?.route
@@ -194,7 +208,11 @@ class MainActivity : ComponentActivity() {
                                 onOpenReminderHelp = { nav.navigate(Routes.HELP_REMINDERS) },
                                 onOpenDiagnose = { nav.navigate(Routes.DIAGNOSE) },
                                 onOpenScaleHelp = { nav.navigate(Routes.SCALE_HELP) },
+                                onOpenIntro = { nav.navigate(Routes.INTRO) },
                             )
+                        }
+                        composable(Routes.INTRO) {
+                            IntroScreen(onDone = { nav.popBackStack() }, markSeen = false)
                         }
                         composable(Routes.BACKUP) {
                             BackupScreen(onBack = { nav.popBackStack() })

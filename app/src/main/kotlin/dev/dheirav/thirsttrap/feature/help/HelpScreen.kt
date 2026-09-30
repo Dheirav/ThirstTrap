@@ -35,6 +35,7 @@ fun HelpScreen(
     onOpenReminderHelp: () -> Unit,
     onOpenDiagnose: () -> Unit,
     onOpenScaleHelp: () -> Unit,
+    onOpenIntro: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -63,6 +64,12 @@ fun HelpScreen(
                 body = "Almost always battery optimisation or a notification channel. This " +
                     "checks the specific settings Android hides.",
                 onClick = onOpenReminderHelp,
+            )
+            Entry(
+                title = "What this app is for",
+                body = "The first-run page again, including what to do about a pot too " +
+                    "heavy to lift.",
+                onClick = onOpenIntro,
             )
             Entry(
                 title = "Weighing a pot",

@@ -4,6 +4,7 @@ object Routes {
     const val DASHBOARD = "dashboard"
     const val DUE = "due"
     const val HELP = "help"
+    const val INTRO = "intro"
     const val HELP_REMINDERS = "help/reminders"
     const val DEBUG = "debug"
     const val BACKUP = "backup"

@@ -47,6 +47,14 @@ data class AppSettings(
      * and then they are the presets.
      */
     val wateringCanSizesMl: List<Double> = emptyList(),
+    /**
+     * Whether the first-run page has been read. False means show it.
+     *
+     * A flag with one reader and one writer, which is worth saying out loud in
+     * this codebase: D30a found a setting that was written, shown back, and
+     * never read by anything.
+     */
+    val introSeen: Boolean = false,
 )
 
 interface SettingsRepository {
@@ -58,6 +66,7 @@ interface SettingsRepository {
     suspend fun setOnlineSpeciesLookup(enabled: Boolean)
     suspend fun setWateringCanMl(ml: Double)
     suspend fun setWateringCanSizes(sizesMl: List<Double>)
+    suspend fun setIntroSeen(seen: Boolean)
 
     /** Called by the export flow on success; nothing else writes it. */
     suspend fun markExported(atMillis: Long)

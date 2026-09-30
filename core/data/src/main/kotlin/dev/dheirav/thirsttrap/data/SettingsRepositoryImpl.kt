@@ -33,6 +33,7 @@ class SettingsRepositoryImpl @Inject constructor(
     private val onlineLookupKey = booleanPreferencesKey("online_species_lookup")
     private val canMlKey = doublePreferencesKey("watering_can_ml")
     private val canSizesKey = stringSetPreferencesKey("watering_can_sizes_ml")
+    private val introSeenKey = booleanPreferencesKey("intro_seen")
     private val lastExportKey = longPreferencesKey("last_export_at")
 
     override val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
@@ -50,6 +51,7 @@ class SettingsRepositoryImpl @Inject constructor(
             // the chips are in a stable order however they were added.
             wateringCanSizesMl = prefs[canSizesKey]
                 .orEmpty().mapNotNull { it.toDoubleOrNull() }.sorted(),
+            introSeen = prefs[introSeenKey] ?: false,
         )
     }
 
@@ -75,6 +77,10 @@ class SettingsRepositoryImpl @Inject constructor(
 
     override suspend fun markExported(atMillis: Long) {
         context.dataStore.edit { it[lastExportKey] = atMillis }
+    }
+
+    override suspend fun setIntroSeen(seen: Boolean) {
+        context.dataStore.edit { it[introSeenKey] = seen }
     }
 
     override suspend fun setWateringCanSizes(sizesMl: List<Double>) {
