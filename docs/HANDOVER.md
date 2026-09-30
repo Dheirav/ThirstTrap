@@ -643,7 +643,7 @@ and opens fully expanded. It is used standing at a windowsill holding a pot; a
 keypad you have to drag open first is worse than no sheet, and the save button
 had been reachable only by scrolling past twelve keys.
 
-### D31 — F14: the inventory and the calculator are one question (2026-09-09)
+### D31a — F14: the inventory and the calculator are one question (2026-09-09)
 
 Requirements item 14 asks for a fertiliser inventory and a dilution calculator,
 which sound like two screens. They are one question asked at one moment: you are
@@ -676,7 +676,7 @@ Schema v11 adds the `fertilizers` table, and the backup carries it. That last
 part is deliberate: weight readings were once absent from the bundle and nobody
 noticed until an export/import round trip would have destroyed them.
 
-### D30 — The call-site audit, and what it found (2026-09-09)
+### D30a — The call-site audit, and what it found (2026-09-09)
 
 Six instances of "correct, tested, wired to nothing" made it a pattern rather
 than bad luck, so this was a deliberate pass rather than another accident.
@@ -727,6 +727,10 @@ of the reference, produced versus consumed, separates them.
 
 ### D35 — The scanner comes home, and the export gets a clock (2026-09-27)
 
+*Numbering note: two 2026-09-09 entries below carry `a` suffixes, because a
+later session reused D30 and D31 before the earlier ones were pushed. Renaming
+the newer ones would break the cross-references that point at them.*
+
 **The GMS scanner is gone.** Scanning a pot sticker now runs entirely
 in-process: CameraX preview plus a zxing analyzer over the Y plane, decoding
 the same QR format zxing already generates for the stickers. The trade is one
@@ -745,7 +749,7 @@ N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
 
-### D35 — Big pots are not excluded, because the model never needed real grams (2026-09-30)
+### D36 — Big pots are not excluded, because the model never needed real grams (2026-09-30)
 
 Weighing assumed a kitchen scale, which ruled out the plants people care most
 about: the floor-standing Monstera, the ficus, anything too heavy to lift or too
