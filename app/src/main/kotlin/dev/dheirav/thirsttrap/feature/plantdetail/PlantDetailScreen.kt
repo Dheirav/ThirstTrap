@@ -167,6 +167,14 @@ fun PlantDetailScreen(
                                     // sheet, or the full log screen would have
                                     // been left behind a long press.
                                     DropdownMenuItem(
+                                        text = { Text("Log something") },
+                                        onClick = { menuOpen = false; onLogMore(p.id) },
+                                    )
+                                    DropdownMenuItem(
+                                        text = { Text("Add from gallery") },
+                                        onClick = { menuOpen = false; capture.pickFromGallery() },
+                                    )
+                                    DropdownMenuItem(
                                         text = { Text("Compare photos") },
                                         enabled = state.photos.size >= 2,
                                         trailingIcon = {
