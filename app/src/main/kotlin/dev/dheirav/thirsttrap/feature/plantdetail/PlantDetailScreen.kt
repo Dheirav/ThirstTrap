@@ -465,6 +465,7 @@ fun PlantDetailScreen(
                 // and from here that is a swipe.
                 photos = state.photos,
                 startId = photo.id,
+                plantName = plant?.name.orEmpty(),
                 pathOf = viewModel::pathOf,
                 onDismiss = { viewing = null },
                 onSaveCaption = viewModel::setCaption,

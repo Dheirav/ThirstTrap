@@ -85,6 +85,13 @@ fun BackupHelpScreen(onBack: () -> Unit) {
                     "move to a different build of the app, export first and keep the " +
                     "zip somewhere outside the phone.",
             )
+            Para(
+                "You can also save a single photo into your gallery, from the dots menu " +
+                    "when it is open full screen. That is an escape hatch rather than a " +
+                    "backup: the copy has no plant and no date attached to it, and it " +
+                    "will not know if you later change the caption or delete the entry. " +
+                    "The zip is the thing that keeps a photo and its context together.",
+            )
 
             SectionHead("What restoring does")
             Para(

@@ -38,6 +38,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -45,16 +47,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.dheirav.thirsttrap.ui.AlmanacMenu
 import dev.dheirav.thirsttrap.domain.Photo
+import dev.dheirav.thirsttrap.photo.PhotoExport
 import dev.dheirav.thirsttrap.domain.TimelapseFrame
 import dev.dheirav.thirsttrap.domain.buildTimelapse
 import dev.dheirav.thirsttrap.domain.isPlayable
 import dev.dheirav.thirsttrap.domain.spanDays
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -93,6 +98,8 @@ import java.time.format.DateTimeFormatter
 fun PhotoViewer(
     photos: List<Photo>,
     startId: String,
+    /** Travels with a shared photo, since a leaf is not self-explanatory. */
+    plantName: String,
     pathOf: (Photo) -> String,
     onDismiss: () -> Unit,
     onSaveCaption: (photoId: String, caption: String) -> Unit,
@@ -118,6 +125,7 @@ fun PhotoViewer(
     // one of three doors to this one screen, and the photo thumbnails on the
     // plant page are the door that does not need explaining.
     var pinned by remember { mutableStateOf<TimelapseFrame?>(null) }
+    val context = LocalContext.current
 
     LaunchedEffect(pager.settledPage) {
         scale = 1f
@@ -241,6 +249,52 @@ fun PhotoViewer(
                     text = { Text("Edit caption") },
                     onClick = { menu = false; editingCaption = current?.photo },
                 )
+                DropdownMenuItem(
+                    text = { Text("Share") },
+                    onClick = {
+                        menu = false
+                        current?.let { frame ->
+                            val intent = PhotoExport.shareIntent(
+                                context,
+                                File(pathOf(frame.photo)),
+                                shareCaption(plantName, frame.photo),
+                            )
+                            if (intent == null) {
+                                Toast.makeText(context, "That photo is missing", Toast.LENGTH_SHORT)
+                                    .show()
+                            } else {
+                                context.startActivity(
+                                    Intent.createChooser(intent, "Share this photo"),
+                                )
+                            }
+                        }
+                    },
+                )
+                // Only where it needs no permission to offer, which is API 29
+                // and up. See PhotoExport.canSaveToGallery.
+                if (PhotoExport.canSaveToGallery) {
+                    DropdownMenuItem(
+                        text = { Text("Save to gallery") },
+                        onClick = {
+                            menu = false
+                            current?.let { frame ->
+                                val name = galleryName(plantName, frame.photo)
+                                val ok = PhotoExport.saveToGallery(
+                                    context, File(pathOf(frame.photo)), name,
+                                )
+                                Toast.makeText(
+                                    context,
+                                    if (ok) {
+                                        "Saved to Pictures/ThirstTrap"
+                                    } else {
+                                        "Could not save that one"
+                                    },
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                            }
+                        },
+                    )
+                }
                 DropdownMenuItem(
                     text = { Text(if (pinned == null) "Compare with this" else "Stop comparing") },
                     onClick = {
@@ -526,6 +580,60 @@ private fun ZoomableImage(
 
 /** Slow enough to see a leaf move, fast enough that 22 plates is 15 seconds. */
 private const val PLAY_FRAME_MILLIS = 700L
+
+/**
+ * What travels with a shared photo.
+ *
+ * The photo's own caption was all that went before, and it is usually null, so
+ * a shared picture of a leaf arrived with no message at all. Whoever receives
+ * it has no idea which plant or when, which is most of the information.
+ *
+ * Plant then date then the caption, on two lines, because a messaging app will
+ * show the first line and a date is the thing that makes a photo of a leaf mean
+ * anything to somebody who does not live with it.
+ */
+private fun shareCaption(plantName: String, photo: Photo): String = buildString {
+    append(plantName.ifBlank { "A plant" })
+    append(", ")
+    append(shareDate(photo))
+    photo.caption?.takeIf { it.isNotBlank() }?.let {
+        append("\n")
+        append(it)
+    }
+}
+
+/**
+ * The filename a saved copy gets.
+ *
+ * It was `thirsttrap-<epoch millis>.jpg`, which is unreadable in a gallery and
+ * sorts by nothing useful. The plant and the day make it findable six months
+ * later, which is the whole reason somebody saves one out. MediaStore handles a
+ * collision itself by appending a counter, so two photos of one plant on one
+ * day do not need distinguishing here.
+ */
+private fun galleryName(plantName: String, photo: Photo): String {
+    val slug = plantName.trim().lowercase()
+        .map { if (it.isLetterOrDigit()) it else '-' }
+        .joinToString("")
+        .replace(Regex("-+"), "-")
+        // Truncate first, then trim: a long name cut at forty characters can
+        // land on a hyphen, which trimming beforehand would leave behind as
+        // "...goes-on-and--2026-10-01.jpg".
+        .take(40)
+        .trim('-')
+        .ifBlank { "plant" }
+    val zone = ZoneOffset.ofTotalSeconds(photo.tzOffsetMinutes * 60)
+    val day = Instant.ofEpochMilli(photo.takenAtMillis).atZone(zone)
+        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    return "$slug-$day.jpg"
+}
+
+/** Day only. A time of day says nothing to somebody who was not there. */
+private fun shareDate(photo: Photo): String {
+    val zone = ZoneOffset.ofTotalSeconds(photo.tzOffsetMinutes * 60)
+    return Instant.ofEpochMilli(photo.takenAtMillis).atZone(zone)
+        .format(DateTimeFormatter.ofPattern("d MMMM yyyy"))
+}
 
 private fun dateOf(photo: Photo): String {
     val zone = ZoneOffset.ofTotalSeconds(photo.tzOffsetMinutes * 60)

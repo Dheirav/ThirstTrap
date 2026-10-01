@@ -756,6 +756,66 @@ N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
 
+### D52 — One photo out, with enough context to mean something (2026-10-01)
+
+Prompted by the backup help page written an hour earlier, whose central warning
+is that photos live inside the app and uninstalling deletes them. The natural
+response to reading that is "can I get one out", so: Share and Save to gallery,
+in the photo viewer's menu, per photo and user-initiated.
+
+**Bulk export is deliberately not here.** The backup zip already carries every
+photo with the diary attached, and a folder of fifty loose JPEGs with no idea
+which plant or which day each belongs to is strictly worse than what exists.
+The problem the help page describes is not "photos are trapped", it is "people
+do not export", and a gallery button does not fix that.
+
+**Share stages a copy into the cache rather than serving the file.**
+`file_paths.xml` exposes only the camera scratch directory and says why: "the
+photo library itself is never exposed; outbound sharing goes through an explicit
+export". Widening the provider to cover `files/photos` was one line and would
+have quietly made every photo in the diary reachable by anything holding a
+guessed uri. A copy into the already-shared cache is the explicit export that
+comment anticipated, and the cache is the OS's to reclaim.
+
+**Save to gallery is offered only on API 29 and up.** From Q an app writes its
+own images through MediaStore with no permission at all; below that it needs
+WRITE_EXTERNAL_STORAGE. This app is not declaring a storage permission to serve
+two old API levels, and the reason is this morning: D35 declared CAMERA for the
+scanner and silently broke the photo button, because a declared-but-ungranted
+permission changes how the platform treats you. Sharing works everywhere and
+covers the same need. The manifest still declares exactly five permissions.
+
+Written with IS_PENDING set and cleared after the copy, so the gallery never
+indexes a half-written file. Verified on the device rather than trusted:
+`relative_path=Pictures/ThirstTrap/, is_pending=0, _size=245168`, byte-identical
+to the source.
+
+**Both carry context now, which they did not at first.** The share put the
+photo's own caption in the message, and that is usually null, so a shared
+picture of a leaf arrived with no text at all: the recipient had no idea which
+plant or when, which is most of the information. It is two lines now, the plant
+and the date, then the caption if there is one. Day only, no clock time, since
+the hour means nothing to somebody who was not there.
+
+The filename had the same fault in a different place. `thirsttrap-<epoch
+millis>.jpg` is unreadable in a gallery and sorts by nothing useful. It is
+`peperomia-2026-10-01.jpg` now. Checking the slug against awkward names rather
+than assuming caught a real bug: truncating a long name at forty characters can
+land on a hyphen, so the trim has to happen after the truncation, not before.
+
+**A photo that leaves is a copy**, and the backup page now says so. Delete the
+plant and the copy stays; edit the caption and the copy does not know. That is
+right for an escape hatch and the reason the gallery can never be a second
+source of truth.
+
+Asked and answered while this was going in: the phone cannot sense temperature
+or humidity. Its sensor service reports 21 types and neither
+`ambient_temperature` nor `relative_humidity` is among them, nor is `pressure`;
+`light` is there, which is the only reason the light meter works. The API exists
+and the hardware stopped shipping around 2013. Worth recording because the trap
+is real: phones do expose battery and CPU temperatures elsewhere, and reading
+those as room temperature gives a thermometer that rises when the phone charges.
+
 ### D51 — Help that meets the confusion, and three doors closed (2026-10-01)
 
 A long pass over Help and the plant's menu, all of it from the user using the

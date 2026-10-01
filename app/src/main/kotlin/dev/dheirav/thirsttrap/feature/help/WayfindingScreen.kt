@@ -98,7 +98,8 @@ fun WayfindingScreen(onBack: () -> Unit) {
                     "there rather than in a menu: swipe between them, Oldest and Latest " +
                     "to jump either end, Play to run through them in order, and in the " +
                     "dots menu, \"Compare with this\" to pin one and swipe the other " +
-                    "half against it.",
+                    "half against it. That menu also shares a photo, or saves a copy " +
+                    "into your gallery.",
             )
 
             SectionHead("Two gestures worth knowing")
