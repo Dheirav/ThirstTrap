@@ -447,6 +447,8 @@ private fun PredictionHeadline(s: WeightState, onExplain: (SuppressionReason) ->
                 "Give it another day and weigh again."
             SuppressionReason.NEEDS_RECALIBRATION -> "Needs recalibrating" to
                 "The pot changed, so earlier readings no longer apply."
+            SuppressionReason.PLANT_IS_GONE -> "This one has gone" to
+                "Recorded as died or given away. Its history is all still here."
             SuppressionReason.WATERED_SINCE_LAST_READING ->
                 "Weigh it to start the new cycle" to
                     "It has been watered since the last reading, so that weight " +

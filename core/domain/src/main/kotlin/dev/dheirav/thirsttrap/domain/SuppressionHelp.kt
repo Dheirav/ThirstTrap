@@ -83,6 +83,14 @@ fun helpFor(reason: SuppressionReason): SuppressionHelp = when (reason) {
         whatToDo = "Nothing. Change the water when it looks tired. If it goes into " +
             "soil later, switch the medium and weighing starts to mean something.",
     )
+    SuppressionReason.PLANT_IS_GONE -> SuppressionHelp(
+        shown = "This one has gone",
+        why = "It is recorded as died or given away, so there is nothing to water " +
+            "and nothing to predict. Its history is all still here, which is the " +
+            "reason the entry stays rather than disappearing.",
+        whatToDo = "Nothing, unless it was a mistake. If the plant is still alive, " +
+            "edit it and set its status back, and the reminders start again with it.",
+    )
     SuppressionReason.WATERED_SINCE_LAST_READING -> SuppressionHelp(
         shown = "Weigh it to start the new cycle",
         why = "A watering was logged after the most recent weighing, so the newest " +

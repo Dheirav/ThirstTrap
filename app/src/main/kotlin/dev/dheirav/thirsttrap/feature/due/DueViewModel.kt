@@ -50,7 +50,11 @@ class DueViewModel @Inject constructor(
             DueUiState(
                 items = rs.filter { it.isDue(now) }
                     .mapNotNull { r ->
-                        byId[r.plantId]?.let { att ->
+                        // A plant that has died or been given away is not due
+                        // anything. The dashboard deliberately still lists it,
+                        // because un-archiving one is how you read its history,
+                        // so this list has to say no for itself.
+                        byId[r.plantId]?.takeIf { !it.plant.status.isGone }?.let { att ->
                             DueItem(
                                 reminder = r,
                                 plant = att.plant,

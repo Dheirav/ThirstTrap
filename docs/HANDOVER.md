@@ -756,6 +756,53 @@ N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
 
+### D53 — A dead plant was still being asked about (2026-10-01)
+
+Found by the user in the live diary: Flax seeds, recorded as dead weeks ago,
+still appearing in Due and still saying it needed water. The row said why:
+
+```
+Flax seeds    status=DEAD    archived=0    reminder enabled=1
+```
+
+**The cause was one-directional thinking in `archivePlant`.** Its comment
+already described the first half of this bug, caught by the friction report, for
+this same flax cup: an archived plant's reminder kept firing about a pot no
+longer on the shelf. The fix made archiving disable the reminders and
+un-archiving re-enable them, and that second half was unconditional. The
+post-mortem archives a plant it has just recorded as dead, which silenced it
+correctly; un-archiving it later to read its history switched the reminders back
+on for a plant that no longer exists.
+
+Four changes, and only the second is the cause. The rest are there because the
+cause was only findable at all through three layers that each assumed somebody
+else had got it right.
+
+- **`dueNow` checks the plant's status in SQL**, not just the reminder's
+  `enabled` flag. Trusting the flag meant trusting that something had remembered
+  to clear it at some point in the past, and one thing had not. This is the
+  version that cannot drift, and it needs no repair of the existing bad row:
+  the query simply stops returning it.
+- **Un-archiving no longer re-enables reminders for a plant that has gone.**
+- **A gone plant's prediction is suppressed**, new `PLANT_IS_GONE`, reading
+  "This one has gone". Suppressed rather than hidden: un-archiving a dead plant
+  is how you read its history, so making it vanish from the list is a worse
+  answer than letting it sit there saying what it is. It simply must not claim
+  to need water.
+- **The Due list filters for itself**, because it joins against the dashboard
+  and the dashboard deliberately keeps gone plants listed.
+
+`PlantStatus.isGone` covers dead and given away. Dormant is deliberately not in
+it: a plant resting over winter still wants water occasionally, and weighing is
+how you learn how much less. Unknown is not in it either, because it is the
+shrug value and refusing to care for a plant on the strength of a shrug is worse
+than the alternative. Both are pinned by a test.
+
+**Two things working as designed, worth recording.** Adding the refusal failed
+the build until its help text existed, which is the exhaustive `when` from D51
+doing exactly the job it was added for. And the new test earns its place by
+mutation: deleting the status check fails it.
+
 ### D52 — One photo out, with enough context to mean something (2026-10-01)
 
 Prompted by the backup help page written an hour earlier, whose central warning

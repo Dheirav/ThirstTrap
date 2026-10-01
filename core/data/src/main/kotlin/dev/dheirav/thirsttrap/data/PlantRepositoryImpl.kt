@@ -183,7 +183,14 @@ class PlantRepositoryImpl @Inject constructor(
         // scheduled for checks. Archiving silences it; unarchiving re-enables,
         // and the stale due date self-corrects on the next reading or edit,
         // both of which replan.
-        reminderDao.setEnabledForPlant(plantId, enabled = !archived)
+        //
+        // Except that "unarchiving re-enables" was unconditional, and that is
+        // how the same flax cup came back. The post-mortem archives a plant it
+        // has just recorded as dead, which silenced it correctly; un-archiving
+        // it later to look at its history switched the reminders back on for a
+        // plant that no longer exists. Resurrection is for the living.
+        val gone = plantDao.observePlant(plantId).first()?.toDomain()?.status?.isGone == true
+        reminderDao.setEnabledForPlant(plantId, enabled = !archived && !gone)
     }
 
     override suspend fun setStatus(plantId: String, status: PlantStatus) =

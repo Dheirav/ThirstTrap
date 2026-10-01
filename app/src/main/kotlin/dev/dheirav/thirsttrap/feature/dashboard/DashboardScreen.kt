@@ -650,6 +650,9 @@ private fun predictionText(prediction: Prediction): String? = when (prediction) 
         // Telling someone to weigh a cutting in a jar is nonsense.
         SuppressionReason.WEIGHT_MEANINGLESS_FOR_MEDIUM -> null
         SuppressionReason.NOT_CALIBRATED -> null
+        // Said out loud rather than left blank: the row is on the list because
+        // somebody un-archived it, so the useful thing is to say what it is.
+        SuppressionReason.PLANT_IS_GONE -> "This one has gone"
         SuppressionReason.NEEDS_RECALIBRATION -> "Needs recalibrating"
         SuppressionReason.NO_MEASURABLE_DRYING -> "Not drying measurably yet"
         // The fact line under this already says "watered today", so the answer

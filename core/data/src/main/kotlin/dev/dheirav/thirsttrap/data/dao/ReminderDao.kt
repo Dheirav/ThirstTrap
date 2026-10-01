@@ -17,11 +17,23 @@ interface ReminderDao {
 
     @Query(
         """
-        SELECT * FROM reminders
-        WHERE enabled = 1
-          AND next_due_at <= :now
-          AND (snoozed_until IS NULL OR snoozed_until <= :now)
-        ORDER BY next_due_at
+        SELECT r.* FROM reminders r
+        JOIN plants p ON p.id = r.plant_id
+        WHERE r.enabled = 1
+          AND r.next_due_at <= :now
+          AND (r.snoozed_until IS NULL OR r.snoozed_until <= :now)
+          -- The plant's own state, not just the reminder's flag. This used to
+          -- trust `enabled`, which meant it depended on something having
+          -- remembered to switch the flag off at some point in the past, and
+          -- one thing did not: un-archiving a plant re-enabled its reminders
+          -- regardless of whether the plant was dead. A dead flax cup was
+          -- still being asked about weeks later.
+          --
+          -- Checking the status here is the version that cannot drift. There
+          -- is no repair needed for the row that was already wrong, because
+          -- the query stops returning it.
+          AND p.status NOT IN ('DEAD', 'GIVEN_AWAY')
+        ORDER BY r.next_due_at
         """,
     )
     suspend fun dueNow(now: Long): List<ReminderEntity>

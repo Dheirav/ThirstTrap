@@ -47,6 +47,16 @@ enum class SuppressionReason {
      * the card saying "needs water now" about a pot watered an hour ago.
      */
     WATERED_SINCE_LAST_READING,
+
+    /**
+     * The plant died or was given away.
+     *
+     * Suppressed rather than hidden, because somebody who un-archives a dead
+     * plant did it on purpose, presumably to read its history, and making the
+     * plant vanish from the list would be a worse answer than letting it sit
+     * there saying what it is. What it must not do is claim to need water.
+     */
+    PLANT_IS_GONE,
 }
 
 /**
@@ -66,6 +76,11 @@ fun predictWatering(
      */
     lastWateredMillis: Long? = null,
 ): Prediction {
+    // First, before anything else: a dead pot's drying curve is still real
+    // arithmetic and answering it would be absurd.
+    if (plant.status.isGone) {
+        return Prediction.NeedAnotherReading(SuppressionReason.PLANT_IS_GONE)
+    }
     if (!plant.isWeightTrackable) {
         return Prediction.NeedAnotherReading(SuppressionReason.WEIGHT_MEANINGLESS_FOR_MEDIUM)
     }

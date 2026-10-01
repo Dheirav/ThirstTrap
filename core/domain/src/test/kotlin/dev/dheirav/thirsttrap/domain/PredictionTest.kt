@@ -229,6 +229,46 @@ class PredictionTest {
     }
 
     @Test
+    fun `a plant that has gone is never due anything`() {
+        // Found in the live diary: a flax cup recorded as dead weeks earlier
+        // was still being reminded about and still said it needed water. The
+        // cause was elsewhere (un-archiving re-enabled its reminders) but the
+        // prediction answering at all is what made it visible, and that half
+        // belongs here where it can be held.
+        val readings = linearRun(6, 1400.0, 40.0)
+        val segments = segmentReadings(readings, plant().anchors)
+        assertTrue(
+            "the fixture has to be due, or this proves nothing",
+            predictWatering(plant(), segments, at(5.0)) is Prediction.WaterNow,
+        )
+
+        listOf(PlantStatus.DEAD, PlantStatus.GIVEN_AWAY).forEach { status ->
+            val p = predictWatering(
+                plant().copy(status = status), segments, at(5.0),
+            )
+            assertEquals(
+                "$status should suppress",
+                SuppressionReason.PLANT_IS_GONE,
+                (p as Prediction.NeedAnotherReading).reason,
+            )
+        }
+    }
+
+    @Test
+    fun `dormant and unknown are still looked after`() {
+        // Dormant is the one worth stating: a plant resting over winter still
+        // wants water occasionally, and weighing is how you find out how much
+        // less. Unknown is the shrug value, and refusing to care for a plant
+        // on the strength of a shrug is worse than the alternative.
+        val readings = linearRun(4, 1400.0, 20.0)
+        val segments = segmentReadings(readings, plant().anchors)
+        listOf(PlantStatus.ACTIVE, PlantStatus.DORMANT, PlantStatus.UNKNOWN).forEach { status ->
+            val p = predictWatering(plant().copy(status = status), segments, at(3.0))
+            assertTrue("$status should still predict, got $p", p is Prediction.Eta)
+        }
+    }
+
+    @Test
     fun `a watering before the last reading is the segment boundary, not a suppression`() {
         // The ordinary case must not be swallowed by the check above: here the
         // reading is the newer fact and the model should use it.

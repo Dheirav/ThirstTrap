@@ -23,6 +23,22 @@ enum class PlantStatus(val label: String) {
     DEAD("Died"),
     GIVEN_AWAY("Given away"),
     UNKNOWN("Unknown"),
+    ;
+
+    /**
+     * Whether this plant is still something you look after.
+     *
+     * Dormant counts: a plant resting over winter still wants water
+     * occasionally, and the whole point of weighing is that it tells you how
+     * much less. Unknown counts too, because it is the shrug value and
+     * refusing to care for a plant on the strength of a shrug is worse than
+     * the alternative.
+     *
+     * The two that do not are the two that have left: dead, and given away.
+     * Nothing should remind anybody about either, and nothing should predict a
+     * watering date for a pot that is no longer on the shelf.
+     */
+    val isGone: Boolean get() = this == DEAD || this == GIVEN_AWAY
 }
 
 @Serializable
