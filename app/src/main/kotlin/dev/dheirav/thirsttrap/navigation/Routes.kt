@@ -18,7 +18,7 @@ object Routes {
     const val PROPAGATION = "propagation"
     const val POST_MORTEM = "plant/postmortem"
     const val STICKER = "plant/sticker"
-    const val DIAGNOSE = "diagnose"
+    const val DIAGNOSE = "plant/diagnose"
     const val AMBIENT = "ambient"
     const val STATS = "stats"
     const val PLACES = "places"
@@ -49,6 +49,7 @@ object Routes {
     fun sticker(plantId: String) = "$STICKER/$plantId"
 
     fun care(plantId: String) = "$CARE/$plantId"
+    fun diagnose(plantId: String) = "$DIAGNOSE/$plantId"
     fun experiment(id: String) = "$EXPERIMENT/$id"
 
     fun plantEdit(plantId: String? = null) =

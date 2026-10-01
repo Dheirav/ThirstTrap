@@ -21,19 +21,24 @@ import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 
 /**
- * One door for "something is not working".
+ * Documentation, and only documentation.
  *
- * There were three, loose in Settings between the reminder hour and the room
- * section: the reminder troubleshooter, the plant troubleshooter and the scale
- * notes. Three entry points for one intention is how a settings screen stops
- * being scannable. docs/NAVIGATION.md.
+ * It began as one door for three things loose in Settings: the reminder
+ * troubleshooter, the plant troubleshooter and the scale notes. Collecting them
+ * was right. What was wrong is that one of the three was not documentation at
+ * all: "A plant does not look right" is the diagnosis tree, a thing somebody
+ * reaches for at the moment they are worried about a plant, and it sat four
+ * taps deep behind Settings and a word meaning "I am confused". It is on the
+ * plant now.
+ *
+ * So the rule for this screen: if an entry *does* something rather than
+ * explaining something, it does not belong here. docs/NAVIGATION.md.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HelpScreen(
     onBack: () -> Unit,
     onOpenReminderHelp: () -> Unit,
-    onOpenDiagnose: () -> Unit,
     onOpenScaleHelp: () -> Unit,
     onOpenIntro: () -> Unit,
     onOpenWayfinding: () -> Unit,
@@ -63,12 +68,6 @@ fun HelpScreen(
                 body = "What is on each tab, what is behind the two dots menus, and the " +
                     "only two gestures the app cannot tell you about itself.",
                 onClick = onOpenWayfinding,
-            )
-            Entry(
-                title = "A plant does not look right",
-                body = "Walks through what the log and the weight readings can and cannot " +
-                    "tell you, and what to rule out first.",
-                onClick = onOpenDiagnose,
             )
             Entry(
                 title = "Reminders are not arriving",

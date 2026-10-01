@@ -208,7 +208,6 @@ class MainActivity : ComponentActivity() {
                             HelpScreen(
                                 onBack = { nav.popBackStack() },
                                 onOpenReminderHelp = { nav.navigate(Routes.HELP_REMINDERS) },
-                                onOpenDiagnose = { nav.navigate(Routes.DIAGNOSE) },
                                 onOpenScaleHelp = { nav.navigate(Routes.SCALE_HELP) },
                                 onOpenIntro = { nav.navigate(Routes.INTRO) },
                                 onOpenWayfinding = { nav.navigate(Routes.WAYFINDING) },
@@ -257,8 +256,21 @@ class MainActivity : ComponentActivity() {
                         ) {
                             CareScreen(onBack = { nav.popBackStack() })
                         }
-                        composable(Routes.DIAGNOSE) {
-                            DiagnoseScreen(onBack = { nav.popBackStack() })
+                        composable(
+                            route = "${Routes.DIAGNOSE}/{id}",
+                            arguments = listOf(navArgument("id") { type = NavType.StringType }),
+                        ) { entry ->
+                            val id = entry.arguments?.getString("id").orEmpty()
+                            DiagnoseScreen(
+                                onBack = { nav.popBackStack() },
+                                // Every leaf of this tree has had a "Log what
+                                // you found" button since it was written, and
+                                // nobody has ever seen it, because nothing
+                                // passed this. Nothing could, while the only
+                                // way in was from Help, which does not know
+                                // which plant you are worried about.
+                                onLogEvent = { nav.navigate(Routes.logEvent(id)) },
+                            )
                         }
                         composable(Routes.WEIGHING) {
                             WeighingScreen(onBack = { nav.popBackStack() })
@@ -337,6 +349,7 @@ class MainActivity : ComponentActivity() {
                                 onBack = { nav.popBackStack() },
                                 onEdit = { id -> nav.navigate(Routes.plantEdit(id)) },
                                 onLogMore = { id -> nav.navigate(Routes.logEvent(id)) },
+                                onDiagnose = { id -> nav.navigate(Routes.diagnose(id)) },
                                 onWeigh = { id -> nav.navigate(Routes.weight(id)) },
                                 onMeasureLight = { id -> nav.navigate(Routes.light(id)) },
                                 onSticker = { id -> nav.navigate(Routes.sticker(id)) },

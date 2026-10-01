@@ -756,6 +756,41 @@ N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
 
+### D50 — "Something looks wrong" belongs on the plant (2026-10-01)
+
+Section 1 of `docs/NAVIGATION.md` says nobody looks in Settings for a feature,
+so for a new user the seven behind the gear icon do not exist. Seven were moved
+out. Then Help went in, and one of Help's four entries was a feature.
+
+"A plant does not look right" was the diagnosis tree: a thing somebody reaches
+for at the moment they are worried about a plant, sitting four taps deep behind
+Settings, then behind a word meaning "I am confused", then in a list beside
+three pieces of documentation. It is now **"Something looks wrong"**, second in
+the plant's own menu under "Log something", because it is about that plant and
+that is where you are when you want it.
+
+The user spotted this within an hour of D49 shipping, which is the part worth
+recording: D49 repeated the mistake it was itself documenting.
+
+**The move uncovered a button nobody has ever seen.** Every leaf of the tree has
+had "Log what you found" since it was written, and it has never rendered once,
+because nothing passed `onLogEvent`. Nothing could: the only route in came from
+Help, which does not know which plant you mean. The route is plant-scoped now,
+so walking the tree to an answer and logging what you found against that plant
+is a path that exists for the first time. Third dangling callback this week, and
+the first one that was dangling for a structural reason rather than an
+oversight.
+
+Help gains a rule it can be held to:
+
+> If an entry does something rather than explaining something, it does not
+> belong in Help.
+
+Still open, and the user's own observation on seeing it: the four entries left
+are not one category either. Three of them (what this app is for, weighing a
+pot, finding your way around) are how the app works, and one (reminders are not
+arriving) is something being broken. Separation still needed.
+
 ### D49 — A map, and the two gestures the app cannot explain itself (2026-10-01)
 
 The user asked about a tutorial, and then clarified: not what the app is for,

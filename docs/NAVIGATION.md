@@ -181,3 +181,31 @@ route.
 discover by trying**, which is why they are written down in the "Finding your
 way around" help page rather than left to be found.
 
+## 8. Help was the same mistake again
+
+Added 2026-10-01, within the hour, because the user spotted it immediately.
+
+Section 1 of this document says: nobody looks in Settings for a feature, so for
+a new user the seven features behind the gear icon do not exist. Seven were
+moved out. Then Help was put in, and one of Help's four entries was a feature.
+
+"A plant does not look right" is the diagnosis tree. Somebody reaches for it at
+the moment they are worried about a plant, and it was four taps deep behind
+Settings, then behind a word meaning "I am confused", then in a list next to
+three pieces of documentation. It is now **"Something looks wrong"**, second in
+the plant's own menu under "Log something", because it is about that plant and
+that is where you are when you want it.
+
+Two things fell out of the move. The route is plant-scoped now, so the tree's
+"Log what you found" button at every leaf finally has somewhere to go: it had
+been written, shipped and never once rendered, because nothing passed
+`onLogEvent` and nothing could while the only route in came from a screen that
+does not know which plant you mean. And Help now has a rule it can be held to:
+
+> If an entry does something rather than explaining something, it does not
+> belong in Help.
+
+Which leaves Help as four pieces of documentation, and the open question the
+user raised alongside this one: whether documentation behind Settings is itself
+too hard to find. Not decided.
+

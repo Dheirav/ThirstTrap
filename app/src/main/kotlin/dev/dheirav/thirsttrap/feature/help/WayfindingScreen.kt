@@ -86,6 +86,7 @@ fun WayfindingScreen(onBack: () -> Unit) {
                     "the top and the camera has its own button beside the dots.",
             )
             Item("Log something", "A watering with an amount, a check, a repot, a feed, anything with a date.")
+            Item("Something looks wrong", "Walks you through what the log and the weight can and cannot tell you, and what to rule out first. Ends with a button to log what you found.")
             Item("When it needs water", "The weight screen. This is the one the app exists for.")
             Item("Compare photos", "Opens the newest and oldest side by side. Needs two photos.")
             Item("Timelapse", "The same viewer, starting at the first photo, with a Play button.")

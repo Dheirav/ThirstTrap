@@ -93,6 +93,7 @@ fun PlantDetailScreen(
     onBack: () -> Unit,
     onEdit: (String) -> Unit,
     onLogMore: (String) -> Unit,
+    onDiagnose: (String) -> Unit,
     onWeigh: (String) -> Unit,
     onMeasureLight: (String) -> Unit,
     onSticker: (String) -> Unit,
@@ -169,6 +170,17 @@ fun PlantDetailScreen(
                                     DropdownMenuItem(
                                         text = { Text("Log something") },
                                         onClick = { menuOpen = false; onLogMore(p.id) },
+                                    )
+                                    // Second, under logging. "Something is
+                                    // wrong with this plant" is something you
+                                    // do at the moment you are worried, not a
+                                    // help topic, and it was four taps deep
+                                    // behind Settings and a word meaning "I am
+                                    // confused". It is about this plant, so it
+                                    // belongs on this plant.
+                                    DropdownMenuItem(
+                                        text = { Text("Something looks wrong") },
+                                        onClick = { menuOpen = false; onDiagnose(p.id) },
                                     )
                                     DropdownMenuItem(
                                         text = { Text("Add from gallery") },
