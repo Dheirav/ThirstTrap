@@ -14,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -55,7 +56,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.text.font.FontWeight
@@ -86,6 +89,7 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun WeightScreen(
+    onExplainRefusal: (SuppressionReason) -> Unit,
     onBack: () -> Unit,
     onOpenScaleHelp: () -> Unit,
     viewModel: WeightViewModel = hiltViewModel(),
@@ -166,6 +170,7 @@ fun WeightScreen(
                             s,
                             Modifier.fillMaxWidth().height(200.dp).padding(10.dp)
                                 .semantics { contentDescription = chartSummary(s) },
+                            onPointTap = { editingReading = it },
                         )
                     }
                     Text(
@@ -177,7 +182,7 @@ fun WeightScreen(
                     )
                 }
             } else {
-                PredictionHeadline(s)
+                PredictionHeadline(s, onExplain = onExplainRefusal)
                 DepletionLine(s)
                 DoubleRule(Modifier.padding(top = 12.dp, bottom = 16.dp))
 
@@ -211,6 +216,7 @@ fun WeightScreen(
                                 .height(200.dp)
                                 .padding(10.dp)
                                 .semantics { contentDescription = chartSummary(s) },
+                            onPointTap = { editingReading = it },
                         )
                     }
                     Text(
@@ -415,7 +421,7 @@ fun WeightScreen(
 }
 
 @Composable
-private fun PredictionHeadline(s: WeightState) {
+private fun PredictionHeadline(s: WeightState, onExplain: (SuppressionReason) -> Unit) {
     val (text, sub) = when (val p = s.prediction) {
         is Prediction.WaterNow -> "Needs water now" to null
         is Prediction.Eta -> {
@@ -459,6 +465,20 @@ private fun PredictionHeadline(s: WeightState) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+        }
+        // A refusal is the moment somebody most wants a reason, and until now
+        // none of the seven was explained anywhere in the app. Putting the route
+        // here rather than in Help means the answer arrives in the same breath
+        // as the question, and nobody has to know Help exists or guess which of
+        // its entries applies.
+        (s.prediction as? Prediction.NeedAnotherReading)?.let { p ->
+            TextButton(
+                onClick = { onExplain(p.reason) },
+                contentPadding = PaddingValues(vertical = 4.dp),
+                modifier = Modifier.padding(top = 4.dp),
+            ) {
+                Text("Why not?", style = MaterialTheme.typography.labelLarge)
+            }
         }
     }
 }
@@ -604,7 +624,11 @@ private fun Keypad(
  * drawn exactly where the model puts them.
  */
 @Composable
-private fun WeightChart(s: WeightState, modifier: Modifier = Modifier) {
+private fun WeightChart(
+    s: WeightState,
+    modifier: Modifier = Modifier,
+    onPointTap: (WeightReading) -> Unit = {},
+) {
     // Null before the first post-water weigh. The curve is still real - it is
     // grams over time - so it is drawn without the anchor bands and the trigger
     // line rather than not drawn at all.
@@ -617,7 +641,33 @@ private fun WeightChart(s: WeightState, modifier: Modifier = Modifier) {
     val tertiary = MaterialTheme.colorScheme.tertiary
     val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
 
-    Canvas(modifier) {
+    // Where each point ended up on screen, recorded by the draw pass and read
+    // by the gesture handler.
+    //
+    // A plain mutable list rather than state, deliberately: nothing composes
+    // off it, so filling it during a draw cannot start a recomposition loop.
+    // The alternative was recomputing the same projection inside pointerInput,
+    // which means two copies of the maths that must agree forever, and they
+    // would not: the y scale depends on the anchors, which the chart already
+    // handles being absent.
+    val hitTargets = remember { mutableListOf<Pair<Offset, WeightReading>>() }
+
+    Canvas(
+        modifier.pointerInput(Unit) {
+            detectTapGestures { tap ->
+                // Nearest point, not an exact hit. A 3dp dot is a 6dp target
+                // and the accessibility floor is 48dp, so anything else would
+                // be unhittable. Capped so a tap on empty chart does nothing
+                // rather than selecting something far away.
+                val slop = TAP_SLOP_DP.dp.toPx()
+                hitTargets
+                    .minByOrNull { (at, _) -> (at - tap).getDistance() }
+                    ?.takeIf { (at, _) -> (at - tap).getDistance() <= slop }
+                    ?.let { (_, reading) -> onPointTap(reading) }
+            }
+        },
+    ) {
+        hitTargets.clear()
         // Time as days-since-first in Double before it touches Float. Epoch
         // millis through Float has a ULP of ~131 seconds at present dates, so
         // readings would quantise into roughly two-minute buckets.
@@ -699,10 +749,15 @@ private fun WeightChart(s: WeightState, modifier: Modifier = Modifier) {
         }
 
         points.forEach {
-            drawCircle(primary, radius = 3.dp.toPx(), center = Offset(x(it.timestampMillis), y(it.grams)))
+            val at = Offset(x(it.timestampMillis), y(it.grams))
+            drawCircle(primary, radius = 3.dp.toPx(), center = at)
+            hitTargets += at to it
         }
     }
 }
+
+/** Half the accessibility floor, which is as tight as a dot on a line can be. */
+private const val TAP_SLOP_DP = 24
 
 private fun readingDate(millis: Long, offsetMinutes: Int): String {
     val zone = java.time.ZoneOffset.ofTotalSeconds(offsetMinutes * 60)

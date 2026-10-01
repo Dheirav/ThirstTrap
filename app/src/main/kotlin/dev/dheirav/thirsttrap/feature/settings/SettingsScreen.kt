@@ -39,7 +39,8 @@ import dev.dheirav.thirsttrap.BuildConfig
 @Composable
 fun SettingsScreen(
     onOpenBackup: () -> Unit,
-    onOpenHelpIndex: () -> Unit,
+    onOpenHowItWorks: () -> Unit,
+    onOpenTroubleshoot: () -> Unit,
     onOpenDebug: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
@@ -182,8 +183,15 @@ fun SettingsScreen(
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             SectionHeader("Help")
-            OutlinedButton(onClick = onOpenHelpIndex, modifier = Modifier.fillMaxWidth()) {
-                Text("Something is not working")
+            // Two buttons, because there were two intentions behind one. The
+            // single button read "Something is not working" and opened a list
+            // of five pages explaining how the app works, so it promised
+            // troubleshooting and delivered documentation.
+            OutlinedButton(onClick = onOpenHowItWorks, modifier = Modifier.fillMaxWidth()) {
+                Text("How the app works")
+            }
+            OutlinedButton(onClick = onOpenTroubleshoot, modifier = Modifier.fillMaxWidth()) {
+                Text("Something is wrong")
             }
 
             HorizontalDivider(Modifier.padding(vertical = 8.dp))

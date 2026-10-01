@@ -95,11 +95,6 @@ fun PhotoViewer(
     startId: String,
     pathOf: (Photo) -> String,
     onDismiss: () -> Unit,
-    /**
-     * Opens already comparing against this photo, for the "Compare photos"
-     * entry point. Null is the ordinary single view.
-     */
-    pinnedId: String? = null,
     onSaveCaption: (photoId: String, caption: String) -> Unit,
     onSetCover: (photoId: String) -> Unit,
     onDelete: (photoId: String) -> Unit,
@@ -118,9 +113,11 @@ fun PhotoViewer(
     var editingCaption by remember { mutableStateOf<Photo?>(null) }
     var confirmingDelete by remember { mutableStateOf<Photo?>(null) }
     // The fixed half of a comparison. Null means the ordinary single view.
-    var pinned by remember(pinnedId) {
-        mutableStateOf(frames.firstOrNull { it.photo.id == pinnedId })
-    }
+    // Set only from this screen's own menu. It was also settable on open, for
+    // the plant page's "Compare photos" entry, and that entry is gone: it was
+    // one of three doors to this one screen, and the photo thumbnails on the
+    // plant page are the door that does not need explaining.
+    var pinned by remember { mutableStateOf<TimelapseFrame?>(null) }
 
     LaunchedEffect(pager.settledPage) {
         scale = 1f

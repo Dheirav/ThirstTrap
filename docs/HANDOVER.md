@@ -756,6 +756,97 @@ N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
 
+### D51 — Help that meets the confusion, and three doors closed (2026-10-01)
+
+A long pass over Help and the plant's menu, all of it from the user using the
+app. Five things, and two of them were my own inconsistencies from earlier the
+same day.
+
+**Two Settings buttons instead of one.** The single button read "Something is
+not working" and opened five pages explaining how the app works, so it promised
+troubleshooting and delivered documentation. It is now "How the app works" and
+"Something is wrong".
+
+Splitting it settled where one entry belongs. "Why it won't give a date" reads
+like documentation and is not: somebody meets it because the app is refusing to
+do what they expected, which is troubleshooting. It sits with the reminders,
+retitled "It won't tell me when to water", which is how you would describe the
+problem rather than how the app describes its internals.
+
+**The seven refusals are explained, from the refusal itself.** The app has seven
+ways to decline to give a date, which is section 6 of WATERING-MODEL working as
+intended, and **not one of them was explained anywhere**. They were worded in
+two screens and that was all. "Needs recalibrating" is honest and completely
+opaque if you do not know what an anchor is.
+
+There is a "Why not?" link under the refusal on the weight screen now, opening
+a page with the one you tapped in full and the other six below. The route being
+*from the refusal* is the point: nobody has to know Help exists or guess which
+entry applies.
+
+The text lives in `core/domain/SuppressionHelp.kt` rather than a composable,
+for two reasons. The `when` is exhaustive, so an eighth refusal will not compile
+until somebody writes its explanation, and a test can assert the text is there.
+Three tests: every reason has a non-trivial why and what-to-do, the headings
+match the strings `WeightScreen` actually prints so a rename there fails the
+build, and no explanation uses "you forgot", "you should have", "simply" or
+"just do", because the anti-goals apply to help text too.
+
+**That third suite caught my own work on its first run**, which is the first
+time this week a test beat the user to something. `NO_READINGS` had a
+31-character explanation. The threshold could have come down; the explanation
+went up instead.
+
+**Backups have a page, and the missing fact is now said twice.** A grep for
+"uninstall" across every user-facing string in the app found nothing. So: photos
+live inside the app rather than in the gallery, and uninstalling deletes them.
+That is on the new page and on the backup screen itself, because that is where
+the decision gets made, and it is precisely the sequence anybody moving from a
+sideloaded build to a signed one has to perform. The page also covers what
+restore does *not* do, which was unstated: it cannot undo a deletion, because a
+delete leaves no trace in the file for the importer to respect.
+
+**Compare photos and Timelapse are gone from the plant's menu.** D44 folded the
+timelapse into the viewer and D48 folded Compare in after it, and both left
+their menu entries standing as separate doors. Three routes to one screen, which
+the user spotted: tapping a thumbnail, and those two. The thumbnails are on the
+page whenever there are photos at all, so the menu entries were the redundant
+pair, and everything photos can do now lives with the photos.
+
+Two pieces of dead state fell out within seconds of that deletion, both created
+by it: `comparingAgainst` had no writer left and `PhotoViewer.pinnedId` had no
+caller passing anything. Removed rather than left, since that is the pattern
+this project keeps generating.
+
+What is genuinely lost is the "needs 2" hint, which was the only thing telling
+somebody that comparing exists before they had two photos. It now surfaces only
+once you are in the viewer. Judged worth it, because the hint was paying for two
+redundant menu lines, but it is a real loss and not a free win.
+
+**Chart nodes open their reading.** Nearest-point hit testing at 24dp, half the
+accessibility floor and about as tight as a dot on a line can be, capped so a
+tap on empty chart does nothing rather than grabbing a distant point.
+
+The draw pass records where each point landed and the gesture handler reads that
+list. The alternative was recomputing the projection inside `pointerInput`,
+which means two copies of the maths that must agree forever, and they would not
+have: the y scale depends on the anchors, and the chart already handles those
+being absent. A plain mutable list rather than state, so filling it during a
+draw cannot start a recomposition loop.
+
+**The weight screen has its third name.** "Weight and prediction" named its
+implementation. "When it needs water" promised a date the screen declines to
+give seven different ways, which sets up the exact disappointment the "Why not?"
+link now absorbs. It is **"How thirsty it is"**, true in every state including
+before anything has been weighed, and in the voice the app already uses for "How
+dry before watering" and "How does the pot feel?".
+
+**Four help pages went stale within an hour of being written today**, every time
+because a rename or a move happened after them, and every time the user found it
+rather than the suite. The suppression tests cover one slice of that. A test
+asserting the wayfinding page's quoted menu names exist in the source would
+cover another, and is not written.
+
 ### D50 — "Something looks wrong" belongs on the plant (2026-10-01)
 
 Section 1 of `docs/NAVIGATION.md` says nobody looks in Settings for a feature,

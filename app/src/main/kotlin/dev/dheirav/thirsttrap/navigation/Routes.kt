@@ -3,9 +3,12 @@ package dev.dheirav.thirsttrap.navigation
 object Routes {
     const val DASHBOARD = "dashboard"
     const val DUE = "due"
-    const val HELP = "help"
+    const val HOW_IT_WORKS = "help/how-it-works"
+    const val TROUBLESHOOT = "help/something-wrong"
     const val INTRO = "intro"
     const val WAYFINDING = "help/wayfinding"
+    const val WHY_NO_DATE = "help/why-no-date"
+    const val BACKUP_HELP = "help/backups"
     const val HELP_REMINDERS = "help/reminders"
     const val DEBUG = "debug"
     const val BACKUP = "backup"
@@ -50,6 +53,8 @@ object Routes {
 
     fun care(plantId: String) = "$CARE/$plantId"
     fun diagnose(plantId: String) = "$DIAGNOSE/$plantId"
+    /** [reason] is a SuppressionReason name, or "any" to browse all of them. */
+    fun whyNoDate(reason: String = "any") = "$WHY_NO_DATE/$reason"
     fun experiment(id: String) = "$EXPERIMENT/$id"
 
     fun plantEdit(plantId: String? = null) =

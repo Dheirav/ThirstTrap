@@ -76,6 +76,18 @@ fun BackupScreen(onBack: () -> Unit, viewModel: BackupViewModel = hiltViewModel(
                     "Nothing leaves this phone unless you put it somewhere.",
                 style = MaterialTheme.typography.bodyMedium,
             )
+            // Said here as well as in the help page, because this is where the
+            // decision gets made. A grep for "uninstall" across every
+            // user-facing string in the app used to find nothing at all, and
+            // this is the one fact that turns reinstalling from an
+            // inconvenience into losing every photo somebody has taken.
+            Text(
+                "Photos live inside the app rather than in your gallery, so " +
+                    "uninstalling ThirstTrap deletes them. Export before you " +
+                    "uninstall, change phone, or move to a different build.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
 
             Button(
                 onClick = { createDoc.launch(viewModel.suggestedFileName()) },

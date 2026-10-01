@@ -2,8 +2,11 @@ package dev.dheirav.thirsttrap
 
 import dev.dheirav.thirsttrap.feature.ambient.AmbientScreen
 import dev.dheirav.thirsttrap.feature.fertilizer.FertilizerScreen
-import dev.dheirav.thirsttrap.feature.help.HelpScreen
+import dev.dheirav.thirsttrap.feature.help.HowItWorksScreen
+import dev.dheirav.thirsttrap.feature.help.TroubleshootScreen
+import dev.dheirav.thirsttrap.feature.help.BackupHelpScreen
 import dev.dheirav.thirsttrap.feature.help.WayfindingScreen
+import dev.dheirav.thirsttrap.feature.help.WhyNoPredictionScreen
 import dev.dheirav.thirsttrap.feature.intro.IntroScreen
 import dev.dheirav.thirsttrap.feature.locations.LocationsScreen
 import dev.dheirav.thirsttrap.feature.weighing.WeighingScreen
@@ -197,20 +200,42 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.SETTINGS) {
                             SettingsScreen(
                                 onOpenBackup = { nav.navigate(Routes.BACKUP) },
-                                onOpenHelpIndex = { nav.navigate(Routes.HELP) },
+                                onOpenHowItWorks = { nav.navigate(Routes.HOW_IT_WORKS) },
+                                onOpenTroubleshoot = { nav.navigate(Routes.TROUBLESHOOT) },
                                 onOpenDebug = { nav.navigate(Routes.DEBUG) },
                             )
+                        }
+                        composable(
+                            route = "${Routes.WHY_NO_DATE}/{reason}",
+                            arguments = listOf(navArgument("reason") { type = NavType.StringType }),
+                        ) { entry ->
+                            val name = entry.arguments?.getString("reason")
+                            WhyNoPredictionScreen(
+                                asked = dev.dheirav.thirsttrap.domain.SuppressionReason.entries
+                                    .firstOrNull { it.name == name },
+                                onBack = { nav.popBackStack() },
+                            )
+                        }
+                        composable(Routes.BACKUP_HELP) {
+                            BackupHelpScreen(onBack = { nav.popBackStack() })
                         }
                         composable(Routes.WAYFINDING) {
                             WayfindingScreen(onBack = { nav.popBackStack() })
                         }
-                        composable(Routes.HELP) {
-                            HelpScreen(
+                        composable(Routes.HOW_IT_WORKS) {
+                            HowItWorksScreen(
+                                onBack = { nav.popBackStack() },
+                                onOpenIntro = { nav.navigate(Routes.INTRO) },
+                                onOpenScaleHelp = { nav.navigate(Routes.SCALE_HELP) },
+                                onOpenWayfinding = { nav.navigate(Routes.WAYFINDING) },
+                                onOpenBackupHelp = { nav.navigate(Routes.BACKUP_HELP) },
+                            )
+                        }
+                        composable(Routes.TROUBLESHOOT) {
+                            TroubleshootScreen(
                                 onBack = { nav.popBackStack() },
                                 onOpenReminderHelp = { nav.navigate(Routes.HELP_REMINDERS) },
-                                onOpenScaleHelp = { nav.navigate(Routes.SCALE_HELP) },
-                                onOpenIntro = { nav.navigate(Routes.INTRO) },
-                                onOpenWayfinding = { nav.navigate(Routes.WAYFINDING) },
+                                onOpenWhyNoDate = { nav.navigate(Routes.whyNoDate()) },
                             )
                         }
                         composable(Routes.INTRO) {
@@ -226,6 +251,9 @@ class MainActivity : ComponentActivity() {
                             WeightScreen(
                                 onBack = { nav.popBackStack() },
                                 onOpenScaleHelp = { nav.navigate(Routes.SCALE_HELP) },
+                                onExplainRefusal = { r ->
+                                    nav.navigate(Routes.whyNoDate(r.name))
+                                },
                             )
                         }
                         composable(

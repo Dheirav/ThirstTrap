@@ -66,7 +66,7 @@ fun WayfindingScreen(onBack: () -> Unit) {
             SectionHead("The three tabs")
             Item("Plants", "Everything you are keeping, each with its state and two quick log buttons. The plus button adds one.")
             Item("Due", "Only what is asking for attention today. Empty is the normal state and means nothing is wrong.")
-            Item("Settings", "Backup, reminders, appearance, and this help section.")
+            Item("Settings", "Backup, reminders, appearance, and two help buttons: how the app works, and something is wrong.")
 
             SectionHead("Behind the dots on the Plants tab")
             Para(
@@ -87,12 +87,19 @@ fun WayfindingScreen(onBack: () -> Unit) {
             )
             Item("Log something", "A watering with an amount, a check, a repot, a feed, anything with a date.")
             Item("Something looks wrong", "Walks you through what the log and the weight can and cannot tell you, and what to rule out first. Ends with a button to log what you found.")
-            Item("When it needs water", "The weight screen. This is the one the app exists for.")
-            Item("Compare photos", "Opens the newest and oldest side by side. Needs two photos.")
-            Item("Timelapse", "The same viewer, starting at the first photo, with a Play button.")
+            Item("How thirsty it is", "Weigh the pot, see how far down its range it has come, and get a date when there is one worth giving. This is the one the app exists for.")
             Item("Measure the light here", "Uses the phone's light sensor and files the reading against the place.")
             Item("Look up this species", "Only appears when there are no care notes on file for it.")
             Item("Edit plant", "Name, species, pot, how dry it is allowed to get.")
+
+            SectionHead("Photos")
+            Para(
+                "Tap any photo to open it full screen. Everything photos can do is in " +
+                    "there rather than in a menu: swipe between them, Oldest and Latest " +
+                    "to jump either end, Play to run through them in order, and in the " +
+                    "dots menu, \"Compare with this\" to pin one and swipe the other " +
+                    "half against it.",
+            )
 
             SectionHead("Two gestures worth knowing")
             Para(

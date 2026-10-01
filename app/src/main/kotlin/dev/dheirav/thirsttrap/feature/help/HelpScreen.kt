@@ -21,32 +21,106 @@ import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 
 /**
- * Documentation, and only documentation.
+ * Two screens, because they answer two different questions.
  *
- * It began as one door for three things loose in Settings: the reminder
- * troubleshooter, the plant troubleshooter and the scale notes. Collecting them
- * was right. What was wrong is that one of the three was not documentation at
- * all: "A plant does not look right" is the diagnosis tree, a thing somebody
- * reaches for at the moment they are worried about a plant, and it sat four
- * taps deep behind Settings and a word meaning "I am confused". It is on the
- * plant now.
+ * This was one screen called Help, reached from a Settings button labelled
+ * "Something is not working", and five of its six entries explained how the app
+ * works. The button promised troubleshooting and delivered documentation.
  *
- * So the rule for this screen: if an entry *does* something rather than
- * explaining something, it does not belong here. docs/NAVIGATION.md.
+ * Splitting it also settles where one entry belongs. "Why it sometimes won't
+ * give a date" reads like documentation and is not: somebody meets it because
+ * the app is refusing to do the thing they expected, which is the definition of
+ * troubleshooting. It sits with the reminders, not with the explainers.
+ *
+ * The rule from D50 still holds for both: if an entry *does* something rather
+ * than explaining something, it belongs on the thing it acts on and not here.
+ * docs/NAVIGATION.md section 8.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HelpScreen(
+fun HowItWorksScreen(
+    onBack: () -> Unit,
+    onOpenIntro: () -> Unit,
+    onOpenScaleHelp: () -> Unit,
+    onOpenWayfinding: () -> Unit,
+    onOpenBackupHelp: () -> Unit,
+) {
+    HelpPage("How the app works", onBack) {
+        // Reading order rather than alphabetical: why it exists, the one
+        // mechanic it rests on, where things are, and then the thing you only
+        // care about once you have data worth keeping.
+        Entry(
+            title = "What this app is for",
+            body = "The first-run page again: why it weighs pots, and why there are no " +
+                "streaks or counts of what you missed.",
+            onClick = onOpenIntro,
+        )
+        Entry(
+            title = "Weighing a pot",
+            body = "What to weigh, when, and what to do about a pot too heavy to lift.",
+            onClick = onOpenScaleHelp,
+        )
+        Entry(
+            title = "Finding your way around",
+            body = "What is on each tab, what is behind the two dots menus, and the only " +
+                "two gestures the app cannot tell you about itself.",
+            onClick = onOpenWayfinding,
+        )
+        Entry(
+            title = "Backups, and what you lose without one",
+            body = "What is in a backup, what restoring does and does not do, and why " +
+                "photos are the part that cannot be replaced.",
+            onClick = onOpenBackupHelp,
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TroubleshootScreen(
     onBack: () -> Unit,
     onOpenReminderHelp: () -> Unit,
-    onOpenScaleHelp: () -> Unit,
-    onOpenIntro: () -> Unit,
-    onOpenWayfinding: () -> Unit,
+    onOpenWhyNoDate: () -> Unit,
+) {
+    HelpPage("Something is wrong", onBack) {
+        Entry(
+            title = "Reminders are not arriving",
+            body = "Almost always battery optimisation or a notification channel. This " +
+                "checks the specific settings Android hides, and can run the real " +
+                "background sweep rather than just posting a notification.",
+            onClick = onOpenReminderHelp,
+        )
+        Entry(
+            title = "It won't tell me when to water",
+            body = "The seven things the app says instead of a date, what each one means, " +
+                "and what to do about it.",
+            onClick = onOpenWhyNoDate,
+        )
+        // Signposting rather than a route, because the answer is genuinely
+        // somewhere else and somebody who remembers it being here needs telling
+        // once. D50 moved it onto the plant it is about.
+        Text(
+            "A plant that does not look right is handled on the plant itself: open it, " +
+                "then \"Something looks wrong\" in its menu. It needs to know which " +
+                "plant you mean, which is why it is not here.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/** The frame both share, so they cannot drift apart. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HelpPage(
+    title: String,
+    onBack: () -> Unit,
+    content: @Composable () -> Unit,
 ) {
     Scaffold(
         topBar = {
             androidx.compose.material3.TopAppBar(
-                title = { ScreenTitle("Help") },
+                title = { ScreenTitle(title) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(AppIcons.arrowBack, contentDescription = "Back")
@@ -58,36 +132,7 @@ fun HelpScreen(
         Column(
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())
                 .padding(16.dp),
-        ) {
-            // First, and the only entry here that is not about something being
-            // broken. The screen is called Help because three troubleshooters
-            // needed one door; "where is the thing I want" is a fair question
-            // to arrive with too, and it has nowhere else to go.
-            Entry(
-                title = "Finding your way around",
-                body = "What is on each tab, what is behind the two dots menus, and the " +
-                    "only two gestures the app cannot tell you about itself.",
-                onClick = onOpenWayfinding,
-            )
-            Entry(
-                title = "Reminders are not arriving",
-                body = "Almost always battery optimisation or a notification channel. This " +
-                    "checks the specific settings Android hides.",
-                onClick = onOpenReminderHelp,
-            )
-            Entry(
-                title = "What this app is for",
-                body = "The first-run page again, including what to do about a pot too " +
-                    "heavy to lift.",
-                onClick = onOpenIntro,
-            )
-            Entry(
-                title = "Weighing a pot",
-                body = "What to weigh, when, and what to do about a pot too heavy to lift. " +
-                    "Also why the app sometimes declines to predict.",
-                onClick = onOpenScaleHelp,
-            )
-        }
+        ) { content() }
     }
 }
 

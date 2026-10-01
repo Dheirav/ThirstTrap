@@ -130,7 +130,10 @@ navigation" turned out to be the two the user noticed first.
 
 **Weighing was named after its implementation.** "Weight and prediction" in a
 plant's overflow menu was a screen title, not an invitation, for the feature the
-whole app exists for. It reads **"When it needs water"** now.
+whole app exists for. It read "When it needs water" for a day after that, which
+promised a date the screen frequently declines to give: there are seven ways it
+can refuse. It is **"How thirsty it is"** now, which is true in every state and
+matches the voice of "How dry before watering" elsewhere in the app.
 
 **A plain tap on a diary row opened a menu whose only item deleted.** Recorded
 twice as a mis-delete risk before this document, and it cost a third real entry

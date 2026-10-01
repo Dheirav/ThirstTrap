@@ -107,8 +107,6 @@ fun PlantDetailScreen(
     val plant = state.plant
     val capture = dev.dheirav.thirsttrap.photo.rememberPhotoCapture { viewModel.addPhoto(it) }
     var viewing by remember { mutableStateOf<Photo?>(null) }
-    // Set only by "Compare photos", which opens the viewer already split.
-    var comparingAgainst by remember { mutableStateOf<Photo?>(null) }
     var menuOpen by remember { mutableStateOf(false) }
 
     val hero = state.photos.firstOrNull()?.let(viewModel::pathOf)
@@ -186,59 +184,46 @@ fun PlantDetailScreen(
                                         text = { Text("Add from gallery") },
                                         onClick = { menuOpen = false; capture.pickFromGallery() },
                                     )
-                                    DropdownMenuItem(
-                                        text = { Text("Compare photos") },
-                                        enabled = state.photos.size >= 2,
-                                        trailingIcon = {
-                                            if (state.photos.size < 2) {
-                                                Text(
-                                                    "needs 2",
-                                                    style = MaterialTheme.typography.labelSmall,
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                )
-                                            }
-                                        },
-                                        // Opens the viewer already comparing,
-                                        // with the first photo pinned and the
-                                        // latest in the moving half, which is
-                                        // the pair the old Compare screen
-                                        // defaulted to. Swiping walks the right
-                                        // half forward against a fixed
-                                        // reference.
-                                        onClick = {
-                                            menuOpen = false
-                                            comparingAgainst =
-                                                state.photos.minByOrNull { it.takenAtMillis }
-                                            viewing = state.photos.maxByOrNull { it.takenAtMillis }
-                                        },
-                                    )
-                                    // Same gating as Compare, and for the same
-                                    // reason: shown always, disabled with a stated
-                                    // cause, because hiding it makes the feature
-                                    // vanish exactly when somebody goes looking.
-                                    DropdownMenuItem(
-                                        text = { Text("Timelapse") },
-                                        enabled = state.photos.size >= 2,
-                                        trailingIcon = {
-                                            if (state.photos.size < 2) {
-                                                Text(
-                                                    "needs 2",
-                                                    style = MaterialTheme.typography.labelSmall,
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                )
-                                            }
-                                        },
-                                        // The viewer is the timelapse now, so
-                                        // this opens it at the oldest photo and
-                                        // Play walks forward from there.
-                                        onClick = {
-                                            menuOpen = false
-                                            viewing = state.photos.minByOrNull { it.takenAtMillis }
-                                        },
-                                    )
+                                    // "Compare photos" and "Timelapse" used to sit
+                                    // here, and both opened the photo viewer in a
+                                    // particular state: one with the oldest photo
+                                    // pinned, one starting at the oldest with Play
+                                    // ready. D44 folded the timelapse screen into
+                                    // the viewer and D48 folded Compare in after
+                                    // it, which merged the screens and left their
+                                    // two menu entries standing as separate doors.
+                                    //
+                                    // Three routes to one page, which the user
+                                    // pointed out: tapping a thumbnail, and these
+                                    // two. The thumbnails are right there on this
+                                    // page whenever there are photos at all, so the
+                                    // menu entries were the redundant pair. Pin and
+                                    // Play live in the viewer, with the photos.
+                                    //
+                                    // What is lost is the "needs 2" hint, which was
+                                    // the only thing telling somebody comparing
+                                    // exists before they had two photos to compare.
+                                    // That now lives in the viewer's own menu, which
+                                    // is where you are when the question arises.
                                     if (p.isWeightTrackable) {
                                         DropdownMenuItem(
-                                            text = { Text("When it needs water") },
+                                            // Third name for this screen. It was
+                                            // "Weight and prediction", which named
+                                            // its implementation, then "When it
+                                            // needs water", which promises a date
+                                            // the screen frequently refuses to give:
+                                            // there are seven ways it can decline,
+                                            // and a label that oversells sets up the
+                                            // disappointment the "Why not?" link now
+                                            // has to absorb.
+                                            //
+                                            // "How thirsty it is" is true in every
+                                            // state, including before anything has
+                                            // been weighed, and it matches the voice
+                                            // the app already uses for "How dry
+                                            // before watering" and "How does the pot
+                                            // feel?".
+                                            text = { Text("How thirsty it is") },
                                             onClick = { menuOpen = false; onWeigh(p.id) },
                                         )
                                     }
@@ -481,8 +466,7 @@ fun PlantDetailScreen(
                 photos = state.photos,
                 startId = photo.id,
                 pathOf = viewModel::pathOf,
-                pinnedId = comparingAgainst?.id,
-                onDismiss = { viewing = null; comparingAgainst = null },
+                onDismiss = { viewing = null },
                 onSaveCaption = viewModel::setCaption,
                 onSetCover = viewModel::setCover,
                 onDelete = viewModel::deletePhoto,
