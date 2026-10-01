@@ -1,6 +1,7 @@
 package dev.dheirav.thirsttrap.domain
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -265,36 +266,65 @@ class AmbientForPlantTest {
         ambient("Windowsill", segmentStart + (2 * MILLIS_PER_DAY).toLong(), 28.5),
     )
 
+    /** The explanation, or a failure naming the gap it reported instead. */
+    private fun explained(
+        state: WeightState,
+        readings: List<AmbientReading>,
+    ): AmbientExplanation {
+        val insight = insightForPlant(state, readings, now)
+        return (insight as? AmbientInsight.Explained)?.explanation
+            ?: throw AssertionError("expected an explanation, got $insight")
+    }
+
+    private fun gap(state: WeightState, readings: List<AmbientReading>): AmbientGap {
+        val insight = insightForPlant(state, readings, now)
+        return (insight as? AmbientInsight.Waiting)?.gap
+            ?: throw AssertionError("expected a gap, got $insight")
+    }
+
     @Test
     fun `the segment boundary splits baseline from current`() {
-        val e = explainForPlant(state(), ambientSet(), now)
-        assertEquals(AmbientVerdict.EXPLAINS_FASTER, e?.verdict)
-        assertEquals(9.5, e!!.temperatureDeltaC!!, 0.001)
+        val e = explained(state(), ambientSet())
+        assertEquals(AmbientVerdict.EXPLAINS_FASTER, e.verdict)
+        assertEquals(9.5, e.temperatureDeltaC!!, 0.001)
     }
 
     @Test
     fun `a plant with no location has no room to describe`() {
-        assertNull(explainForPlant(state(location = null), ambientSet(), now))
-        assertNull(explainForPlant(state(location = "  "), ambientSet(), now))
+        // Used to be a bare null. The gap is the useful half: a reader needs to
+        // know it is waiting for readings rather than reporting a steady room.
+        assertEquals(AmbientGap.NO_READINGS, gap(state(location = null), ambientSet()))
+        assertEquals(AmbientGap.NO_READINGS, gap(state(location = "  "), ambientSet()))
+    }
+
+    @Test
+    fun `every gap has wording, and none of it nags`() {
+        AmbientGap.entries.forEach { g ->
+            val text = wordingFor(g)
+            assertTrue("$g has no wording", text.length > 40)
+            listOf("you forgot", "you should", "you failed", "simply").forEach { banned ->
+                assertFalse("$g says '$banned'", text.lowercase().contains(banned))
+            }
+        }
     }
 
     @Test
     fun `another room's readings are not borrowed`() {
         val elsewhere = ambientSet().map { it.copy(location = "Bathroom") }
-        assertNull(explainForPlant(state(), elsewhere, now))
+        assertEquals(AmbientGap.NO_READINGS, gap(state(), elsewhere))
     }
 
     @Test
     fun `one closed segment is not a baseline`() {
         // The EWMA after a single segment is that segment, so this would be
         // comparing the pot to itself and calling the room responsible.
-        assertNull(explainForPlant(state(closed = 1), ambientSet(), now))
+        assertEquals(AmbientGap.NO_BASELINE_YET, gap(state(closed = 1), ambientSet()))
     }
 
     @Test
     fun `nothing is claimed before there is a fitted rate`() {
-        assertNull(explainForPlant(state(current = null), ambientSet(), now))
-        assertNull(explainForPlant(state(ewma = null), ambientSet(), now))
+        assertEquals(AmbientGap.NO_BASELINE_YET, gap(state(current = null), ambientSet()))
+        assertEquals(AmbientGap.NO_BASELINE_YET, gap(state(ewma = null), ambientSet()))
     }
 
     @Test
@@ -302,6 +332,8 @@ class AmbientForPlantTest {
         val old = ambientSet().map {
             it.copy(timestampMillis = now - ((AMBIENT_STALE_DAYS + 10) * MILLIS_PER_DAY).toLong())
         }
-        assertNull(explainForPlant(state(), old, now))
+        // Stale readings are filtered before the split, so this reads as having
+        // none at all, which is the right thing to tell somebody.
+        assertEquals(AmbientGap.NO_READINGS, gap(state(), old))
     }
 }

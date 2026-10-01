@@ -74,6 +74,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.domain.Confidence
 import dev.dheirav.thirsttrap.domain.AmbientExplanation
+import dev.dheirav.thirsttrap.domain.AmbientGap
+import dev.dheirav.thirsttrap.domain.AmbientInsight
+import dev.dheirav.thirsttrap.domain.wordingFor
 import dev.dheirav.thirsttrap.domain.AmbientSource
 import dev.dheirav.thirsttrap.domain.AmbientVerdict
 import dev.dheirav.thirsttrap.domain.DryingDiagnostic
@@ -98,7 +101,7 @@ fun WeightScreen(
     val entry by viewModel.entry.collectAsStateWithLifecycle()
     val context by viewModel.context.collectAsStateWithLifecycle()
     val hint by viewModel.hint.collectAsStateWithLifecycle()
-    val ambient by viewModel.ambientExplanation.collectAsStateWithLifecycle()
+    val ambient by viewModel.ambientInsight.collectAsStateWithLifecycle()
     val dismissed by viewModel.dismissed.collectAsStateWithLifecycle()
     var showKeypad by remember { mutableStateOf(false) }
     var editingReading by remember { mutableStateOf<WeightReading?>(null) }
@@ -194,7 +197,14 @@ fun WeightScreen(
                         onHelp = onOpenScaleHelp,
                     )
                 }
-                ambient?.let { AmbientCard(it) }
+                // Says why when it has nothing, rather than vanishing. A silent
+                // card is identical whether the room has been steady or nobody
+                // has ever recorded a reading, and those are different facts.
+                when (val a = ambient) {
+                    is AmbientInsight.Explained -> AmbientCard(a.explanation)
+                    is AmbientInsight.Waiting -> AmbientWaiting(a.gap)
+                    null -> Unit
+                }
 
                 if (s.readings.count { !it.excluded } < 2) {
                     Text(
@@ -777,6 +787,25 @@ private fun chartSummary(s: WeightState): String = buildString {
         is Prediction.Eta -> append(", water in about ${p.days.toInt()} days")
         else -> Unit
     }
+}
+
+/**
+ * The room comparison, when there is not one.
+ *
+ * Quiet text rather than a card: a card says "here is a finding", and this is
+ * the absence of one. It names the missing precondition so somebody can act on
+ * it if they want to, and reads as neutral if they do not, which matters
+ * because "no room readings" must not land as a telling-off for not having
+ * filled in a form.
+ */
+@Composable
+private fun AmbientWaiting(gap: AmbientGap) {
+    Text(
+        wordingFor(gap),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.outline,
+        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+    )
 }
 
 /**

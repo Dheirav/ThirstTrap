@@ -45,12 +45,12 @@ class WeightViewModel @Inject constructor(
      * the weather. Null whenever there is nothing honest to say, which is most
      * of the time.
      */
-    val ambientExplanation: StateFlow<dev.dheirav.thirsttrap.domain.AmbientExplanation?> =
+    val ambientInsight: StateFlow<dev.dheirav.thirsttrap.domain.AmbientInsight?> =
         kotlinx.coroutines.flow.combine(
             repository.observeWeightState(plantId),
             ambient.observeAll(),
         ) { weight, readings ->
-            dev.dheirav.thirsttrap.domain.explainForPlant(
+            dev.dheirav.thirsttrap.domain.insightForPlant(
                 weight,
                 readings,
                 System.currentTimeMillis(),

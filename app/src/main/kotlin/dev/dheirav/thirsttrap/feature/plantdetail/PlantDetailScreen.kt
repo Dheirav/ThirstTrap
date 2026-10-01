@@ -409,6 +409,24 @@ fun PlantDetailScreen(
                     }
                 }
 
+                // The one thing lost when "Compare photos" left this menu was
+                // the greyed "needs 2" label, which was the only hint that
+                // comparing exists before you have anything to compare. Said
+                // here instead, where the photos are and where you would act
+                // on it, and only at exactly one photo: at two it is no longer
+                // news, and at none the line above already covers it.
+                if (state.photos.size == 1) {
+                    item {
+                        Text(
+                            "One more photo and you can put them side by side, or play " +
+                                "them in order.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.outline,
+                            modifier = Modifier.padding(bottom = 16.dp),
+                        )
+                    }
+                }
+
                 if (state.loaded && state.days.isEmpty()) {
                     item {
                         Column(

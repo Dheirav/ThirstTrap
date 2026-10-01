@@ -200,24 +200,111 @@ interface AmbientRepository {
  * by a fixed number of days because that is where the drying rate the app is
  * comparing actually changes.
  */
-fun explainForPlant(
+/**
+ * Why no room comparison is being made.
+ *
+ * This existed as a bare null, and a bare null is the one answer this screen
+ * must not give: silence is identical whether the room has been steady or
+ * nobody has ever typed a reading, and those are completely different facts.
+ * With no room readings at all the card simply never appeared, and there was no
+ * way to learn that it was waiting for something.
+ *
+ * Exhaustive, so a seventh precondition cannot be added without wording it, for
+ * the same reason [SuppressionReason] is.
+ */
+enum class AmbientGap {
+    /** Nothing has ever been recorded for this plant's place. */
+    NO_READINGS,
+
+    /** Readings exist, but not from before this drying cycle started. */
+    NONE_BEFORE_THIS_CYCLE,
+
+    /** Readings exist from before, but none since this cycle started. */
+    NONE_DURING_THIS_CYCLE,
+
+    /** Fewer than two finished drying cycles, so there is no rate to compare to. */
+    NO_BASELINE_YET,
+
+    /** The pot's drying rate has not meaningfully changed, so nothing needs explaining. */
+    POT_UNCHANGED,
+
+    /** The pot changed but the room did not, which is itself worth knowing. */
+    ROOM_UNCHANGED,
+}
+
+/** Either an explanation, or the reason there is not one. */
+sealed interface AmbientInsight {
+    data class Explained(val explanation: AmbientExplanation) : AmbientInsight
+    data class Waiting(val gap: AmbientGap) : AmbientInsight
+}
+
+fun insightForPlant(
     state: WeightState,
     ambient: List<AmbientReading>,
     nowMillis: Long,
-): AmbientExplanation? {
-    val baselineRate = state.plant.slopeEwmaGramsPerDay ?: return null
-    val currentRate = state.slopeGramsPerDay ?: return null
+): AmbientInsight {
+    val baselineRate = state.plant.slopeEwmaGramsPerDay
+    val currentRate = state.slopeGramsPerDay
     // One closed segment is not a baseline - the EWMA is still just that
     // segment, so comparing the current cycle to it compares it to itself.
-    if (state.closedSegmentCount < MIN_CLOSED_SEGMENTS_FOR_DIAGNOSTICS) return null
+    if (baselineRate == null || currentRate == null ||
+        state.closedSegmentCount < MIN_CLOSED_SEGMENTS_FOR_DIAGNOSTICS
+    ) {
+        return AmbientInsight.Waiting(AmbientGap.NO_BASELINE_YET)
+    }
 
-    val segmentStart = state.currentSegment?.first?.timestampMillis ?: return null
+    val segmentStart = state.currentSegment?.first?.timestampMillis
+        ?: return AmbientInsight.Waiting(AmbientGap.NO_BASELINE_YET)
     val relevant = ambient.forLocation(state.plant.location, nowMillis)
+    if (relevant.isEmpty()) return AmbientInsight.Waiting(AmbientGap.NO_READINGS)
 
-    return explainDryingChange(
+    val before = relevant.filter { it.timestampMillis < segmentStart }
+    val during = relevant.filter { it.timestampMillis >= segmentStart }
+    if (before.size < AMBIENT_MIN_READINGS_PER_PERIOD) {
+        return AmbientInsight.Waiting(AmbientGap.NONE_BEFORE_THIS_CYCLE)
+    }
+    if (during.size < AMBIENT_MIN_READINGS_PER_PERIOD) {
+        return AmbientInsight.Waiting(AmbientGap.NONE_DURING_THIS_CYCLE)
+    }
+
+    val explained = explainDryingChange(
         baselineGramsPerDay = baselineRate,
         currentGramsPerDay = currentRate,
-        baseline = relevant.filter { it.timestampMillis < segmentStart },
-        current = relevant.filter { it.timestampMillis >= segmentStart },
-    )
+        baseline = before,
+        current = during,
+    ) ?: run {
+        // explainDryingChange declines for two different reasons and the
+        // difference matters to a reader: an unchanged pot needs no
+        // explanation, while a changed pot in an unchanged room is the
+        // interesting case where the cause is something else.
+        val ratio = abs(currentRate) / abs(baselineRate).coerceAtLeast(1e-9)
+        val potMoved = ratio !in (1.0 / AMBIENT_DRYING_SHIFT_RATIO)..AMBIENT_DRYING_SHIFT_RATIO
+        return AmbientInsight.Waiting(
+            if (potMoved) AmbientGap.ROOM_UNCHANGED else AmbientGap.POT_UNCHANGED,
+        )
+    }
+    return AmbientInsight.Explained(explained)
+}
+
+/** What to say for each [AmbientGap]. One line, no blame, no nagging. */
+fun wordingFor(gap: AmbientGap): String = when (gap) {
+    AmbientGap.NO_READINGS ->
+        "No room readings for this place yet, so nothing is being compared against " +
+            "the weather. Recording the temperature and humidity now and then is what " +
+            "lets the app tell a warm week apart from a thirsty plant."
+    AmbientGap.NONE_BEFORE_THIS_CYCLE ->
+        "There are room readings, but none from before this drying cycle started, so " +
+            "there is nothing to compare this one against yet."
+    AmbientGap.NONE_DURING_THIS_CYCLE ->
+        "No room readings since this drying cycle started. One now would let the app " +
+            "say whether the room explains how the pot is behaving."
+    AmbientGap.NO_BASELINE_YET ->
+        "Not enough finished drying cycles yet to know what normal looks like for this " +
+            "pot, so there is nothing for the room to explain."
+    AmbientGap.POT_UNCHANGED ->
+        "This pot is drying at about its usual rate, so there is nothing for the room " +
+            "to account for."
+    AmbientGap.ROOM_UNCHANGED ->
+        "This pot's drying rate has changed and the room has not, so the cause is " +
+            "something else: where it is standing, how much it has grown, or the soil."
 }

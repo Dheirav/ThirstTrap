@@ -756,6 +756,52 @@ N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
 
+### D54 — Three decisions the user made, and what followed (2026-10-01)
+
+**Ambient stays, manual, and says when it has nothing.** No hardware is being
+added to this app, so typed readings are the only source there will ever be.
+That does not rescue the feature, and the honest position is that one row in a
+month is the user's own verdict on typing two numbers into a form.
+
+What it does fix is the feature lying by omission. `explainForPlant` returned a
+bare null when any of six preconditions failed, so the card simply never
+appeared, and silence is identical whether the room has been steady or nobody
+has ever recorded anything. Those are completely different facts and only one of
+them is actionable.
+
+It is `insightForPlant` now, returning `Explained` or `Waiting(gap)`, with
+`AmbientGap` naming which of the six is missing and `wordingFor` saying it in
+one quiet line. Same shape as the `SuppressionReason` work in D51, and the
+enum is exhaustive for the same reason: a seventh precondition cannot be added
+without wording it.
+
+Two of the six were worth separating, and the old code conflated them by
+returning null for both: a pot drying at its usual rate needs no explanation,
+while a pot that has changed in a room that has not is the interesting case,
+because it rules out the boring cause and points at where the plant is standing
+or how much it has grown.
+
+The real decision is deferred rather than taken, deliberately. Once the app says
+"no room readings yet" out loud on a screen the user visits, they will find out
+whether that bothers them enough to record any. That is better evidence than
+either of us guessing now, and it is the same argument as the accuracy panel:
+use it, then decide.
+
+**Help stays in Settings.** Asked and answered. Now that it is documentation
+only and split into two buttons, Settings is where people expect documentation.
+The alternative considered and rejected was splitting by urgency, with
+"Something is wrong" on the dashboard overflow because you want it immediately
+when reminders stop, and "How the app works" left in Settings because you browse
+it. Worth remembering if the troubleshooting half ever gets used in anger.
+
+**The "needs 2" hint came back, in the right place.** Removing "Compare photos"
+and "Timelapse" from the plant's menu (D51) took with it the greyed "needs 2"
+label, which was the only thing in the app telling somebody that comparing
+exists before they have anything to compare. It is one line under the photo
+strip now, shown at exactly one photo: at two it is no longer news, and at zero
+the existing empty-state line already covers it. The hint belongs where the
+photos are and where you would act on it, not in a menu you have to open.
+
 ### D53 — A dead plant was still being asked about (2026-10-01)
 
 Found by the user in the live diary: Flax seeds, recorded as dead weeks ago,
