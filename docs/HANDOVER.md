@@ -756,6 +756,64 @@ N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
 
+### D49 — A map, and the two gestures the app cannot explain itself (2026-10-01)
+
+The user asked about a tutorial, and then clarified: not what the app is for,
+but how to get around it. Those are different questions and only the first had
+an answer.
+
+**`docs/NAVIGATION.md` was describing an app that no longer existed.** It opens
+by saying it was written before any code, which is honest, so sections 1 to 6
+stay as the plan they were and a section 7 records what got built.
+
+Its own section 6, "What this does not fix", set two things aside as not really
+navigation. Both are now done: the weight screen is called "When it needs water"
+rather than "Weight and prediction", and a tap on a diary row opens the entry
+instead of a delete menu. Those entries are left in rather than deleted, because
+the useful fact about that document is that the two things it dismissed are the
+two the user noticed first.
+
+Route count went 28 to 28 and is not the same 28: `compare` and `timelapse` are
+gone into the photo viewer, `intro` and `help` arrived. The viewer has no route
+at all, which is worth recording, since it is an overlay in the activity's own
+window rather than a destination.
+
+The plan's real blind spot was treating navigation as a tab-shape problem. The
+tabs were the easy half. The hard half was that a tap had accumulated four
+different meanings in this app and two of them opened destructive menus, so
+section 7 states the rule that now applies everywhere:
+
+> A tap opens the thing you tapped. A long press is a shortcut, and only ever to
+> something that is also reachable by tapping.
+
+**The help page is `WayfindingScreen`**, first in the Help index and the only
+entry there that is not about something being broken. Help exists because three
+troubleshooters needed one door, and "where is the thing I want" is a fair
+question to arrive with too.
+
+It lists the three tabs, both overflow menus item by item, and then the part
+that earns its place: the **two** gestures nothing on screen can convey. Holding
+a plant row gives the quick sheet; holding the water drop asks for amount and
+method. Everything else in the app is a plain tap and therefore learnable by
+trying, which was the whole point of D48, so those two are the entire syllabus.
+It closes by saying so explicitly, and that tapping a photo or an entry cannot
+delete anything without asking, because until D48 it could.
+
+**Not coach marks**, and that was a recommendation rather than a shortcut.
+Overlay tooltips pointing at buttons on first run would fight every other
+decision here: no chrome, no nagging, no tone of voice. They also get dismissed
+unread. The intro page handles what the app is for, this handles where things
+are, and neither ambushes anybody.
+
+Every menu name on the page was checked against the source rather than written
+from memory, thirteen of thirteen present. A map that is wrong is worse than no
+map, and this one describes nine menu items that were renamed, moved or added in
+the last two days.
+
+**Still not built: the landing page with the scripted demo**, the other half of
+the "Both" answer from D36. That one is for people who have not installed the
+app, which is a different audience and the one that matters before sharing.
+
 ### D48 — The five UI items, and two things they uncovered (2026-09-30)
 
 The list that stood under Next actions, cleared. Each came from the user using

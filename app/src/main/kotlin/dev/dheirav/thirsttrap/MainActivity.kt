@@ -3,6 +3,7 @@ package dev.dheirav.thirsttrap
 import dev.dheirav.thirsttrap.feature.ambient.AmbientScreen
 import dev.dheirav.thirsttrap.feature.fertilizer.FertilizerScreen
 import dev.dheirav.thirsttrap.feature.help.HelpScreen
+import dev.dheirav.thirsttrap.feature.help.WayfindingScreen
 import dev.dheirav.thirsttrap.feature.intro.IntroScreen
 import dev.dheirav.thirsttrap.feature.locations.LocationsScreen
 import dev.dheirav.thirsttrap.feature.weighing.WeighingScreen
@@ -200,6 +201,9 @@ class MainActivity : ComponentActivity() {
                                 onOpenDebug = { nav.navigate(Routes.DEBUG) },
                             )
                         }
+                        composable(Routes.WAYFINDING) {
+                            WayfindingScreen(onBack = { nav.popBackStack() })
+                        }
                         composable(Routes.HELP) {
                             HelpScreen(
                                 onBack = { nav.popBackStack() },
@@ -207,6 +211,7 @@ class MainActivity : ComponentActivity() {
                                 onOpenDiagnose = { nav.navigate(Routes.DIAGNOSE) },
                                 onOpenScaleHelp = { nav.navigate(Routes.SCALE_HELP) },
                                 onOpenIntro = { nav.navigate(Routes.INTRO) },
+                                onOpenWayfinding = { nav.navigate(Routes.WAYFINDING) },
                             )
                         }
                         composable(Routes.INTRO) {

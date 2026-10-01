@@ -36,6 +36,7 @@ fun HelpScreen(
     onOpenDiagnose: () -> Unit,
     onOpenScaleHelp: () -> Unit,
     onOpenIntro: () -> Unit,
+    onOpenWayfinding: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -53,6 +54,16 @@ fun HelpScreen(
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())
                 .padding(16.dp),
         ) {
+            // First, and the only entry here that is not about something being
+            // broken. The screen is called Help because three troubleshooters
+            // needed one door; "where is the thing I want" is a fair question
+            // to arrive with too, and it has nowhere else to go.
+            Entry(
+                title = "Finding your way around",
+                body = "What is on each tab, what is behind the two dots menus, and the " +
+                    "only two gestures the app cannot tell you about itself.",
+                onClick = onOpenWayfinding,
+            )
             Entry(
                 title = "A plant does not look right",
                 body = "Walks through what the log and the weight readings can and cannot " +

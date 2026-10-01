@@ -122,12 +122,62 @@ Settings   Appearance, Network, Reminders, Watering default
            Debug tools, debug builds only
 ```
 
-## 6. What this does not fix
+## 6. What this did not fix
 
-**Weighing is still named after its implementation.** "Weight and prediction" in
-a plant's overflow menu is a screen title, not an invitation, and it is the
-feature the whole app exists for. That is a separate item on the sharing plan and
-it needs a name, not a new home.
+Both items here are now done, and they are left in rather than deleted because
+what they say about this document is useful: the two things it set aside as "not
+navigation" turned out to be the two the user noticed first.
 
-**A plain tap on a diary row opens a menu whose only item deletes.** Recorded
-twice already as a mis-delete risk. Unrelated to tabs, still worth fixing.
+**Weighing was named after its implementation.** "Weight and prediction" in a
+plant's overflow menu was a screen title, not an invitation, for the feature the
+whole app exists for. It reads **"When it needs water"** now.
+
+**A plain tap on a diary row opened a menu whose only item deleted.** Recorded
+twice as a mis-delete risk before this document, and it cost a third real entry
+afterwards. A tap opens the entry now, D48.
+
+## 7. What it actually became
+
+Added 2026-10-01, after building it. Sections 1 to 6 are the plan as written
+before any code; this is the shape that exists, and the two differ in ways worth
+recording.
+
+**28 routes, down from 28.** No net change, but not the same 28. `compare` and
+`timelapse` are gone, folded into the photo viewer (section 3's merges, carried
+further than planned), and `intro` and `help` were added. The viewer itself has
+no route at all: it is an overlay in the activity's own window, because a Dialog
+gets clipped inside the system bars and a screen would need a back-stack entry
+for something that is really a mode of the page you are already on.
+
+**The three tabs landed as planned.** Plants, Due, Settings. The seven features
+behind the gear icon came out to the dashboard's overflow: Feeding, Propagation
+board, Scan a pot sticker, Places, Figures, Experiments.
+
+**What the plan did not anticipate is that gestures needed deciding too.** The
+tab shape was the easy half. The harder half was that this app had accumulated
+four different meanings for a tap, and two of them opened destructive menus.
+The rule now, applied everywhere:
+
+> A tap opens the thing you tapped. A long press is a shortcut, and only ever
+> to something that is also reachable by tapping.
+
+That resolved every case bar two, and those two are deliberate:
+
+| Where | Tap | Long press |
+|---|---|---|
+| A plant row | opens the plant | the quick-log sheet |
+| The watering droplet on a row | logs the usual amount | amount and method |
+| A photo | opens it full screen | nothing |
+| A diary entry | opens the entry | nothing |
+| A filmstrip thumbnail | picks it | nothing |
+
+The two long presses survive because nothing is *only* behind them. The sheet's
+contents are all on the plant page the tap now opens, which is why "Log
+something" had to be added there first; the droplet's long press duplicates the
+log screen. That is the test: a long press may be a shortcut, never a sole
+route.
+
+**The two long presses are the only things in the app a new user cannot
+discover by trying**, which is why they are written down in the "Finding your
+way around" help page rather than left to be found.
+
