@@ -1184,11 +1184,18 @@ in a menu for something they do not know is there. "Don't ask again" in the
 prompt turns it off, and Settings can turn it back on: `offerCareOnAdd` in
 `AppSettings`, defaulting true, so the absent key has to mean on.
 
-Note on the two care-notes entry points, which looked like a duplicate and is
-not: the in-page button appears only when there are notes, while the overflow
-item is deliberately never disabled, because the care screen's empty state is
-the only route to the online species lookup. Disabling it made the lookup
-unreachable for exactly the plants it exists for. Both stay.
+Note on the two care-notes entry points, which looked like a duplicate: the
+in-page button appears only when there are notes, while the overflow item was
+never disabled, because the care screen's empty state is the only route to the
+online species lookup and disabling it made the lookup unreachable for exactly
+the plants it exists for.
+
+Both stayed at the time, which was the wrong call. The user asked why the menu
+needed a "Care notes" item at all, and the honest answer is that it did not: it
+was not a duplicate, it was mislabelled. The two are exclusive now and each says
+what it does. Notes on file: the button on the page and nothing in the menu.
+Nothing on file: a menu item reading "Look up this species", named for the one
+thing that screen can actually offer. Exactly one route either way.
 
 **The compare screen's two filmstrips were one strip with a gap in it.** Two
 adjacent `LazyRow`s of identical thumbnails, no boundary, and nothing saying

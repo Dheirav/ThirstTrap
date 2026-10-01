@@ -234,26 +234,28 @@ fun PlantDetailScreen(
                                         text = { Text("Measure the light here") },
                                         onClick = { menuOpen = false; onMeasureLight(p.id) },
                                     )
-                                    DropdownMenuItem(
-                                        text = { Text("Care notes") },
-                                        // Deliberately NOT disabled when the
-                                        // catalogue has nothing. The care screen's
-                                        // empty state is the only route to the
-                                        // online name lookup, and disabling this
-                                        // made it unreachable for exactly the
-                                        // plants it exists for. The hint below
-                                        // still sets the expectation.
-                                        trailingIcon = {
-                                            if (!hasSpeciesCare(p.species) && !hasSpeciesCare(p.name)) {
-                                                Text(
-                                                    "not on file",
-                                                    style = MaterialTheme.typography.labelSmall,
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                )
-                                            }
-                                        },
-                                        onClick = { menuOpen = false; onCare(p.id) },
-                                    )
+                                    // "Care notes" used to sit here always,
+                                    // alongside the in-page "Care notes for
+                                    // this species" button, which read as the
+                                    // same thing offered twice. It was not a
+                                    // duplicate, it was mislabelled: when the
+                                    // catalogue has nothing this is the only
+                                    // route to the online name lookup, because
+                                    // LookupSection lives in the care screen's
+                                    // empty state, and the in-page button only
+                                    // appears when there are notes to read.
+                                    //
+                                    // So the two are now exclusive and each
+                                    // says what it actually does. Notes on
+                                    // file: the button on the page, and nothing
+                                    // in the menu. Nothing on file: this, named
+                                    // for the only thing the screen can offer.
+                                    if (!hasSpeciesCare(p.species) && !hasSpeciesCare(p.name)) {
+                                        DropdownMenuItem(
+                                            text = { Text("Look up this species") },
+                                            onClick = { menuOpen = false; onCare(p.id) },
+                                        )
+                                    }
                                     if (advanced) {
                                         DropdownMenuItem(
                                             text = { Text("Pot sticker") },
