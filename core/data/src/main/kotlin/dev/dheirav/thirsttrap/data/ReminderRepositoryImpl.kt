@@ -39,6 +39,16 @@ class ReminderRepositoryImpl @Inject constructor(
     override suspend fun rescheduleFromModel(plantId: String, nowMillis: Long) {
         val plantRow = plantDao.observePlant(plantId).first() ?: return
         val plant = plantRow.toDomain()
+        // Nothing is ever replanned for a plant that has gone. Eleven call
+        // sites reach this function, which is exactly why the check belongs
+        // here and not in them: logging an event, finishing a weighing round,
+        // editing a plant and the backfill all replan, and each one would have
+        // had to remember. Switching the reminders off as well, because
+        // something may have enabled them before the plant died.
+        if (plant.status.isGone) {
+            dao.setEnabledForPlant(plantId, enabled = false)
+            return
+        }
         val events = eventDao.observeForPlant(plantId).first().map { it.toDomain() }
         val readings = weightDao.observeForPlant(plantId).first().map { it.toDomainReading() }
 

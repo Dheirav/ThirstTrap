@@ -1,0 +1,565 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ThirstTrap · stop guessing when to water</title>
+<meta name="description" content="An offline-first plant diary that weighs the pot. Water has weight, so a pot tells you when it actually needs watering.">
+<meta name="theme-color" content="#22201A">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Hanken+Grotesk:wght@400;500;600&family=Martian+Mono:wght@400;500&family=Silkscreen&family=Caveat:wght@600&display=swap">
+<link rel="stylesheet" href="engine/story.css">
+<script type="importmap">
+{ "imports": {
+  "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js",
+  "gsap/": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/",
+  "lenis": "https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.mjs"
+} }
+</script>
+<style>
+  /* The app's own palette, lifted from core/ui/Theme.kt so the handoff does not show. */
+  :root{
+    --ink:#22201A; --ink-2:#413B30; --paper:#F5F0E2; --warm:#C98A3A; --accent:#2F5D3A;
+    --font-display:'Newsreader',Georgia,serif; --font-body:'Hanken Grotesk',system-ui,sans-serif;
+    --tt-leaf:#2F5D3A; --tt-terracotta:#8C3A2A; --tt-rule:#C9C0A8; --tt-dim:#5F5847;
+    --tt-surface:#E3DBC6; --tt-low:#F0EAD9;
+  }
+  /* ---- the app mock: an almanac page, not a dashboard ---- */
+  /* The stage is a page of paper, not a phone in a frame.
+     The camera's fit stop uses cover, so fitting a portrait phone screen on a
+     landscape viewport overscales it enormously - which is why the template's
+     screen rect is landscape. Rather than fight that, the handoff lands on
+     paper, and the app's content sits in a centred column: full width on a
+     phone, a reading column on a desktop. Both sides of the cut are then the
+     same colour with the same column in the middle. */
+  .demo-screen{background:var(--paper)}
+  .app .bar,.app .body{width:min(560px,100%);margin-inline:auto}
+  .app{position:absolute;inset:0;background:var(--paper);color:var(--ink);
+       font:400 14px/1.5 var(--font-body);display:flex;flex-direction:column;overflow:hidden}
+  .app .bar{display:flex;align-items:center;gap:10px;padding:14px 18px 10px;flex:0 0 auto}
+  .app .bar h3{font:600 15px/1 var(--font-body);letter-spacing:.18em;text-transform:uppercase;margin:0}
+  .app .bar .sp{margin-left:auto;display:flex;gap:14px;color:var(--tt-dim);font-size:19px;line-height:1}
+  .app .body{flex:1;overflow:auto;padding:0 18px 18px}
+  .app .rule{height:1px;background:var(--tt-rule);margin:0 0 2px}
+  .app .rule2{height:2px;background:var(--ink);margin:8px 0 1px}
+  .app .row{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center;padding:13px 0}
+  .app .row + .rule{margin-top:0}
+  .app .pot{width:52px;height:52px;border-radius:3px;background:var(--tt-surface);display:grid;place-items:center;
+            font:600 18px var(--font-display);color:var(--tt-leaf);overflow:hidden}
+  .app .nm{font:600 17px/1.2 var(--font-display)}
+  .app .sub{font-size:12.5px;color:var(--tt-dim);margin-top:2px}
+  .app .sub.go{color:var(--tt-leaf)}
+  .app .acts{display:flex;gap:14px;color:var(--tt-leaf);font-size:17px}
+  .app .big{font:600 25px/1.15 var(--font-display);margin:14px 0 2px}
+  .app .lede{color:var(--tt-dim);font-size:13px}
+  .app .head{font:500 11px var(--font-body);letter-spacing:.18em;text-transform:uppercase;color:var(--tt-dim);margin:18px 0 4px}
+  .app .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
+  .app .key{background:var(--tt-low);border:1px solid var(--tt-rule);border-radius:3px;padding:12px 0;text-align:center;
+            font:500 17px var(--font-mono)}
+  .app .readout{font:500 34px var(--font-mono);letter-spacing:.02em;padding:8px 0 2px}
+  .app .readout i{font-style:normal;color:var(--tt-dim);font-size:17px;margin-left:4px}
+  .app .btn{display:block;width:100%;border:0;border-radius:3px;background:var(--tt-leaf);color:#fff;
+            font:500 14px var(--font-body);padding:13px 0;margin-top:11px}
+  .app .btn.ghost{background:none;color:var(--tt-leaf);border:1px solid var(--tt-leaf)}
+  .app .chip{display:inline-block;border:1px solid var(--tt-rule);border-radius:3px;padding:5px 11px;
+             font-size:12.5px;margin:0 6px 6px 0}
+  .app .chip.on{background:var(--tt-leaf);color:#fff;border-color:var(--tt-leaf)}
+  .app .link{color:var(--tt-leaf);font-size:13px;text-decoration:underline;display:inline-block;margin-top:9px}
+  .app .quiet{color:var(--tt-dim);font-size:12.5px;margin-top:7px}
+  .app .note-s{font-size:12.5px;color:var(--tt-dim)}
+  .app svg.chart{width:100%;height:auto;display:block;margin-top:6px}
+  .app .gone{color:var(--tt-dim);font-style:italic}
+  @media (max-width:767px){ .app .body{padding:0 14px 170px} }
+  .scene2d .layer-room{opacity:0}
+</style>
+</head>
+<body>
+<div class="loader" id="loader"><i></i></div>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="nav">
+  <a class="brand" href="#">ThirstTrap</a>
+  <nav><a href="https://github.com/Dheirav/ThirstTrap">GitHub</a></nav>
+</header>
+
+<!-- ================= 2D SCENE: the sill at night, then the table ================= -->
+<div class="scene2d" aria-hidden="true">
+  <!-- Shot 1: a dark room. One pot on a windowsill, lit. Camera pushes into it. -->
+  <div class="cam layer-sill" data-kf='{"0":{"scale":1},"0.08":{"scale":1.06,"y":"-2vh"},"0.34":{"fit":"#thepot"},"0.38":{"fit":"#thepot","opacity":0}}'>
+    <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+      <rect width="1600" height="900" fill="var(--ink)"/>
+      <!-- night outside the window -->
+      <rect x="250" y="70" width="1100" height="520" fill="#14130f"/>
+      <circle cx="1180" cy="190" r="46" fill="var(--paper)" opacity=".85"/>
+      <g fill="var(--paper)" opacity=".5">
+        <circle cx="360" cy="140" r="2"/><circle cx="520" cy="210" r="1.4"/><circle cx="700" cy="110" r="1.8"/>
+        <circle cx="900" cy="250" r="1.4"/><circle cx="1320" cy="150" r="1.8"/><circle cx="430" cy="320" r="1.3"/>
+      </g>
+      <!-- window frame -->
+      <rect x="250" y="70" width="1100" height="520" fill="none" stroke="#2b2820" stroke-width="18"/>
+      <line x1="800" y1="70" x2="800" y2="590" stroke="#2b2820" stroke-width="12"/>
+      <!-- sill -->
+      <rect x="150" y="590" width="1300" height="26" fill="#2b2820"/>
+      <rect x="150" y="616" width="1300" height="284" fill="#1a1813"/>
+      <!-- warm lamp glow from the right -->
+      <circle cx="1430" cy="470" r="330" fill="var(--warm)" opacity=".10"/>
+      <!-- three pots in shadow -->
+      <g fill="#241f17">
+        <path d="M300 590 l16 -74 h88 l16 74z"/><path d="M300 516 q60 -58 120 0z" fill="#1d2a1d"/>
+        <path d="M980 590 l14 -64 h78 l14 64z"/><path d="M980 526 q53 -50 106 0z" fill="#1d2a1d"/>
+        <path d="M1180 590 l12 -54 h66 l12 54z"/><path d="M1180 536 q45 -42 90 0z" fill="#1d2a1d"/>
+      </g>
+      <!-- THE pot: lit, and it carries a miniature of the next shot, so the zoom IS the cut -->
+      <rect x="590" y="430" width="240" height="162" fill="var(--warm)" opacity=".16"/>
+      <svg id="thepot" x="600" y="438" width="220" height="124" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"><use href="#table-art"/></svg>
+    </svg>
+  </div>
+
+  <!-- Shot 2: the table. The pot is on a kitchen scale, the phone beside it. Dive into the phone. -->
+  <div class="cam layer-room" data-kf-portrait='{"0.34":{"opacity":0},"0.38":{"opacity":1},"0.62":{"x":"-30vw"},"0.97":{"fit":"#screen-main"}}' data-kf='{"0.34":{"opacity":0},"0.38":{"opacity":1},"0.62":{"scale":1.05,"x":"-2vw"},"0.78":{"scale":1.4,"x":"22vw","y":"-10vh"},"0.88":{"scale":1.4,"x":"22vw","y":"-10vh"},"0.97":{"fit":"#screen"}}'>
+    <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"><g id="table-art">
+      <rect width="1600" height="900" fill="#1a1813"/>
+      <circle cx="400" cy="300" r="420" fill="var(--warm)" opacity=".10"/>
+      <!-- table top -->
+      <rect x="0" y="610" width="1600" height="290" fill="#2b2820"/>
+      <rect x="0" y="600" width="1600" height="12" fill="#3a352a"/>
+      <!-- the plant, lit -->
+      <g>
+        <path d="M300 600 l26 -128 h150 l26 128z" fill="#8C3A2A"/>
+        <path d="M326 472 q75 -24 150 0z" fill="#241f17"/>
+        <path d="M400 472 q-10 -92 -72 -120 q58 -8 76 70 q14 -82 76 -94 q-54 46 -66 144z" fill="#2F5D3A"/>
+        <ellipse cx="330" cy="356" rx="56" ry="34" fill="#356b42"/>
+        <ellipse cx="474" cy="338" rx="50" ry="31" fill="#2F5D3A"/>
+      </g>
+      <!-- the kitchen scale under it -->
+      <rect x="268" y="600" width="256" height="20" rx="4" fill="#c9c0a8"/>
+      <rect x="268" y="620" width="256" height="30" rx="4" fill="#8e8775"/>
+      <rect x="330" y="626" width="130" height="18" rx="3" fill="#1a1813"/>
+      <text x="395" y="641" text-anchor="middle" font-family="'Martian Mono',monospace" font-size="15" fill="#d8ffe2">218 g</text>
+      <!-- the phone, propped, screen facing us -->
+      <rect x="880" y="250" width="420" height="640" rx="34" fill="#15140f"/>
+      <rect x="896" y="266" width="388" height="608" rx="24" fill="#2b2820"/>
+      <g id="screen">
+        <rect x="904" y="274" width="372" height="592" rx="18" fill="#F5F0E2"/>
+        <rect id="screen-main" x="904" y="274" width="372" height="592" fill="none"/>
+        <!-- A miniature of demo view 1, inset to the same proportion the real
+             mock uses for its column, so the two frames match at the cut. -->
+        <rect x="926" y="300" width="96" height="9" rx="2" fill="#22201A"/>
+        <rect x="926" y="322" width="324" height="1.5" fill="#C9C0A8"/>
+        <g>
+          <rect x="926" y="336" width="44" height="44" rx="3" fill="#E3DBC6"/>
+          <rect x="984" y="344" width="120" height="11" rx="2" fill="#22201A"/>
+          <rect x="984" y="363" width="168" height="8" rx="2" fill="#5F5847"/>
+          <rect x="926" y="394" width="324" height="1" fill="#C9C0A8"/>
+          <rect x="926" y="408" width="44" height="44" rx="3" fill="#E3DBC6"/>
+          <rect x="984" y="416" width="140" height="11" rx="2" fill="#22201A"/>
+          <rect x="984" y="435" width="150" height="8" rx="2" fill="#8C3A2A"/>
+          <rect x="926" y="466" width="324" height="1" fill="#C9C0A8"/>
+          <rect x="926" y="480" width="44" height="44" rx="3" fill="#E3DBC6"/>
+          <rect x="984" y="488" width="112" height="11" rx="2" fill="#22201A"/>
+          <rect x="984" y="507" width="176" height="8" rx="2" fill="#5F5847"/>
+          <rect x="926" y="538" width="324" height="1" fill="#C9C0A8"/>
+          <rect x="926" y="552" width="44" height="44" rx="3" fill="#E3DBC6"/>
+          <rect x="984" y="560" width="96" height="11" rx="2" fill="#22201A"/>
+          <rect x="984" y="579" width="130" height="8" rx="2" fill="#5F5847"/>
+        </g>
+      </g>
+      <!-- watering can, pushed to the back, out of the light -->
+      <g fill="#241f17" opacity=".9">
+        <rect x="1380" y="470" width="150" height="130" rx="10"/>
+        <path d="M1380 520 l-80 -40 l10 24 l70 32z"/>
+        <path d="M1530 500 q44 20 0 60z" fill="none" stroke="#241f17" stroke-width="12"/>
+      </g>
+    </g></svg>
+  </div>
+</div>
+
+<main>
+  <!-- ================= TRACK 1: the story ================= -->
+  <section class="track" id="story-track" style="--len: 820vh">
+    <div class="hero-title">
+      <p class="pixel-label">Offline · No account · Open source</p>
+      <h1>ThirstTrap</h1>
+      <p class="lede">A plant diary that weighs the pot. Water has weight, so a pot can tell you when it actually needs watering, instead of you guessing on a Sunday.</p>
+      <div class="cta">
+        <a class="ghost" href="https://github.com/Dheirav/ThirstTrap">Get the APK</a>
+        <a class="ghost" href="https://github.com/Dheirav/ThirstTrap">Read the code</a>
+      </div>
+    </div>
+
+    <div class="beat" data-at="0.14">
+      <p class="pixel-label">Tuesday, 11pm</p>
+      <p>Priya pushes a finger into the soil. Dry. She reaches for the watering can.</p>
+    </div>
+    <div class="beat" data-at="0.32">
+      <p class="pixel-label">The top three centimetres</p>
+      <p>They dry first. Underneath, it has been wet for nine days.</p>
+    </div>
+    <div class="beat" data-at="0.50">
+      <p class="pixel-label">Root rot</p>
+      <p>More houseplants are killed by kindness than by drought.</p>
+    </div>
+    <div class="beat" data-at="0.68">
+      <p class="pixel-label">Four pots, one kitchen scale</p>
+      <p>She stopped trusting her finger and started writing the weights down.</p>
+    </div>
+    <div class="beat beat-big" data-at="0.83">
+      <p>A pot loses weight as it dries.<br>Steadily enough to fit a line to.</p>
+    </div>
+  </section>
+
+  <!-- ================= TRACK 2: the walkthrough ================= -->
+  <section class="track" id="demo-track" style="--len: 500vh"></section>
+
+  <!-- ================= normal sections scroll over the stage ================= -->
+  <section class="section">
+    <div class="wrap two-col">
+      <div>
+        <p class="pixel-label">The arithmetic</p>
+        <h2>Why weighing works</h2>
+        <p class="section-lede">Water is most of what a pot loses between waterings. Soil does not evaporate; roots and leaves move water out, and that shows up as grams. Weigh the pot just after watering and you have the full mark. Weigh it again a few times and the slope between those points is the drying rate, in grams a day, for that pot in that room in this week's weather.</p>
+        <p class="section-lede">The prediction is then division: how far above the trigger weight it is, divided by how fast it is falling. No plant database, no averages from somebody else's windowsill.</p>
+      </div>
+      <div>
+        <p class="pixel-label">Measured, not assumed</p>
+        <h2>It says when it does not know</h2>
+        <p class="section-lede">There are seven things the app will say instead of a date: too few readings, no measurable drying yet, a pot that has just been repotted, a plant that has gone. Each one explains itself and says what would fix it.</p>
+        <p class="section-lede">An app that names a confident wrong day teaches watering by the calendar, which is the habit this exists to replace. Honest uncertainty is the product, not a caveat.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <p class="pixel-label">Anti-goals</p>
+      <h2>No streaks. No counts of what you missed.<br>No tone of voice about it.</h2>
+      <p class="section-lede" style="max-width:52ch">A missed day is not a failure, it is a day when nothing needed doing. The app is laid out like an almanac rather than a habit tracker: rules and dated entries, not cards that can be full or empty. A blank line in an almanac is not a reproach.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap two-col">
+      <div>
+        <p class="pixel-label">Offline-first, and it means it</p>
+        <h2>Nothing leaves the phone</h2>
+        <p class="section-lede">No account, no sync, no server. The diary is a database on your device and a zip you keep. One setting can look a plant name up online, it is off by default, and it sends the name and nothing else.</p>
+      </div>
+      <div>
+        <p class="pixel-label">Built in the open</p>
+        <h2>Kotlin, Compose, Room</h2>
+        <p class="section-lede">Four modules, a pure-JVM domain layer holding the watering model, and 277 tests over it. The model is written down in <span style="font-family:var(--font-mono);font-size:.9em">docs/WATERING-MODEL.md</span> before it was written in code, including the parts that refuse to answer.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <h2>Your pots already know.<br>They just need somebody to write it down.</h2>
+      <div class="cta">
+        <a class="ghost" href="https://github.com/Dheirav/ThirstTrap">Get the APK</a>
+        <a class="ghost" href="https://github.com/Dheirav/ThirstTrap">GitHub</a>
+      </div>
+      <p class="pixel-label" style="margin-top:28px">The weights on this page are real, from the diary that built the app</p>
+    </div>
+  </section>
+</main>
+
+<!-- ================= DEMO STAGE ================= -->
+<div class="demo-stage" id="demo-stage" aria-label="ThirstTrap walkthrough">
+  <div class="demo-screen"></div>
+
+  <!-- 1. the plants list, as it stood on 25 September -->
+  <template data-view="list">
+    <div class="app">
+      <div class="bar"><h3>Plants</h3><span class="sp">+</span></div>
+      <div class="body">
+        <div class="rule2"></div>
+        <div class="row" data-t="row-fit">
+          <div class="pot">F</div>
+          <div><div class="nm">Fittonia</div><div class="sub go">Watered today</div></div>
+          <div class="acts">&#9850;</div>
+        </div><div class="rule"></div>
+        <div class="row" data-t="row-pep">
+          <div class="pot">P</div>
+          <div><div class="nm">Peperomia</div><div class="sub" data-t="pep-state">Needs water now</div></div>
+          <div class="acts">&#9850;</div>
+        </div><div class="rule"></div>
+        <div class="row" data-t="row-fig">
+          <div class="pot">C</div>
+          <div><div class="nm">Creeping fig</div><div class="sub">Water in about 2 days</div></div>
+          <div class="acts">&#9850;</div>
+        </div><div class="rule"></div>
+        <div class="row" data-t="row-flax">
+          <div class="pot">&#10013;</div>
+          <div><div class="nm">Flax seeds</div><div class="sub gone">This one has gone</div></div>
+          <div class="acts"></div>
+        </div><div class="rule"></div>
+      </div>
+    </div>
+  </template>
+
+  <!-- 2. the weight screen, keypad open -->
+  <template data-view="weigh">
+    <div class="app">
+      <div class="bar"><h3>How thirsty it is</h3></div>
+      <div class="body">
+        <div class="rule2"></div>
+        <div class="big">Peperomia</div>
+        <div class="lede">Put the pot on the scale and type what it says.</div>
+        <div class="readout" data-t="readout">&#8212;<i>g</i></div>
+        <div class="rule"></div>
+        <div style="margin-top:9px">
+          <span class="chip" data-t="ctx-routine">Just checking</span><span class="chip on" data-t="ctx-pre">About to water</span><span class="chip">Just watered</span>
+        </div>
+        <div class="keys">
+          <div class="key" data-t="k1">1</div><div class="key" data-t="k2">2</div><div class="key">3</div>
+          <div class="key">4</div><div class="key">5</div><div class="key">6</div>
+          <div class="key">7</div><div class="key" data-t="k8">8</div><div class="key">9</div>
+          <div class="key">.</div><div class="key" data-t="k0">0</div><div class="key">&#9003;</div>
+        </div>
+        <button class="btn" data-t="save">Save this weight</button>
+      </div>
+    </div>
+  </template>
+
+  <!-- 3. saved: the answer, with the arithmetic shown -->
+  <template data-view="answer">
+    <div class="app">
+      <div class="bar"><h3>How thirsty it is</h3></div>
+      <div class="body">
+        <div class="rule2"></div>
+        <div class="big" data-t="verdict">Needs water now</div>
+        <div class="lede" data-t="verdict-sub">218 g, and it waters at 221 g.</div>
+        <div class="head">The pot</div>
+        <div class="rule"></div>
+        <div class="note-s" style="margin-top:7px">Full after watering <b>298 g</b> &nbsp;·&nbsp; losing about <b>8.8 g a day</b> &nbsp;·&nbsp; 65% down its range</div>
+        <div class="head">Last ten readings</div>
+        <div class="rule"></div>
+        <svg class="chart" viewBox="0 0 300 120" data-t="chart">
+          <line x1="14" y1="17.7" x2="286" y2="17.7" stroke="#C9C0A8" stroke-width="1" stroke-dasharray="3 3"/>
+          <line x1="14" y1="89.6" x2="286" y2="89.6" stroke="#8C3A2A" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="286" y="13" text-anchor="end" font-size="7" fill="#5F5847" font-family="'Martian Mono',monospace">298 g full</text>
+          <text x="14" y="99" font-size="7" fill="#8C3A2A" font-family="'Martian Mono',monospace">221 g waters here</text>
+          <path d="M14.0 17.7 L43.5 26.1 L72.4 37.2 L102.7 47.4 L135.8 55.8 L157.8 61.3 L195.0 71.5 L227.5 78.0 L255.8 85.4 L286.0 91.9"
+                fill="none" stroke="#2F5D3A" stroke-width="1.8"/>
+          <g fill="#2F5D3A">
+            <circle cx="14.0" cy="17.7" r="2.4"/><circle cx="43.5" cy="26.1" r="2.4"/><circle cx="72.4" cy="37.2" r="2.4"/>
+            <circle cx="102.7" cy="47.4" r="2.4"/><circle cx="135.8" cy="55.8" r="2.4"/><circle cx="157.8" cy="61.3" r="2.4"/>
+            <circle cx="195.0" cy="71.5" r="2.4"/><circle cx="227.5" cy="78.0" r="2.4"/><circle cx="255.8" cy="85.4" r="2.4"/>
+          </g>
+          <circle cx="286.0" cy="91.9" r="3.4" fill="#8C3A2A" data-t="last-dot"/>
+        </svg>
+        <div class="note-s" style="margin-top:4px">16 Sept &#8594; 25 Sept</div>
+      </div>
+    </div>
+  </template>
+
+  <!-- 4. a reading opened from the chart -->
+  <template data-view="reading">
+    <div class="app">
+      <div class="bar"><h3>How thirsty it is</h3></div>
+      <div class="body">
+        <div class="rule2"></div>
+        <div class="big">Edit reading</div>
+        <div class="readout">218<i>g</i></div>
+        <div class="note-s">25 September, 09:32</div>
+        <div style="margin-top:12px">
+          <span class="chip">Just checking</span><span class="chip on">About to water</span><span class="chip">Just watered</span>
+        </div>
+        <div class="head">Leave out of the curve</div>
+        <div class="rule"></div>
+        <div class="note-s" style="margin-top:7px">A pot weighed with the saucer still on it is a wrong number, not a dry plant. Excluded readings stay in the record, struck through.</div>
+        <button class="btn ghost" data-t="back-chart" style="margin-top:14px">Back to the curve</button>
+      </div>
+    </div>
+  </template>
+
+  <!-- 5. the refusal, and the reason -->
+  <template data-view="refuse">
+    <div class="app">
+      <div class="bar"><h3>How thirsty it is</h3></div>
+      <div class="body">
+        <div class="rule2"></div>
+        <div class="big">Not drying measurably yet</div>
+        <div class="lede">Give it another day and weigh again.</div>
+        <div class="link" data-t="whynot">Why not?</div>
+        <div class="head">Readings</div>
+        <div class="rule"></div>
+        <div class="note-s" style="margin-top:7px">2 Oct &nbsp; 278 g<br>1 Oct &nbsp; 278 g</div>
+      </div>
+    </div>
+  </template>
+
+  <template data-view="why">
+    <div class="app">
+      <div class="bar"><h3>Why no date</h3></div>
+      <div class="body">
+        <div class="rule2"></div>
+        <div class="lede" style="margin-top:12px">The app would rather say nothing than name a day it cannot stand behind.</div>
+        <div class="head">What you tapped</div>
+        <div class="rule"></div>
+        <div class="big" style="font-size:19px">&#8220;Not drying measurably yet&#8221;</div>
+        <div class="note-s" data-t="why-body">The change between readings is too small to separate from the scale&#8217;s own rounding. A loss smaller than one increment is a rounding artefact whatever the pot weighs, and fitting a line to it would invent a date.</div>
+        <div class="note-s" style="margin-top:9px;color:#22201A">Leave it longer between weighings. A pot in a cool room in winter can take a week to show a measurable change, and that is information rather than a fault.</div>
+        <div class="head">The others it can say</div>
+        <div class="rule"></div>
+        <div class="note-s" style="margin-top:7px">&#8220;Weigh once more to predict&#8221; &nbsp;·&nbsp; &#8220;Needs recalibrating&#8221; &nbsp;·&nbsp; &#8220;Weight won&#8217;t help here&#8221; &nbsp;·&nbsp; &#8220;This one has gone&#8221;</div>
+      </div>
+    </div>
+  </template>
+
+  <!-- 6. the backup -->
+  <template data-view="backup">
+    <div class="app">
+      <div class="bar"><h3>Backup</h3></div>
+      <div class="body">
+        <div class="rule2"></div>
+        <div class="lede" style="margin-top:12px">Everything &#8212; plants, every entry, every photo &#8212; into one zip you keep. Nothing leaves this phone unless you put it somewhere.</div>
+        <button class="btn" data-t="export">Write a backup</button>
+        <div class="quiet" data-t="exported">Last export: never. The diary lives only on this phone.</div>
+        <div class="head">Photos</div>
+        <div class="rule"></div>
+        <div class="note-s" style="margin-top:7px">Photos live inside the app rather than in your gallery, so uninstalling deletes them. Export before you uninstall or change phone.</div>
+      </div>
+    </div>
+  </template>
+
+  <div class="chapter-note" aria-live="polite">
+    <div class="dots"><i data-dot="list"></i><i data-dot="weigh"></i><i data-dot="curve"></i><i data-dot="refuse"></i><i data-dot="private"></i></div>
+    <div class="note" data-note="list"><p class="pixel-label">01 · The list</p><p>Four pots, and what each one is actually asking for today.</p></div>
+    <div class="note" data-note="weigh"><p class="pixel-label">02 · Weigh it</p><p>One number off a kitchen scale. That is the whole input.</p></div>
+    <div class="note" data-note="curve"><p class="pixel-label">03 · The curve</p><p>Nine days of real readings, and the weight it waters at.</p></div>
+    <div class="note" data-note="refuse"><p class="pixel-label">04 · When it won't say</p><p>Seven ways to decline, each one explaining itself.</p></div>
+    <div class="note" data-note="private"><p class="pixel-label">05 · Yours</p><p>A zip you keep. No account, no server, no sync.</p></div>
+    <div class="note-bar"><i></i></div>
+  </div>
+</div>
+
+<script type="module">
+  import { smoothScroll, track, beats, layer, range, ready, gsap } from './engine/scroll-stage.js';
+  import { keyframed } from './engine/parallax.js';
+  import { createDemo } from './engine/demo-director.js';
+
+  const $ = (s) => document.querySelector(s);
+  await smoothScroll();
+
+  const storyTrack = $('#story-track');
+  const stage = $('#demo-stage');
+  const scene2d = $('.scene2d');
+  const cam = keyframed(scene2d);
+  const beat = beats(storyTrack);
+
+  gsap.to('.hero-title', { yPercent: -35, opacity: 0, ease: 'none',
+    scrollTrigger: { trigger: storyTrack, start: 'top top', end: '+=80%', scrub: true } });
+
+  track(storyTrack, (p) => {
+    cam(p);
+    beat(p);
+    const o = range(p, 0.965, 0.995);
+    layer(stage, o);
+    scene2d.style.visibility = o > 0.99 ? 'hidden' : 'visible';
+    document.documentElement.classList.toggle('on-paper', o > 0.5);
+  });
+
+  // The cursor is Priya's. Curved paths and a human typing rhythm are the engine's;
+  // the pauses are chosen so each chapter reads rather than races.
+  const demo = createDemo(stage, { cursorName: 'Priya' });
+  demo.show('list');
+
+  demo
+    .chapter('list', (s) => s
+      .view('list', { fade: false })
+      .appear('[data-t^="row-"]', { stagger: 0.09 })
+      .cursorAt(0.72, 0.84)
+      .move('row-pep', { dx: 54, dur: 0.8 })
+      .hover('row-pep')
+      .note('pep-state', 'measured, not a calendar', { side: 'right', dx: 20 })
+      .wait(1.1)
+      // Cleared first: two arrows on screen at once crossed each other, and the
+      // second one pointed at the row above the one it was about.
+      .clearNotes()
+      .hover('row-pep', false)
+      .move('row-flax', { dx: 54, dur: 0.7 })
+      .hover('row-flax')
+      .note('row-flax', 'gone, and still here', { side: 'bottom', dx: 20 })
+      .wait(1.2))
+
+    .chapter('weigh', (s) => s
+      .view('list', { fade: false })
+      .cursorAt(0.5, 0.4)
+      .move('row-pep', { dx: 40, dur: 0.6 })
+      .click('row-pep')
+      .view('weigh')
+      .cursorAt(0.5, 0.78)
+      .move('k2', { dur: 0.6 })
+      .click('k2', () => setReadout('2'))
+      .move('k1', { dur: 0.35 })
+      .click('k1', () => setReadout('21'))
+      .move('k8', { dur: 0.35 })
+      .click('k8', () => setReadout('218'))
+      .note('readout', 'what the scale says', { side: 'right' })
+      .wait(0.6)
+      .move('save', { dur: 0.7 })
+      .click('save')
+      .view('answer')
+      .wait(1.3))
+
+    .chapter('curve', (s) => s
+      .view('answer', { fade: false })
+      .cursorAt(0.35, 0.3)
+      .note('chart', 'nine days, one line', { side: 'top', dx: -30 })
+      .wait(1.0)
+      .clearNotes()
+      .move('last-dot', { dur: 0.9 })
+      .note('last-dot', 'today, just under it', { side: 'left', dy: -18 })
+      .wait(0.9)
+      .click('last-dot')
+      .view('reading')
+      .note('back-chart', 'a bad weigh-in can be left out', { side: 'bottom' })
+      .wait(1.3)
+      // Back to the chart, because the chapter is called "the curve" and the
+      // engine jumps to a chapter's end state when you scroll up into it. An
+      // end state that does not show the thing the card is describing reads as
+      // a mistake.
+      .clearNotes()
+      .move('back-chart', { dur: 0.6 })
+      .click('back-chart')
+      .view('answer')
+      .note('chart', '8.8 g a day, this pot, this room', { side: 'bottom', dx: -20 })
+      .wait(1.3))
+
+    .chapter('refuse', (s) => s
+      .view('refuse', { fade: false })
+      .cursorAt(0.5, 0.55)
+      .note('whynot', 'it says when it does not know', { side: 'right', dy: 10 })
+      .wait(1.1)
+      .move('whynot', { dur: 0.7 })
+      .click('whynot')
+      .view('why')
+      .wait(1.6))
+
+    .chapter('private', (s) => s
+      .view('backup', { fade: false })
+      .cursorAt(0.5, 0.42)
+      .move('export', { dur: 0.8 })
+      .click('export', () => {
+        const q = stage.querySelector('[data-t="exported"]');
+        if (q) q.textContent = 'Last export: just now. 4 plants, 100 entries, 57 photos.';
+      })
+      .note('exported', 'a zip you keep', { side: 'bottom' })
+      .wait(1.5))
+
+    .bindScroll($('#demo-track'));
+
+  // Typing into a readout is not an <input>, so the director's .type() does not fit:
+  // the keypad builds the number a digit at a time, which is what the real app does.
+  function setReadout(v) {
+    const el = stage.querySelector('[data-t="readout"]');
+    if (el) el.innerHTML = v + '<i>g</i>';
+  }
+
+  ready($('#loader'));
+</script>
+</body>
+</html>

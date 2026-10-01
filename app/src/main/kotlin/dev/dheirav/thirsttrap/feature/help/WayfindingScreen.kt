@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.dheirav.thirsttrap.ui.AppIcons
+import dev.dheirav.thirsttrap.ui.MenuLabels
 import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.SectionHead
@@ -64,33 +65,35 @@ fun WayfindingScreen(onBack: () -> Unit) {
             )
 
             SectionHead("The three tabs")
-            Item("Plants", "Everything you are keeping, each with its state and two quick log buttons. The plus button adds one.")
-            Item("Due", "Only what is asking for attention today. Empty is the normal state and means nothing is wrong.")
-            Item("Settings", "Backup, reminders, appearance, and two help buttons: how the app works, and something is wrong.")
+            Item(MenuLabels.Tab.PLANTS, "Everything you are keeping, each with its state and two quick log buttons. The plus button adds one.")
+            Item(MenuLabels.Tab.DUE, "Only what is asking for attention today. Empty is the normal state and means nothing is wrong.")
+            Item(MenuLabels.Tab.SETTINGS, "Backup, reminders, appearance, and two help buttons: how the app works, and something is wrong.")
 
             SectionHead("Behind the dots on the Plants tab")
             Para(
                 "Six jobs that are about several plants at once rather than about one, " +
                     "which is why they are not on any single plant:",
             )
-            Item("Feeding", "What is due a feed, and the dilution maths for a given can.")
-            Item("Propagation board", "Cuttings from cut to established, by stage.")
-            Item("Scan a pot sticker", "Opens whichever plant's sticker you point the camera at.")
-            Item("Places", "A note and a light reading per spot in the house.")
-            Item("Figures", "How often you water, what became of things, and whether the predictions have been any good.")
-            Item("Experiments", "Two arms, one variable, for when you want an answer rather than an impression.")
+            Item(MenuLabels.Dashboard.FEEDING, "What is due a feed, and the dilution maths for a given can.")
+            Item(MenuLabels.Dashboard.PROPAGATION, "Cuttings from cut to established, by stage.")
+            Item(MenuLabels.Dashboard.SCAN, "Opens whichever plant's sticker you point the camera at.")
+            Item(MenuLabels.Dashboard.PLACES, "A note and a light reading per spot in the house.")
+            Item(MenuLabels.Dashboard.FIGURES, "How often you water, what became of things, and whether the predictions have been any good.")
+            Item(MenuLabels.Dashboard.EXPERIMENTS, "Two arms, one variable, for when you want an answer rather than an impression.")
 
             SectionHead("Behind the dots on one plant")
             Para(
                 "Everything that is about that plant. The two you will use most are at " +
                     "the top and the camera has its own button beside the dots.",
             )
-            Item("Log something", "A watering with an amount, a check, a repot, a feed, anything with a date.")
-            Item("Something looks wrong", "Walks you through what the log and the weight can and cannot tell you, and what to rule out first. Ends with a button to log what you found.")
-            Item("How thirsty it is", "Weigh the pot, see how far down its range it has come, and get a date when there is one worth giving. This is the one the app exists for.")
-            Item("Measure the light here", "Uses the phone's light sensor and files the reading against the place.")
-            Item("Look up this species", "Only appears when there are no care notes on file for it.")
-            Item("Edit plant", "Name, species, pot, how dry it is allowed to get.")
+            Item(MenuLabels.Plant.LOG, "A watering with an amount, a check, a repot, a feed, anything with a date.")
+            Item(MenuLabels.Plant.GALLERY, "Adds a photo you already took, instead of taking a new one.")
+            Item(MenuLabels.Plant.DIAGNOSE, "Walks you through what the log and the weight can and cannot tell you, and what to rule out first. Ends with a button to log what you found.")
+            Item(MenuLabels.Plant.WEIGHT, "Weigh the pot, see how far down its range it has come, and get a date when there is one worth giving. This is the one the app exists for.")
+            Item(MenuLabels.Plant.LIGHT, "Uses the phone's light sensor and files the reading against the place.")
+            Item(MenuLabels.Plant.LOOKUP, "Only appears when there are no care notes on file for it.")
+            Item(MenuLabels.Plant.STICKER, "Only with advanced features on. Prints a QR label for the pot, so scanning it opens this plant.")
+            Item(MenuLabels.Plant.EDIT, "Name, species, pot, how dry it is allowed to get.")
 
             SectionHead("Photos")
             Para(

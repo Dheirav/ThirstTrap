@@ -756,6 +756,98 @@ N days ago. The diary lives only on this phone." under the backup button.
 Stored in DataStore, written only by a successful export. Quiet text, never a
 badge or a notification - the anti-goals apply to guilt about backups too.
 
+### D55 — The dead plant, two layers further down (2026-10-02)
+
+D53 fixed the flax cup in four places and the user found two more by looking at
+the app: the plants list still offered it a watering, and the widget still
+listed it as wanting a look.
+
+**The widget had its own copy of the question.** `wantsAttention` in
+`WateringWidget.kt` asks the reminder date and the prediction and knew nothing
+about status, so three separate places decide "is this plant owed anything" and
+D53 had taught two. The row's log buttons were the other: the row stays on the
+list on purpose, because un-archiving is how you read a dead plant's history,
+but offering to water it is the same mistake as predicting a date for it.
+
+**Then I went looking instead of waiting for the next one.** Eleven call sites
+reach `rescheduleFromModel`: logging an event, finishing a weighing round,
+editing a plant, the startup backfill, the notification actions. Any of them
+could have re-dated a dead plant's reminder, and asking each to remember is how
+this bug keeps happening. The guard went inside that function, which now
+refuses to replan a plant that has gone and switches its reminders off while it
+is there.
+
+Six places for one defect, and the shape is always the same: one wrong line,
+then five layers that each assumed somebody else had got it right. The two
+fixes that cannot drift are the SQL in `dueNow` and this one, because they are
+the chokepoints everything passes through.
+
+### D56 — Two insurance jobs, and one of them was the wrong fix (2026-10-02)
+
+**`proguard-rules.pro` exists now**, deliberately empty, and the comment is the
+point. Both build types name the file and it did not exist, which Gradle does
+not complain about, so nobody could tell "no rules are needed" apart from "the
+file went missing". No app-specific keep is needed, and that is a measurement:
+the minified release was installed on the device and put through launching,
+Room, the camera path, and a backup whose JSON came back with all eleven keys
+and every field present. The file says what to do when a release-only crash
+appears, and argues against the broad keep that would silence it.
+
+**The help-drift test was the wrong fix and I did not write it.** The failure
+was that the same string is typed twice, once in a menu and once in the page
+quoting it, so a test that notices drift is strictly worse than drift being
+impossible. `MenuLabels` holds the seventeen names and both sides use it; zero
+hard-coded menu names are left in the wayfinding page.
+
+Doing it turned up the second failure mode already present: the page documented
+six of the plant menu's eight entries. "Add from gallery" and "Pot sticker" had
+never been written up. Both added.
+
+The honest limit, recorded in the file: this makes renames impossible and does
+**not** guarantee completeness. Adding a menu item without documenting it still
+goes unnoticed. The version that would guarantee it is a data-driven menu where
+both render from one list, judged not worth it because the plant's menu carries
+three different conditions and folding those into a list costs more clarity
+than the problem is worth.
+
+### D57 — The landing page (2026-10-02)
+
+`site/`, built with the scroll-story skill: a scroll-driven page where the
+camera moves through two illustrated shots into the phone, then a scripted
+cursor walks five chapters of the real UI.
+
+**The data on it is real, which was the user's call and the right one.** The
+curve in chapter three is the Peperomia's actual run from 16 to 25 September:
+ten readings from 298 g down to 218 g, 8.8 g a day, against a trigger of 221 g.
+Those numbers are consistent because they come from the model itself: the
+derived wet anchor is 298, the provisional dry end is 60% of it, and a 0.65
+trigger lands on 220.5, which is why the diary has a real PRE_WATER at 218 g on
+that date. The demo is a real moment rather than a dramatisation.
+
+Four things the build taught:
+
+- `ready()` takes the loader element. Called with no arguments it silently does
+  nothing, and the page sat on its spinner.
+- The camera's `fit` uses **cover**, so fitting a portrait phone screen on a
+  landscape viewport overscales it enormously. The handoff lands on paper with a
+  centred column instead, which cuts cleanly and reads at both sizes.
+- Chapter triggers fire relative to the viewport bottom, so chapter *i* plays at
+  `trackTop + i*slice - viewportHeight`. My first probe was a whole chapter out
+  and I nearly "fixed" a page that was correct.
+- A chapter's end state is what you see when scrolling back up into it. Chapter
+  three was called "the curve" and ended on the reading editor, so it now
+  returns to the chart.
+
+Verified at 1440x900 and 390x844 with no console errors, and each chapter
+checked for the right screen, card and annotations.
+
+**Not done:** the art is flat, SVG shapes rather than illustration. Blender is
+not installed and I argued against 3D for this page: the cost is a GLB to model,
+light and optimise, judged through screenshots, against a weakness better fixed
+by drawing the 2D scene properly. Hosting is GitHub Pages from `/site` on main,
+not yet switched on, and the page loads GSAP, Lenis and fonts from CDNs rather
+than vendoring them.
+
 ### D54 — Three decisions the user made, and what followed (2026-10-01)
 
 **Ambient stays, manual, and says when it has nothing.** No hardware is being

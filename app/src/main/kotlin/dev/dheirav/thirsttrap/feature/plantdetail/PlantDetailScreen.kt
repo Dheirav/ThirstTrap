@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.plantdetail
 
+import dev.dheirav.thirsttrap.ui.MenuLabels
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.EventColors
@@ -166,7 +167,7 @@ fun PlantDetailScreen(
                                     // sheet, or the full log screen would have
                                     // been left behind a long press.
                                     DropdownMenuItem(
-                                        text = { Text("Log something") },
+                                        text = { Text(MenuLabels.Plant.LOG) },
                                         onClick = { menuOpen = false; onLogMore(p.id) },
                                     )
                                     // Second, under logging. "Something is
@@ -177,11 +178,11 @@ fun PlantDetailScreen(
                                     // confused". It is about this plant, so it
                                     // belongs on this plant.
                                     DropdownMenuItem(
-                                        text = { Text("Something looks wrong") },
+                                        text = { Text(MenuLabels.Plant.DIAGNOSE) },
                                         onClick = { menuOpen = false; onDiagnose(p.id) },
                                     )
                                     DropdownMenuItem(
-                                        text = { Text("Add from gallery") },
+                                        text = { Text(MenuLabels.Plant.GALLERY) },
                                         onClick = { menuOpen = false; capture.pickFromGallery() },
                                     )
                                     // "Compare photos" and "Timelapse" used to sit
@@ -223,12 +224,12 @@ fun PlantDetailScreen(
                                             // the app already uses for "How dry
                                             // before watering" and "How does the pot
                                             // feel?".
-                                            text = { Text("How thirsty it is") },
+                                            text = { Text(MenuLabels.Plant.WEIGHT) },
                                             onClick = { menuOpen = false; onWeigh(p.id) },
                                         )
                                     }
                                     DropdownMenuItem(
-                                        text = { Text("Measure the light here") },
+                                        text = { Text(MenuLabels.Plant.LIGHT) },
                                         onClick = { menuOpen = false; onMeasureLight(p.id) },
                                     )
                                     // "Care notes" used to sit here always,
@@ -249,18 +250,18 @@ fun PlantDetailScreen(
                                     // for the only thing the screen can offer.
                                     if (!hasSpeciesCare(p.species) && !hasSpeciesCare(p.name)) {
                                         DropdownMenuItem(
-                                            text = { Text("Look up this species") },
+                                            text = { Text(MenuLabels.Plant.LOOKUP) },
                                             onClick = { menuOpen = false; onCare(p.id) },
                                         )
                                     }
                                     if (advanced) {
                                         DropdownMenuItem(
-                                            text = { Text("Pot sticker") },
+                                            text = { Text(MenuLabels.Plant.STICKER) },
                                             onClick = { menuOpen = false; onSticker(p.id) },
                                         )
                                     }
                                     DropdownMenuItem(
-                                        text = { Text("Edit plant") },
+                                        text = { Text(MenuLabels.Plant.EDIT) },
                                         onClick = { menuOpen = false; onEdit(p.id) },
                                     )
                                 }

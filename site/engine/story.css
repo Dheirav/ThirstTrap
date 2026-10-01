@@ -1,0 +1,133 @@
+/* story.css — base styles for scroll-story pages.
+   Retheme by overriding the tokens; everything else reads from them. */
+:root {
+  --ink: #0e2a33;        /* night / background */
+  --ink-2: #16414c;
+  --paper: #f4ecdc;      /* light surfaces, text on ink */
+  --mid: #2f7f8c;
+  --warm: #f2b544;       /* the one warm accent: lamp, screen, stars */
+  --accent: #f08a5d;
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-mono: 'Martian Mono', ui-monospace, monospace;
+  --font-pixel: 'Silkscreen', var(--font-mono);
+  --font-hand: 'Caveat', cursive;
+  --gutter: clamp(16px, 4vw, 48px);
+}
+
+* { box-sizing: border-box; }
+html { background: var(--ink); color: var(--paper); }
+body { margin: 0; background: var(--ink); color: var(--paper); font: 400 16px/1.55 var(--font-mono); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 800; line-height: 1.02; letter-spacing: -0.02em; margin: 0; }
+h1 { font-size: clamp(3rem, 11vw, 9rem); }
+h2 { font-size: clamp(2rem, 5vw, 3.6rem); }
+a { color: inherit; }
+.pixel-label { font: 400 0.78rem/1.2 var(--font-pixel); letter-spacing: 0.06em; text-transform: uppercase; color: var(--warm); margin: 0 0 0.7em; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 var(--gutter); }
+
+/* ---- tracks & fixed layers -------------------------------------------- */
+/* A track is empty scroll distance. 100vh of track ≈ one "screen" of story. */
+.track { position: relative; height: var(--len, 500vh); }
+.layer { position: fixed; inset: 0; }
+.layer.fades { opacity: 0; visibility: hidden; pointer-events: none; }
+#stage3d { position: fixed; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 0.8s; pointer-events: none; }
+#stage3d.ready { opacity: 1; }
+.poster { position: fixed; inset: 0; z-index: 0; }
+.poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Hero title sits in normal flow at the top of the first track and scrolls away. */
+.hero-title { position: relative; z-index: 10; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 0 var(--gutter); max-width: 900px; }
+/* A scrim so the title stays readable over busy art; it scrolls away with the title. */
+.hero-title::before { content: ''; position: absolute; z-index: -1; inset: 0 auto 0 0; width: min(100vw, 980px); background: linear-gradient(90deg, var(--ink) 35%, color-mix(in srgb, var(--ink) 55%, transparent) 70%, transparent); pointer-events: none; }
+@media (max-width: 767px) { .hero-title::before { width: 100vw; background: color-mix(in srgb, var(--ink) 78%, transparent); } }
+.hero-title .lede { font-size: clamp(1rem, 1.6vw, 1.2rem); max-width: 42ch; opacity: 0.85; }
+
+/* ---- beats: captions pinned to scroll moments --------------------------- */
+.beat { position: fixed; z-index: 10; left: var(--gutter); bottom: 14vh; max-width: min(34ch, calc(100vw - 2 * var(--gutter))); font: 500 clamp(1.25rem, 2.6vw, 2rem)/1.2 var(--font-display); opacity: 0; visibility: hidden; text-wrap: balance; text-shadow: 0 2px 24px color-mix(in srgb, var(--ink) 80%, transparent); pointer-events: none; }
+.beat p { margin: 0; }
+.beat-right { left: auto; right: var(--gutter); text-align: right; }
+.beat-big { left: 50%; right: auto; bottom: auto; top: 14vh; translate: -50% 0; text-align: center; font-size: clamp(1.8rem, 5vw, 4rem); max-width: 18ch; }
+
+/* ---- 2D scene ----------------------------------------------------------- */
+.scene2d { position: fixed; inset: 0; overflow: hidden; z-index: 1; }
+/* The camera keeps the art's 16:9 shape and overflows the viewport on the
+   short axis, so portrait keyframes can pan across the full illustration. */
+.scene2d .cam { position: absolute; --w: max(100vw, 177.78vh); --h: max(100vh, 56.25vw); width: var(--w); height: var(--h); left: calc((100vw - var(--w)) / 2); top: calc((100vh - var(--h)) / 2); }
+.scene2d svg { display: block; width: 100%; height: 100%; }
+
+/* ---- film grain (no image asset needed) --------------------------------- */
+.grain { position: fixed; inset: -50%; z-index: 50; pointer-events: none; opacity: 0.1; mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 0.9s steps(3, end) infinite; }
+@keyframes grain { 0% { transform: translate(0, 0); } 33% { transform: translate(-3%, 2%); } 66% { transform: translate(2%, -3%); } 100% { transform: translate(0, 0); } }
+.on-paper .grain { opacity: 0.04; }
+
+/* ---- loader ------------------------------------------------------------- */
+.loader { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; background: var(--ink); transition: opacity 0.6s, visibility 0.6s; }
+.loader.done { opacity: 0; visibility: hidden; }
+.loader i { width: 28px; height: 28px; border: 3px solid var(--warm); border-radius: 50%; border-top-color: transparent; animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(1turn); } }
+
+/* ---- nav ---------------------------------------------------------------- */
+.nav { position: fixed; z-index: 40; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 18px var(--gutter); transition: opacity 0.3s; }
+.nav a { text-decoration: none; margin-left: 1.4em; font-size: 0.85rem; }
+.nav .brand { margin: 0; font: 800 1.2rem var(--font-display); }
+.on-paper .nav { opacity: 0; pointer-events: none; }
+
+/* ---- buttons ------------------------------------------------------------ */
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 1.6em; }
+.install, .ghost { font: 500 0.9rem var(--font-mono); padding: 0.85em 1.2em; border-radius: 10px; cursor: pointer; text-decoration: none; }
+.install { background: var(--paper); color: var(--ink); border: 0; display: inline-flex; gap: 0.6em; align-items: center; }
+.install .prompt { color: var(--mid); }
+.install .copy-state { font-size: 0.7rem; opacity: 0.55; margin-left: 0.6em; }
+.ghost { border: 1px solid color-mix(in srgb, var(--paper) 35%, transparent); color: var(--paper); }
+
+/* ---- demo stage: the product walkthrough -------------------------------- */
+.demo-stage { position: fixed; inset: 0; z-index: 30; background: var(--paper); color: var(--ink); opacity: 0; visibility: hidden; pointer-events: none; overflow: hidden; }
+.demo-screen { position: absolute; inset: 0; overflow: hidden; }
+.demo-screen [data-hover] { filter: brightness(1.06); outline: 2px solid color-mix(in srgb, var(--mid) 50%, transparent); }
+.demo-screen [data-pressed] { transform: scale(0.97); }
+.cursor { position: absolute; z-index: 5; left: 0; top: 0; pointer-events: none; will-change: transform; }
+.cursor svg { width: 22px; height: 22px; display: block; fill: var(--accent); stroke: #fff; stroke-width: 1.5; filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.3)); }
+.cursor span { position: absolute; left: 18px; top: 18px; font: 500 0.7rem var(--font-mono); background: var(--accent); color: #fff; padding: 2px 7px; border-radius: 6px; white-space: nowrap; }
+.cursor.tag-left span { left: auto; right: 18px; }
+.ripple { position: absolute; left: -18px; top: -18px; width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--accent); pointer-events: none; z-index: 4; }
+.annot { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.annot svg { position: absolute; overflow: visible; }
+.annot path { fill: none; stroke: var(--accent); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.annot p { position: absolute; margin: 0; font: 600 1.5rem/1 var(--font-hand); color: var(--accent); white-space: nowrap; }
+
+.chapter-note { position: absolute; z-index: 6; left: var(--gutter); bottom: 24px; width: min(420px, calc(100vw - 2 * var(--gutter))); background: var(--ink); color: var(--paper); border-radius: 14px; padding: 16px 18px 14px; box-shadow: 0 20px 50px -20px rgb(0 0 0 / 0.5); }
+.chapter-note .dots { display: flex; gap: 6px; margin-bottom: 10px; }
+.chapter-note .dots i { width: 7px; height: 7px; border-radius: 50%; background: color-mix(in srgb, var(--paper) 25%, transparent); transition: background 0.3s; }
+.chapter-note .dots i.on { background: var(--warm); }
+.chapter-note .note { display: none; }
+.chapter-note .note.on { display: block; }
+.chapter-note .note p:last-child { margin: 0; font-size: 0.88rem; }
+.note-bar { height: 2px; margin-top: 12px; background: color-mix(in srgb, var(--paper) 15%, transparent); }
+.note-bar i { display: block; height: 100%; background: var(--warm); transform-origin: 0 50%; transform: scaleX(0); }
+@media (max-width: 767px) {
+  .chapter-note { left: 12px; right: 12px; width: auto; bottom: 12px; }
+}
+
+/* ---- terminal ----------------------------------------------------------- */
+.tty { background: #0b0e11; color: #d7dde3; border-radius: 12px; overflow: hidden; font: 400 0.8rem/1.6 var(--font-mono); box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.6); }
+.tty-h { display: flex; align-items: center; gap: 6px; margin: 0; padding: 10px 14px; background: #151a20; font-size: 0.7rem; opacity: 0.85; }
+.tty-h i { width: 10px; height: 10px; border-radius: 50%; background: #3a434d; }
+.tty-h span { margin-left: 8px; }
+.tty-body { padding: 14px 16px; min-height: 260px; max-height: 360px; overflow: hidden; }
+.tty-body p { margin: 0; white-space: pre-wrap; word-break: break-word; }
+.tty-body .prompt { color: var(--warm); }
+.tty-body .out { opacity: 0.75; }
+.tty-body .ok { color: #7fd18b; }
+.tty-body .caret { display: inline-block; width: 0.55em; height: 1em; vertical-align: -0.15em; background: currentColor; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ---- normal-flow sections after the story -------------------------------- */
+.section { position: relative; z-index: 35; background: var(--ink); padding: 18vh 0; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+@media (max-width: 860px) { .two-col { grid-template-columns: 1fr; } }
+.section-lede { max-width: 52ch; opacity: 0.8; }
+
+@media (prefers-reduced-motion: reduce) {
+  .grain, .loader i, .tty-body .caret { animation: none; }
+}

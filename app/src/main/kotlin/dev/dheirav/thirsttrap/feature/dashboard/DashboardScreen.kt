@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.dashboard
 
+import dev.dheirav.thirsttrap.ui.MenuLabels
 import dev.dheirav.thirsttrap.ui.AlmanacSheet
 import dev.dheirav.thirsttrap.ui.AlmanacMenu
 import dev.dheirav.thirsttrap.ui.Motion
@@ -221,31 +222,31 @@ fun DashboardScreen(
                         // seven lived behind the gear icon, where nobody looks
                         // for a feature.
                         DropdownMenuItem(
-                            text = { Text("Feeding") },
+                            text = { Text(MenuLabels.Dashboard.FEEDING) },
                             onClick = { moreOpen = false; onOpenFeeding() },
                         )
                         DropdownMenuItem(
-                            text = { Text("Propagation board") },
+                            text = { Text(MenuLabels.Dashboard.PROPAGATION) },
                             onClick = { moreOpen = false; onOpenPropagation() },
                         )
                         if (advanced) {
                             DropdownMenuItem(
-                                text = { Text("Scan a pot sticker") },
+                                text = { Text(MenuLabels.Dashboard.SCAN) },
                                 onClick = { moreOpen = false; onScanPot() },
                             )
                         }
                         HorizontalDivider()
                         DropdownMenuItem(
-                            text = { Text("Places") },
+                            text = { Text(MenuLabels.Dashboard.PLACES) },
                             onClick = { moreOpen = false; onOpenPlaces() },
                         )
                         DropdownMenuItem(
-                            text = { Text("Figures") },
+                            text = { Text(MenuLabels.Dashboard.FIGURES) },
                             onClick = { moreOpen = false; onOpenFigures() },
                         )
                         if (advanced) {
                             DropdownMenuItem(
-                                text = { Text("Experiments") },
+                                text = { Text(MenuLabels.Dashboard.EXPERIMENTS) },
                                 onClick = { moreOpen = false; onOpenExperiments() },
                             )
                         }
@@ -576,23 +577,29 @@ private fun PlantCard(
             // differ in the only way that survives being 24dp of green - the
             // glyph depicts the action. A hand held back from the pot, and a
             // drop.
-            LogAction(
-                icon = AppIcons.stillWet,
-                label = "Log checked, still wet for ${plant.name}",
-                justLogged = item.lastCheckedMillis,
-                onClick = onQuickCheck,
-            )
+            // Nothing to log against a plant that has gone. The row stays on
+            // the list, because un-archiving one is how you read its history,
+            // but offering to water it is the same mistake as predicting a
+            // date for it.
+            if (!plant.status.isGone) {
+                LogAction(
+                    icon = AppIcons.stillWet,
+                    label = "Log checked, still wet for ${plant.name}",
+                    justLogged = item.lastCheckedMillis,
+                    onClick = onQuickCheck,
+                )
 
             // Tap logs immediately; long-press opens the detailed entry, for
             // the times you want to record something other than the usual.
-            LogAction(
-                icon = AppIcons.waterDrop,
-                loggedIcon = AppIcons.waterDropFilled,
-                label = "Log watering for ${plant.name}. Long press for amount and method.",
-                justLogged = item.lastWateredMillis,
-                onClick = onQuickWater,
-                onLongClick = onDetailedWater,
-            )
+                LogAction(
+                    icon = AppIcons.waterDrop,
+                    loggedIcon = AppIcons.waterDropFilled,
+                    label = "Log watering for ${plant.name}. Long press for amount and method.",
+                    justLogged = item.lastWateredMillis,
+                    onClick = onQuickWater,
+                    onLongClick = onDetailedWater,
+                )
+            }
         }
         Rule()
     }

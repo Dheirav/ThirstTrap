@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap
 
+import dev.dheirav.thirsttrap.ui.MenuLabels
 import dev.dheirav.thirsttrap.feature.ambient.AmbientScreen
 import dev.dheirav.thirsttrap.feature.fertilizer.FertilizerScreen
 import dev.dheirav.thirsttrap.feature.help.HowItWorksScreen
@@ -141,19 +142,19 @@ class MainActivity : ComponentActivity() {
                                     selected = route == Routes.DASHBOARD,
                                     onClick = { nav.navigate(Routes.DASHBOARD) { popUpTo(Routes.DASHBOARD) { inclusive = true } } },
                                     icon = { Icon(AppIcons.yard, contentDescription = null) },
-                                    label = { Text("Plants") },
+                                    label = { Text(MenuLabels.Tab.PLANTS) },
                                 )
                                 NavigationBarItem(
                                     selected = route == Routes.DUE,
                                     onClick = { nav.navigate(Routes.DUE) { launchSingleTop = true } },
                                     icon = { Icon(AppIcons.notifications, contentDescription = null) },
-                                    label = { Text("Due") },
+                                    label = { Text(MenuLabels.Tab.DUE) },
                                 )
                                 NavigationBarItem(
                                     selected = route == Routes.SETTINGS,
                                     onClick = { nav.navigate(Routes.SETTINGS) { launchSingleTop = true } },
                                     icon = { Icon(AppIcons.settings, contentDescription = null) },
-                                    label = { Text("Settings") },
+                                    label = { Text(MenuLabels.Tab.SETTINGS) },
                                 )
                             }
                         }

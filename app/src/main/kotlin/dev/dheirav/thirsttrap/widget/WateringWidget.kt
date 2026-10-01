@@ -89,6 +89,12 @@ class WateringWidget : GlanceAppWidget() {
  * lists nothing when nothing is due is doing its job.
  */
 private fun PlantAttention.wantsAttention(nowMillis: Long): Boolean {
+    // A plant that died or was given away wants nothing. The widget has its own
+    // copy of this question, which is how it went on listing a dead flax cup
+    // after the Due list and the reminder sweep had both stopped: three places
+    // asking "is this plant owed anything" and only two of them were taught
+    // about the fourth answer.
+    if (plant.status.isGone) return false
     val due = reminderDueMillis
     return (due != null && due <= nowMillis) || prediction is Prediction.WaterNow
 }
