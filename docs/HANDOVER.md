@@ -2363,30 +2363,21 @@ The five UI items that stood here are done, D48. Two of them uncovered defects
 that were not part of the ask, which is the argument for doing this kind of work
 by using the app rather than by reading it.
 
-**Help is in the wrong place and is not one category.** Raised by the user
-2026-10-01, deferred by them, not yet designed.
+**Signing is done.** D39's park is lifted. A release keystore exists at
+`~/thirsttrap-release.jks`, `local.properties` carries the four properties, and
+a signed release APK was built, installed and smoke-tested on the device: it
+launches, Room reads and writes, the camera path works, and kotlinx.serialization
+produces a field-for-field correct backup under R8, which was the one failure
+that would have shipped silently.
 
-Two problems, and the second is the sharper one. Help sits behind Settings,
-which is the exact arrangement `docs/NAVIGATION.md` section 1 was written to
-undo: "nobody looks in Settings for a feature, so for a new user those seven do
-not exist." Seven things were moved out of there, and then Help was put in.
+What remains of it is not code. **Back that keystore up somewhere that is not
+the laptop**, with its password. It is the only route to ever updating this app
+for anybody who installs it, and there is no recovery.
 
-And Help is four different kinds of thing behind one word. "A plant does not
-look right" is a **feature**, the diagnosis tree, and the only entry that does
-something rather than explains something. "Reminders are not arriving" is
-support. "What this app is for" is the first-run explainer. "Finding your way
-around" is a map, D49. Somebody worried about a plant is not looking for help,
-they are trying to do something, and that something is currently four taps deep
-behind a word meaning "I am confused".
-
-So D49 repeated the mistake it was documenting, one level down. The fix is
-probably to pull the diagnosis out of Help entirely and put it where a worried
-person already is, which is the plant, and let Help be documentation only. Not
-decided, and the user wants to design it rather than have it designed.
-
-**Signing.** Parked at the user's request, D39. The keystore needs a password
-only the user can choose, and until it exists there is no upgradeable install
-and no Play listing.
+Also outstanding from that work: `proguard-rules.pro` is named by both build
+types and does not exist. Nothing needs it today, which the smoke test proved,
+and it becomes a release-only crash the first time a library needs a keep rule.
+An empty file with a comment would mark where the rules go.
 
 **A week of ordinary use.** The one thing still genuinely unverified. Every
 prediction property is tested against synthetic curves, and `PredictionEvaluation`
