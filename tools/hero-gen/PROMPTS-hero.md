@@ -97,3 +97,109 @@ the style block, which overrides anything the references suggest.
     phone's screen is switched OFF: a flat, very dark, slightly reflective
     rectangle with nothing on it at all, no icons, no glow, no text. The
     screen is the largest clean shape in the picture.
+
+**depth.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-observal-desk.png`:
+
+    A terracotta pot cut cleanly in half from the side so the full depth of
+    soil is visible, standing on a table at night. The top band of soil, about
+    a sixth of the pot's depth, is pale and crumbly and dry. Everything below
+    it is dark, dense and visibly damp, with a faint sheen. A single finger
+    enters from the right and reaches only into that pale top band, stopping
+    well short of the wet soil. The composition is the comparison: the shallow
+    reach against the depth it cannot read.
+
+**roots.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-observal-desk.png`:
+
+    A close view inside dark damp potting soil, filling the frame, with a
+    network of fine pale roots spreading through it. Through the middle of the
+    picture runs a fresh channel where something has been pushed in and
+    withdrawn, and the fine roots along its edges are visibly torn and broken,
+    pale ends hanging loose. Lit warmly from one side so the broken ends catch
+    the light. No hand, no pot rim, no room. Just soil and roots and the damage.
+
+**ledger-p.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-observal-hero.png`:
+
+    A single sheet of cream paper pinned to a dark wall beside a window at
+    night, lit warmly from one side. The sheet is ruled into seven rows with
+    fine hairlines. Each row is a short handwritten date on the left and the
+    single handwritten word "Watered" on the right, identical in every row.
+    The repetition is the subject.
+
+    Portrait orientation, nine by sixteen, which overrides the landscape
+    instruction in the style block. Compose for a tall frame: stack the
+    subject vertically, keep it central, and let the top and bottom of the
+    picture carry quiet dark areas rather than cropping a wide scene.
+
+**shelf-evening-p.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-observal-hero.png`:
+
+    A row of four small terracotta pots of leafy plants on a windowsill at
+    night, seen along the sill so they recede up the frame rather than across
+    it, with all four clearly countable. A metal watering can tips over the
+    nearest one and pours a thin stream into it. Night city beyond the glass.
+
+    Portrait orientation, nine by sixteen, which overrides the landscape
+    instruction in the style block. Compose for a tall frame: stack the
+    subject vertically, keep it central, and let the top and bottom of the
+    picture carry quiet dark areas rather than cropping a wide scene.
+
+**finger-test-p.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-observal-desk.png`:
+
+    One terracotta pot of a leafy plant on a windowsill at night, filling the
+    middle of the frame. A hand enters from the side, cropped at the wrist, and
+    one finger is pushed into the soil up to the first knuckle. Lit warmly from
+    one side so the hand reads as a silhouette with a lit edge.
+
+    Portrait orientation, nine by sixteen, which overrides the landscape
+    instruction in the style block. Compose for a tall frame: stack the
+    subject vertically, keep it central, and let the top and bottom of the
+    picture carry quiet dark areas rather than cropping a wide scene.
+
+**depth-p.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-observal-desk.png`:
+
+    A terracotta pot cut cleanly in half from the side so the full depth of
+    soil is visible. The top band of soil is pale, crumbly and dry; everything
+    below is dark, dense and visibly damp. A single finger enters from the side
+    and reaches only into that pale top band, stopping well short of the wet
+    soil. The composition is the comparison.
+
+    Portrait orientation, nine by sixteen, which overrides the landscape
+    instruction in the style block. Compose for a tall frame: stack the
+    subject vertically, keep it central, and let the top and bottom of the
+    picture carry quiet dark areas rather than cropping a wide scene.
+
+**roots-p.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-observal-desk.png`:
+
+    A close view inside dark damp potting soil filling the frame, with fine
+    pale roots spreading through it, and a fresh channel running down the
+    middle where something has been pushed in and withdrawn. The fine roots
+    along its edges are torn, pale broken ends catching a warm side light.
+
+    Portrait orientation, nine by sixteen, which overrides the landscape
+    instruction in the style block. Compose for a tall frame: stack the
+    subject vertically, keep it central, and let the top and bottom of the
+    picture carry quiet dark areas rather than cropping a wide scene.
+
+**scale-table-p.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-observal-desk.png`:
+
+    A terracotta pot of a leafy plant standing on a small kitchen scale on a
+    wooden table at night, with a phone lying flat on the table below it in the
+    same frame. One warm lamp above. The pot and the phone stack vertically so
+    both are clearly readable.
+
+    Portrait orientation, nine by sixteen, which overrides the landscape
+    instruction in the style block. Compose for a tall frame: stack the
+    subject vertically, keep it central, and let the top and bottom of the
+    picture carry quiet dark areas rather than cropping a wide scene.
+
+**phone-closeup-p.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-observal-desk.png`:
+
+    A phone lying flat on a wooden table at night, seen at a slight angle from
+    above and filling much of the frame, with the base of a kitchen scale and a
+    terracotta pot behind it. One warm lamp. The phone's screen is switched
+    OFF: a flat, very dark, slightly reflective rectangle with nothing on it at
+    all, no icons, no glow, no text.
+
+    Portrait orientation, nine by sixteen, which overrides the landscape
+    instruction in the style block. Compose for a tall frame: stack the
+    subject vertically, keep it central, and let the top and bottom of the
+    picture carry quiet dark areas rather than cropping a wide scene.
