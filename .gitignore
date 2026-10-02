@@ -46,3 +46,5 @@ tools/*.log
 # Screenshots of someone else's site, kept locally as generation reference only.
 tools/hero-gen/refs/
 tools/hero-gen/out/.run-started
+__pycache__/
+*.pyc
