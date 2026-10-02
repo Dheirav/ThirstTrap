@@ -238,112 +238,62 @@ handles it, which is worth knowing before picking one.
 
 ## 7. Shot transitions
 
-Section 6 said this document was the story and not the picture. That is no
-longer true: the picture is five generated plates in `tools/hero-gen/out`, so
-the joins between them are now a narrative decision and belong here.
+### What the first attempt got wrong
 
-### What the plates measure
+The hero was first built from five plates with the camera hunting for each beat
+inside them: a match cut on the moon, a dissolve hidden in a dark lower third, a
+mask opening the cut pot out of the soil. All of it worked, and the page still
+looked worse than the plates it was made of.
 
-Two numbers decide every join.
+Measuring said why. Across fourteen framings the page was showing **12 to 48
+percent** of each picture at pushes of 1.5x to 3x, and on a phone **6.8 to 26
+percent** at 3.85x to 7.54x. What makes these plates good is the balance across
+the whole frame: lamp hard at one edge, window at the other, subject centred,
+large quiet areas carrying the value structure. Crop to a third of that and you
+keep the texture and throw the composition away. The two framings that showed
+about 90 percent were the two frames that looked like the references.
 
-**Light direction alternates.** The brightest-pixel centroid sits at x=0.03 in
-`shelf-evening`, 0.95 in `finger-test`, 0.05 in `section`, 0.84 in
-`scale-table` and 0.42 in `ledger`. The lamp swaps sides between consecutive
-shots, which kills any join meant to be invisible unless a plate is flipped.
+So the fix was not better joins. It was **more plates and less camera**: one
+picture composed for each beat, rather than one picture mined for three.
 
-**Three are dark grounds and one is a light ground.** Near-black covers 49.6%
-of `shelf-evening`, 45.7% of `finger-test`, 34.8% of `scale-table` and 34.0%
-of `ledger`, but only 10.0% of `section`. Dark cannot be crossfaded into light, because the midpoint
-of the dissolve is a grey wash across the whole screen and it announces itself.
+### What it does now
 
-So the plan is not to make everything continuous. Observal gets its continuity
-from one camera flying one spline through one modelled room, where the dome and
-the desk and the laptop all coexist. Five separate rasters cannot do that, and
-pretending otherwise produces mush. The plan is to decide which joins hide and
-which ones declare themselves, and to let the beat decide which is which.
+Seven plates, one per beat, each entered at the whole frame, held there, and
+pushed 1.12x inside it. The page now shows **71.8 to 90 percent** of each
+picture at 1.11x to 1.24x, and **65.5 to 82.1 percent** at 1.22x to 1.36x on a
+phone. The single exception is the last stop before the demo, which pushes to
+40 percent of the frame to fill the viewport with the phone's dark screen.
 
-### The joins
+Every plate exists in both orientations, drawn for each rather than cropped from
+the other. That is what fixes phones: a 9:16 source in a 9:19.5 viewport keeps
+82 percent of its width, where cropping the 16:9 kept 26 percent and upscaled it
+four times over. The layer swaps its source and its viewBox together on
+orientation, and the swap registers before the camera does, so the fits are
+recomputed against the coordinate system they belong to.
 
-| scroll | join | device |
-|---|---|---|
-| 0.00 to 0.09 | open on `ledger` | pull back from the sheet to the room, no cut |
-| 0.09 | `ledger` to `shelf-evening` | dissolve aligned on the moon |
-| 0.20 | `shelf-evening` to `finger-test` | invisible match on one pot, hidden in the dark lower third |
-| 0.31 | `finger-test` to `section` | push into the soil until it fills frame, then open the section out of the black with a radial mask |
-| 0.41 | inside `section` | no join, push in on the root zone |
-| 0.54 | `section` to `scale-table` | declared cut: hold the pot silhouette, swap the world under it |
-| 0.67 to 0.90 | inside `scale-table` | no new art, the phone screen carries beats 6, 7 and 8 |
+Three devices from the first attempt did not survive, and it is worth saying why
+rather than leaving them in the file as if they were still true.
 
-**The ledger opens the page.** It shares the window, the moon, the city and the
-sill with `shelf-evening`, so the two are the same room and the camera can move
-between them freely. Starting tight on the sheet and pulling back also gives
-the viewer something to read while they are still deciding whether to keep
-scrolling, which a wide establishing shot does not. Align the dissolve on the
-moon, because it appears in both frames and the eye tracks it, so a move from
-the wall to the sill reads as one pan rather than as two pictures.
+**The moon match cut is gone**, because the plates it joined are gone. It was
+also harder than it first looked: equalising the two moons directly puts the
+frame's right edge 245 px outside the picture, since the ledger's moon sits much
+nearer its own edge. Both crops have to lie inside their own images, and the two
+admissible ranges only overlap once both plates are pushed past about 1.3x.
 
-The moon makes this join solvable arithmetically instead of by eye, which is
-the same thing Observal does with its match cut. Measured, the ledger's moon
-sits at x=0.905, y=0.121 and is 0.0586 of the frame wide; shelf-evening's sits
-at x=0.729, y=0.109 and is 0.0658 wide.
+**The hidden dissolve is gone.** It existed because a pot is 11.5 percent of the
+row shot and 43 percent of the close-up, a 5.8x mismatch against a 1.6x budget,
+so the join had to be buried in darkness rather than matched. With a plate per
+beat there is nothing to hide.
 
-Equalising those two directly does not work, and it is worth writing down why,
-because it is the trap in every match cut built from separate images. Scaling
-the ledger by 1.123x makes the moons the same size, but it also puts the frame's
-right edge 245 px outside the picture, because the ledger's moon is much nearer
-its own right edge. **Both crops have to lie inside their own images**, and that
-second constraint is what actually picks the framing. Writing the moon's
-position as a fraction of the frame, each plate admits a range of framings, and
-the two ranges only overlap once both plates are pushed in past about 1.3x. At a
-moon width of 9% of frame the ledger's admissible range is 0.854 to 1.0 and
-shelf-evening's is 0.629 to 0.998, so they meet. The join is therefore
-**ledger at 1.54x and shelf-evening at 1.37x**, moon at 0.88 across and 0.14
-down in both, which is what the keyframes now say.
+**The radial mask is gone.** It existed because the old cut-pot plate was a light
+ground at 10 percent near-black and the finger plate is 46 percent, and
+dissolving one into the other greys the whole screen at the midpoint. The plate
+composed to replace it is a night interior at 33 percent, so the join is an
+ordinary crossfade and one moving part comes out of the page.
 
-In portrait there is no moon match at all. A 16:9 plate cropped to a phone's
-9:19.5 keeps about a quarter of its width, so matching the moon would mean a
-318 px crop, and the join is a plain dissolve between two compatible framings
-instead.
-
-**`shelf-evening` into `finger-test` cannot be a size match**, which is the
-other thing measuring caught. In the row shot a pot is 11.5% of the frame; in
-the close-up it is 43%. Matching them would be a 5.8x push and the plate holds
-about 1.6x. So this join is a dissolve hidden in the dark lower third rather
-than an object match: the pot stays near the centre of frame across the cut and
-the sizes jump by about 2.4x, which darkness absorbs and a clean dissolve would
-not. It still needs `finger-test` flipped horizontally first so its lamp moves
-to the same side. The cost is that the hand becomes a left hand, which
-nobody reads as wrong. Flip only this plate: standardising the light across all
-five would be tidier and would buy nothing, because every other join is
-supposed to be felt. Then push from the row of four to one pot, landing so that
-pot's rim sits in the same box as `finger-test`'s, and cross over while the
-bottom third of the frame is 80% near-black going out and 68% coming in.
-Darkness is where you hide a cut.
-
-**`finger-test` into `section` is the hard one**, and it is the one place worth
-spending a mask rather than an opacity fade. Keep pushing past the fingertip
-until the soil fills the frame, where it is near-uniform and carries no detail
-that can mismatch, then grow the section out of that black with a radial mask
-centred on where the fingertip was. The subject never leaves the middle of the
-screen, so it reads as cutting that pot open rather than as a new picture
-arriving, and the dark-to-light problem never comes up because nothing
-dissolves.
-
-**`section` into `scale-table` should stay visible on purpose.** The beat
-changes its mind there: he stops interrogating the soil and starts measuring
-the pot. Hiding that join would waste it. Mask the section down to the pot
-silhouette alone, swap the ground under it from paper to the dark table while
-the silhouette holds still, then pull back to reveal the scale and the phone.
-Continuous on the object and discontinuous on the world, which is exactly what
-the sentence is doing. The light flipping from left to right across this cut
-now helps instead of hurting.
-
-**After 0.67 there is no new art.** Push to the phone in `scale-table` and let
-the screen content change instead of the camera. That also fixes what is wrong
-with that plate, which is that its readout is unreadable: give the screen
-something worth reading. And it makes the 0.90 handoff to the live demo
-invisible, because the hero's last frame is already the demo's first view at
-the same size and position.
+What remains true from the first attempt is the lesson rather than the devices:
+**these joins are decided by measurement, not by eye.** Every claim above was
+wrong at least once before it was checked.
 
 ### Two constraints on building it
 

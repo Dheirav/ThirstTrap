@@ -106,72 +106,98 @@
   <nav><a href="https://github.com/Dheirav/ThirstTrap">GitHub</a></nav>
 </header>
 
-<!-- ================= THE HERO: five painted plates, joined ==================
-  Each plate is one generated image inside an SVG whose viewBox is the image's
-  own pixel grid, so the camera targets below are written in image coordinates
-  and a `fit` lands where it was measured. Positioning them as HTML would not
-  work: the layer is 100vw and the image is cover-cropped, so a percentage in
-  the layer is not a fraction of the picture.
+<div class="beat-scrim" id="scrim" aria-hidden="true"></div>
+<div class="beat-scrim top" id="scrim-top" aria-hidden="true"></div>
 
-  Which joins hide and which declare themselves is argued in section 7 of
-  docs/HERO-NARRATIVE.md. The short version: only ledger -> shelf is a true
-  object match, because it is the only pair of plates drawn at a similar
-  distance. The rest are cuts, placed where the story changes its mind.
+<!-- ================= THE HERO: one composed plate per beat ==================
+  Measuring the old cut said the page was showing about a third of each picture
+  enlarged roughly twice, and under a fifth of it on a phone. These plates are
+  composed as whole 16:9 and 9:16 pictures, so the camera now holds the whole
+  frame and pushes 1.12x inside it rather than cropping to find the subject.
+
+  Each layer carries both orientations. The portrait plates are drawn portrait
+  rather than cropped from the landscape ones, which is what fixes phones: a
+  9:16 source into a 9:19.5 viewport keeps 82% of its width, where cropping the
+  16:9 kept 26% and upscaled it four times over.
 ================================================================================ -->
 <div class="scene2d" aria-hidden="true">
-  <div class="cam layer-ledger" data-kf='{"0":{"fit":"#a-sheet"},"0.05":{"fit":"#a-sheet"},"0.10":{"fit":"#a-join"},"0.125":{"fit":"#a-join","opacity":0}}' data-kf-portrait='{"0":{"fit":"#a-sheet-p"},"0.05":{"fit":"#a-sheet-p"},"0.10":{"fit":"#a-join-p"},"0.125":{"fit":"#a-join-p","opacity":0}}'>
-    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice">
-      <image href="hero/ledger.avif" x="0" y="0" width="1672" height="941"/>
-      <rect id="a-sheet" x="120" y="30" width="980" height="551" fill="none"/>
-      <rect id="a-join" x="555" y="28" width="1089" height="613" fill="none"/>
-      <rect id="a-sheet-p" x="300" y="60" width="420" height="880" fill="none"/>
-      <rect id="a-join-p" x="900" y="0" width="772" height="941" fill="none"/>
+  <div class="cam layer-ledger" data-kf='{"0.0":{"opacity":0,"fit":"#a-all"},"0.03":{"opacity":1,"fit":"#a-all"},"0.085":{"fit":"#a-in"},"0.105":{"fit":"#a-in","opacity":0}}' data-kf-portrait='{"0.0":{"opacity":0,"fit":"#a-all-p"},"0.03":{"opacity":1,"fit":"#a-all-p"},"0.085":{"fit":"#a-in-p"},"0.105":{"fit":"#a-in-p","opacity":0}}'>
+    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice"
+         data-vb="0 0 1672 941" data-vb-portrait="0 0 941 1672">
+      <image href="hero/ledger.avif" x="0" y="0" width="1672" height="941"
+             data-src="hero/ledger.avif" data-src-portrait="hero/ledger-p.avif"/>
+      <rect id="a-all" x="0" y="0" width="1672" height="941" fill="none"/>
+      <rect id="a-in" x="0" y="0" width="1493" height="840" fill="none"/>
+      <rect id="a-all-p" x="0" y="0" width="941" height="1672" fill="none"/>
+      <rect id="a-in-p" x="69" y="0" width="840" height="1493" fill="none"/>
     </svg>
   </div>
-  <div class="cam layer-shelf" data-kf='{"0.10":{"opacity":0,"fit":"#b-join"},"0.125":{"opacity":1,"fit":"#b-join"},"0.155":{"fit":"#b-row"},"0.205":{"fit":"#b-row"},"0.245":{"fit":"#b-pot"},"0.265":{"fit":"#b-pot","opacity":0}}' data-kf-portrait='{"0.10":{"opacity":0,"fit":"#b-join-p"},"0.125":{"opacity":1,"fit":"#b-join-p"},"0.155":{"fit":"#b-row-p"},"0.205":{"fit":"#b-row-p"},"0.245":{"fit":"#b-pot-p"},"0.265":{"fit":"#b-pot-p","opacity":0}}'>
-    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice">
-      <image href="hero/shelf-evening.avif" x="0" y="0" width="1672" height="941"/>
-      <rect id="b-join" x="144" y="7" width="1222" height="688" fill="none"/>
-      <rect id="b-row" x="470" y="290" width="1130" height="636" fill="none"/>
-      <rect id="b-pot" x="593" y="301" width="1079" height="607" fill="none"/>
-      <rect id="b-join-p" x="820" y="0" width="772" height="941" fill="none"/>
-      <rect id="b-row-p" x="980" y="300" width="460" height="620" fill="none"/>
-      <rect id="b-pot-p" x="950" y="300" width="480" height="620" fill="none"/>
+  <div class="cam layer-shelf-evening" data-kf='{"0.095":{"opacity":0,"fit":"#b-all"},"0.125":{"opacity":1,"fit":"#b-all"},"0.205":{"fit":"#b-in"},"0.225":{"fit":"#b-in","opacity":0}}' data-kf-portrait='{"0.095":{"opacity":0,"fit":"#b-all-p"},"0.125":{"opacity":1,"fit":"#b-all-p"},"0.205":{"fit":"#b-in-p"},"0.225":{"fit":"#b-in-p","opacity":0}}'>
+    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice"
+         data-vb="0 0 1672 941" data-vb-portrait="0 0 941 1672">
+      <image href="hero/shelf-evening.avif" x="0" y="0" width="1672" height="941"
+             data-src="hero/shelf-evening.avif" data-src-portrait="hero/shelf-evening-p.avif"/>
+      <rect id="b-all" x="0" y="0" width="1672" height="941" fill="none"/>
+      <rect id="b-in" x="179" y="101" width="1493" height="840" fill="none"/>
+      <rect id="b-all-p" x="0" y="0" width="941" height="1672" fill="none"/>
+      <rect id="b-in-p" x="98" y="174" width="840" height="1493" fill="none"/>
     </svg>
   </div>
-  <div class="cam layer-finger" data-kf='{"0.235":{"opacity":0,"fit":"#c-all"},"0.265":{"opacity":1,"fit":"#c-all"},"0.31":{"fit":"#c-pot"},"0.365":{"fit":"#c-soil"},"0.40":{"fit":"#c-soil"}}' data-kf-portrait='{"0.235":{"opacity":0,"fit":"#c-all-p"},"0.265":{"opacity":1,"fit":"#c-all-p"},"0.31":{"fit":"#c-pot-p"},"0.365":{"fit":"#c-soil-p"},"0.40":{"fit":"#c-soil-p"}}'>
-    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice">
-      <image href="hero/finger-test.avif" x="0" y="0" width="1672" height="941"/>
+  <div class="cam layer-finger-test" data-kf='{"0.215":{"opacity":0,"fit":"#c-all"},"0.245":{"opacity":1,"fit":"#c-all"},"0.315":{"fit":"#c-in"},"0.335":{"fit":"#c-in","opacity":0}}' data-kf-portrait='{"0.215":{"opacity":0,"fit":"#c-all-p"},"0.245":{"opacity":1,"fit":"#c-all-p"},"0.315":{"fit":"#c-in-p"},"0.335":{"fit":"#c-in-p","opacity":0}}'>
+    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice"
+         data-vb="0 0 1672 941" data-vb-portrait="0 0 941 1672">
+      <image href="hero/finger-test.avif" x="0" y="0" width="1672" height="941"
+             data-src="hero/finger-test.avif" data-src-portrait="hero/finger-test-p.avif"/>
       <rect id="c-all" x="0" y="0" width="1672" height="941" fill="none"/>
-      <rect id="c-pot" x="120" y="170" width="1250" height="703" fill="none"/>
-      <rect id="c-soil" x="394" y="344" width="700" height="394" fill="none"/>
-      <rect id="c-all-p" x="450" y="0" width="772" height="941" fill="none"/>
-      <rect id="c-pot-p" x="527" y="0" width="435" height="941" fill="none"/>
-      <rect id="c-soil-p" x="484" y="0" width="520" height="941" fill="none"/>
+      <rect id="c-in" x="0" y="101" width="1493" height="840" fill="none"/>
+      <rect id="c-all-p" x="0" y="0" width="941" height="1672" fill="none"/>
+      <rect id="c-in-p" x="69" y="40" width="840" height="1493" fill="none"/>
     </svg>
   </div>
-  <div class="reveal" id="reveal-section">
-  <div class="cam layer-section" data-kf='{"0.365":{"fit":"#d-pot"},"0.405":{"fit":"#d-crust"},"0.455":{"fit":"#d-crust"},"0.50":{"fit":"#d-roots"},"0.545":{"fit":"#d-pot"},"0.575":{"fit":"#d-pot","opacity":0}}' data-kf-portrait='{"0.365":{"fit":"#d-pot-p"},"0.405":{"fit":"#d-crust-p"},"0.455":{"fit":"#d-crust-p"},"0.50":{"fit":"#d-roots-p"},"0.545":{"fit":"#d-pot-p"},"0.575":{"fit":"#d-pot-p","opacity":0}}'>
-    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice">
-      <image href="hero/section.avif" x="0" y="0" width="1672" height="941"/>
-      <rect id="d-pot" x="438" y="269" width="880" height="495" fill="none"/>
-      <rect id="d-crust" x="536" y="158" width="700" height="394" fill="none"/>
-      <rect id="d-roots" x="576" y="427" width="620" height="349" fill="none"/>
-      <rect id="d-pot-p" x="640" y="230" width="420" height="560" fill="none"/>
-      <rect id="d-crust-p" x="700" y="180" width="380" height="480" fill="none"/>
-      <rect id="d-roots-p" x="720" y="420" width="400" height="500" fill="none"/>
+  <div class="cam layer-depth" data-kf='{"0.325":{"opacity":0,"fit":"#d-all"},"0.355":{"opacity":1,"fit":"#d-all"},"0.445":{"fit":"#d-in"},"0.465":{"fit":"#d-in","opacity":0}}' data-kf-portrait='{"0.325":{"opacity":0,"fit":"#d-all-p"},"0.355":{"opacity":1,"fit":"#d-all-p"},"0.445":{"fit":"#d-in-p"},"0.465":{"fit":"#d-in-p","opacity":0}}'>
+    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice"
+         data-vb="0 0 1672 941" data-vb-portrait="0 0 941 1672">
+      <image href="hero/depth.avif" x="0" y="0" width="1672" height="941"
+             data-src="hero/depth.avif" data-src-portrait="hero/depth-p.avif"/>
+      <rect id="d-all" x="0" y="0" width="1672" height="941" fill="none"/>
+      <rect id="d-in" x="0" y="98" width="1493" height="840" fill="none"/>
+      <rect id="d-all-p" x="0" y="0" width="941" height="1672" fill="none"/>
+      <rect id="d-in-p" x="0" y="179" width="840" height="1493" fill="none"/>
     </svg>
   </div>
+  <div class="cam layer-roots" data-kf='{"0.455":{"opacity":0,"fit":"#e-all"},"0.485":{"opacity":1,"fit":"#e-all"},"0.545":{"fit":"#e-in"},"0.565":{"fit":"#e-in","opacity":0}}' data-kf-portrait='{"0.455":{"opacity":0,"fit":"#e-all-p"},"0.485":{"opacity":1,"fit":"#e-all-p"},"0.545":{"fit":"#e-in-p"},"0.565":{"fit":"#e-in-p","opacity":0}}'>
+    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice"
+         data-vb="0 0 1672 941" data-vb-portrait="0 0 941 1672">
+      <image href="hero/roots.avif" x="0" y="0" width="1672" height="941"
+             data-src="hero/roots.avif" data-src-portrait="hero/roots-p.avif"/>
+      <rect id="e-all" x="0" y="0" width="1672" height="941" fill="none"/>
+      <rect id="e-in" x="90" y="50" width="1493" height="840" fill="none"/>
+      <rect id="e-all-p" x="0" y="0" width="941" height="1672" fill="none"/>
+      <rect id="e-in-p" x="50" y="90" width="840" height="1493" fill="none"/>
+    </svg>
   </div>
-  <div class="cam layer-table" data-kf='{"0.545":{"opacity":0,"fit":"#e-pot"},"0.575":{"opacity":1,"fit":"#e-pot"},"0.66":{"fit":"#e-wide"},"0.93":{"fit":"#e-phone"}}' data-kf-portrait='{"0.545":{"opacity":0,"fit":"#e-pot-p"},"0.575":{"opacity":1,"fit":"#e-pot-p"},"0.66":{"fit":"#e-wide-p"},"0.93":{"fit":"#e-phone-p"}}'>
-    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice">
-      <image href="hero/scale-table.avif" x="0" y="0" width="1672" height="941"/>
-      <rect id="e-pot" x="543" y="186" width="1045" height="588" fill="none"/>
-      <rect id="e-wide" x="0" y="0" width="1672" height="941" fill="none"/>
-      <rect id="e-phone" x="627" y="468" width="1045" height="588" fill="none"/>
-      <rect id="e-pot-p" x="848" y="0" width="435" height="941" fill="none"/>
-      <rect id="e-wide-p" x="933" y="0" width="435" height="941" fill="none"/>
-      <rect id="e-phone-p" x="1037" y="75" width="400" height="866" fill="none"/>
+  <div class="cam layer-scale-table" data-kf='{"0.555":{"opacity":0,"fit":"#f-all"},"0.585":{"opacity":1,"fit":"#f-all"},"0.755":{"fit":"#f-in"},"0.775":{"fit":"#f-in","opacity":0}}' data-kf-portrait='{"0.555":{"opacity":0,"fit":"#f-all-p"},"0.585":{"opacity":1,"fit":"#f-all-p"},"0.755":{"fit":"#f-in-p"},"0.775":{"fit":"#f-in-p","opacity":0}}'>
+    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice"
+         data-vb="0 0 1672 941" data-vb-portrait="0 0 941 1672">
+      <image href="hero/scale-table.avif" x="0" y="0" width="1672" height="941"
+             data-src="hero/scale-table.avif" data-src-portrait="hero/scale-table-p.avif"/>
+      <rect id="f-all" x="0" y="0" width="1672" height="941" fill="none"/>
+      <rect id="f-in" x="179" y="60" width="1493" height="840" fill="none"/>
+      <rect id="f-all-p" x="0" y="0" width="941" height="1672" fill="none"/>
+      <rect id="f-in-p" x="69" y="123" width="840" height="1493" fill="none"/>
+    </svg>
+  </div>
+  <div class="cam layer-phone-closeup" data-kf='{"0.765":{"opacity":0,"fit":"#g-all"},"0.795":{"opacity":1,"fit":"#g-all"},"0.88":{"fit":"#g-in"},"0.97":{"fit":"#g-screen"}}' data-kf-portrait='{"0.765":{"opacity":0,"fit":"#g-all-p"},"0.795":{"opacity":1,"fit":"#g-all-p"},"0.88":{"fit":"#g-in-p"},"0.97":{"fit":"#g-screen-p"}}'>
+    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice"
+         data-vb="0 0 1672 941" data-vb-portrait="0 0 941 1672">
+      <image href="hero/phone-closeup.avif" x="0" y="0" width="1672" height="941"
+             data-src="hero/phone-closeup.avif" data-src-portrait="hero/phone-closeup-p.avif"/>
+      <rect id="g-all" x="0" y="0" width="1672" height="941" fill="none"/>
+      <rect id="g-in" x="23" y="98" width="1493" height="840" fill="none"/>
+      <rect id="g-all-p" x="0" y="0" width="941" height="1672" fill="none"/>
+      <rect id="g-in-p" x="0" y="123" width="840" height="1493" fill="none"/>
+      <rect id="g-screen" x="203" y="199" width="1115" height="627" fill="none"/>
+      <rect id="g-screen-p" x="60" y="430" width="800" height="760" fill="none"/>
     </svg>
   </div>
 </div>
@@ -189,34 +215,34 @@
       </div>
     </div>
 
-    <div class="beat" data-at="0.13" data-until="0.18">
+    <div class="beat" data-at="0.13" data-until="0.19">
       <p class="pixel-label">Every evening</p>
       <p>He watered all four, because that is what looking after something feels like. It is also how you drown one.</p>
     </div>
-    <div class="beat" data-at="0.27" data-until="0.33">
+    <div class="beat" data-at="0.25" data-until="0.31">
       <p class="pixel-label">Then he started checking</p>
       <p>Finger in the soil, water only the ones that are dry. That was a real improvement.</p>
     </div>
-    <div class="beat" data-at="0.40" data-until="0.45">
+    <div class="beat" data-at="0.37" data-until="0.43">
       <p class="pixel-label">Two centimetres down</p>
       <p>The finger reaches an inch. The pot is twelve deep, and the bottom has been wet for nine days.</p>
     </div>
-    <div class="beat" data-at="0.51" data-until="0.55">
+    <div class="beat" data-at="0.49" data-until="0.53">
       <p class="pixel-label">And the test is not free</p>
       <p>Each push tears the fine roots it is measuring.</p>
     </div>
-    <div class="beat" data-at="0.61" data-until="0.65">
+    <div class="beat" data-at="0.59" data-until="0.64">
       <p class="pixel-label">One kitchen scale</p>
       <p>Water has weight. He stopped asking the soil and started writing the number down.</p>
     </div>
-    <div class="beat beat-big" data-at="0.71" data-until="0.75">
+    <div class="beat beat-big" data-at="0.70" data-until="0.74">
       <p>A pot loses weight as it dries.<br>Steadily enough to fit a line to.</p>
     </div>
-    <div class="beat" data-at="0.81" data-until="0.84">
+    <div class="beat" data-at="0.81" data-until="0.85">
       <p class="pixel-label">And when it cannot tell</p>
       <p>It says so, in eight different ways, each one naming what would fix it.</p>
     </div>
-    <div class="beat" data-at="0.90" data-until="0.93">
+    <div class="beat" data-at="0.91" data-until="0.93">
       <p class="pixel-label">It keeps no score</p>
       <p>A missed day is a day when nothing needed doing. Nobody is counting.</p>
     </div>
@@ -465,30 +491,48 @@
   const storyTrack = $('#story-track');
   const stage = $('#demo-stage');
   const scene2d = $('.scene2d');
+  // Every plate exists in both orientations, drawn for each rather than cropped
+  // from the other, so the source and the coordinate system swap together. This
+  // registers before keyframed() does, and resize listeners fire in order, so
+  // the viewBox is already right when the camera recomputes its fits against it.
+  const plates = [...scene2d.querySelectorAll('.cam svg')];
+  function orient() {
+    const tall = innerHeight > innerWidth;
+    for (const svg of plates) {
+      svg.setAttribute('viewBox', tall ? svg.dataset.vbPortrait : svg.dataset.vb);
+      const img = svg.querySelector('image');
+      const src = tall ? img.dataset.srcPortrait : img.dataset.src;
+      if (img.getAttribute('href') !== src) img.setAttribute('href', src);
+      img.setAttribute('width', tall ? 941 : 1672);
+      img.setAttribute('height', tall ? 1672 : 941);
+    }
+  }
+  orient();
+  addEventListener('resize', orient);
   const cam = keyframed(scene2d);
   const beat = beats(storyTrack, { win: 0.03 });
+  const beatEls = [...storyTrack.querySelectorAll('.beat')];
+  const scrim = $('#scrim'), scrimTop = $('#scrim-top');
 
   const seg = (p, a, b) => Math.max(0, Math.min(1, (p - a) / (b - a)));
   const ease = (t) => t * t * (3 - 2 * t);
 
-  // The one join that is neither a match nor a cut. The finger shot pushes into
-  // the soil until the frame is a near-uniform dark field, and the cut pot is
-  // then opened out of that darkness from the point the fingertip was at. It
-  // has to be a mask rather than a crossfade because the finger plate is 46%
-  // near-black and the section plate is 10%: dissolving one into the other puts
-  // a grey wash over the whole screen at the midpoint and announces itself.
-  const revealEl = $('#reveal-section');
-  function revealSection(p) {
-    revealEl.style.setProperty('--mr', (-7 + ease(seg(p, 0.365, 0.415)) * 122).toFixed(2));
-  }
 
   gsap.to('.hero-title', { yPercent: -35, opacity: 0, ease: 'none',
     scrollTrigger: { trigger: storyTrack, start: 'top top', end: '+=80%', scrub: true } });
 
   track(storyTrack, (p) => {
     cam(p);
-    revealSection(p);
     beat(p);
+    // The scrim follows whatever caption is actually up, so an empty frame is
+    // the plate alone. beats() has already written the opacities by this point.
+    let lo = 0, hi = 0;
+    for (const el of beatEls) {
+      const o = +el.style.opacity || 0;
+      if (el.classList.contains('beat-big')) hi = Math.max(hi, o); else lo = Math.max(lo, o);
+    }
+    scrim.style.opacity = lo.toFixed(3);
+    scrimTop.style.opacity = hi.toFixed(3);
     const o = range(p, 0.965, 0.995);
     layer(stage, o);
     scene2d.style.visibility = o > 0.99 ? 'hidden' : 'visible';
