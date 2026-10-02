@@ -42,3 +42,6 @@ s.png
 tools/__pycache__/
 tools/*_progress.txt
 tools/*.log
+
+# Screenshots of someone else's site, kept locally as generation reference only.
+tools/hero-gen/refs/
