@@ -25,16 +25,33 @@
     --tt-leaf:#2F5D3A; --tt-terracotta:#8C3A2A; --tt-rule:#C9C0A8; --tt-dim:#5F5847;
     --tt-surface:#E3DBC6; --tt-low:#F0EAD9;
   }
-  /* ---- the app mock: an almanac page, not a dashboard ---- */
-  /* The stage is a page of paper, not a phone in a frame.
-     The camera's fit stop uses cover, so fitting a portrait phone screen on a
-     landscape viewport overscales it enormously - which is why the template's
-     screen rect is landscape. Rather than fight that, the handoff lands on
-     paper, and the app's content sits in a centred column: full width on a
-     phone, a reading column on a desktop. Both sides of the cut are then the
-     same colour with the same column in the middle. */
-  .demo-screen{background:var(--paper)}
-  .app .bar,.app .body{width:min(560px,100%);margin-inline:auto}
+  /* ---- the app mock: the real UI, on a real phone ---- */
+  /* The walkthrough is a phone held up, not a page. The camera's fit stop uses
+     cover, so fitting a portrait screen on a landscape viewport overscales it,
+     which is why the handoff does NOT fit the phone: it fits the SVG screen
+     rect and then this stage fades in over it with the phone already at the
+     size it will stay. The two are aligned by matching aspect, not by zoom. */
+  .demo-stage{background:var(--tt-low)}
+  .demo-screen{display:grid;place-items:center;background:transparent}
+  .phone{position:relative;background:#15140F;border-radius:38px;padding:11px;
+         box-shadow:0 1px 0 rgba(255,255,255,.07) inset, 0 26px 60px rgba(34,32,26,.22);
+         height:min(92vh, 860px);aspect-ratio:390/844;flex:0 0 auto}
+  .phone::after{content:'';position:absolute;left:50%;translate:-50% 0;top:19px;
+         width:86px;height:5px;border-radius:3px;background:#2E2B24}
+  .phone .screen{position:relative;width:100%;height:100%;border-radius:28px;
+         overflow:hidden;background:var(--paper)}
+  /* the app's own status strip, so the mock is a phone and not a card */
+  .phone .status{position:absolute;top:11px;left:11px;right:11px;height:34px;z-index:3;
+         display:flex;align-items:center;justify-content:space-between;
+         padding:0 20px;font:500 11px/1 var(--font-body);color:var(--tt-dim);
+         letter-spacing:.04em;pointer-events:none}
+  .app{padding-top:34px}
+  @media (max-width:760px){
+    .phone{height:100vh;width:100vw;max-width:100vw;border-radius:0;padding:0;box-shadow:none;aspect-ratio:auto}
+    .phone::after{display:none}
+    .phone .screen{border-radius:0}
+  }
+  .app .bar,.app .body{width:100%;margin-inline:auto}
   .app{position:absolute;inset:0;background:var(--paper);color:var(--ink);
        font:400 14px/1.5 var(--font-body);display:flex;flex-direction:column;overflow:hidden}
   .app .bar{display:flex;align-items:center;gap:10px;padding:14px 18px 10px;flex:0 0 auto}
@@ -71,7 +88,13 @@
   .app svg.chart{width:100%;height:auto;display:block;margin-top:6px}
   .app .gone{color:var(--tt-dim);font-style:italic}
   @media (max-width:767px){ .app .body{padding:0 14px 170px} }
-  .scene2d .layer-room{opacity:0}
+  .scene2d .layer-section{opacity:1}
+   /* The reveal lives on a wrapper, not on the .cam. A mask on the .cam would
+      be dragged by the camera's own transform, so the circle would grow as the
+      shot pushed in instead of staying put on screen. */
+   .scene2d .reveal{position:absolute;inset:0;overflow:hidden;--mr:-7;
+     -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 calc(var(--mr) * 1vmax), rgba(0,0,0,0) calc(var(--mr) * 1vmax + 7vmax));
+     mask-image:radial-gradient(circle at 50% 50%, #000 calc(var(--mr) * 1vmax), rgba(0,0,0,0) calc(var(--mr) * 1vmax + 7vmax))}
 </style>
 </head>
 <body>
@@ -83,95 +106,73 @@
   <nav><a href="https://github.com/Dheirav/ThirstTrap">GitHub</a></nav>
 </header>
 
-<!-- ================= 2D SCENE: the sill at night, then the table ================= -->
+<!-- ================= THE HERO: five painted plates, joined ==================
+  Each plate is one generated image inside an SVG whose viewBox is the image's
+  own pixel grid, so the camera targets below are written in image coordinates
+  and a `fit` lands where it was measured. Positioning them as HTML would not
+  work: the layer is 100vw and the image is cover-cropped, so a percentage in
+  the layer is not a fraction of the picture.
+
+  Which joins hide and which declare themselves is argued in section 7 of
+  docs/HERO-NARRATIVE.md. The short version: only ledger -> shelf is a true
+  object match, because it is the only pair of plates drawn at a similar
+  distance. The rest are cuts, placed where the story changes its mind.
+================================================================================ -->
 <div class="scene2d" aria-hidden="true">
-  <!-- Shot 1: a dark room. One pot on a windowsill, lit. Camera pushes into it. -->
-  <div class="cam layer-sill" data-kf='{"0":{"scale":1},"0.08":{"scale":1.06,"y":"-2vh"},"0.34":{"fit":"#thepot"},"0.38":{"fit":"#thepot","opacity":0}}'>
-    <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
-      <rect width="1600" height="900" fill="var(--ink)"/>
-      <!-- night outside the window -->
-      <rect x="250" y="70" width="1100" height="520" fill="#14130f"/>
-      <circle cx="1180" cy="190" r="46" fill="var(--paper)" opacity=".85"/>
-      <g fill="var(--paper)" opacity=".5">
-        <circle cx="360" cy="140" r="2"/><circle cx="520" cy="210" r="1.4"/><circle cx="700" cy="110" r="1.8"/>
-        <circle cx="900" cy="250" r="1.4"/><circle cx="1320" cy="150" r="1.8"/><circle cx="430" cy="320" r="1.3"/>
-      </g>
-      <!-- window frame -->
-      <rect x="250" y="70" width="1100" height="520" fill="none" stroke="#2b2820" stroke-width="18"/>
-      <line x1="800" y1="70" x2="800" y2="590" stroke="#2b2820" stroke-width="12"/>
-      <!-- sill -->
-      <rect x="150" y="590" width="1300" height="26" fill="#2b2820"/>
-      <rect x="150" y="616" width="1300" height="284" fill="#1a1813"/>
-      <!-- warm lamp glow from the right -->
-      <circle cx="1430" cy="470" r="330" fill="var(--warm)" opacity=".10"/>
-      <!-- three pots in shadow -->
-      <g fill="#241f17">
-        <path d="M300 590 l16 -74 h88 l16 74z"/><path d="M300 516 q60 -58 120 0z" fill="#1d2a1d"/>
-        <path d="M980 590 l14 -64 h78 l14 64z"/><path d="M980 526 q53 -50 106 0z" fill="#1d2a1d"/>
-        <path d="M1180 590 l12 -54 h66 l12 54z"/><path d="M1180 536 q45 -42 90 0z" fill="#1d2a1d"/>
-      </g>
-      <!-- THE pot: lit, and it carries a miniature of the next shot, so the zoom IS the cut -->
-      <rect x="590" y="430" width="240" height="162" fill="var(--warm)" opacity=".16"/>
-      <svg id="thepot" x="600" y="438" width="220" height="124" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"><use href="#table-art"/></svg>
+  <div class="cam layer-ledger" data-kf='{"0":{"fit":"#a-sheet"},"0.05":{"fit":"#a-sheet"},"0.10":{"fit":"#a-join"},"0.125":{"fit":"#a-join","opacity":0}}' data-kf-portrait='{"0":{"fit":"#a-sheet-p"},"0.05":{"fit":"#a-sheet-p"},"0.10":{"fit":"#a-join-p"},"0.125":{"fit":"#a-join-p","opacity":0}}'>
+    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice">
+      <image href="hero/ledger.avif" x="0" y="0" width="1672" height="941"/>
+      <rect id="a-sheet" x="120" y="30" width="980" height="551" fill="none"/>
+      <rect id="a-join" x="555" y="28" width="1089" height="613" fill="none"/>
+      <rect id="a-sheet-p" x="300" y="60" width="420" height="880" fill="none"/>
+      <rect id="a-join-p" x="900" y="0" width="772" height="941" fill="none"/>
     </svg>
   </div>
-
-  <!-- Shot 2: the table. The pot is on a kitchen scale, the phone beside it. Dive into the phone. -->
-  <div class="cam layer-room" data-kf-portrait='{"0.34":{"opacity":0},"0.38":{"opacity":1},"0.62":{"x":"-30vw"},"0.97":{"fit":"#screen-main"}}' data-kf='{"0.34":{"opacity":0},"0.38":{"opacity":1},"0.62":{"scale":1.05,"x":"-2vw"},"0.78":{"scale":1.4,"x":"22vw","y":"-10vh"},"0.88":{"scale":1.4,"x":"22vw","y":"-10vh"},"0.97":{"fit":"#screen"}}'>
-    <svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"><g id="table-art">
-      <rect width="1600" height="900" fill="#1a1813"/>
-      <circle cx="400" cy="300" r="420" fill="var(--warm)" opacity=".10"/>
-      <!-- table top -->
-      <rect x="0" y="610" width="1600" height="290" fill="#2b2820"/>
-      <rect x="0" y="600" width="1600" height="12" fill="#3a352a"/>
-      <!-- the plant, lit -->
-      <g>
-        <path d="M300 600 l26 -128 h150 l26 128z" fill="#8C3A2A"/>
-        <path d="M326 472 q75 -24 150 0z" fill="#241f17"/>
-        <path d="M400 472 q-10 -92 -72 -120 q58 -8 76 70 q14 -82 76 -94 q-54 46 -66 144z" fill="#2F5D3A"/>
-        <ellipse cx="330" cy="356" rx="56" ry="34" fill="#356b42"/>
-        <ellipse cx="474" cy="338" rx="50" ry="31" fill="#2F5D3A"/>
-      </g>
-      <!-- the kitchen scale under it -->
-      <rect x="268" y="600" width="256" height="20" rx="4" fill="#c9c0a8"/>
-      <rect x="268" y="620" width="256" height="30" rx="4" fill="#8e8775"/>
-      <rect x="330" y="626" width="130" height="18" rx="3" fill="#1a1813"/>
-      <text x="395" y="641" text-anchor="middle" font-family="'Martian Mono',monospace" font-size="15" fill="#d8ffe2">218 g</text>
-      <!-- the phone, propped, screen facing us -->
-      <rect x="880" y="250" width="420" height="640" rx="34" fill="#15140f"/>
-      <rect x="896" y="266" width="388" height="608" rx="24" fill="#2b2820"/>
-      <g id="screen">
-        <rect x="904" y="274" width="372" height="592" rx="18" fill="#F5F0E2"/>
-        <rect id="screen-main" x="904" y="274" width="372" height="592" fill="none"/>
-        <!-- A miniature of demo view 1, inset to the same proportion the real
-             mock uses for its column, so the two frames match at the cut. -->
-        <rect x="926" y="300" width="96" height="9" rx="2" fill="#22201A"/>
-        <rect x="926" y="322" width="324" height="1.5" fill="#C9C0A8"/>
-        <g>
-          <rect x="926" y="336" width="44" height="44" rx="3" fill="#E3DBC6"/>
-          <rect x="984" y="344" width="120" height="11" rx="2" fill="#22201A"/>
-          <rect x="984" y="363" width="168" height="8" rx="2" fill="#5F5847"/>
-          <rect x="926" y="394" width="324" height="1" fill="#C9C0A8"/>
-          <rect x="926" y="408" width="44" height="44" rx="3" fill="#E3DBC6"/>
-          <rect x="984" y="416" width="140" height="11" rx="2" fill="#22201A"/>
-          <rect x="984" y="435" width="150" height="8" rx="2" fill="#8C3A2A"/>
-          <rect x="926" y="466" width="324" height="1" fill="#C9C0A8"/>
-          <rect x="926" y="480" width="44" height="44" rx="3" fill="#E3DBC6"/>
-          <rect x="984" y="488" width="112" height="11" rx="2" fill="#22201A"/>
-          <rect x="984" y="507" width="176" height="8" rx="2" fill="#5F5847"/>
-          <rect x="926" y="538" width="324" height="1" fill="#C9C0A8"/>
-          <rect x="926" y="552" width="44" height="44" rx="3" fill="#E3DBC6"/>
-          <rect x="984" y="560" width="96" height="11" rx="2" fill="#22201A"/>
-          <rect x="984" y="579" width="130" height="8" rx="2" fill="#5F5847"/>
-        </g>
-      </g>
-      <!-- watering can, pushed to the back, out of the light -->
-      <g fill="#241f17" opacity=".9">
-        <rect x="1380" y="470" width="150" height="130" rx="10"/>
-        <path d="M1380 520 l-80 -40 l10 24 l70 32z"/>
-        <path d="M1530 500 q44 20 0 60z" fill="none" stroke="#241f17" stroke-width="12"/>
-      </g>
-    </g></svg>
+  <div class="cam layer-shelf" data-kf='{"0.10":{"opacity":0,"fit":"#b-join"},"0.125":{"opacity":1,"fit":"#b-join"},"0.155":{"fit":"#b-row"},"0.205":{"fit":"#b-row"},"0.245":{"fit":"#b-pot"},"0.265":{"fit":"#b-pot","opacity":0}}' data-kf-portrait='{"0.10":{"opacity":0,"fit":"#b-join-p"},"0.125":{"opacity":1,"fit":"#b-join-p"},"0.155":{"fit":"#b-row-p"},"0.205":{"fit":"#b-row-p"},"0.245":{"fit":"#b-pot-p"},"0.265":{"fit":"#b-pot-p","opacity":0}}'>
+    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice">
+      <image href="hero/shelf-evening.avif" x="0" y="0" width="1672" height="941"/>
+      <rect id="b-join" x="144" y="7" width="1222" height="688" fill="none"/>
+      <rect id="b-row" x="470" y="290" width="1130" height="636" fill="none"/>
+      <rect id="b-pot" x="593" y="301" width="1079" height="607" fill="none"/>
+      <rect id="b-join-p" x="820" y="0" width="772" height="941" fill="none"/>
+      <rect id="b-row-p" x="980" y="300" width="460" height="620" fill="none"/>
+      <rect id="b-pot-p" x="950" y="300" width="480" height="620" fill="none"/>
+    </svg>
+  </div>
+  <div class="cam layer-finger" data-kf='{"0.235":{"opacity":0,"fit":"#c-all"},"0.265":{"opacity":1,"fit":"#c-all"},"0.31":{"fit":"#c-pot"},"0.365":{"fit":"#c-soil"},"0.40":{"fit":"#c-soil"}}' data-kf-portrait='{"0.235":{"opacity":0,"fit":"#c-all-p"},"0.265":{"opacity":1,"fit":"#c-all-p"},"0.31":{"fit":"#c-pot-p"},"0.365":{"fit":"#c-soil-p"},"0.40":{"fit":"#c-soil-p"}}'>
+    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice">
+      <image href="hero/finger-test.avif" x="0" y="0" width="1672" height="941"/>
+      <rect id="c-all" x="0" y="0" width="1672" height="941" fill="none"/>
+      <rect id="c-pot" x="120" y="170" width="1250" height="703" fill="none"/>
+      <rect id="c-soil" x="394" y="344" width="700" height="394" fill="none"/>
+      <rect id="c-all-p" x="450" y="0" width="772" height="941" fill="none"/>
+      <rect id="c-pot-p" x="527" y="0" width="435" height="941" fill="none"/>
+      <rect id="c-soil-p" x="484" y="0" width="520" height="941" fill="none"/>
+    </svg>
+  </div>
+  <div class="reveal" id="reveal-section">
+  <div class="cam layer-section" data-kf='{"0.365":{"fit":"#d-pot"},"0.405":{"fit":"#d-crust"},"0.455":{"fit":"#d-crust"},"0.50":{"fit":"#d-roots"},"0.545":{"fit":"#d-pot"},"0.575":{"fit":"#d-pot","opacity":0}}' data-kf-portrait='{"0.365":{"fit":"#d-pot-p"},"0.405":{"fit":"#d-crust-p"},"0.455":{"fit":"#d-crust-p"},"0.50":{"fit":"#d-roots-p"},"0.545":{"fit":"#d-pot-p"},"0.575":{"fit":"#d-pot-p","opacity":0}}'>
+    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice">
+      <image href="hero/section.avif" x="0" y="0" width="1672" height="941"/>
+      <rect id="d-pot" x="438" y="269" width="880" height="495" fill="none"/>
+      <rect id="d-crust" x="536" y="158" width="700" height="394" fill="none"/>
+      <rect id="d-roots" x="576" y="427" width="620" height="349" fill="none"/>
+      <rect id="d-pot-p" x="640" y="230" width="420" height="560" fill="none"/>
+      <rect id="d-crust-p" x="700" y="180" width="380" height="480" fill="none"/>
+      <rect id="d-roots-p" x="720" y="420" width="400" height="500" fill="none"/>
+    </svg>
+  </div>
+  </div>
+  <div class="cam layer-table" data-kf='{"0.545":{"opacity":0,"fit":"#e-pot"},"0.575":{"opacity":1,"fit":"#e-pot"},"0.66":{"fit":"#e-wide"},"0.93":{"fit":"#e-phone"}}' data-kf-portrait='{"0.545":{"opacity":0,"fit":"#e-pot-p"},"0.575":{"opacity":1,"fit":"#e-pot-p"},"0.66":{"fit":"#e-wide-p"},"0.93":{"fit":"#e-phone-p"}}'>
+    <svg viewBox="0 0 1672 941" preserveAspectRatio="xMidYMid slice">
+      <image href="hero/scale-table.avif" x="0" y="0" width="1672" height="941"/>
+      <rect id="e-pot" x="543" y="186" width="1045" height="588" fill="none"/>
+      <rect id="e-wide" x="0" y="0" width="1672" height="941" fill="none"/>
+      <rect id="e-phone" x="627" y="468" width="1045" height="588" fill="none"/>
+      <rect id="e-pot-p" x="848" y="0" width="435" height="941" fill="none"/>
+      <rect id="e-wide-p" x="933" y="0" width="435" height="941" fill="none"/>
+      <rect id="e-phone-p" x="1037" y="75" width="400" height="866" fill="none"/>
+    </svg>
   </div>
 </div>
 
@@ -181,31 +182,43 @@
     <div class="hero-title">
       <p class="pixel-label">Offline · No account · Open source</p>
       <h1>ThirstTrap</h1>
-      <p class="lede">A plant diary that weighs the pot. Water has weight, so a pot can tell you when it actually needs watering, instead of you guessing on a Sunday.</p>
+      <p class="lede">A plant diary that weighs the pot. Water has weight, so a pot can tell you when it actually needs watering, instead of you watering everything on the same evening.</p>
       <div class="cta">
         <a class="ghost" href="https://github.com/Dheirav/ThirstTrap">Get the APK</a>
         <a class="ghost" href="https://github.com/Dheirav/ThirstTrap">Read the code</a>
       </div>
     </div>
 
-    <div class="beat" data-at="0.14">
-      <p class="pixel-label">Tuesday, 11pm</p>
-      <p>Priya pushes a finger into the soil. Dry. She reaches for the watering can.</p>
+    <div class="beat" data-at="0.13" data-until="0.18">
+      <p class="pixel-label">Every evening</p>
+      <p>He watered all four, because that is what looking after something feels like. It is also how you drown one.</p>
     </div>
-    <div class="beat" data-at="0.32">
-      <p class="pixel-label">The top three centimetres</p>
-      <p>They dry first. Underneath, it has been wet for nine days.</p>
+    <div class="beat" data-at="0.27" data-until="0.33">
+      <p class="pixel-label">Then he started checking</p>
+      <p>Finger in the soil, water only the ones that are dry. That was a real improvement.</p>
     </div>
-    <div class="beat" data-at="0.50">
-      <p class="pixel-label">Root rot</p>
-      <p>More houseplants are killed by kindness than by drought.</p>
+    <div class="beat" data-at="0.40" data-until="0.45">
+      <p class="pixel-label">Two centimetres down</p>
+      <p>The finger reaches an inch. The pot is twelve deep, and the bottom has been wet for nine days.</p>
     </div>
-    <div class="beat" data-at="0.68">
-      <p class="pixel-label">Four pots, one kitchen scale</p>
-      <p>She stopped trusting her finger and started writing the weights down.</p>
+    <div class="beat" data-at="0.51" data-until="0.55">
+      <p class="pixel-label">And the test is not free</p>
+      <p>Each push tears the fine roots it is measuring.</p>
     </div>
-    <div class="beat beat-big" data-at="0.83">
+    <div class="beat" data-at="0.61" data-until="0.65">
+      <p class="pixel-label">One kitchen scale</p>
+      <p>Water has weight. He stopped asking the soil and started writing the number down.</p>
+    </div>
+    <div class="beat beat-big" data-at="0.71" data-until="0.75">
       <p>A pot loses weight as it dries.<br>Steadily enough to fit a line to.</p>
+    </div>
+    <div class="beat" data-at="0.81" data-until="0.84">
+      <p class="pixel-label">And when it cannot tell</p>
+      <p>It says so, in eight different ways, each one naming what would fix it.</p>
+    </div>
+    <div class="beat" data-at="0.90" data-until="0.93">
+      <p class="pixel-label">It keeps no score</p>
+      <p>A missed day is a day when nothing needed doing. Nobody is counting.</p>
     </div>
   </section>
 
@@ -267,7 +280,12 @@
 
 <!-- ================= DEMO STAGE ================= -->
 <div class="demo-stage" id="demo-stage" aria-label="ThirstTrap walkthrough">
-  <div class="demo-screen"></div>
+  <div class="demo-screen">
+    <div class="phone">
+      <div class="status" aria-hidden="true"><span>21:40</span><span>IST</span></div>
+      <div class="screen"></div>
+    </div>
+  </div>
 
   <!-- 1. the plants list, as it stood on 25 September -->
   <template data-view="list">
@@ -448,13 +466,28 @@
   const stage = $('#demo-stage');
   const scene2d = $('.scene2d');
   const cam = keyframed(scene2d);
-  const beat = beats(storyTrack);
+  const beat = beats(storyTrack, { win: 0.03 });
+
+  const seg = (p, a, b) => Math.max(0, Math.min(1, (p - a) / (b - a)));
+  const ease = (t) => t * t * (3 - 2 * t);
+
+  // The one join that is neither a match nor a cut. The finger shot pushes into
+  // the soil until the frame is a near-uniform dark field, and the cut pot is
+  // then opened out of that darkness from the point the fingertip was at. It
+  // has to be a mask rather than a crossfade because the finger plate is 46%
+  // near-black and the section plate is 10%: dissolving one into the other puts
+  // a grey wash over the whole screen at the midpoint and announces itself.
+  const revealEl = $('#reveal-section');
+  function revealSection(p) {
+    revealEl.style.setProperty('--mr', (-7 + ease(seg(p, 0.365, 0.415)) * 122).toFixed(2));
+  }
 
   gsap.to('.hero-title', { yPercent: -35, opacity: 0, ease: 'none',
     scrollTrigger: { trigger: storyTrack, start: 'top top', end: '+=80%', scrub: true } });
 
   track(storyTrack, (p) => {
     cam(p);
+    revealSection(p);
     beat(p);
     const o = range(p, 0.965, 0.995);
     layer(stage, o);
@@ -462,9 +495,9 @@
     document.documentElement.classList.toggle('on-paper', o > 0.5);
   });
 
-  // The cursor is Priya's. Curved paths and a human typing rhythm are the engine's;
+  // The cursor is Dheirav's. Curved paths and a human typing rhythm are the engine's;
   // the pauses are chosen so each chapter reads rather than races.
-  const demo = createDemo(stage, { cursorName: 'Priya' });
+  const demo = createDemo(stage, { cursorName: 'Dheirav', screen: $('.phone .screen') });
   demo.show('list');
 
   demo
