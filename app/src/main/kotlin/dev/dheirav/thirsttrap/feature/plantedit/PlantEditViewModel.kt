@@ -4,6 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.dheirav.thirsttrap.domain.DEFAULT_DEPLETION_TRIGGER_PCT
+import dev.dheirav.thirsttrap.domain.carePrefill
+import dev.dheirav.thirsttrap.domain.findSpeciesCare
 import dev.dheirav.thirsttrap.domain.CareEvent
 import dev.dheirav.thirsttrap.domain.CareEventType
 import dev.dheirav.thirsttrap.domain.Medium
@@ -64,12 +67,23 @@ data class PlantEditUiState(
      * Whole percent, because a slider over 0.05 steps of a Double invites
      * 0.6499999 into the database. Converted at the edges.
      */
-    val depletionTriggerPct: Int = 50,
+    // The same constant the prefill tests against. Two copies of this number
+    // would drift, and the failure is silent: the trigger simply stops being
+    // prefilled, with nothing to notice.
+    val depletionTriggerPct: Int = DEFAULT_DEPLETION_TRIGGER_PCT,
     val weightTracked: Boolean = true,
     val weighingMethod: dev.dheirav.thirsttrap.domain.WeighingMethod =
         dev.dheirav.thirsttrap.domain.WeighingMethod.WHOLE_POT,
     val weighingStep: String = "1",
     /** What the plant had when the form opened, to spot a real change on save. */
+    /**
+     * The species whose notes filled part of this form, and which fields they
+     * filled. Held so the form can say so, because a value that appears in a
+     * field the user did not type is otherwise indistinguishable from one they
+     * typed and forgot.
+     */
+    val prefillFrom: String? = null,
+    val prefilled: List<String> = emptyList(),
     val originalWeighingMethod: dev.dheirav.thirsttrap.domain.WeighingMethod? = null,
     val originalWeighingStep: Double? = null,
     val archived: Boolean = false,
@@ -156,7 +170,49 @@ class PlantEditViewModel @Inject constructor(
     }
 
     fun onName(v: String) { _state.value = _state.value.copy(name = v) }
-    fun onSpecies(v: String) { _state.value = _state.value.copy(species = v) }
+    /**
+     * Typing a species fills the care profile from the catalogue.
+     *
+     * asTargetDryness() was documented as "prefills the plant's own care
+     * profile" and had zero callers, while CareViewModel.applySuggestions
+     * copied the same four values onto a plant behind a four-step path the user
+     * had to find after saving. The numbers were already in the app; nothing
+     * put them where they were needed.
+     *
+     * A field the user has touched always wins, which is the same precedence
+     * CareViewModel uses: fill only what is still at its default. That is why
+     * this cannot overwrite an answer, only supply a missing one.
+     */
+    fun onSpecies(v: String) {
+        val s = _state.value
+        val care = findSpeciesCare(v)
+        if (care == null) {
+            // Clearing or changing the species away from a match clears the
+            // attribution, not the values: the numbers are the plant's now.
+            _state.value = s.copy(species = v, prefillFrom = null, prefilled = emptyList())
+            return
+        }
+        if (!s.isNew) {
+            _state.value = s.copy(species = v)
+            return
+        }
+        val fill = carePrefill(
+            care = care,
+            currentLight = s.lightNeeds,
+            currentDryness = s.targetDryness,
+            currentMedium = s.medium,
+            currentTriggerPct = s.depletionTriggerPct,
+        )
+        _state.value = s.copy(
+            species = v,
+            lightNeeds = fill.light ?: s.lightNeeds,
+            targetDryness = fill.dryness ?: s.targetDryness,
+            medium = fill.medium ?: s.medium,
+            depletionTriggerPct = fill.depletionTriggerPct ?: s.depletionTriggerPct,
+            prefillFrom = if (fill.isEmpty) s.prefillFrom else care.name,
+            prefilled = if (fill.isEmpty) s.prefilled else fill.filled,
+        )
+    }
     fun onLocation(v: String) { _state.value = _state.value.copy(location = v) }
     fun onContainer(v: String) { _state.value = _state.value.copy(containerDesc = v) }
     fun onMedium(v: Medium) { _state.value = _state.value.copy(medium = v) }

@@ -1,5 +1,19 @@
 package dev.dheirav.thirsttrap.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -324,5 +338,85 @@ fun AlmanacSheet(
     ) {
         Rule()
         content()
+    }
+}
+
+/**
+ * A section that can be folded away, in the almanac's own voice.
+ *
+ * The app had no collapse component at all, which is why every screen that
+ * wanted progressive disclosure reached for an `if` on state instead. That
+ * hides a field without telling anyone it exists, which is concealment rather
+ * than disclosure: the point of the pattern is that the reader can see there is
+ * more and choose to look.
+ *
+ * The header is [SectionHead]'s typography so a folded section and an open one
+ * are the same kind of thing, with the current value on the right. That summary
+ * is what the section HOLDS, never how much of it is missing. No count, no
+ * "3 of 7", no meter: a completeness indicator is a score, and a bar filling
+ * toward full is the grammar of task completion this design already refuses.
+ *
+ * The chevron is drawn rather than imported. core/ui has no icon source, the
+ * project having dropped material-icons-extended for shipping several thousand
+ * glyphs to use sixteen, and two hairlines suit the page better than a filled
+ * Material arrow would.
+ */
+@Composable
+fun Disclosure(
+    label: String,
+    modifier: Modifier = Modifier,
+    summary: String? = null,
+    initiallyOpen: Boolean = false,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    var open by remember { mutableStateOf(initiallyOpen) }
+    Column(modifier.fillMaxWidth()) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clickable { open = !open }
+                .semantics {
+                    contentDescription =
+                        if (open) "$label, open. Tap to fold away." else "$label, folded. Tap to open."
+                }
+                .padding(top = 20.dp, bottom = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                label.uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                letterSpacing = 0.18.em,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            if (summary != null) {
+                Text(
+                    summary,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.outline,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f).padding(start = 12.dp),
+                    textAlign = TextAlign.End,
+                )
+            } else {
+                Column(Modifier.weight(1f)) {}
+            }
+            Chevron(open, Modifier.padding(start = 10.dp))
+        }
+        Rule()
+        AnimatedVisibility(open) { Column(content = content) }
+    }
+}
+
+/** Two hairlines meeting at a point, pointing down when folded. */
+@Composable
+private fun Chevron(open: Boolean, modifier: Modifier = Modifier) {
+    val turn by animateFloatAsState(if (open) 180f else 0f, label = "chevron")
+    val ink = MaterialTheme.colorScheme.onSurfaceVariant
+    Canvas(modifier.size(12.dp).rotate(turn)) {
+        val w = size.width
+        val h = size.height
+        drawLine(ink, Offset(0f, h * 0.3f), Offset(w / 2f, h * 0.75f), 1.5.dp.toPx(), StrokeCap.Round)
+        drawLine(ink, Offset(w / 2f, h * 0.75f), Offset(w, h * 0.3f), 1.5.dp.toPx(), StrokeCap.Round)
     }
 }
