@@ -1,6 +1,8 @@
 package dev.dheirav.thirsttrap.feature.ambient
 
 import androidx.compose.foundation.layout.Arrangement
+import dev.dheirav.thirsttrap.ui.DialogText
+import dev.dheirav.thirsttrap.ui.AlmanacDialog
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -200,6 +202,11 @@ private val stamp = SimpleDateFormat("d MMM, HH:mm", Locale.getDefault())
 
 @Composable
 private fun AmbientRow(reading: AmbientReading, onDelete: () -> Unit) {
+    // This was the only one of nine destructive actions in the app that fired
+    // on the first tap, and the only one not coloured as destructive. On these
+    // screens a TextButton otherwise means "History" or "Dismiss", so the one
+    // that threw a reading away looked exactly like the ones that do nothing.
+    var confirming by remember { mutableStateOf(false) }
     Card(Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
         Row(Modifier.padding(12.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
@@ -231,7 +238,27 @@ private fun AmbientRow(reading: AmbientReading, onDelete: () -> Unit) {
                     )
                 }
             }
-            TextButton(onClick = onDelete) { Text("Delete") }
+            TextButton(onClick = { confirming = true }) {
+                Text("Delete", color = MaterialTheme.colorScheme.error)
+            }
+            if (confirming) {
+                DeleteReadingDialog(onDismiss = { confirming = false }, onConfirm = onDelete)
+            }
         }
     }
+}
+
+@Composable
+private fun DeleteReadingDialog(onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    AlmanacDialog(
+        title = "Delete this reading?",
+        onDismissRequest = onDismiss,
+        body = { DialogText("The reading goes. Nothing else in the diary changes.") },
+        dismiss = { TextButton(onClick = onDismiss) { Text("Keep it") } },
+        confirm = {
+            TextButton(onClick = { onDismiss(); onConfirm() }) {
+                Text("Delete", color = MaterialTheme.colorScheme.error)
+            }
+        },
+    )
 }

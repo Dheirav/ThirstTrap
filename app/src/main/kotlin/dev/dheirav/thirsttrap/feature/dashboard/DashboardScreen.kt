@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -326,7 +327,6 @@ fun DashboardScreen(
                                 announce(event, "Good call - ${item.plant.name} checked, not thirsty yet")
                             }
                         },
-                        onDetailedWater = { onLogMore(item.plant.id) },
                         onOpen = { onOpenPlant(item.plant.id) },
                         onOpenSheet = { sheetFor = item },
                     )
@@ -402,7 +402,6 @@ private fun PlantCard(
     nowMillis: Long,
     onQuickWater: () -> Unit,
     onQuickCheck: () -> Unit,
-    onDetailedWater: () -> Unit,
     onOpen: () -> Unit,
     onOpenSheet: () -> Unit,
 ) {
@@ -579,15 +578,26 @@ private fun PlantCard(
                     onClick = onQuickCheck,
                 )
 
-            // Tap logs immediately; long-press opens the detailed entry, for
-            // the times you want to record something other than the usual.
+                // Dead space between two targets that mean opposite things.
+                // Fitts's Law is usually quoted as "big and close"; its other
+                // half is that two targets sharing a boundary have a mis-tap
+                // rate set by the boundary, not by their size. Both are 48dp
+                // and they were flush, so the miss between "still wet" and
+                // "watered" was a wrong entry in the diary rather than a near
+                // miss. I made that exact mistake on this row.
+                Spacer(Modifier.width(8.dp))
+
+                // One long press per card. The row already opens the quick
+                // sheet on long press, and this held a second long press with
+                // an invisible boundary between them, so holding the row and
+                // holding the droplet did different things. The sheet's "More"
+                // calls onLogMore with the same plant id, so nothing is lost.
                 LogAction(
                     icon = AppIcons.waterDrop,
                     loggedIcon = AppIcons.waterDropFilled,
-                    label = "Log watering for ${plant.name}. Long press for amount and method.",
+                    label = "Log watering for ${plant.name}",
                     justLogged = item.lastWateredMillis,
                     onClick = onQuickWater,
-                    onLongClick = onDetailedWater,
                 )
             }
         }

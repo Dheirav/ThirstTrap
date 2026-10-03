@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.propagation
 
+import dev.dheirav.thirsttrap.ui.OutlinedButton
 import dev.dheirav.thirsttrap.ui.ColumnHead
 import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
@@ -204,21 +205,15 @@ private fun CuttingCard(
                     )
                 }
             }
-            if (card.stage.previous != null) {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        AppIcons.arrowBack,
-                        contentDescription = "Move back to ${card.stage.previous!!.label}",
-                    )
-                }
+            // These move a cutting between stages, and they were the only two
+            // of 32 IconButtons not in a top bar: a bare arrowBack 20dp from
+            // the real back arrow, meaning something else entirely. Naming the
+            // stage says what the tap does, which an arrow cannot.
+            card.stage.previous?.let { prev ->
+                OutlinedButton(onClick = onBack) { Text(prev.label) }
             }
-            if (card.stage.next != null) {
-                IconButton(onClick = onForward) {
-                    Icon(
-                        AppIcons.arrowForward,
-                        contentDescription = "Move on to ${card.stage.next!!.label}",
-                    )
-                }
+            card.stage.next?.let { next ->
+                OutlinedButton(onClick = onForward) { Text(next.label) }
             }
         }
     }
