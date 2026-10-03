@@ -34,8 +34,21 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import dev.dheirav.thirsttrap.ui.Rule
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -110,7 +123,7 @@ class MainActivity : ComponentActivity() {
             // which is what made the first-run page flash on every launch.
             val loaded = settings ?: return@setContent
 
-            ThirstTrapTheme(dynamicColor = loaded.dynamicColor) {
+            ThirstTrapTheme {
                 // The first-run page sits in front of everything rather than
                 // being a route, because it is not somewhere you navigate to and
                 // there must be no way to reach it again by accident. Read where
@@ -137,25 +150,41 @@ class MainActivity : ComponentActivity() {
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),
                     bottomBar = {
                         if (showBar) {
-                            NavigationBar {
-                                NavigationBarItem(
-                                    selected = route == Routes.DASHBOARD,
-                                    onClick = { nav.navigate(Routes.DASHBOARD) { popUpTo(Routes.DASHBOARD) { inclusive = true } } },
-                                    icon = { Icon(AppIcons.yard, contentDescription = null) },
-                                    label = { Text(MenuLabels.Tab.PLANTS) },
-                                )
-                                NavigationBarItem(
-                                    selected = route == Routes.DUE,
-                                    onClick = { nav.navigate(Routes.DUE) { launchSingleTop = true } },
-                                    icon = { Icon(AppIcons.notifications, contentDescription = null) },
-                                    label = { Text(MenuLabels.Tab.DUE) },
-                                )
-                                NavigationBarItem(
-                                    selected = route == Routes.SETTINGS,
-                                    onClick = { nav.navigate(Routes.SETTINGS) { launchSingleTop = true } },
-                                    icon = { Icon(AppIcons.settings, contentDescription = null) },
-                                    label = { Text(MenuLabels.Tab.SETTINGS) },
-                                )
+                            // The bar was the last fully rounded shape in the
+                            // app and the only tonal surface nobody chose: the
+                            // pill indicator and the elevation tint are both
+                            // Material defaults. Selection is now marked the
+                            // way every other section break in the app is, with
+                            // a rule, and the bar sits on the page rather than
+                            // above it.
+                            Column {
+                                Rule()
+                                NavigationBar(
+                                    containerColor = MaterialTheme.colorScheme.surface,
+                                    tonalElevation = 0.dp,
+                                ) {
+                                    NavigationBarItem(
+                                        selected = route == Routes.DASHBOARD,
+                                        onClick = { nav.navigate(Routes.DASHBOARD) { popUpTo(Routes.DASHBOARD) { inclusive = true } } },
+                                        icon = { TabMark(route == Routes.DASHBOARD) { Icon(AppIcons.yard, contentDescription = null) } },
+                                        label = { Text(MenuLabels.Tab.PLANTS) },
+                                        colors = flatTabColors(),
+                                    )
+                                    NavigationBarItem(
+                                        selected = route == Routes.DUE,
+                                        onClick = { nav.navigate(Routes.DUE) { launchSingleTop = true } },
+                                        icon = { TabMark(route == Routes.DUE) { Icon(AppIcons.notifications, contentDescription = null) } },
+                                        label = { Text(MenuLabels.Tab.DUE) },
+                                        colors = flatTabColors(),
+                                    )
+                                    NavigationBarItem(
+                                        selected = route == Routes.SETTINGS,
+                                        onClick = { nav.navigate(Routes.SETTINGS) { launchSingleTop = true } },
+                                        icon = { TabMark(route == Routes.SETTINGS) { Icon(AppIcons.settings, contentDescription = null) } },
+                                        label = { Text(MenuLabels.Tab.SETTINGS) },
+                                        colors = flatTabColors(),
+                                    )
+                                }
                             }
                         }
                     },
@@ -439,5 +468,33 @@ class MainActivity : ComponentActivity() {
             this, Manifest.permission.POST_NOTIFICATIONS,
         ) == PackageManager.PERMISSION_GRANTED
         if (!granted) requestNotifications.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
+}
+
+/** The pill indicator removed, so selection is carried by the rule in [TabMark]. */
+@Composable
+private fun flatTabColors() = NavigationBarItemDefaults.colors(
+    indicatorColor = Color.Transparent,
+)
+
+/**
+ * A 2dp rule over the selected tab.
+ *
+ * The app marks every other section break with a rule, so the bottom bar now
+ * does too. The space is reserved whether or not the tab is selected, because a
+ * mark that appears and disappears would shift the icons by 2dp as you move
+ * between tabs.
+ */
+@Composable
+private fun TabMark(selected: Boolean, icon: @Composable () -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            Modifier
+                .padding(bottom = 4.dp)
+                .width(24.dp)
+                .height(2.dp)
+                .background(if (selected) MaterialTheme.colorScheme.onSurface else Color.Transparent),
+        )
+        icon()
     }
 }

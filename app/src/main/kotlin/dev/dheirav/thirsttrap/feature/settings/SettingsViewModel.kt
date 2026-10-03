@@ -41,7 +41,6 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch { _storage.value = maintenance.report() }
     }
 
-    fun setDynamicColor(on: Boolean) = viewModelScope.launch { settings.setDynamicColor(on) }
 
     fun setOnlineSpeciesLookup(on: Boolean) =
         viewModelScope.launch { settings.setOnlineSpeciesLookup(on) }

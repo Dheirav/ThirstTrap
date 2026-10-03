@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import dev.dheirav.thirsttrap.ui.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
@@ -21,7 +21,7 @@ import androidx.compose.material3.Scaffold
 import dev.dheirav.thirsttrap.ui.AlmanacDialog
 import dev.dheirav.thirsttrap.ui.DialogText
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import dev.dheirav.thirsttrap.ui.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

@@ -18,7 +18,7 @@ import dev.dheirav.thirsttrap.ui.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import dev.dheirav.thirsttrap.ui.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.SnackbarDuration

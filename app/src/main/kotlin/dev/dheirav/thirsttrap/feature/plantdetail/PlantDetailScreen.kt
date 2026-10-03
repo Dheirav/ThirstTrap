@@ -32,7 +32,7 @@ import dev.dheirav.thirsttrap.ui.FilledTonalButton
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.MaterialTheme
@@ -62,7 +62,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
 import dev.dheirav.thirsttrap.domain.hasSpeciesCare
 import dev.dheirav.thirsttrap.domain.CareEvent
-import androidx.compose.material3.TextButton
+import dev.dheirav.thirsttrap.ui.TextButton
 import androidx.compose.ui.layout.ContentScale
 import dev.dheirav.thirsttrap.ui.PlantPhoto
 import dev.dheirav.thirsttrap.ui.AlmanacMenu

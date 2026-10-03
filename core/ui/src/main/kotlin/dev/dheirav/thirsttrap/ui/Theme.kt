@@ -1,17 +1,13 @@
 package dev.dheirav.thirsttrap.ui
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 /**
@@ -189,18 +185,18 @@ internal val AppShapes = Shapes(
 @Composable
 fun ThirstTrapTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Default OFF: the app's own palette is the intended look, and dynamic
-    // colour means it is otherwise never seen. Switchable in settings.
-    dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    val context = LocalContext.current
-    val scheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        darkTheme -> DarkScheme
-        else -> LightScheme
-    }
+    // There is one palette and it is this one.
+    //
+    // Material You used to be switchable here, and the switch was a quiet
+    // contradiction: every colour in the app is measured, and ThemeTest fails
+    // the build when body text drops under 4.5:1, when the surface ramp stops
+    // climbing, or when the text tiers collapse into one lightness. Dynamic
+    // colour replaced the whole scheme at runtime with one derived from a
+    // wallpaper, so none of those guarantees survived the toggle being on, and
+    // the look the app was designed around was never seen.
+    val scheme = if (darkTheme) DarkScheme else LightScheme
     MaterialTheme(
         colorScheme = scheme,
         shapes = AppShapes,

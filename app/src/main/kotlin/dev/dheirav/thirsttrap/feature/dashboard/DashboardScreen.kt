@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.dashboard
 
+import dev.dheirav.thirsttrap.ui.BlockHeight
 import dev.dheirav.thirsttrap.ui.MenuLabels
 import dev.dheirav.thirsttrap.ui.AlmanacSheet
 import dev.dheirav.thirsttrap.ui.AlmanacMenu
@@ -44,12 +45,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import dev.dheirav.thirsttrap.ui.FilledTonalButton
 import dev.dheirav.thirsttrap.ui.FilterChip
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
+import dev.dheirav.thirsttrap.ui.FloatingActionButton
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
@@ -57,7 +57,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import dev.dheirav.thirsttrap.ui.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -258,16 +258,7 @@ fun DashboardScreen(
         floatingActionButton = {
             // A ruled block, not a floating one. The shadow was the last thing
             // on the page still pretending to hover above the paper.
-            FloatingActionButton(
-                onClick = onAddPlant,
-                shape = MaterialTheme.shapes.small,
-                elevation = FloatingActionButtonDefaults.elevation(
-                    defaultElevation = 0.dp,
-                    pressedElevation = 0.dp,
-                    focusedElevation = 0.dp,
-                    hoveredElevation = 0.dp,
-                ),
-            ) {
+            FloatingActionButton(onClick = onAddPlant) {
                 Icon(AppIcons.add, contentDescription = "Add a plant")
             }
         },
@@ -800,13 +791,13 @@ private fun QuickLogSheet(
 
         // Both answers, same size and weight. Neither is the primary one.
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            FilledTonalButton(onClick = onWatered, modifier = Modifier.weight(1f).height(SheetBlock)) {
+            FilledTonalButton(onClick = onWatered, modifier = Modifier.weight(1f).height(BlockHeight)) {
                 Text(
                     if (suggestedWaterMl != null) "Watered  ${suggestedWaterMl.toInt()} ml" else "Watered",
                     textAlign = TextAlign.Center,
                 )
             }
-            FilledTonalButton(onClick = onStillWet, modifier = Modifier.weight(1f).height(SheetBlock)) {
+            FilledTonalButton(onClick = onStillWet, modifier = Modifier.weight(1f).height(BlockHeight)) {
                 Text("Still wet")
             }
         }
@@ -814,18 +805,18 @@ private fun QuickLogSheet(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier.padding(top = 10.dp),
         ) {
-            OutlinedButton(onClick = onPhoto, modifier = Modifier.weight(1f).height(SheetBlock)) {
+            OutlinedButton(onClick = onPhoto, modifier = Modifier.weight(1f).height(BlockHeight)) {
                 Text("Photo")
             }
             // The feature the app exists for was three taps inside a plant's
             // overflow menu, named after its implementation. One tap from the
             // list, and hidden only where weight means nothing.
             if (weighable) {
-                OutlinedButton(onClick = onWeigh, modifier = Modifier.weight(1f).height(SheetBlock)) {
+                OutlinedButton(onClick = onWeigh, modifier = Modifier.weight(1f).height(BlockHeight)) {
                     Text("Weigh it")
                 }
             }
-            OutlinedButton(onClick = onMore, modifier = Modifier.weight(1f).height(SheetBlock)) {
+            OutlinedButton(onClick = onMore, modifier = Modifier.weight(1f).height(BlockHeight)) {
                 Text("More")
             }
         }
@@ -838,14 +829,6 @@ private fun QuickLogSheet(
     }
 }
 
-/**
- * One height for all four sheet buttons.
- *
- * "Watered 50 ml" used to wrap onto a second line while its neighbours did not,
- * which made a 2x2 grid of buttons that were not the same size. The amount now
- * sits on one line beside the word.
- */
-private val SheetBlock = 56.dp
 
 /** "every 1 days" is the kind of thing that makes an app feel unfinished. */
 private fun cadenceLabel(avgDays: Double): String = when (val d = avgDays.toInt()) {

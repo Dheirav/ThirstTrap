@@ -14,7 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import dev.dheirav.thirsttrap.ui.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -53,27 +53,6 @@ fun DebugScreen(onBack: () -> Unit, viewModel: DebugViewModel = hiltViewModel())
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text("Appearance", style = MaterialTheme.typography.titleMedium)
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(Modifier.weight(1f)) {
-                    Text("Use system colours")
-                    Text(
-                        "On, the phone's wallpaper theme wins. Off, you see the app's own " +
-                            "muted green palette.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-                Switch(
-                    checked = settings.dynamicColor,
-                    onCheckedChange = viewModel::setDynamicColor,
-                )
-            }
-
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
             Text("Reminders", style = MaterialTheme.typography.titleMedium)
 
             FilledTonalButton(

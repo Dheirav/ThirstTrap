@@ -62,10 +62,6 @@ class DebugViewModel @Inject constructor(
     private val _status = MutableStateFlow("")
     val status: StateFlow<String> = _status.asStateFlow()
 
-    fun setDynamicColor(enabled: Boolean) {
-        viewModelScope.launch { settings.setDynamicColor(enabled) }
-    }
-
     fun fireReminderNow(context: Context) {
         viewModelScope.launch {
             val plant = plants.observePlants().first().firstOrNull()

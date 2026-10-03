@@ -20,7 +20,7 @@ import dev.dheirav.thirsttrap.ui.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import dev.dheirav.thirsttrap.ui.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -53,18 +53,7 @@ fun SettingsScreen(
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            SectionHeader("Appearance")
-            SettingRow(
-                title = "Use system colours",
-                subtitle = "Off shows the app's own green. On follows your wallpaper.",
-            ) {
-                Switch(
-                    checked = settings.dynamicColor,
-                    onCheckedChange = viewModel::setDynamicColor,
-                    modifier = Modifier.semantics { contentDescription = "Use system colours" },
-                )
-            }
-
+            SectionHeader("New plants")
             SettingRow(
                 title = "Offer care notes for a new plant",
                 subtitle = "Just after you add a plant, if there are notes on file for its " +

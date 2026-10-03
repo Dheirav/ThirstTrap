@@ -25,7 +25,6 @@ class SettingsRepositoryImpl @Inject constructor(
     private val context: Context,
 ) : SettingsRepository {
 
-    private val dynamicColorKey = booleanPreferencesKey("dynamic_color")
     private val reminderHourKey = intPreferencesKey("reminder_hour")
     private val triggerKey = doublePreferencesKey("default_depletion_trigger")
     private val dismissedKey = stringSetPreferencesKey("dismissed_diagnostics")
@@ -40,7 +39,6 @@ class SettingsRepositoryImpl @Inject constructor(
     override val settings: Flow<AppSettings> = context.dataStore.data.map { prefs ->
         AppSettings(
             lastExportAtMillis = prefs[lastExportKey],
-            dynamicColor = prefs[dynamicColorKey] ?: false,
             reminderHour = prefs[reminderHourKey] ?: 9,
             defaultDepletionTrigger = prefs[triggerKey] ?: DEFAULT_DEPLETION_TRIGGER,
             // Absent means off. A missing preference must never be read as
@@ -56,10 +54,6 @@ class SettingsRepositoryImpl @Inject constructor(
             // Defaults true, so the absent key has to mean on.
             offerCareOnAdd = prefs[offerCareKey] ?: true,
         )
-    }
-
-    override suspend fun setDynamicColor(enabled: Boolean) {
-        context.dataStore.edit { it[dynamicColorKey] = enabled }
     }
 
     override suspend fun setReminderHour(hour: Int) {
