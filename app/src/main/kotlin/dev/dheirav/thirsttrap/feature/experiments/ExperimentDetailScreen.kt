@@ -10,8 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import dev.dheirav.thirsttrap.ui.Rule
+import dev.dheirav.thirsttrap.ui.FieldLabel
 import dev.dheirav.thirsttrap.ui.FilterChip
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -95,9 +96,9 @@ fun ExperimentDetailScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            HorizontalDivider()
+            Rule()
 
-            Text("Subjects", style = MaterialTheme.typography.labelLarge)
+            FieldLabel("Subjects")
             val byArm = state.experiment!!.subjects.groupBy { it.label }
             if (byArm.isEmpty()) {
                 Text(
@@ -132,7 +133,7 @@ fun ExperimentDetailScreen(
             }
 
             if (!exp.isConcluded && state.candidates.isNotEmpty()) {
-                Text("Add a subject", style = MaterialTheme.typography.labelLarge)
+                FieldLabel("Add a subject")
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     state.candidates.forEach { p ->
                         FilterChip(
@@ -144,13 +145,13 @@ fun ExperimentDetailScreen(
                 }
             }
 
-            HorizontalDivider()
+            Rule()
 
             if (exp.isConcluded) {
-                Text("Conclusion", style = MaterialTheme.typography.labelLarge)
+                FieldLabel("Conclusion")
                 Text(exp.conclusion.orEmpty(), style = MaterialTheme.typography.bodyMedium)
             } else {
-                Text("Conclude", style = MaterialTheme.typography.labelLarge)
+                FieldLabel("Conclude")
                 Text(
                     "One way, on purpose: a conclusion that can be rewritten later is a " +
                         "lab notebook in pencil. Getting it wrong is what the next " +

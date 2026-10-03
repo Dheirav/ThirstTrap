@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.postmortem
 
+import dev.dheirav.thirsttrap.ui.Rule
+import dev.dheirav.thirsttrap.ui.SectionHead
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +18,6 @@ import androidx.compose.foundation.verticalScroll
 import dev.dheirav.thirsttrap.ui.Button
 import dev.dheirav.thirsttrap.ui.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -84,7 +85,7 @@ fun PostMortemScreen(onDone: () -> Unit, viewModel: PostMortemViewModel = hiltVi
             )
 
             if (state.photos.isNotEmpty()) {
-                Text("How it looked", style = MaterialTheme.typography.titleSmall)
+                SectionHead("How it looked")
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(state.photos.sortedBy { it.takenAtMillis }, key = { it.id }) { photo ->
                         PlantPhoto(
@@ -97,8 +98,8 @@ fun PostMortemScreen(onDone: () -> Unit, viewModel: PostMortemViewModel = hiltVi
             }
 
             recap?.let { r ->
-                HorizontalDivider()
-                Text("The record", style = MaterialTheme.typography.titleSmall)
+                Rule()
+                SectionHead("The record")
                 Text(
                     buildString {
                         r.daysOwned?.let { append("Logged for $it days. ") }
@@ -119,7 +120,7 @@ fun PostMortemScreen(onDone: () -> Unit, viewModel: PostMortemViewModel = hiltVi
                 }
 
                 if (r.keyEvents.isNotEmpty()) {
-                    Text("Things that changed", style = MaterialTheme.typography.titleSmall)
+                    SectionHead("Things that changed")
                     r.keyEvents.forEach { e ->
                         Text(
                             "${dateOf(e.timestampMillis, e.tzOffsetMinutes)} · ${e.type.label}" +
@@ -131,7 +132,7 @@ fun PostMortemScreen(onDone: () -> Unit, viewModel: PostMortemViewModel = hiltVi
                 }
             }
 
-            HorizontalDivider()
+            Rule()
 
             OutlinedTextField(
                 value = state.cause,

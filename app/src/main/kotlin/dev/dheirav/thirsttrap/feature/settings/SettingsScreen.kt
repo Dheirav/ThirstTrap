@@ -10,11 +10,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.AlmanacDialog
 import dev.dheirav.thirsttrap.ui.DialogText
 import dev.dheirav.thirsttrap.ui.ScreenTitle
+import dev.dheirav.thirsttrap.ui.SectionHead
 import dev.dheirav.thirsttrap.ui.FilterChip
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import dev.dheirav.thirsttrap.ui.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -53,7 +54,7 @@ fun SettingsScreen(
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            SectionHeader("New plants")
+            SectionHead("New plants")
             SettingRow(
                 title = "Offer care notes for a new plant",
                 subtitle = "Just after you add a plant, if there are notes on file for its " +
@@ -71,8 +72,7 @@ fun SettingsScreen(
                 )
             }
 
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
-            SectionHeader("Network")
+            SectionHead("Network")
             SettingRow(
                 title = "Look up unknown plant names online",
                 subtitle = "Off by default, and the only thing in the app that can send " +
@@ -95,8 +95,7 @@ fun SettingsScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
-            SectionHeader("Reminders")
+            SectionHead("Reminders")
             Text(
                 "When to check for plants that need a look",
                 style = MaterialTheme.typography.bodySmall,
@@ -131,8 +130,7 @@ fun SettingsScreen(
             // and it is now the only thing the screen claims.
 
 
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
-            SectionHeader("Watering")
+            SectionHead("Watering")
             Text(
                 "How dry a new plant is allowed to get before it is worth watering. " +
                     "Succulents want more, ferns want less. Each plant can override this.",
@@ -152,8 +150,7 @@ fun SettingsScreen(
                 }
             }
 
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
-            SectionHeader("Extras")
+            SectionHead("Extras")
             SettingRow(
                 title = "Show the specialist tools",
                 subtitle = "Pot stickers and the scanner, experiments, and logging room " +
@@ -170,8 +167,7 @@ fun SettingsScreen(
                 )
             }
 
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
-            SectionHeader("Help")
+            SectionHead("Help")
             // Two buttons, because there were two intentions behind one. The
             // single button read "Something is not working" and opened a list
             // of five pages explaining how the app works, so it promised
@@ -183,8 +179,7 @@ fun SettingsScreen(
                 Text("Something is wrong")
             }
 
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
-            SectionHeader("Your data")
+            SectionHead("Your data")
             OutlinedButton(onClick = onOpenBackup, modifier = Modifier.fillMaxWidth()) {
                 Text("Backup and restore")
             }
@@ -251,7 +246,7 @@ fun SettingsScreen(
             }
 
             if (BuildConfig.DEBUG) {
-                HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                Rule(Modifier.padding(vertical = 8.dp))
                 TextButton(onClick = onOpenDebug) { Text("Debug tools") }
             }
 
@@ -265,15 +260,6 @@ fun SettingsScreen(
     }
 }
 
-@Composable
-private fun SectionHeader(text: String) {
-    Text(
-        text,
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.SemiBold,
-        modifier = Modifier.padding(top = 4.dp),
-    )
-}
 
 @Composable
 private fun SettingRow(title: String, subtitle: String, control: @Composable () -> Unit) {

@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.diagnose
 
+import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +14,6 @@ import androidx.compose.foundation.verticalScroll
 import dev.dheirav.thirsttrap.ui.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -146,7 +146,7 @@ fun DiagnoseScreen(onBack: () -> Unit, onLogEvent: (() -> Unit)? = null) {
                         Text("· $it", style = MaterialTheme.typography.bodyMedium)
                     }
 
-                    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                    Rule(Modifier.padding(vertical = 8.dp))
                     onLogEvent?.let {
                         TextButton(onClick = it, modifier = Modifier.fillMaxWidth()) {
                             Text("Log what you found")

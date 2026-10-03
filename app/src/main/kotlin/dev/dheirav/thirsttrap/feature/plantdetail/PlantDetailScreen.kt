@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.plantdetail
 
+import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.MenuLabels
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
@@ -30,7 +31,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.Row
 import dev.dheirav.thirsttrap.ui.FilledTonalButton
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.DatePicker
@@ -545,7 +545,7 @@ private fun EventRow(
     )
 
     Column {
-        if (isLifeEvent) HorizontalDivider(thickness = 2.dp, color = MaterialTheme.colorScheme.tertiary)
+        if (isLifeEvent) Rule(thickness = 2.dp, color = MaterialTheme.colorScheme.tertiary)
 
         Row(
             Modifier

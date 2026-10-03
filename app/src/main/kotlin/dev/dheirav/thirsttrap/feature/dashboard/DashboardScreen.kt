@@ -47,7 +47,6 @@ import dev.dheirav.thirsttrap.ui.FilledTonalButton
 import dev.dheirav.thirsttrap.ui.FilterChip
 import dev.dheirav.thirsttrap.ui.FloatingActionButton
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -235,7 +234,7 @@ fun DashboardScreen(
                                 onClick = { moreOpen = false; onScanPot() },
                             )
                         }
-                        HorizontalDivider()
+                        Rule()
                         DropdownMenuItem(
                             text = { Text(MenuLabels.Dashboard.PLACES) },
                             onClick = { moreOpen = false; onOpenPlaces() },

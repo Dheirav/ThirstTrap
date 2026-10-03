@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.plantedit
 
+import dev.dheirav.thirsttrap.ui.FieldLabel
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.layout.Arrangement
@@ -177,7 +178,7 @@ fun PlantEditScreen(
                 modifier = Modifier.fillMaxWidth(),
             )
 
-            Text("Growing medium", style = MaterialTheme.typography.labelLarge)
+            FieldLabel("Growing medium")
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Medium.entries.filter { it != Medium.UNKNOWN }.forEach { m ->
                     FilterChip(
@@ -243,7 +244,7 @@ fun PlantEditScreen(
             // Only once the pot is actually being weighed. The method and the
             // scale's step are what make one reading comparable to the next.
             if (state.medium != Medium.WATER && state.weightTracked) {
-                Text("How you weigh it", style = MaterialTheme.typography.labelLarge)
+                FieldLabel("How you weigh it")
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     WeighingMethod.entries.forEach { m ->
                         FilterChip(
@@ -297,7 +298,7 @@ fun PlantEditScreen(
                 }
             }
 
-            Text("Where it came from", style = MaterialTheme.typography.labelLarge)
+            FieldLabel("Where it came from")
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 PlantSource.entries.filter { it != PlantSource.UNKNOWN }.forEach { s ->
                     FilterChip(
@@ -316,7 +317,7 @@ fun PlantEditScreen(
             }
 
             if (state.isNew) {
-                Text("When did you last water it?", style = MaterialTheme.typography.labelLarge)
+                FieldLabel("When did you last water it?")
                 Text(
                     "A plant you add today already has a history. This starts its first " +
                         "reminder from the right day.",

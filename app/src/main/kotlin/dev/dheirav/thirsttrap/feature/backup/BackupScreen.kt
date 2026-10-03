@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.backup
 
+import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -16,7 +17,6 @@ import androidx.compose.foundation.verticalScroll
 import dev.dheirav.thirsttrap.ui.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -95,7 +95,7 @@ fun BackupScreen(onBack: () -> Unit, viewModel: BackupViewModel = hiltViewModel(
                 modifier = Modifier.fillMaxWidth(),
             ) { Text("Export a backup") }
 
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            Rule(Modifier.padding(vertical = 8.dp))
 
             Text("Restore", style = MaterialTheme.typography.titleMedium)
             Text(

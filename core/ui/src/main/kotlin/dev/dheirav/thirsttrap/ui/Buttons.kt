@@ -40,6 +40,29 @@ import androidx.compose.material3.TextButton as M3TextButton
  *  - **A rule, not a fill, for the quiet ones.** An outlined button in an
  *    almanac is a box drawn with a rule.
  */
+/*
+ * THE VOCABULARY. Which affordance means what.
+ *
+ * The shapes were fixed here before the meanings were, so the same committing
+ * action was a filled Button on nine screens and a FilledTonalButton on two. A
+ * filled and a tonal button are two emphasis levels, so using both for one
+ * semantic role tells the reader there is a difference and then declines to say
+ * what it is. That, not the palette, is what "like buttons" was pointing at.
+ *
+ *   Button              writes the record. One per surface.
+ *   FilledTonalButton   starts a job that commits elsewhere, or acts in place.
+ *   OutlinedButton      the alternative, or the non-writing action on the same
+ *                       surface.
+ *   TextButton          explains, dismisses, or acts inside a dialog.
+ *   IconButton          top bar only.
+ *   FilterChip          filters or picks among existing data. Never an action.
+ *
+ * ONE EXCEPTION, and it is load-bearing. Where two actions are both valid
+ * answers to the same question they take equal weight, whatever the rule above
+ * says. "Watered" and "Still wet" are the two taps this product exists to
+ * collect, and promoting either to the filled primary would score watering
+ * above restraint. That is the guilt mechanic the app refuses by design.
+ */
 val BlockHeight = 56.dp
 
 /**

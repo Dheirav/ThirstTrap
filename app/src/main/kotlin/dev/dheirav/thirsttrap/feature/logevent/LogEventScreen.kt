@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.logevent
 
+import dev.dheirav.thirsttrap.ui.FieldLabel
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.layout.Arrangement
 import dev.dheirav.thirsttrap.ui.Card
@@ -73,7 +74,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text("When?", style = MaterialTheme.typography.labelLarge)
+            FieldLabel("When?")
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 WhenLogged.entries.forEach { w ->
                     FilterChip(
@@ -102,7 +103,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
                 )
             }
 
-            Text("What happened?", style = MaterialTheme.typography.labelLarge)
+            FieldLabel("What happened?")
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 CareEventType.entries.filter { it != CareEventType.UNKNOWN }.forEach { t ->
                     FilterChip(
@@ -156,7 +157,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
             }
 
             if (state.showCheckResult) {
-                Text("How did it feel?", style = MaterialTheme.typography.labelLarge)
+                FieldLabel("How did it feel?")
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     listOf(
                         CheckResult.STILL_HEAVY,
@@ -177,7 +178,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
                 // stays underneath, because a one-off feed is a real thing and
                 // not everything you pour has to be inventoried first.
                 if (cupboard.isNotEmpty()) {
-                    Text("From the cupboard", style = MaterialTheme.typography.labelLarge)
+                    FieldLabel("From the cupboard")
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         cupboard.forEach { f ->
                             FilterChip(
@@ -207,7 +208,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
             }
 
             if (state.showMedium) {
-                Text("Moved into", style = MaterialTheme.typography.labelLarge)
+                FieldLabel("Moved into")
                 Text(
                     "This clears the weight calibration - the pot itself changed weight, " +
                         "so every earlier reading is now meaningless.",

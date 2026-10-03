@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.care
 
+import dev.dheirav.thirsttrap.ui.Rule
+import dev.dheirav.thirsttrap.ui.SectionHead
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,8 +16,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.foundation.verticalScroll
 import dev.dheirav.thirsttrap.ui.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import dev.dheirav.thirsttrap.ui.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
+import dev.dheirav.thirsttrap.ui.Button
 import androidx.compose.material3.Icon
 import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -115,12 +116,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
             care.toxicity?.let { Section("Pets", it) }
 
             if (care.commonProblems.isNotEmpty()) {
-                Text(
-                    "What usually goes wrong",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(top = 12.dp),
-                )
+                SectionHead("What usually goes wrong")
                 care.commonProblems.forEach {
                     Text("· $it", style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(top = 4.dp))
@@ -133,13 +129,9 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
                 }
             }
 
-            HorizontalDivider(Modifier.padding(vertical = 16.dp))
+            Rule(Modifier.padding(vertical = 16.dp))
 
-            Text(
-                "Use these as this plant's settings",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
-            )
+            SectionHead("Use these as this plant's settings")
             Text(
                 "Sets how dry it should get before watering to ${(care.depletionTrigger * 100).roundToInt()}%" +
                     " - the one number there is no way to guess - along with the light and " +
@@ -148,7 +140,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(vertical = 8.dp),
             )
-            FilledTonalButton(
+            Button(
                 onClick = { viewModel.applySuggestions(onBack) },
                 enabled = !state.alreadyApplied,
                 modifier = Modifier.fillMaxWidth(),

@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.debug
 
+import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import dev.dheirav.thirsttrap.ui.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -75,7 +75,7 @@ fun DebugScreen(onBack: () -> Unit, viewModel: DebugViewModel = hiltViewModel())
                 modifier = Modifier.fillMaxWidth(),
             ) { Text("Reset all reminders to +7 days") }
 
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            Rule(Modifier.padding(vertical = 8.dp))
 
             FilledTonalButton(
                 onClick = { viewModel.exportToCache() },

@@ -8,12 +8,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import dev.dheirav.thirsttrap.ui.FilterChip
-import dev.dheirav.thirsttrap.ui.FilledTonalButton
-import androidx.compose.material3.HorizontalDivider
+import dev.dheirav.thirsttrap.ui.Button
 import androidx.compose.material3.Icon
 import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -168,13 +168,13 @@ fun AmbientScreen(onBack: () -> Unit, viewModel: AmbientViewModel = hiltViewMode
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
                 )
-                FilledTonalButton(
+                Button(
                     onClick = { viewModel.record(location, tempValue, humidityValue, note) },
                     enabled = canSave,
                     modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                 ) { Text("Record") }
 
-                HorizontalDivider(Modifier.padding(vertical = 20.dp))
+                Rule(Modifier.padding(vertical = 20.dp))
             }
 
             if (state.readings.isEmpty()) {

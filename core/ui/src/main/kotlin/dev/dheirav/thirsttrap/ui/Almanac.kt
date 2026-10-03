@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 
@@ -46,7 +47,12 @@ import androidx.compose.ui.unit.em
 fun Rule(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.outlineVariant,
-) = HorizontalDivider(modifier, thickness = 1.dp, color = color)
+    // A hairline by default, and one caller legitimately wants heavier: the
+    // plant timeline marks a life event (repotted, medium changed, died) with a
+    // 2dp tertiary rule. Leaving that as a raw HorizontalDivider would have kept
+    // a second divider vocabulary alive for the sake of one deliberate exception.
+    thickness: Dp = 1.dp,
+) = HorizontalDivider(modifier, thickness = thickness, color = color)
 
 /**
  * The same hairline turned on its side, for a column boundary.
@@ -115,6 +121,26 @@ fun Masthead(
         }
         DoubleRule(Modifier.padding(top = 8.dp))
     }
+}
+
+/**
+ * The label over one control or one group of controls inside a form.
+ *
+ * This is NOT [SectionHead] and the difference is the point. A section head
+ * divides a page and earns a rule; a field label names the thing directly under
+ * it and must not, or a five-field form grows five horizontal rules and reads as
+ * five pages. The app had this role in three voices before it had a name for it:
+ * bare labelLarge in eleven places, titleSmall with SemiBold in six, and a
+ * private composable in Settings.
+ */
+@Composable
+fun FieldLabel(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurface,
+        modifier = modifier,
+    )
 }
 
 /** A section head: letterspaced caps over a hairline. */
