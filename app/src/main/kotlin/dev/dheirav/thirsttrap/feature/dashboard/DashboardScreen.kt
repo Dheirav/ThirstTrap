@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.dashboard
 
+import dev.dheirav.thirsttrap.ui.WateringAnswer
 import dev.dheirav.thirsttrap.ui.BlockHeight
 import dev.dheirav.thirsttrap.ui.MenuLabels
 import dev.dheirav.thirsttrap.ui.AlmanacSheet
@@ -292,9 +293,14 @@ fun DashboardScreen(
 
                 if (showArchived) {
                     items(archived, key = { "archived-" + it.id }) { plant ->
-                        Card(Modifier.fillMaxWidth()) {
+                        // A ruled entry, like every other plant on this list.
+                        // It was a bordered Card eighty lines above PlantCard,
+                        // which closes with Rule(): the same screen said "these
+                        // are separate objects" and "this is the same page,
+                        // further down" about two halves of one list.
+                        Column {
                             Row(
-                                Modifier.padding(12.dp),
+                                Modifier.padding(vertical = 14.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Column(Modifier.weight(1f)) {
@@ -309,6 +315,7 @@ fun DashboardScreen(
                                     Text("Restore")
                                 }
                             }
+                            Rule()
                         }
                     }
                 }
@@ -798,18 +805,11 @@ private fun QuickLogSheet(
         )
         DoubleRule(Modifier.padding(top = 10.dp, bottom = 16.dp))
 
-        // Both answers, same size and weight. Neither is the primary one.
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            FilledTonalButton(onClick = onWatered, modifier = Modifier.weight(1f).height(BlockHeight)) {
-                Text(
-                    if (suggestedWaterMl != null) "Watered  ${suggestedWaterMl.toInt()} ml" else "Watered",
-                    textAlign = TextAlign.Center,
-                )
-            }
-            FilledTonalButton(onClick = onStillWet, modifier = Modifier.weight(1f).height(BlockHeight)) {
-                Text("Still wet")
-            }
-        }
+        WateringAnswer(
+            onWatered = onWatered,
+            onStillWet = onStillWet,
+            suggestedWaterMl = suggestedWaterMl,
+        )
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier.padding(top = 10.dp),

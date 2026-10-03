@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import dev.dheirav.thirsttrap.ui.Rule
+import dev.dheirav.thirsttrap.ui.WateringAnswer
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -97,52 +99,43 @@ fun DueScreen(
         LazyColumn(
             Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             items(state.items, key = { it.reminder.id }) { item ->
-                Card(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(16.dp)) {
-                        Text(
-                            "Time to check the ${item.plant.name}",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                        )
-                        Text(
-                            sinceLabel(item.daysSinceChecked),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 4.dp, bottom = 16.dp),
-                        )
-                        // Equal weight, side by side. Neither is the primary.
-                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            FilledTonalButton(
-                                onClick = {
-                                    viewModel.watered(item) { e, due ->
-                                        announce(item, e, due, wateredMessage(item))
-                                    }
-                                },
-                                modifier = Modifier.weight(1f).heightIn(min = 56.dp),
-                            ) {
-                                Text(
-                                    item.suggestedWaterMl
-                                        ?.let { "Watered\n${it.toInt()} ml" } ?: "Watered",
-                                    textAlign = TextAlign.Center,
+                // A ruled entry, not a bordered Card. Tapping between the first
+                // and second tab used to change the grammar of the list: the
+                // same plants, drawn as a page on one and as a deck of separate
+                // objects on the other.
+                Column {
+                    Text(
+                        "Time to check the ${item.plant.name}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Text(
+                        sinceLabel(item.daysSinceChecked),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 4.dp, bottom = 16.dp),
+                    )
+                    WateringAnswer(
+                        onWatered = {
+                            viewModel.watered(item) { e, due ->
+                                announce(item, e, due, wateredMessage(item))
+                            }
+                        },
+                        onStillWet = {
+                            viewModel.stillWet(item) { e, due ->
+                                announce(
+                                    item, e, due,
+                                    "Good call - ${item.plant.name} checked, not thirsty yet",
                                 )
                             }
-                            FilledTonalButton(
-                                onClick = {
-                                    viewModel.stillWet(item) { e, due ->
-                                        announce(
-                                            item, e, due,
-                                            "Good call - ${item.plant.name} checked, not thirsty yet",
-                                        )
-                                    }
-                                },
-                                modifier = Modifier.weight(1f).heightIn(min = 56.dp),
-                            ) { Text("Still wet\nleave it", textAlign = TextAlign.Center) }
-                        }
-                        TextButton(onClick = { viewModel.snooze(item) }) { Text("Snooze a day") }
-                    }
+                        },
+                        suggestedWaterMl = item.suggestedWaterMl,
+                    )
+                    TextButton(onClick = { viewModel.snooze(item) }) { Text("Snooze a day") }
+                    Rule(Modifier.padding(top = 8.dp))
                 }
             }
             if (state.items.size > 1) {
