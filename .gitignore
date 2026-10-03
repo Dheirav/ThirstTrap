@@ -48,3 +48,10 @@ tools/hero-gen/refs/
 tools/hero-gen/out/.run-started
 __pycache__/
 *.pyc
+
+# Re-fetchable from Poly Haven with tools/blender/fetch_assets.py, but keep
+# the record of what was taken and under what licence.
+tools/blender/assets/*
+!tools/blender/assets/CREDITS.md
+# derived renders
+tools/blender/out/
