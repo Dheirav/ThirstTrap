@@ -187,13 +187,24 @@ def append(name, loc, scale=1.0, rot_z=0.0, mats=None, default=None, drop=('_gro
         # and the order matters: "potted_plant_04_pot" contains both "pot" and
         # "plant", so the specific hint has to be tested first. Hence a list
         # rather than a dict.
-        hay = o.name.lower() + ' ' + ' '.join(
-            (m.name.lower() if m else '') for m in o.data.materials)
+        # Match the OBJECT name first and only fall back to material names.
+        # Every part of the lamp carries both 'desk_lamp_arm_01' and
+        # 'desk_lamp_arm_01_light', so testing a joined haystack gave the whole
+        # fixture the emissive shade material and it rendered as a solid white
+        # blob. Same shape of bug as the pots: the hint matched more than meant.
+        oname = o.name.lower()
+        slots = [(m.name.lower() if m else '') for m in o.data.materials]
         o.data.materials.clear()
-        pick = default
+        pick = None
         for hint, m in (mats or []):
-            if hint in hay:
+            if hint in oname:
                 pick = m; break
+        if pick is None:
+            for hint, m in (mats or []):
+                if any(hint in s for s in slots):
+                    pick = m; break
+        if pick is None:
+            pick = default
         if pick:
             o.data.materials.append(pick)
         for poly in o.data.polygons:
@@ -224,7 +235,12 @@ def soil_top(x, y, r=0.12):
     import mathutils
     best = None
     for o in bpy.data.objects:
-        if o.type != 'MESH' or '_dirt' not in o.name.lower():
+        # Each plant asset names its soil differently: potted_plant_04 says
+        # _dirt, potted_plant_01 says _pebbles. Matching only one of them meant
+        # swapping the plant silently dropped the hand to table height, below
+        # the sill and out of frame.
+        if o.type != 'MESH' or not any(
+                k in o.name.lower() for k in ('_dirt', '_pebbles', '_soil', '_ground')):
             continue
         pts = [o.matrix_world @ mathutils.Vector(c) for c in o.bound_box]
         cx = sum(p.x for p in pts) / 8; cy = sum(p.y for p in pts) / 8
@@ -270,6 +286,31 @@ def place_hand(at, yaw=0.0, pitch=-0.62, into=0.012):
     return f
 
 
+def scatter(root, placements):
+    """Linked duplicates of an appended asset.
+
+    root_cluster_01 is 225k faces. Appending it five times to make a root mass
+    would load five copies of that; linked duplicates share the mesh data, so
+    the cost is five object headers and the renderer instances the rest.
+    """
+    src = [o for o in root.children_recursive if o.type == 'MESH']
+    made = []
+    for loc, scale, rot in placements:
+        holder = bpy.data.objects.new(root.name + '_dup', None)
+        bpy.context.collection.objects.link(holder)
+        holder.location, holder.scale = loc, (scale, scale, scale)
+        holder.rotation_euler = rot
+        for o in src:
+            c = o.copy()                      # object copy, mesh data shared
+            bpy.context.collection.objects.link(c)
+            c.parent = holder
+            c.matrix_parent_inverse = o.matrix_parent_inverse.copy()
+            c.matrix_basis = o.matrix_basis.copy()
+        made.append(holder)
+    bpy.context.view_layer.update()
+    return made
+
+
 def build(res=(1672, 941), samples=96):
     sc = look.reset(res=res, samples=samples)
     M = dict(
@@ -311,18 +352,26 @@ def build(res=(1672, 941), samples=96):
     for x, z in ((-0.80, 1.30), (-0.74, 1.52), (0.18, 1.38), (0.70, 1.18)):
         _box((x, WIN_Y + 1.86, z), (0.030, 0.01, 0.045),
              look.mat('litwin', (1, 1, 1, 1), 1.0, emit=look.srgb('#C98A3A'), strength=3.0))
-    bpy.ops.mesh.primitive_circle_add(vertices=28, radius=0.115, fill_type='NGON',
-                                      location=(0.30, WIN_Y + 2.45, 1.66))
+    bpy.ops.mesh.primitive_circle_add(vertices=28, radius=0.135, fill_type='NGON',
+                                      location=(0.60, WIN_Y + 2.45, 1.70))
     mn = bpy.context.object; mn.rotation_euler = (math.radians(90), 0, 0)
     look.put(mn, look.mat('moon', (1, 1, 1, 1), 1.0, emit=(0.95, 0.96, 1.0, 1), strength=5.0))
 
     # --- the four pots on the sill, and the can pouring into the first
     soil_m = look.mat('potsoil', look.SOIL, 0.96)
+    A = lambda n, f: os.path.join(ASSETS, n, f)
+    # The spiky succulent read as agave against plates full of broad leaves.
+    # These assets build each leaf as an alpha card, so the leaf material has to
+    # keep that one texture or every leaf becomes a solid rectangle.
+    leaf1 = look.leaf_mat('leaf1', look.LEAF, A('potted_plant_01', 'potted_plant_01_leaves_alpha_1k.png'))
+    leaf2 = look.leaf_mat('leaf2', look.LEAF, A('potted_plant_02', 'potted_plant_02_leaves_alpha_1k.png'))
+    P1 = [('_leaves', leaf1), ('_stem', M['stem']), ('_pebbles', soil_m), ('_pot', M['terra'])]
+    P2 = [('_leaves', leaf2), ('_dirt', soil_m), ('_pot', M['terra'])]
     PM = [('_pot', M['terra']), ('_dirt', soil_m), ('_ground', soil_m),
           ('_plant', M['leaf']), ('leaves', M['leaf']), ('leaf', M['leaf'])]
     for i, x in enumerate(POTS_X):
-        append('potted_plant_04', (x, 0.985, SILL_Z), scale=1.0,
-               rot_z=0.7 * i, mats=PM, default=M['terra'])
+        append('potted_plant_01', (x, 0.985, SILL_Z), scale=0.185 + 0.012 * (i % 3),
+               rot_z=1.1 * i, mats=P1, default=M['terra'])
     can = _box((POTS_X[0] - 0.19, 0.95, SILL_Z + 0.20), (0.115, 0.095, 0.105), M['metal'])
     can.rotation_euler = (0, math.radians(-26), 0)
     sp = _box((POTS_X[0] - 0.085, 0.95, SILL_Z + 0.175), (0.115, 0.022, 0.022), M['metal'])
@@ -339,18 +388,24 @@ def build(res=(1672, 941), samples=96):
     _box((0.30, 0.12, TABLE_Z + 0.022), (0.215, 0.185, 0.044), M['plastic'])
     _box((0.30, 0.12, TABLE_Z + 0.048), (0.195, 0.165, 0.010), M['plastic'])
     _box((0.30, 0.035, TABLE_Z + 0.030), (0.072, 0.012, 0.024), M['glassblack'])
-    append('potted_plant_04', (0.30, 0.13, TABLE_Z + 0.053), scale=1.0,
-           rot_z=2.1, mats=PM, default=M['terra'])
+    append('potted_plant_02', (0.30, 0.13, TABLE_Z + 0.053), scale=0.30,
+           rot_z=2.1, mats=P2, default=M['terra'])
     # the cut pot, the depth shot, on the same table
     facet_pot((-0.18, 0.10, TABLE_Z), m=M['terra'], cut=True)
     plant((-0.18, 0.10, TABLE_Z + 0.104), M['leaf'], M['stem'], scale=0.9)
     # the roots beat is a macro into real root geometry rather than my 14 tubes
-    append('root_cluster_01', (-0.18, 0.115, TABLE_Z + 0.055), scale=0.030,
-           rot_z=0.4, default=look.mat('rootm', look.srgb('#B7A184'), 0.86))
+    rootm = look.mat('rootm', look.srgb('#A8906F'), 0.88)
+    rc = append('root_cluster_01', (-0.18, 0.118, TABLE_Z + 0.048), scale=0.026,
+                rot_z=0.4, default=rootm)
+    scatter(rc, [((-0.205, 0.108, TABLE_Z + 0.030), 0.021, (0.5, 0.2, 1.9)),
+                 ((-0.152, 0.122, TABLE_Z + 0.034), 0.019, (-0.4, 0.3, 3.4)),
+                 ((-0.180, 0.100, TABLE_Z + 0.018), 0.024, (0.2, -0.3, 0.8)),
+                 ((-0.196, 0.130, TABLE_Z + 0.062), 0.016, (1.1, 0.1, 5.0)),
+                 ((-0.165, 0.112, TABLE_Z + 0.056), 0.017, (-0.7, 0.4, 2.6))])
     # the lamp the plates actually show, with the key light at its head
     lamp_root = append('desk_lamp_arm_01', (0.90, 0.33, TABLE_Z), scale=0.40, rot_z=-2.3,
-           mats=[('_light', look.mat('shadeglow', (1, 1, 1, 1), 1.0,
-                                     emit=look.LAMP + (1,), strength=2.4))],
+           mats=[('lamp-head', look.mat('shadeglow', (1, 1, 1, 1), 1.0,
+                                       emit=look.LAMP + (1,), strength=2.0))],
            default=look.mat('lampbody', look.srgb('#2A2420'), 0.55))
     append('book_encyclopedia_set_01', (-0.52, -0.14, TABLE_Z), scale=0.075, rot_z=0.5,
            mats=[('_paper', look.mat('pages', look.srgb('#9B8D74'), 0.95))],
@@ -374,6 +429,11 @@ def build(res=(1672, 941), samples=96):
     scr.rotation_euler = (0, 0, math.radians(-14))
 
     # --- the ledger, pinned to the left pier
+    _box((-0.86, 1.00, 1.30), (0.42, 0.20, 0.022), M['wood'])          # shelf by the ledger
+    append('potted_plant_04', (-0.78, 1.00, 1.311), scale=0.78, rot_z=1.3,
+           mats=PM, default=M['terra'])
+    append('potted_plant_04', (-0.96, 0.99, 1.311), scale=0.62, rot_z=-0.6,
+           mats=PM, default=M['terra'])
     led = _box((-1.06, 1.00, 1.46), (0.012, 0.215, 0.285), M['paper'])
     led.rotation_euler = (0, 0, math.radians(4))
     rule = look.mat('rule', look.srgb('#4A4134'), 0.95)
@@ -449,7 +509,7 @@ def build(res=(1672, 941), samples=96):
 
 # (name, camera loc, aim, lens, portrait lens)
 SHOTS = {
- 'ledger':        ((-0.48, 0.16, 1.49), (-1.02, 0.99, 1.45), 42, 34),
+ 'ledger':        ((-0.30, 0.02, 1.52), (-1.00, 0.99, 1.44), 38, 30),
  'shelf-evening': ((-0.30, -0.28, 1.21), (-0.10, 0.98, 1.03), 35, 28),
  'finger-test':   ((0.17, 0.47, 1.20), (-0.21, 0.975, 1.095), 55, 45),
  'depth':         ((-0.18, -0.60, 0.95), (-0.18, 0.10, 0.845), 55, 45),

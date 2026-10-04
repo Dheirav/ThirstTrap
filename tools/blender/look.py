@@ -133,3 +133,29 @@ def place_at_frame(cam, fx, fy, depth_y):
     w, h, d = frame_at(cam, depth_y)
     centre = cam.location + fwd * d
     return centre + right * ((fx - 0.5) * w) + up * ((0.5 - fy) * h)
+
+
+def leaf_mat(name, base, alpha_png, rough=0.66):
+    """Flat leaf colour that keeps the asset's alpha cutout.
+
+    The broad-leaf assets build each leaf as a card with an alpha map doing the
+    shape. Replacing their material wholesale, which is what every other prop
+    here gets, turns every leaf into a solid rectangle. So this one keeps the
+    one texture that is geometry in disguise and throws away the rest.
+    """
+    import os
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    nt = m.node_tree
+    b = nt.nodes['Principled BSDF']
+    b.inputs['Base Color'].default_value = base
+    b.inputs['Roughness'].default_value = rough
+    b.inputs['Specular IOR Level'].default_value = 0.15
+    if alpha_png and os.path.exists(alpha_png):
+        img = nt.nodes.new('ShaderNodeTexImage')
+        img.image = bpy.data.images.load(alpha_png)
+        img.image.colorspace_settings.name = 'Non-Color'
+        img.interpolation = 'Closest'
+        nt.links.new(img.outputs['Color'], b.inputs['Alpha'])
+        m.blend_method = 'CLIP' if hasattr(m, 'blend_method') else m.blend_method
+    return m
