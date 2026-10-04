@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.help
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -138,15 +139,27 @@ private fun HelpPage(
 
 @Composable
 private fun Entry(title: String, body: String, onClick: () -> Unit) {
-    Column(Modifier.fillMaxWidth().padding(bottom = 18.dp)) {
+    // The whole entry is the target, not a button under it.
+    //
+    // This drew a full-width filled Button reading "Open" beneath every item,
+    // six of them across the two help pages. By the vocabulary in Buttons.kt a
+    // filled button means "writes the record, one per surface", so a help page
+    // was carrying six primaries, each the same visual weight as "Log it", for
+    // the act of reading a page. A list of things to read is a list, and a list
+    // row is tapped.
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .clickable(onClickLabel = title) { onClick() }
+            .padding(top = 14.dp, bottom = 14.dp),
+    ) {
         Text(title, style = MaterialTheme.typography.titleMedium)
         Text(
             body,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 4.dp, bottom = 10.dp),
+            modifier = Modifier.padding(top = 4.dp),
         )
-        Button(onClick = onClick, modifier = Modifier.fillMaxWidth()) { Text("Open") }
-        Rule(Modifier.padding(top = 18.dp))
     }
+    Rule()
 }
