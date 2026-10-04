@@ -848,6 +848,51 @@ by drawing the 2D scene properly. Hosting is GitHub Pages from `/site` on main,
 not yet switched on, and the page loads GSAP, Lenis and fonts from CDNs rather
 than vendoring them.
 
+### D66 — Dressing the room to match the plates (2026-10-05)
+
+D65 got the shading right and said the set was undressed. This dresses it. Each
+of these was found by putting the render beside the plate and looking, which is
+the only method that has worked on this all day.
+
+**The sky was a bright slab because of my own compositor.** The ambient floor
+multiplies every albedo in the scene and the gain then amplifies it, so the
+night sky, the moon and the lit windows were arriving at roughly half of full
+lighting on top of their own glow. Emissive materials now get a black base
+colour, which is what they should always have had. The city went from four lit
+windows to twenty-two, because the scatter is most of what makes a window read
+as a city rather than a painted panel.
+
+**The sill pots were footed goblets.** `potted_plant_01` is a Poly Haven asset
+with a pedestal base and alpha-card leaves, and against plain tapered pots and
+broad foliage it read as a different prop in every shot. The sill and the table
+now use the room's own `facet_pot` and a new `leafy_plant`, which builds a loose
+two-tier rosette: a single ring at one length reads as a paper fan, because real
+foliage overlaps itself and the overlap is most of the effect.
+
+**The lamp was the wrong fixture.** `desk_lamp_arm_01` is rigged, its shade sits
+0.9 m from its own origin, and four separate bugs came out of placing it. Every
+plate shows a wide pendant hanging low over the table, which is one cone, one
+disc and a flex. Modelling it deleted about forty lines of correction code and
+put the glow exactly where the key light already was.
+
+**Two bugs worth keeping, both mine.** The cut pot was standing in every shot,
+not just `depth` and `roots`, so it is tagged at build time and struck
+elsewhere; the first version of that capture ran before the root mass was
+appended, so the pot vanished and its roots stayed. The second version swept up
+the boolean cutter, and unhiding that for the depth shots parked a 0.8 m cube in
+front of the camera and rendered both frames solid white. It now captures only
+objects that were not already hidden.
+
+**`root_cluster_01` is dropped.** Flat-shaded at this scale it renders as a
+crumpled beige sheet covering the soil column that `depth` and `roots` exist to
+show. The fourteen generated tubes are cruder and read as roots.
+
+**Where it stands.** `scale-table`, `depth`, `shelf-evening` and
+`phone-closeup` are close. `ledger` needs its handwriting. `roots` is still
+wrong in kind rather than degree: the plate is a macro inside soil and the room
+has no soil-macro geometry, so it shows the whole pot instead. That shot needs
+building, not tuning.
+
 ### D65 — The room can be shaded like the plates; it is not built like them (2026-10-05)
 
 Asked to make the Blender room look like the painted plates, because a modelled

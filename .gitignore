@@ -57,3 +57,4 @@ tools/blender/assets/*
 tools/blender/out/
 .diary-backup/
 core/domain/src/test/resources/real-diary.tsv
+tools/blender/out-plate/

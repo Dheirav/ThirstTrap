@@ -18,12 +18,15 @@ Layout, in metres, floor at z=0:
   lamp          clamped at the right, x +0.95, throwing left across the table
   ledger        pinned to the pier at x -1.02, beside the window
 """
-import bpy, math, os, sys
+import bpy, math, os, random, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import look, parts, scene as sc_mod
 from mathutils import Vector
 
 SILL_Z, TABLE_Z, WIN_Y = 0.95, 0.755, 1.06
+
+# Objects that belong to the depth and roots shots only. See build().
+CUT_POT = []
 POTS_X = (-0.52, -0.21, 0.10, 0.41)
 
 
@@ -112,6 +115,44 @@ def leaf(m, base, aim_xy, length, width=0.052, rise=1.25, droop=0.60):
     ob = bpy.data.objects.new('leaf', me); bpy.context.collection.objects.link(ob)
     ob.modifiers.new('s', 'SOLIDIFY').thickness = 0.0015
     return look.put(ob, m)
+
+
+def leafy_plant(at, leaf_m, stem_m, scale=1.0, seed=0):
+    """The one plant this room grows, in a loose rosette of broad leaves.
+
+    The old `plant` put six leaves in a flat fan, which read as a sparse twig
+    at any distance, and the sill used a Poly Haven asset whose pot is a footed
+    goblet. Neither matches the plates, where every pot holds the same broad
+    rounded leaves on short upright stalks, and the pot is a plain taper.
+
+    Two tiers rather than one ring: the outer leaves longer and dropping, the
+    inner ones shorter and more upright. A single ring at one length reads as a
+    paper fan, because real foliage overlaps itself and that overlap is most of
+    what makes it look like a plant.
+    """
+    rnd = random.Random(seed)
+    outer, inner = 7, 5
+    for i in range(outer):
+        a = (i / outer) * math.tau + rnd.uniform(-0.18, 0.18)
+        ln = (0.098 + rnd.uniform(-0.012, 0.014)) * scale
+        leaf(leaf_m, at, (math.cos(a), math.sin(a)), ln,
+             width=(0.062 + rnd.uniform(-0.006, 0.008)) * scale,
+             rise=1.05 + rnd.uniform(-0.12, 0.12), droop=0.74 + rnd.uniform(-0.1, 0.1))
+    for i in range(inner):
+        a = (i / inner) * math.tau + 0.5 + rnd.uniform(-0.2, 0.2)
+        ln = (0.066 + rnd.uniform(-0.010, 0.012)) * scale
+        leaf(leaf_m, (at[0], at[1], at[2] + 0.012 * scale),
+             (math.cos(a), math.sin(a)), ln,
+             width=(0.048 + rnd.uniform(-0.005, 0.006)) * scale,
+             rise=1.55 + rnd.uniform(-0.15, 0.15), droop=0.42 + rnd.uniform(-0.08, 0.08))
+    for i in range(4):
+        a = (i / 4) * math.tau + 0.3
+        d = (math.cos(a), math.sin(a))
+        bpy.ops.mesh.primitive_cone_add(
+            vertices=6, radius1=0.0034 * scale, radius2=0.0016 * scale,
+            depth=0.055 * scale,
+            location=(at[0] + d[0] * 0.009, at[1] + d[1] * 0.009, at[2] + 0.024 * scale))
+        look.put(bpy.context.object, stem_m)
 
 
 def plant(at, leaf_m, stem_m, scale=1.0, n=6):
@@ -344,7 +385,10 @@ def build(res=(1672, 941), samples=96):
     _box((-0.17, WIN_Y, 2.10), (2.2, 0.11, 0.18), M['pier'])            # head
     _box((-0.17, 0.985, SILL_Z - 0.028), (2.5, 0.185, 0.055), M['sill'])
     # glazing: dim emission, because night read as paint when it was a flat colour
-    sky = look.mat('sky', look.SKY, 0.9, emit=look.srgb('#38495F'), strength=1.05)
+    # Dimmer than it was. Measured on the plate the glass sits at value 0.24,
+    # and it has to stay below the lit wood or the window pulls the eye out of
+    # the room, which is the opposite of what these shots are about.
+    sky = look.mat('sky', look.SKY, 0.9, emit=look.srgb('#1E2A38'), strength=0.42)
     g = _box((-0.17, WIN_Y + 2.60, 1.50), (9.0, 0.02, 5.0), sky)
     for mx in (-0.17,):
         _box((mx, WIN_Y - 0.02, 1.50), (0.022, 0.03, 1.08), M['frame'])
@@ -353,9 +397,19 @@ def build(res=(1672, 941), samples=96):
     for x, h in ((-1.30, 0.62), (-0.78, 0.95), (-0.34, 0.45), (0.14, 0.78), (0.66, 0.52),
                  (1.15, 0.70)):
         _box((x, WIN_Y + 1.90, 0.95 + h/2), (0.42, 0.06, h), city)
-    for x, z in ((-0.80, 1.30), (-0.74, 1.52), (0.18, 1.38), (0.70, 1.18)):
-        _box((x, WIN_Y + 1.86, z), (0.030, 0.01, 0.045),
-             look.mat('litwin', (1, 1, 1, 1), 1.0, emit=look.srgb('#C98A3A'), strength=3.0))
+    # The plate's window is a dark field with small warm lights scattered in it,
+    # and that scatter is most of what makes it read as a city rather than a
+    # painted panel. Six windows was too few to read as anything.
+    litw = look.mat('litwin', (0, 0, 0, 1), 1.0, emit=look.srgb('#C98A3A'), strength=4.0)
+    litc = look.mat('litwin2', (0, 0, 0, 1), 1.0, emit=look.srgb('#9FB4C6'), strength=2.2)
+    WINDOWS = [(-1.38, 1.18), (-1.22, 1.42), (-1.30, 1.30), (-0.92, 1.24),
+               (-0.80, 1.30), (-0.74, 1.52), (-0.86, 1.68), (-0.60, 1.14),
+               (-0.42, 1.36), (-0.28, 1.22), (-0.36, 1.08), (0.02, 1.46),
+               (0.18, 1.38), (0.10, 1.60), (0.26, 1.20), (0.52, 1.30),
+               (0.70, 1.18), (0.62, 1.44), (0.84, 1.26), (1.06, 1.38),
+               (1.20, 1.16), (1.12, 1.56)]
+    for i, (x, z) in enumerate(WINDOWS):
+        _box((x, WIN_Y + 1.86, z), (0.026, 0.01, 0.038), litw if i % 3 else litc)
     bpy.ops.mesh.primitive_circle_add(vertices=28, radius=0.135, fill_type='NGON',
                                       location=(0.60, WIN_Y + 2.45, 1.70))
     mn = bpy.context.object; mn.rotation_euler = (math.radians(90), 0, 0)
@@ -374,9 +428,15 @@ def build(res=(1672, 941), samples=96):
     P2 = [('_leaves', leaf2), ('_dirt', soil_m), ('_pot', M['terra'])]
     PM = [('_pot', M['terra']), ('_dirt', soil_m), ('_ground', soil_m),
           ('_plant', M['leaf']), ('leaves', M['leaf']), ('leaf', M['leaf'])]
+    # Modelled here rather than appended. potted_plant_01 is a footed goblet and
+    # its leaves are alpha cards, so against the plates' plain tapered pots and
+    # broad foliage it read as a different prop in every shot that showed it.
     for i, x in enumerate(POTS_X):
-        append('potted_plant_01', (x, 0.985, SILL_Z), scale=0.185 + 0.012 * (i % 3),
-               rot_z=1.1 * i, mats=P1, default=M['terra'])
+        sc_i = 0.92 + 0.10 * ((i * 7) % 3) / 2.0
+        facet_pot((x, 0.985, SILL_Z), top_r=0.062 * sc_i, bot_r=0.047 * sc_i,
+                  h=0.108 * sc_i, m=M['terra'])
+        leafy_plant((x, 0.985, SILL_Z + 0.094 * sc_i), M['leaf'], M['stem'],
+                    scale=0.80 * sc_i, seed=i)
     can = _box((POTS_X[0] - 0.19, 0.95, SILL_Z + 0.20), (0.115, 0.095, 0.105), M['metal'])
     can.rotation_euler = (0, math.radians(-26), 0)
     sp = _box((POTS_X[0] - 0.085, 0.95, SILL_Z + 0.175), (0.115, 0.022, 0.022), M['metal'])
@@ -393,44 +453,93 @@ def build(res=(1672, 941), samples=96):
     _box((0.30, 0.12, TABLE_Z + 0.022), (0.215, 0.185, 0.044), M['plastic'])
     _box((0.30, 0.12, TABLE_Z + 0.048), (0.195, 0.165, 0.010), M['plastic'])
     _box((0.30, 0.035, TABLE_Z + 0.030), (0.072, 0.012, 0.024), M['glassblack'])
-    append('potted_plant_02', (0.30, 0.13, TABLE_Z + 0.053), scale=0.30,
-           rot_z=2.1, mats=P2, default=M['terra'])
+    facet_pot((0.30, 0.13, TABLE_Z + 0.053), top_r=0.078, bot_r=0.059, h=0.132,
+              m=M['terra'])
+    leafy_plant((0.30, 0.13, TABLE_Z + 0.172), M['leaf'], M['stem'], scale=1.45, seed=9)
     # the cut pot, the depth shot, on the same table
+    # The cut pot belongs to two shots and was standing in every other one: a
+    # pot sliced open in the middle of `scale-table` is not a continuity detail,
+    # it is a prop nobody struck between setups. Recorded here so the renderer
+    # can hide it where it does not belong.
+    _before = set(bpy.data.objects)
     facet_pot((-0.18, 0.10, TABLE_Z), m=M['terra'], cut=True)
-    plant((-0.18, 0.10, TABLE_Z + 0.104), M['leaf'], M['stem'], scale=0.9)
-    # the roots beat is a macro into real root geometry rather than my 14 tubes
-    rootm = look.mat('rootm', look.srgb('#A8906F'), 0.88)
-    rc = append('root_cluster_01', (-0.18, 0.118, TABLE_Z + 0.048), scale=0.026,
-                rot_z=0.4, default=rootm)
-    scatter(rc, [((-0.205, 0.108, TABLE_Z + 0.030), 0.021, (0.5, 0.2, 1.9)),
-                 ((-0.152, 0.122, TABLE_Z + 0.034), 0.019, (-0.4, 0.3, 3.4)),
-                 ((-0.180, 0.100, TABLE_Z + 0.018), 0.024, (0.2, -0.3, 0.8)),
-                 ((-0.196, 0.130, TABLE_Z + 0.062), 0.016, (1.1, 0.1, 5.0)),
-                 ((-0.165, 0.112, TABLE_Z + 0.056), 0.017, (-0.7, 0.4, 2.6))])
-    # the lamp the plates actually show, with the key light at its head
-    lamp_root = append('desk_lamp_arm_01', (0.90, 0.33, TABLE_Z), scale=0.40, rot_z=-2.3,
-           mats=[('lamp-head', look.mat('shadeglow', (1, 1, 1, 1), 1.0,
-                                       emit=look.LAMP + (1,), strength=2.0))],
-           default=look.mat('lampbody', look.srgb('#2A2420'), 0.55))
+    leafy_plant((-0.18, 0.10, TABLE_Z + 0.104), M['leaf'], M['stem'], scale=0.9, seed=4)
+    # root_cluster_01 is dropped. It was appended to give the roots beat real
+    # geometry instead of the fourteen generated tubes, and flat-shaded at this
+    # scale it renders as a crumpled beige sheet that covers the soil column the
+    # depth and roots shots exist to show. The tubes are cruder and read as
+    # roots, which is the only thing being asked of them.
+    # Only the objects that are actually rendered. The boolean knife lives in
+    # here too and is hidden on purpose, so a blanket unhide for the depth and
+    # roots shots parked a 0.8 m cube between the camera and the pot and
+    # rendered both frames solid white.
+    CUT_POT.clear()
+    CUT_POT.extend(o.name for o in bpy.data.objects
+                   if o not in _before and not o.hide_render)
+    # A pendant over the table, modelled, not an appended desk lamp.
+    #
+    # desk_lamp_arm_01 was fought for a long time: it is rigged, its shade sits
+    # 0.9 m from its own origin, and four separate bugs came out of trying to
+    # place it. All of that was effort spent on the wrong prop. Every plate
+    # shows a wide shade hanging low over the table, which is one cone, one
+    # disc and a flex, and it is the single biggest object in three of the
+    # seven shots. It also puts the glow exactly where the key light already
+    # is, so nothing has to be reconciled.
+    LAMP_AT = (0.60, 0.24, 1.26)
+    # Not near-black. The shade is the biggest object in three shots and at
+    # #241E1A it read as a hole punched in the window behind it.
+    shade_m = look.mat('shade', look.srgb('#4A3B2F'), 0.9)
+    bpy.ops.mesh.primitive_cone_add(vertices=28, radius1=0.175, radius2=0.052,
+                                    depth=0.105, end_fill_type='NOTHING',
+                                    location=(LAMP_AT[0], LAMP_AT[1], LAMP_AT[2] + 0.052))
+    shade = look.put(bpy.context.object, shade_m)
+    sm = shade.modifiers.new('s', 'SOLIDIFY'); sm.thickness = 0.005; sm.offset = 1.0
+    # the lit underside, which is the warm ellipse the plates all show
+    # Smaller and dimmer than the shade's mouth. At full width and strength 2.6
+    # it rendered as a flat white ellipse with the dark shade invisible behind
+    # it, which is the one gradient the plates allow turned into a sticker.
+    bpy.ops.mesh.primitive_circle_add(vertices=28, radius=0.120, fill_type='NGON',
+                                      location=(LAMP_AT[0], LAMP_AT[1], LAMP_AT[2] + 0.018))
+    look.put(bpy.context.object, look.mat('shadeglow', (0, 0, 0, 1), 1.0,
+                                          emit=look.LAMP + (1,), strength=0.9))
+    # the bulb, a little below the rim so it reads as a source, not a panel
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=18, ring_count=10, radius=0.042,
+                                         location=(LAMP_AT[0], LAMP_AT[1], LAMP_AT[2] + 0.034))
+    look.put(bpy.context.object, look.mat('bulb', (0, 0, 0, 1), 1.0,
+                                          emit=(1.0, 0.86, 0.66, 1), strength=7.0),
+             smooth=True)
+    _box((LAMP_AT[0], LAMP_AT[1], LAMP_AT[2] + 0.105 + 0.42),
+         (0.008, 0.008, 0.84), shade_m)                       # flex to the ceiling
+    lamp_root = None
     append('book_encyclopedia_set_01', (-0.52, -0.14, TABLE_Z), scale=0.075, rot_z=0.5,
            mats=[('_paper', look.mat('pages', look.srgb('#9B8D74'), 0.95))],
            default=look.mat('book', look.srgb('#43342६'.replace('६','6')), 0.88))
     # one mug beside the phone, not a whole service: the set's origin is at the
     # middle of a 0.9 m spread, so appending it whole scatters crockery.
-    bpy.ops.mesh.primitive_cylinder_add(vertices=22, radius=0.041, depth=0.094,
-                                        location=(0.86, -0.17, TABLE_Z + 0.047))
+    # Left of the pot, not right of it. Both mug and phone sat out at x 0.76 and
+    # 0.86, so the scale-table camera framed the pot with empty table beside it
+    # while the plate has the mug on one side and the phone on the other. The
+    # room is the authority on where things are, but when it disagrees with
+    # every plate about composition it is the room that is wrong.
+    bpy.ops.mesh.primitive_cylinder_add(vertices=22, radius=0.044, depth=0.098,
+                                        location=(0.02, -0.06, TABLE_Z + 0.049))
     look.put(bpy.context.object, M['mug'])
-    bpy.ops.mesh.primitive_torus_add(major_radius=0.034, minor_radius=0.006,
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.036, minor_radius=0.0065,
                                      major_segments=20, minor_segments=8,
-                                     location=(0.906, -0.17, TABLE_Z + 0.050),
+                                     location=(-0.030, -0.06, TABLE_Z + 0.052),
                                      rotation=(math.radians(90), 0, 0))
     look.put(bpy.context.object, M['mug'])
+    # and something in it. An empty cream cylinder reads as a paper cup, and
+    # the dark disc is most of what makes the plate's mug a mug.
+    bpy.ops.mesh.primitive_circle_add(vertices=22, radius=0.038, fill_type='NGON',
+                                      location=(0.02, -0.06, TABLE_Z + 0.086))
+    look.put(bpy.context.object, look.mat('coffee', look.srgb('#241509'), 0.55))
     append('trowel_01', (0.74, 0.96, SILL_Z + 0.006), scale=0.55, rot_z=1.25,
            default=look.mat('tool', look.srgb('#3A342C'), 0.62))
     # phone, face up, screen off
-    ph = _box((0.76, -0.10, TABLE_Z + 0.006), (0.078, 0.158, 0.009), M['frame'])
+    ph = _box((0.63, -0.14, TABLE_Z + 0.006), (0.078, 0.158, 0.009), M['frame'])
     ph.rotation_euler = (0, 0, math.radians(-14))
-    scr = _box((0.76, -0.10, TABLE_Z + 0.0112), (0.070, 0.148, 0.001), M['glassblack'])
+    scr = _box((0.63, -0.14, TABLE_Z + 0.0112), (0.070, 0.148, 0.001), M['glassblack'])
     scr.rotation_euler = (0, 0, math.radians(-14))
 
     # --- the ledger, pinned to the left pier
@@ -459,39 +568,23 @@ def build(res=(1672, 941), samples=96):
     # why the two close shots blew out: the plates show a POOL of light with a
     # dark surround, and the thing that makes a pool is the fixture.
     bpy.context.view_layer.update()
-    # The fixture was swallowing its own light: the key sits at the shade and the
-    # shade is solid, so almost nothing escaped. Let the lamp be lit and visible
-    # but stop it casting shadows, which is the usual way to put a practical
-    # light inside a modelled fixture without modelling the aperture.
-    for o in (lamp_root.children_recursive if hasattr(lamp_root, 'children_recursive')
-              else [c for c in bpy.data.objects if c.parent == lamp_root]):
-        if o.type == 'MESH':
-            o.visible_shadow = False
-    # An articulated lamp reaches 0.73 m from its base, so seating the BASE put
-    # the head at x=1.63, straight through the right wall at 1.28: the key light
-    # spent four renders outside the room. Place it by the head, which is the
-    # part whose position actually matters, and let the base land where it may.
-    head = next((o for o in bpy.data.objects if 'lamp-head' in o.name.lower()), None)
-    WANT_HEAD = Vector((0.60, 0.24, 1.30))
-    if head:
-        # Iterate rather than assume one pass: matrix_world for a child of the
-        # root can still be stale right after append re-seats it, so a single
-        # correction is computed against the wrong starting point and leaves the
-        # lamp a long way from where it was asked for.
-        # Correct on the shade's GEOMETRY, not its object origin. This asset's
-        # head mesh sits 0.9 m from its own origin, so aligning the origin put
-        # the light correctly over the table while leaving the visible shade
-        # back by the sill: one lamp, lighting one place and appearing in
-        # another. The bounding-box centre is where the shade actually is.
-        import mathutils
-        for _ in range(4):
-            pts = [head.matrix_world @ mathutils.Vector(c) for c in head.bound_box]
-            ctr = sum(pts, mathutils.Vector()) / len(pts)
-            delta = WANT_HEAD - ctr
-            if delta.length < 1e-4:
-                break
-            lamp_root.location = lamp_root.location + delta
-            bpy.context.view_layer.update()
+    # The shade is solid and would swallow its own key, so the fixture is lit
+    # and visible but casts no shadow. That is the ordinary way to put a
+    # practical inside a modelled lamp without modelling its aperture.
+    #
+    # What used to be here was forty lines of correcting an appended, rigged
+    # desk lamp whose head sat 0.9 m from its own origin and kept landing
+    # through the right-hand wall. The pendant is modelled at the key's own
+    # position now, so there is nothing left to reconcile.
+    for o in bpy.data.objects:
+        if o.type == 'MESH' and o.name.lower().startswith(('cone', 'circle', 'sphere')):
+            pass
+    for nm in ('shade', 'shadeglow', 'bulb'):
+        for o in bpy.data.objects:
+            if o.type == 'MESH' and o.data.materials and o.data.materials[0] \
+                    and o.data.materials[0].name.startswith(nm):
+                o.visible_shadow = False
+    WANT_HEAD = Vector((0.60, 0.24, 1.26))
     hp = WANT_HEAD
     bpy.ops.object.light_add(type='AREA', location=(hp.x, hp.y, hp.z - 0.035))
     k = bpy.context.object
@@ -528,8 +621,8 @@ SHOTS = {
  'shelf-evening': ((-0.30, -0.28, 1.21), (-0.10, 0.98, 1.03), 35, 28, None),
  'finger-test':   ((0.17, 0.47, 1.20), (-0.21, 0.975, 1.095), 55, 45, 2.8),
  'depth':         ((-0.18, -0.60, 0.95), (-0.18, 0.10, 0.845), 55, 45, 3.5),
- 'roots':         ((-0.18, -0.28, 0.845), (-0.18, 0.10, 0.830), 85, 72, 2.2),
- 'scale-table':   ((0.28, -0.86, 1.08), (0.36, 0.12, 0.845), 42, 34, None),
+ 'roots':         ((-0.18, -0.34, 0.838), (-0.18, 0.10, 0.826), 58, 48, 2.2),
+ 'scale-table':   ((0.26, -0.82, 1.12), (0.33, 0.16, 0.91), 33, 27, None),
  'phone-closeup': ((0.80, -0.60, 0.95), (0.70, -0.04, 0.775), 42, 34, 3.2),
 }
 

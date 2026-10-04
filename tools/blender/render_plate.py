@@ -39,7 +39,14 @@ HANDS = {
     'depth':       dict(pot=(-0.18, 0.035),           yaw=-0.35, pitch=-0.55),
 }
 
+# Which shots the cut pot is in. Everywhere else it is struck, like a set.
+CUT_SHOTS = {'depth', 'roots'}
+
 for name in (shots or world.SHOTS):
+    for nm in world.CUT_POT:
+        o = bpy.data.objects.get(nm)
+        if o:
+            o.hide_render = name not in CUT_SHOTS
     loc, aim, lens, plens, fstop = world.SHOTS[name]
     for c in [o for o in bpy.data.objects if o.type == 'CAMERA']:
         bpy.data.objects.remove(c, do_unlink=True)

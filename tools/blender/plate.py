@@ -40,6 +40,16 @@ def flat_materials():
         b = m.node_tree.nodes.get('Principled BSDF')
         if not b:
             continue
+        # An emissive surface must not also have an albedo, or the ambient floor
+        # lifts it. The night sky, the moon and the lit city windows are all
+        # emission over a base colour, and the floor multiplies every albedo in
+        # the scene before the gain does, so the sky was arriving at roughly
+        # half of full lighting on top of its own glow. That is what made the
+        # window a flat bright slab and the whole set look washed: the thing
+        # that is supposed to be the darkest surface in the room was being lit
+        # like the brightest.
+        if b.inputs['Emission Strength'].default_value > 0.0:
+            b.inputs['Base Color'].default_value = (0, 0, 0, 1)
         # A specular highlight is a gradient on an unlit surface, which the
         # plates never have. Roughness 1 removes the sheen the renders had on
         # every pot and the table.
