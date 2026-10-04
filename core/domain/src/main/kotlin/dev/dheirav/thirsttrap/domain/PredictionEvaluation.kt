@@ -21,9 +21,21 @@ data class PredictionSample(
     /** Days until the pot actually crossed the trigger weight. */
     val actualDays: Double,
     val confidence: Confidence,
+    /**
+     * What watering by the calendar would have claimed at that same moment, or
+     * null where a calendar had nothing to go on yet.
+     *
+     * This is the comparison the product rests on and it was not being made.
+     * The app measured its own error and reported it, which says whether the
+     * arithmetic works, not whether weighing beats the habit it exists to
+     * replace. A model can be accurate and still be pointless.
+     */
+    val calendarDays: Double? = null,
 ) {
     /** Negative = predicted early, the safe direction. */
     val errorDays: Double get() = predictedDays - actualDays
+
+    val calendarErrorDays: Double? get() = calendarDays?.minus(actualDays)
 }
 
 data class PredictionScore(
@@ -32,7 +44,28 @@ data class PredictionScore(
     val medianAbsErrorDays: Double? = null,
     /** Median signed error. Negative = the model runs early, which is safe. */
     val biasDays: Double? = null,
-)
+    /**
+     * The same two numbers for watering by the calendar, over the SAME moments.
+     * Only the samples where both made a call are counted, on both sides: a
+     * comparison across two different sets of moments is not a comparison.
+     */
+    val comparedSamples: Int = 0,
+    val calendarMedianAbsErrorDays: Double? = null,
+    val calendarBiasDays: Double? = null,
+    /** Model error over the compared subset, so the two sit on one footing. */
+    val medianAbsErrorDaysCompared: Double? = null,
+) {
+    /**
+     * Days of error the weighing saves against the calendar. Positive = weighing
+     * is better. Null until there is something to compare.
+     */
+    val advantageDays: Double?
+        get() {
+            val c = calendarMedianAbsErrorDays ?: return null
+            val m = medianAbsErrorDaysCompared ?: return null
+            return c - m
+        }
+}
 
 /**
  * One plant's samples: at every reading where the model would have produced an
@@ -88,11 +121,37 @@ fun evaluatePredictions(
                     predictedDays = p.days,
                     actualDays = (crossingMillis - r.timestampMillis) / MILLIS_PER_DAY,
                     confidence = p.confidence,
+                    calendarDays = calendarPrediction(wateringEventsMillis, r.timestampMillis),
                 )
             }
         }
     }
     return samples
+}
+
+/**
+ * What a calendar would say, standing at [asOfMillis]: the last watering plus
+ * the interval this plant has actually been watered at.
+ *
+ * Fitted the same walk-forward way the model is, from gaps observed strictly
+ * before this moment and nothing after it. That matters, because the easy
+ * version of this comparison is rigged. Picking a round number like seven days,
+ * or fitting the interval over the whole history including the future, produces
+ * a straw man that weighing beats without telling you anything. This is the
+ * best calendar available from the same evidence, which is the only one worth
+ * losing to.
+ *
+ * Null until two waterings have been seen, because one gap is not an interval,
+ * and a calendar nobody could have written is not a fair opponent either.
+ */
+private fun calendarPrediction(wateringEventsMillis: List<Long>, asOfMillis: Long): Double? {
+    val past = wateringEventsMillis.filter { it <= asOfMillis }.sorted()
+    if (past.size < 3) return null
+    val gaps = past.zipWithNext { a, b -> (b - a) / MILLIS_PER_DAY }.sorted()
+    val interval = median(gaps)
+    if (interval <= 0.0) return null
+    val due = past.last() + (interval * MILLIS_PER_DAY).toLong()
+    return (due - asOfMillis) / MILLIS_PER_DAY
 }
 
 /** Where the series first crosses [trigger], interpolated. Null if it never does. */
@@ -110,10 +169,20 @@ fun scorePredictions(samples: List<PredictionSample>): PredictionScore {
     if (samples.isEmpty()) return PredictionScore()
     val absErrors = samples.map { abs(it.errorDays) }.sorted()
     val signed = samples.map { it.errorDays }.sorted()
+
+    // Paired: only the moments where both the model and a calendar made a call.
+    val both = samples.filter { it.calendarErrorDays != null }
     return PredictionScore(
         samples = samples.size,
         medianAbsErrorDays = median(absErrors),
         biasDays = median(signed),
+        comparedSamples = both.size,
+        calendarMedianAbsErrorDays =
+            both.takeIf { it.isNotEmpty() }?.map { abs(it.calendarErrorDays!!) }?.sorted()?.let(::median),
+        calendarBiasDays =
+            both.takeIf { it.isNotEmpty() }?.map { it.calendarErrorDays!! }?.sorted()?.let(::median),
+        medianAbsErrorDaysCompared =
+            both.takeIf { it.isNotEmpty() }?.map { abs(it.errorDays) }?.sorted()?.let(::median),
     )
 }
 

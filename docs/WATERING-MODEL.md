@@ -1,14 +1,93 @@
 # ThirstTrap — Weight-Based Watering Model
 
 Requirements item 17. This is the feature the app exists for: no mainstream
-plant app does weight-based watering, and the method is validated commercial
-greenhouse practice (weigh-to-target irrigation, the MAD / managed-allowable-
-depletion framework).
+plant app does weight-based watering, and the method itself is long-established
+horticultural practice rather than something invented here. Sources in section
+0, including what they do and do not support.
 
 All of this lives in **`core:domain`** as pure functions over lists of
 readings. No Android, no database, no I/O. That makes it exhaustively testable,
 and testing it exhaustively is the point — a wrong prediction here is the whole
 product failing.
+
+---
+
+## 0. Where this comes from, and what it does not prove
+
+This section exists because the line it replaces said the method was "validated
+commercial greenhouse practice" and cited nothing. The claim is true. It also
+proves less than it sounds, and the difference matters on a public page.
+
+### What the literature does support
+
+**Gravimetric irrigation scheduling is standard practice, not a novelty.**
+Dumroese, Montville and Pinto describe it for container nurseries in terms that
+match this app almost line for line: weigh the container at field capacity,
+meaning watered until saturated then allowed to drain freely for 30 to 60
+minutes, reweigh at intervals, and irrigate when the weight falls to a target
+proportion. That is the wet anchor procedure in section 2, including the drain
+time, which was chosen here before the paper was read and turns out to be the
+same number.
+
+They also state the case against the finger test better than the landing page
+does: tactile assessment "require[s] a great deal of experience by the
+individual to be consistent", and "what one staff person considers 'dry'
+another might consider 'moist'".
+
+**The trigger fraction is the MAD framework.** Management Allowed Depletion is
+the portion of plant-available water that may be depleted before stress begins,
+and it is crop-specific: about 30% for sensitive vegetables, 50% for corn, 50 to
+60% for alfalfa, 65% for cotton. `DEFAULT_DEPLETION_TRIGGER_PCT` is 50, which
+sits in that band rather than being picked by feel.
+
+**And the arithmetic matches the right definition.** `triggerWeight` is
+`wet - trigger x (wet - dry)`, a fraction of the water between the anchors, not
+a fraction of the pot's total weight. Dumroese warns specifically that these two
+get confused, and shows the size of the mistake: at a nominal 70% target the two
+readings differ by 80% in the water actually supplied, while the target weights
+differ by only 22%. A plausible-looking off-by-a-definition here would be nearly
+invisible and would halve or double the water. This app is on the MAD side,
+which is the one the framework means.
+
+**It saves water at commercial scale.** Hunt and McDonald report 30 to 70%
+savings from a weight-based controller in production nurseries, depending on the
+system.
+
+### What the literature does not support
+
+None of the above is evidence for this app. The gap is not small:
+
+- Those studies use **load cells logging continuously**. This has a kitchen
+  scale and a person who has to remember. Reading frequency is the single
+  biggest difference and it is entirely on the wrong side.
+- They run **uniform crops under controlled light, temperature and humidity**,
+  on a bench. This runs four unlike plants on a windowsill in a flat.
+- They measure **water saved against a grower's existing regime at scale**. That
+  is not the same as beating one person's habit with four pots, where the habit
+  may already be fine.
+- Nothing in them validates the choices that are actually ours: the linear fit
+  over recent readings, the EWMA smoothing, the segmentation, the suppression
+  table, or any of the confidence rules.
+
+So the honest reading is that the method is sound in principle and the
+implementation is unproven. That is why `PredictionEvaluation.kt` scores this
+app against a calendar fitted to the user's own interval, from their own diary.
+Published work answers whether weighing can work. Only that scoring answers
+whether it is working here.
+
+### Sources
+
+- Dumroese RK, Montville ME, Pinto JR. 2015. Using container weights to
+  determine irrigation needs: a simple method. *Native Plants Journal*
+  16(1):67-71.
+  <https://research.fs.usda.gov/treesearch/download/48087.pdf>
+- Hunt DS, McDonald J. 2015. Automating irrigation scheduling in production
+  nurseries using a weight-based irrigation controller. *Acta Horticulturae*
+  1104, chapter 8. <https://doi.org/10.17660/ActaHortic.2015.1104.8>
+- Shortridge J, Porter W. Scheduling Agricultural Irrigation Based on Soil
+  Moisture Content: Interpreting and Using Sensor Data. Virginia Cooperative
+  Extension BSE-339P.
+  <https://www.pubs.ext.vt.edu/BSE/BSE-339/BSE-339.html>
 
 ---
 

@@ -202,6 +202,27 @@ private fun PredictionTable(p: dev.dheirav.thirsttrap.domain.PredictionScore) {
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
+        // The claim this app is built on is not "the model is accurate", it is
+        // "weighing beats watering by the calendar". Those are different
+        // sentences and only the first was ever being shown. The calendar here
+        // is the best one available from the same diary, fitted to this plant's
+        // own watering interval, because beating a straw man would prove
+        // nothing. If this row ever reads the wrong way round, that is the
+        // product being wrong, and it should say so on its own screen.
+        if (p.comparedSamples > 0) {
+            Rule()
+            Row(
+                Modifier.fillMaxWidth().height(40.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text("Watering by the calendar", style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    p.calendarMedianAbsErrorDays?.let { "%.1f days".format(it) } ?: "-",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
         Rule()
         Text(
             buildString {
@@ -225,6 +246,24 @@ private fun PredictionTable(p: dev.dheirav.thirsttrap.domain.PredictionScore) {
                                 .format(bias) + "late means a thirsty pot.",
                         )
                         else -> append("No consistent lean early or late.")
+                    }
+                    val adv = p.advantageDays
+                    val model = p.medianAbsErrorDaysCompared
+                    val cal = p.calendarMedianAbsErrorDays
+                    if (adv != null && model != null && cal != null) {
+                        append("\n\nOver the ${p.comparedSamples} of those where this plant ")
+                        append("had been watered often enough for a calendar to have an opinion ")
+                        append("too, weighing was off by %.1f days and a calendar fitted to ".format(model))
+                        append("this plant's own interval was off by %.1f days. ".format(cal))
+                        append(
+                            when {
+                                adv > 0.25 -> "Weighing is ahead by %.1f days.".format(adv)
+                                adv < -0.25 ->
+                                    "The calendar is ahead by %.1f days here, which is the ".format(-adv) +
+                                        "result that matters most: on this plant, so far, the pot is not telling you more than the habit was."
+                                else -> "They are level so far."
+                            },
+                        )
                     }
                 }
             },

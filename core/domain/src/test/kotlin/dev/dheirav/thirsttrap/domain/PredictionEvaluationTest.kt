@@ -94,6 +94,71 @@ class PredictionEvaluationTest {
         )
     }
 
+    /**
+     * Three ordinary cycles five days apart, then a hot week where the same pot
+     * dries twice as fast. This is the whole product argument in one fixture:
+     * the habit has not changed, so a calendar fitted to it still says five
+     * days, while the pot says two. If weighing cannot win here it cannot win
+     * anywhere, and if it beats a calendar ONLY here, the honest claim is
+     * narrower than "better", it is "better when the weather moves".
+     */
+    private fun hotWeek(): Pair<List<WeightReading>, List<Long>> {
+        val readings = mutableListOf<WeightReading>()
+        val waterings = mutableListOf<Long>()
+        for (c in 0..2) {
+            val base = c * 5.0
+            waterings += T0 + (base * DAY).toLong()
+            readings += reading(base + 0.01, 1400.0, ReadingContext.POST_WATER)
+            for (d in 1..4) readings += reading(base + d, 1400.0 - 50.0 * d)
+        }
+        val base = 15.0
+        waterings += T0 + (base * DAY).toLong()
+        readings += reading(base + 0.01, 1400.0, ReadingContext.POST_WATER)
+        for (d in 1..3) readings += reading(base + d, 1400.0 - 100.0 * d)
+        return readings to waterings
+    }
+
+    @Test
+    fun `weighing beats the calendar when the drying rate changes`() {
+        val (readings, waterings) = hotWeek()
+        val score = scorePredictions(
+            evaluatePredictions(plant(trigger = 0.5), readings, waterings, emptyList()),
+        )
+
+        assertTrue("nothing to compare", score.comparedSamples > 0)
+        val model = score.medianAbsErrorDaysCompared!!
+        val calendar = score.calendarMedianAbsErrorDays!!
+        assertTrue(
+            "model $model should beat calendar $calendar over the same moments",
+            model < calendar,
+        )
+        assertTrue("advantage should be positive", score.advantageDays!! > 0.0)
+    }
+
+    @Test
+    fun `the calendar is scored over exactly the same moments as the model`() {
+        val (readings, waterings) = hotWeek()
+        val samples = evaluatePredictions(plant(trigger = 0.5), readings, waterings, emptyList())
+        val score = scorePredictions(samples)
+        // Comparing a model over one set of moments against a calendar over a
+        // different set is not a comparison at all, so both sides count only
+        // the samples where each made a call.
+        assertEquals(samples.count { it.calendarDays != null }, score.comparedSamples)
+        assertTrue(score.comparedSamples <= score.samples)
+    }
+
+    @Test
+    fun `no calendar opinion until it has seen enough waterings to have one`() {
+        // One gap is not an interval. A calendar nobody could have written is
+        // not a fair opponent, so it abstains rather than guessing.
+        val (readings, waterings) = linearCycle()
+        val samples = evaluatePredictions(plant(anchors = null, trigger = 0.5), readings, waterings, emptyList())
+        assertTrue("expected samples", samples.isNotEmpty())
+        assertTrue("a single watering cannot fit an interval", samples.all { it.calendarDays == null })
+        assertEquals(0, scorePredictions(samples).comparedSamples)
+        assertEquals(null, scorePredictions(samples).advantageDays)
+    }
+
     @Test
     fun `score medians are computed correctly`() {
         val samples = listOf(

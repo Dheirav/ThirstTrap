@@ -848,6 +848,101 @@ by drawing the 2D scene properly. Hosting is GitHub Pages from `/site` on main,
 not yet switched on, and the page loads GSAP, Lenis and fonts from CDNs rather
 than vendoring them.
 
+### D62 — The app now measures the claim, not just itself (2026-10-05)
+
+`PredictionEvaluation.kt` already replayed history to a past reading, took the
+prediction the app would have made standing there with only the data it had,
+and compared it against when the pot really crossed its trigger. Good machinery:
+no hindsight anchors, censored cycles excluded, surfaced on the stats screen.
+
+**It was scoring the wrong thing.** "Typically off by 0.8 days" says the
+arithmetic works. It does not say whether weighing beats watering by the
+calendar, which is the sentence this product is built on, and those are
+different claims. A model can be accurate and still be pointless. The one
+number the app most needed to show was the one it was not computing.
+
+**The baseline is the best calendar, not a straw man.** At each scored moment it
+asks what "water every N days" would have said, where N is the median interval
+*this plant has actually been watered at*, from gaps observed strictly before
+that moment. Picking a round seven days, or fitting N over the whole history
+including the future, produces an opponent weighing beats while proving nothing.
+It abstains until three waterings have been seen, because one gap is not an
+interval and a calendar nobody could have written is not a fair opponent either.
+
+**Both sides are scored over exactly the same moments**, and a test asserts it.
+A model measured over one set of moments against a calendar measured over
+another is not a comparison, and that is the easiest way to get a flattering
+answer by accident.
+
+Three tests, 282 passing. The headline fixture is three ordinary cycles five
+days apart followed by a hot week where the same pot dries twice as fast: the
+habit has not changed, so the calendar still says five days while the pot says
+two. That also bounds the honest claim. Weighing wins **when conditions move**.
+In a flat with steady temperature and predictable plants, a calendar may tie.
+
+The stats screen shows both rows and names which is ahead, including when that
+is the calendar: "on this plant, so far, the pot is not telling you more than
+the habit was." If the premise is wrong, this app should be what says so.
+
+**Still unverified, and this does not change that.** The number needs real
+cycles to score. What changed is that ordinary use now produces an answer
+instead of an anecdote, and the comparison row appears once a plant has three
+waterings, so the oldest plants report first.
+
+**One assert that should be a measurement.** `docs/WATERING-MODEL.md` claims the
+method is "validated commercial greenhouse practice (weigh-to-target irrigation,
+the MAD framework)". Those frameworks are real and the claim is very likely
+true, but nothing in the repo cites a source for it. It also proves less than it
+sounds: greenhouse work uses continuous load cells under controlled conditions,
+not a kitchen scale and a human who remembers. It establishes the method is
+sound in principle, never that this implementation beats this user's habit.
+Either cite two or three real sources or soften the wording, especially on the
+landing page, where someone will ask.
+
+### D61 — The plates now answer to the Blender room (2026-10-04)
+
+The plates did not look like the same room, and the reason was structural rather
+than artistic: `PROMPTS-hero.md` described a look and never described a place.
+The style block fixed the palette and the flat-vector treatment, then each scene
+invented its own setting, so nothing told the generator that the sill in
+`finger-test` is the sill in `shelf-evening`.
+
+**Measured first**, by the horizontal centroid of the brightest tenth of each
+picture, which is where the light lands and which survives a dark subject
+sitting on one half. The lamp sat left in five plates and right in two, changing
+sides three times down the page and six times in portrait, and three beats lit
+the same moment from opposite sides in their two orientations. Foliage came back
+at hue 60 to 102 against a specified 134.
+
+**The room was already the answer and was not being used.** `world.py` models
+the room once with a camera per beat and its header says that is why it was
+built, but it was never fed back. `tools/blender/continuity.py` now projects the
+lamp into all seven cameras: **it is to the right of every one of them**, 12 to
+69 degrees off axis. It reports camera-local coordinates, not screen position,
+because the lamp is behind the camera in two shots and a projected x for a point
+behind the lens is mirrored nonsense.
+
+**`PROMPTS-hero.md` is rewritten around that**, with the room block folded
+*inside* the style block, because `gen.mjs` sends exactly two things, the style
+block and one scene body. A third section would never have been sent. Each
+scene attaches a brightened render of the real room from its own camera.
+
+**Fixed without regenerating:** `harmonise.py` rotates each plate's leaves onto
+one green, taking foliage from 0 of 14 plates in spec to 11 of 14. The pots are
+left alone on purpose, because their band overlaps the accent, the lamp glow and
+the wood, and because they are consistently wrong rather than inconsistently
+wrong, which is a different problem. Four plates are mirrored at encode time,
+taking landscape from three side changes to one and portrait from six to one.
+
+**The entry worth keeping:** removing the `finger-test` flip was wrong even
+though the unflipped plate is the one that agrees with the room. It is the odd
+one out among neighbours that do not agree, so dropping the flip made the lamp
+jump three times instead of once. What a viewer can check is the light moving,
+not which side it is on. It went back, and it comes out after a regeneration.
+
+`check-plates.py` scores the set against the room and has a known false pass on
+`depth-p`. Verify a regeneration with it, not by eye.
+
 ### D58 — The hero is seven painted plates, not drawn SVG (2026-10-03) — *supersedes D57*
 
 D57's "two illustrated shots" are gone, and so is `tools/make-opening-svg.py`.

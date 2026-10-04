@@ -25,7 +25,16 @@ line:
 Every weighing places the plant somewhere between them, and the slope of the
 recent readings says when it will reach the trigger. That is the whole model:
 roughly fifty lines of arithmetic, no machine learning, and it is the same
-managed-allowable-depletion framework commercial greenhouses irrigate by.
+managed-allowable-depletion framework commercial nurseries irrigate by.
+
+That method is borrowed rather than invented, and section 0 of
+[`docs/WATERING-MODEL.md`](docs/WATERING-MODEL.md) cites it, including the part
+the sources do not cover. They establish that weighing containers works with
+load cells under controlled conditions. They say nothing about a kitchen scale
+on a windowsill, and nothing about whether this beats the habit you already
+have. The app scores itself against a calendar fitted to your own watering
+interval, so that question gets an answer from your diary rather than an
+assurance from me.
 
 What makes it survive contact with a real shelf is the handling around the
 edges:
