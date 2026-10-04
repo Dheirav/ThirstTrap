@@ -2624,10 +2624,10 @@ It still needs to leave the machine, and the four properties in
 `local.properties` need to go wherever passwords go, because the `.jks` alone
 cannot sign anything. There is no recovery and no reissue.
 
-Also outstanding from that work: `proguard-rules.pro` is named by both build
-types and does not exist. Nothing needs it today, which the smoke test proved,
-and it becomes a release-only crash the first time a library needs a keep rule.
-An empty file with a comment would mark where the rules go.
+~~Also outstanding: `proguard-rules.pro` does not exist.~~ It does now, empty on
+purpose, with a comment saying why an empty file is better than no file: Gradle
+does not complain about a missing one, so nobody could tell "no rules are
+needed" apart from "the rules file went missing".
 
 **A week of ordinary use.** The one thing still genuinely unverified. Every
 prediction property is tested against synthetic curves, and `PredictionEvaluation`
