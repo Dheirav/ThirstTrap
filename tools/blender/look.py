@@ -20,7 +20,7 @@ about it, and what each one forces here:
 Colours below are written in sRGB hex because that is what the measurements
 are in, and converted once on the way to Blender, which wants linear.
 """
-import bpy, math
+import bpy, math, os
 from mathutils import Vector
 
 def srgb(h, a=1.0):
@@ -66,11 +66,31 @@ def reset(res=(836, 470), samples=96):
     sc.view_settings.view_transform = 'Standard'
     sc.view_settings.look = 'None'
     w = bpy.data.worlds.new('w'); sc.world = w; w.use_nodes = True
+    nt = w.node_tree
+    bg = nt.nodes['Background']
     # 54% of the plate sits in a narrow band at V 0.10 to 0.20 and only 9.5%
     # falls below 0.1, so its shadows have a floor. That floor is ambient, not a
     # fill light: a second lamp would put highlights where the plate has none.
-    w.node_tree.nodes['Background'].inputs[0].default_value = srgb('#39414E')
-    w.node_tree.nodes['Background'].inputs[1].default_value = 0.16
+    #
+    # It is an HDRI rather than a flat colour, and the reason is measurable.
+    # Comparing the median local variation of 8x8 blocks at three scales, the
+    # plates climb as you zoom out, 0.90 to 2.13 and 1.54 to 3.49, while the
+    # renders sat flat at 0.50 at every scale. The plates' surfaces shade across
+    # their own width; the renders' did not, because a single flat world colour
+    # lights every facet of a wall identically no matter which way it faces.
+    #
+    # Dim on purpose. This is ambient with direction, not a second light: the
+    # lamp still does the lighting.
+    env = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                       'assets', 'hdri', 'small_empty_room_1_1k.hdr')
+    if os.path.exists(env):
+        tex = nt.nodes.new('ShaderNodeTexEnvironment')
+        tex.image = bpy.data.images.load(env)
+        nt.links.new(tex.outputs['Color'], bg.inputs['Color'])
+        bg.inputs[1].default_value = 0.22
+    else:
+        bg.inputs[0].default_value = srgb('#39414E')
+        bg.inputs[1].default_value = 0.16
     return sc
 
 
@@ -158,4 +178,63 @@ def leaf_mat(name, base, alpha_png, rough=0.66):
         img.interpolation = 'Closest'
         nt.links.new(img.outputs['Color'], b.inputs['Alpha'])
         m.blend_method = 'CLIP' if hasattr(m, 'blend_method') else m.blend_method
+    return m
+
+
+TEX = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'tex')
+
+
+def textured(name, base, tex_file, strength=0.35, scale=2.0, rough=0.85):
+    """A flat colour broken up by a texture, not replaced by one.
+
+    Measuring the plates against the renders at three zoom levels showed the
+    plates' within-region variation CLIMBING as you zoom out, 0.90 to 2.13,
+    while the renders stayed flat at 0.50 at every scale. Their surfaces shade
+    across their own width and ours did not.
+
+    Lighting cannot fix that here. An HDRI world was tried first and changed the
+    numbers not at all, because this is an enclosed room and the world only
+    reaches through the window. A physically lit flat-albedo wall genuinely is
+    uniform; the plates' modulation is painted, not lit.
+
+    So the variation has to live in the albedo. The texture is mixed only
+    [strength] of the way toward the flat colour, because the look is flat
+    illustration and a photoreal plank would be a different app's render. It is
+    there to stop a surface being one number, not to be noticed.
+    """
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    nt = m.node_tree
+    b = nt.nodes['Principled BSDF']
+    b.inputs['Roughness'].default_value = rough
+    b.inputs['Specular IOR Level'].default_value = 0.15
+    path = os.path.join(TEX, tex_file)
+    if not os.path.exists(path):
+        b.inputs['Base Color'].default_value = base
+        return m
+    img = nt.nodes.new('ShaderNodeTexImage')
+    img.image = bpy.data.images.load(path)
+    mapping = nt.nodes.new('ShaderNodeMapping')
+    mapping.inputs['Scale'].default_value = (scale, scale, scale)
+    coord = nt.nodes.new('ShaderNodeTexCoord')
+    nt.links.new(coord.outputs['Object'], mapping.inputs['Vector'])
+    nt.links.new(mapping.outputs['Vector'], img.inputs['Vector'])
+    # Modulate AROUND the base, do not multiply it down.
+    #
+    # The first attempt multiplied the texture into the albedo, and nothing
+    # showed. These colours are nearly black: #3B2919 is about 0.04 in linear,
+    # so base * texture varies between 0 and 0.04, which is a couple of 8-bit
+    # levels. The texture has to drive a mix between a darker and a lighter
+    # version of the colour instead, which gives real variation at the value the
+    # surface actually sits at.
+    bw = nt.nodes.new('ShaderNodeRGBToBW')
+    nt.links.new(img.outputs['Color'], bw.inputs['Color'])
+    lo = tuple(c * (1.0 - strength) for c in base[:3]) + (1.0,)
+    hi = tuple(min(1.0, c * (1.0 + strength * 2.2)) for c in base[:3]) + (1.0,)
+    mix = nt.nodes.new('ShaderNodeMixRGB')
+    mix.blend_type = 'MIX'
+    mix.inputs['Color1'].default_value = lo
+    mix.inputs['Color2'].default_value = hi
+    nt.links.new(bw.outputs['Val'], mix.inputs['Fac'])
+    nt.links.new(mix.outputs['Color'], b.inputs['Base Color'])
     return m

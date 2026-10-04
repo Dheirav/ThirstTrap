@@ -314,12 +314,16 @@ def scatter(root, placements):
 def build(res=(1672, 941), samples=96):
     sc = look.reset(res=res, samples=samples)
     M = dict(
-        wall=look.mat('wall', look.srgb('#2B2219'), 0.94),
+        wall=look.textured('wall', look.srgb('#2B2219'), 'rough_plaster_brick_diff_1k.jpg',
+                           strength=0.70, scale=0.6),
         pier=look.mat('pier', look.srgb('#33281D'), 0.92),
-        sill=look.mat('sill', look.srgb('#2C2118'), 0.90),
-        wood=look.mat('wood', look.srgb('#3B2919'), 0.86),
+        sill=look.textured('sill', look.srgb('#2C2118'), 'wood_table_001_diff_1k.jpg',
+                           strength=0.80, scale=2.2),
+        wood=look.textured('wood', look.srgb('#3B2919'), 'wood_table_001_diff_1k.jpg',
+                           strength=0.85, scale=1.4),
         frame=look.mat('frame', look.srgb('#1E1812'), 0.85),
-        terra=look.mat('terra', look.TERRA, 0.80),
+        terra=look.textured('terra', look.TERRA, 'terracotta_floor_tiles_diff_1k.jpg',
+                            strength=0.55, scale=3.0, rough=0.80),
         leaf=look.mat('leaf', look.LEAF, 0.66),
         stem=look.mat('stem', look.STEM, 0.60),
         metal=look.mat('metal', look.srgb('#6E7276'), 0.42, ),
@@ -358,7 +362,8 @@ def build(res=(1672, 941), samples=96):
     look.put(mn, look.mat('moon', (1, 1, 1, 1), 1.0, emit=(0.95, 0.96, 1.0, 1), strength=5.0))
 
     # --- the four pots on the sill, and the can pouring into the first
-    soil_m = look.mat('potsoil', look.SOIL, 0.96)
+    soil_m = look.textured('potsoil', look.SOIL, 'farm_soil_diff_1k.jpg',
+                           strength=0.75, scale=8.0, rough=0.96)
     A = lambda n, f: os.path.join(ASSETS, n, f)
     # The spiky succulent read as agave against plates full of broad leaves.
     # These assets build each leaf as an alpha card, so the leaf material has to
@@ -507,20 +512,30 @@ def build(res=(1672, 941), samples=96):
     return sc, M
 
 
-# (name, camera loc, aim, lens, portrait lens)
+# (name, camera loc, aim, lens, portrait lens, f-stop)
+#
+# The f-stop is per shot and most of them have one now. Depth of field was off
+# everywhere, because look.camera only enables it when passed a stop and nothing
+# passed one, so a 40 cm close-up of soil was rendered with the same infinite
+# sharpness as the back wall. That is most of what separates a photograph of a
+# room from a diagram of one.
+#
+# Wider stop on the close shots, where a few centimetres of focus is the whole
+# effect, and none at all on the two wide room shots, where everything in frame
+# is genuinely meant to be legible.
 SHOTS = {
- 'ledger':        ((-0.30, 0.02, 1.52), (-1.00, 0.99, 1.44), 38, 30),
- 'shelf-evening': ((-0.30, -0.28, 1.21), (-0.10, 0.98, 1.03), 35, 28),
- 'finger-test':   ((0.17, 0.47, 1.20), (-0.21, 0.975, 1.095), 55, 45),
- 'depth':         ((-0.18, -0.60, 0.95), (-0.18, 0.10, 0.845), 55, 45),
- 'roots':         ((-0.18, -0.28, 0.845), (-0.18, 0.10, 0.830), 85, 72),
- 'scale-table':   ((0.28, -0.86, 1.08), (0.36, 0.12, 0.845), 42, 34),
- 'phone-closeup': ((0.80, -0.60, 0.95), (0.70, -0.04, 0.775), 42, 34),
+ 'ledger':        ((-0.30, 0.02, 1.52), (-1.00, 0.99, 1.44), 38, 30, 4.0),
+ 'shelf-evening': ((-0.30, -0.28, 1.21), (-0.10, 0.98, 1.03), 35, 28, None),
+ 'finger-test':   ((0.17, 0.47, 1.20), (-0.21, 0.975, 1.095), 55, 45, 2.8),
+ 'depth':         ((-0.18, -0.60, 0.95), (-0.18, 0.10, 0.845), 55, 45, 3.5),
+ 'roots':         ((-0.18, -0.28, 0.845), (-0.18, 0.10, 0.830), 85, 72, 2.2),
+ 'scale-table':   ((0.28, -0.86, 1.08), (0.36, 0.12, 0.845), 42, 34, None),
+ 'phone-closeup': ((0.80, -0.60, 0.95), (0.70, -0.04, 0.775), 42, 34, 3.2),
 }
 
 
 def set_shot(name, portrait=False):
-    loc, aim, lens, plens = SHOTS[name]
-    cam = look.camera(loc, aim, lens=plens if portrait else lens)
+    loc, aim, lens, plens, fstop = SHOTS[name]
+    cam = look.camera(loc, aim, lens=plens if portrait else lens, fstop=fstop)
     cam.data.sensor_fit = 'HORIZONTAL'
     return cam

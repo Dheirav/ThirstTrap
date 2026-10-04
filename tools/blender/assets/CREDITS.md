@@ -18,3 +18,4 @@ with the flat palette in `look.py`, so only alpha maps are kept.
 - **wooden_spoon** — Poly Haven, CC0 — https://polyhaven.com/a/wooden_spoon
 - **planter_pot_clay** — Poly Haven, CC0 — https://polyhaven.com/a/planter_pot_clay
 - **trowel_01** — Poly Haven, CC0 — https://polyhaven.com/a/trowel_01
+- **small_empty_room_1** (HDRI, 1k) — Poly Haven, CC0 — https://polyhaven.com/a/small_empty_room_1
