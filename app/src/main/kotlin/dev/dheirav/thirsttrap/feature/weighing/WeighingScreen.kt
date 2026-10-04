@@ -63,6 +63,7 @@ private val lastSeen = SimpleDateFormat("d MMM", Locale.getDefault())
 fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val cursor by viewModel.cursor.collectAsStateWithLifecycle()
+    val finished by viewModel.finished.collectAsStateWithLifecycle()
     val entry by viewModel.entry.collectAsStateWithLifecycle()
     val context by viewModel.context.collectAsStateWithLifecycle()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -157,6 +158,56 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                     color = MaterialTheme.colorScheme.outline,
                     modifier = Modifier.padding(top = 12.dp),
                 )
+            }
+        }
+    }
+
+    if (finished) {
+        val weighed = state.rows.filter { it.doneThisRound != null }
+        AlmanacSheet(onDismissRequest = viewModel::dismissSummary, sheetState = sheetState) {
+            Column(
+                Modifier
+                    .navigationBarsPadding()
+                    .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 16.dp),
+            ) {
+                Text(
+                    "WHAT THE SCALE SAID",
+                    style = MaterialTheme.typography.titleMedium,
+                    letterSpacing = 0.18.em,
+                )
+                DoubleRule(Modifier.padding(top = 10.dp, bottom = 12.dp))
+                weighed.forEach { r ->
+                    val now = r.doneThisRound!!.grams
+                    val before = r.last?.grams
+                    Row(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
+                        Text(r.plant.name, Modifier.weight(1f))
+                        Text(
+                            buildString {
+                                append("${now.toInt()} g")
+                                // The change is the whole reason for carrying the
+                                // pot to the scale, so it is the thing that gets
+                                // said, not the fact that a row was filled in.
+                                before?.let {
+                                    val d = (now - it).toInt()
+                                    append(if (d < 0) "     $d g" else "     +$d g")
+                                }
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+                Rule(Modifier.padding(top = 12.dp))
+                Text(
+                    "Each reading moves that plant's prediction. Nothing else to do.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.padding(top = 12.dp),
+                )
+                Button(
+                    onClick = viewModel::dismissSummary,
+                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                ) { Text("Done") }
             }
         }
     }

@@ -104,13 +104,28 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
             }
 
             FieldLabel("What happened?")
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                CareEventType.entries.filter { it != CareEventType.UNKNOWN }.forEach { t ->
-                    FilterChip(
-                        selected = state.type == t,
-                        onClick = { viewModel.onType(t) },
-                        label = { Text(t.label) },
-                    )
+            // Fourteen options of equal weight in one undifferentiated row,
+            // "Died" among them. Hick's Law says decision time rises with the
+            // log of the number of equally weighted choices, and the cost falls
+            // hardest on the step that gates everything after it, which this is.
+            //
+            // The cost comes down through categorisation, not through a shorter
+            // list, and the grouping is carried by SPACING rather than by four
+            // more labels. Proximity is the law doing the work here, and adding
+            // a fifth heading voice to fix a grouping problem would undo the
+            // pass that got the app down to two.
+            EVENT_GROUPS.forEachIndexed { i, group ->
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(top = if (i == 0) 0.dp else 10.dp),
+                ) {
+                    group.forEach { t ->
+                        FilterChip(
+                            selected = state.type == t,
+                            onClick = { viewModel.onType(t) },
+                            label = { Text(t.label) },
+                        )
+                    }
                 }
             }
 
@@ -279,3 +294,26 @@ private fun formatDate(millis: Long): String =
     java.time.Instant.ofEpochMilli(millis)
         .atZone(java.time.ZoneId.systemDefault())
         .format(java.time.format.DateTimeFormatter.ofPattern("d MMM"))
+
+/**
+ * The event types, in four groups the hand already makes.
+ *
+ * Routine is what gets logged most and comes first. Tending is work done to the
+ * plant. Trouble runs from noticing to treating to losing it, which is the
+ * order that actually happens. Notes are the two that record rather than act.
+ * UNKNOWN ("Other") stays out, as it did before.
+ */
+private val EVENT_GROUPS: List<List<CareEventType>> = listOf(
+    listOf(
+        CareEventType.WATERED, CareEventType.CHECKED,
+        CareEventType.FERTILIZED, CareEventType.WATER_CHANGED,
+    ),
+    listOf(
+        CareEventType.REPOTTED, CareEventType.MEDIUM_CHANGED,
+        CareEventType.PRUNED, CareEventType.WEEDED, CareEventType.MOVED,
+    ),
+    listOf(
+        CareEventType.PEST_OR_DISEASE, CareEventType.TREATED, CareEventType.DIED,
+    ),
+    listOf(CareEventType.OBSERVATION, CareEventType.MILESTONE),
+)

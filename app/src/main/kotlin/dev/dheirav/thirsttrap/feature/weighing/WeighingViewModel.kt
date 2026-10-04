@@ -111,6 +111,12 @@ class WeighingViewModel @Inject constructor(
     private val _cursor = MutableStateFlow<Int?>(null)
     val cursor: StateFlow<Int?> = _cursor.asStateFlow()
 
+    /** True once the last pot in the round is in. See saveAndAdvance. */
+    private val _finished = MutableStateFlow(false)
+    val finished: StateFlow<Boolean> = _finished.asStateFlow()
+
+    fun dismissSummary() { _finished.value = false }
+
     fun open(index: Int) {
         _cursor.value = index
         _entry.value = ""
@@ -181,7 +187,18 @@ class WeighingViewModel @Inject constructor(
                 i != index && rows[i].doneThisRound == null
             }
             if (next == null) {
-                close()
+                // Not close(). Carrying every pot to a kitchen scale is the most
+                // effortful thing this app asks for, and it used to end with the
+                // sheet silently vanishing. The Peak-End Rule says an experience
+                // is remembered by its most intense moment and its last one, and
+                // the last one here was nothing at all.
+                //
+                // What replaces it is a statement of fact about the pots, not a
+                // congratulation and not a count of what got done. The anti-goals
+                // rule out a score; they do not rule out telling someone what
+                // they now know that they did not know an hour ago.
+                _cursor.value = null
+                _finished.value = true
             } else {
                 open(next)
             }
