@@ -518,8 +518,24 @@
   const ease = (t) => t * t * (3 - 2 * t);
 
 
-  gsap.to('.hero-title', { yPercent: -35, opacity: 0, ease: 'none',
-    scrollTrigger: { trigger: storyTrack, start: 'top top', end: '+=80%', scrub: true } });
+  // The fade has to finish BEFORE the block reaches the fixed nav, not while it
+  // is crossing it. At 80% of the viewport it was still near half opacity when
+  // the lede arrived at the wordmark, and the nav's backdrop only covers the
+  // nav's own box while the lede is four lines tall, so the scrim alone left
+  // the lower lines colliding. The upward drag made it worse by pulling the
+  // block up faster than the scroll, so that is reduced too.
+  // Opacity only. The block is fixed now, so there is nothing to translate and
+  // nothing that can reach the nav. visibility and pointer-events are driven
+  // too, because a fixed layer at opacity 0 still swallows clicks otherwise,
+  // and these two links sit over the whole left half of the hero.
+  const heroTitle = $('.hero-title');
+  gsap.to(heroTitle, { opacity: 0, ease: 'none',
+    scrollTrigger: { trigger: storyTrack, start: 'top top', end: '+=70%', scrub: true,
+      onUpdate: (st) => {
+        const vis = st.progress < 0.995;
+        heroTitle.style.visibility = vis ? 'visible' : 'hidden';
+        heroTitle.style.pointerEvents = st.progress < 0.2 ? 'auto' : 'none';
+      } } });
 
   track(storyTrack, (p) => {
     cam(p);
