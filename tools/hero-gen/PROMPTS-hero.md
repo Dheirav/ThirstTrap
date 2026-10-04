@@ -123,10 +123,13 @@ them.
     object each time, not merely the same kind of object. Draw them exactly as
     described here and do not redesign them to suit a composition.
 
-    PHONE: one slim flat slab, dark slate body, a thin bright silver-grey metal
-    band around its edge, rounded corners, no case, no visible buttons from
-    above. Its screen is sometimes on and sometimes off and each scene says
-    which, but the body never changes.
+    PHONE: one slim flat slab. Body #22262B, a neutral near-black charcoal, NOT
+    navy and NOT blue. Around its edge, and clearly visible on every edge in
+    every scene, a bright pale metal band the colour of #B9BCC0, about as thick
+    as the phone's own depth. Rounded corners, no case, no buttons visible from
+    above. Its screen is on in some scenes and off in others and each scene says
+    which, but the body colour and that bright band never change. If the band
+    does not read as bright metal against the dark body, it is wrong.
 
     MUG: plain cream stoneware, straight-sided, about as tall as it is wide,
     with a solid D-shaped handle that is ALWAYS visible and always drawn. Half
@@ -136,17 +139,35 @@ them.
     SCALE: a flat square kitchen scale, white, low and slab-like with no bowl,
     and a small dark rectangular readout window set into its front lip.
 
-    WATERING CAN: slim galvanised metal, pale cool grey, long thin straight
-    spout, high arched handle over the top.
+    WATERING CAN: slim galvanised metal, pale cool grey, with a long thin
+    straight spout running up from low on the body and a single high arched
+    handle over the top. Not plastic, not coloured, not a bulbous or rounded
+    can, no rose or sprinkler head on the spout, no decoration.
 
-    POTS: four identical plain terracotta pots on the sill, gently tapered,
-    with a visible rim lip and no saucer, all the same shape and the same clay.
+    POTS: EVERY terracotta pot in every scene is the same design, including the
+    one standing on the scale and the one cut in half. A plain straight-walled
+    pot whose sides slope evenly inward to a narrower base, with one flat rim
+    lip at the top and nothing else. No belly, no bulge, no urn or bowl shape,
+    no flared bucket mouth, no banding, no pattern, no saucer. Same muted clay
+    colour throughout. The four on the sill are this pot at four slightly
+    different sizes.
+
+    PLANTS: every plant in this set is the same kind of plant. Six to ten broad
+    leaves, each a rounded oval coming to a soft point, on short upright stalks
+    rising straight out of the soil in a loose rosette. No trailing vines, no
+    branching woody stems, no narrow strap or spear leaves, no spikes or
+    rosettes of the agave kind, no variegation, no flowers. The four on the sill
+    are this plant at four slightly different sizes, and the one on the scale is
+    the second pot from the left, carried over to the table, so it is that same
+    plant in that same pot.
 
     BOOKS: a short stack of three or four hardbacks lying flat at the left end
     of the sill, dark cloth covers, no titles.
 
-    LEDGER SHEET: one sheet of cream paper held by a single brass pin at its top
-    centre, ruled into seven rows.
+    LEDGER SHEET: one sheet of cream paper, portrait, held by a single brass pin
+    at its top centre, ruled into seven evenly spaced rows by fine hairlines
+    with a heavier rule under the heading. Not a notebook, not a clipboard, not
+    a card, not taped or framed, no curl, and never more than one sheet.
 
 ## Scenes
 
@@ -162,7 +183,7 @@ measured, and what else is in frame.
     left and the single handwritten word "Watered" on the right, identical in
     every row, down the whole page. The repetition is the subject.
 
-    In frame from the prop sheet: LEDGER SHEET, and the POTS and BOOKS on the
+    In frame from the prop sheet: LEDGER SHEET, and the POTS and PLANTS and BOOKS on the
     sill to the right. Draw each one exactly as the prop sheet describes it.
 
     The camera has turned left to face this wall, so the window is off to the
@@ -180,7 +201,7 @@ measured, and what else is in frame.
     into the soil. All four soil surfaces are dark and wet, because all four
     have just been watered. The night window and the moon behind the row.
 
-    In frame from the prop sheet: the four POTS, the WATERING CAN, the BOOKS
+    In frame from the prop sheet: the four POTS and PLANTS, the WATERING CAN, the BOOKS
     at the left end of the sill. Draw each one exactly as the prop sheet
     describes it.
 
@@ -197,7 +218,7 @@ measured, and what else is in frame.
     frame. Only the finger, the soil surface and the pot rim are lit; everything
     else falls away into the dark.
 
-    In frame from the prop sheet: the POTS, one of them close; the BOOKS
+    In frame from the prop sheet: the POTS and PLANTS, one of them close; the BOOKS
     further along the sill. Draw each one exactly as the prop sheet describes
     it.
 
@@ -217,7 +238,7 @@ measured, and what else is in frame.
     soil. The composition is the comparison: the shallow reach against the depth
     it cannot read.
 
-    In frame from the prop sheet: the SCALE and PHONE on the table, the POTS
+    In frame from the prop sheet: the SCALE and PHONE on the table, the POTS and PLANTS
     and BOOKS on the sill behind, the WATERING CAN, the LEDGER SHEET on the
     wall at the left. Draw each one exactly as the prop sheet describes it.
 
@@ -252,7 +273,7 @@ measured, and what else is in frame.
     warm white. Seen from slightly above. The rest of the room is dark.
 
     In frame from the prop sheet: the SCALE with a pot on it, the PHONE, the
-    MUG, the POTS and BOOKS on the sill behind, the LEDGER SHEET on the wall
+    MUG, the POTS and PLANTS and BOOKS on the sill behind, the LEDGER SHEET on the wall
     at the left. Draw each one exactly as the prop sheet describes it.
 
     The window is away to the left of the frame, and the table fills the centre.
@@ -277,7 +298,7 @@ measured, and what else is in frame.
     near its top edge. Shadows are short and drop straight down.
 
     In frame from the prop sheet: the PHONE, the SCALE behind it, the MUG, the
-    POTS and BOOKS on the sill behind, the LEDGER SHEET on the wall at the
+    POTS and PLANTS and BOOKS on the sill behind, the LEDGER SHEET on the wall at the
     left. Draw each one exactly as the prop sheet describes it.
 
 ## Portrait versions
@@ -300,7 +321,7 @@ rewritten, because both are things that drifted when they were written twice.
     left and the single handwritten word "Watered" on the right, identical in
     every row, down the whole page. The repetition is the subject.
 
-    In frame from the prop sheet: LEDGER SHEET, and the POTS and BOOKS on the
+    In frame from the prop sheet: LEDGER SHEET, and the POTS and PLANTS and BOOKS on the
     sill to the right. Draw each one exactly as the prop sheet describes it.
 
     The camera has turned left to face this wall, so the window is off to the
@@ -328,7 +349,7 @@ rewritten, because both are things that drifted when they were written twice.
     into the soil. All four soil surfaces are dark and wet, because all four
     have just been watered. The night window and the moon behind the row.
 
-    In frame from the prop sheet: the four POTS, the WATERING CAN, the BOOKS
+    In frame from the prop sheet: the four POTS and PLANTS, the WATERING CAN, the BOOKS
     at the left end of the sill. Draw each one exactly as the prop sheet
     describes it.
 
@@ -356,7 +377,7 @@ rewritten, because both are things that drifted when they were written twice.
     frame. Only the finger, the soil surface and the pot rim are lit; everything
     else falls away into the dark.
 
-    In frame from the prop sheet: the POTS, one of them close; the BOOKS
+    In frame from the prop sheet: the POTS and PLANTS, one of them close; the BOOKS
     further along the sill. Draw each one exactly as the prop sheet describes
     it.
 
@@ -383,7 +404,7 @@ rewritten, because both are things that drifted when they were written twice.
     soil. The composition is the comparison: the shallow reach against the depth
     it cannot read.
 
-    In frame from the prop sheet: the SCALE and PHONE on the table, the POTS
+    In frame from the prop sheet: the SCALE and PHONE on the table, the POTS and PLANTS
     and BOOKS on the sill behind, the WATERING CAN, the LEDGER SHEET on the
     wall at the left. Draw each one exactly as the prop sheet describes it.
 
@@ -432,7 +453,7 @@ rewritten, because both are things that drifted when they were written twice.
     warm white. Seen from slightly above. The rest of the room is dark.
 
     In frame from the prop sheet: the SCALE with a pot on it, the PHONE, the
-    MUG, the POTS and BOOKS on the sill behind, the LEDGER SHEET on the wall
+    MUG, the POTS and PLANTS and BOOKS on the sill behind, the LEDGER SHEET on the wall
     at the left. Draw each one exactly as the prop sheet describes it.
 
     The window is away to the left of the frame, and the table fills the centre.
@@ -467,7 +488,7 @@ rewritten, because both are things that drifted when they were written twice.
     near its top edge. Shadows are short and drop straight down.
 
     In frame from the prop sheet: the PHONE, the SCALE behind it, the MUG, the
-    POTS and BOOKS on the sill behind, the LEDGER SHEET on the wall at the
+    POTS and PLANTS and BOOKS on the sill behind, the LEDGER SHEET on the wall at the
     left. Draw each one exactly as the prop sheet describes it.
 
     For the tall frame, the phone sits low and the scale and pot stand above and

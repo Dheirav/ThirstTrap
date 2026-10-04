@@ -431,3 +431,41 @@ None of this shows up in a palette distance or a highlight centroid. It is the
 most visible continuity error in the set and the only one a person spotted
 unprompted, which is worth remembering about the measurements above: they
 score what they were built to score, and a viewer is not running them.
+
+### The prop sheet was not enough either, and why
+
+The regeneration fixed the mug, the scale and most of the phone, and a look at
+the result said the rest was still wrong. The pots are different pots: a
+bulbous urn on the scale, a flared bucket cut in half, plain tapers everywhere
+else. The plants are five different species across six plates. The phone's
+metal band is bright in `phone-closeup` and nearly invisible in `scale-table`.
+
+Three separate failures, and none of them was bad luck.
+
+**POTS described the wrong set.** It said "four identical plain terracotta pots
+on the sill", which is a claim about the sill. The pot standing on the scale and
+the pot cut in half are not on the sill, so nothing constrained them at all.
+
+**PLANTS did not exist.** The sheet described what the plants were standing in
+and never what they were. Six plates, five species, and no instruction was
+broken.
+
+**PHONE was qualitative where it needed to be numeric.** "Dark slate body, a
+thin bright silver-grey metal band" leaves both the darkness and the brightness
+to be decided per scene, and they were. It names #22262B and #B9BCC0 now, and
+says outright that if the band does not read as bright metal against the dark
+body it is wrong.
+
+The lint missed all three, because it checked that every prop in frame was
+described and never whether the description could hold. It now rejects a prop
+under 110 characters or one that never says what the object is NOT, since a
+stated negation is what closes off a plausible substitute: "a plain tapered pot"
+leaves a bowl available and "no belly, no bulge, no urn or bowl shape" does not.
+Run against the original sheet that rule catches `MUG` ("a mug", five
+characters), `SCALE` and `PHONE`.
+
+It does **not** catch the old `POTS` entry, which was 141 characters and did
+contain a negation, and still allowed an urn. A heuristic about the shape of a
+sentence cannot tell whether the right thing was ruled out. The check narrows
+the gap; it does not close it, and the thing that found all three of these was
+a person looking at the plates side by side.

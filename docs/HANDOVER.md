@@ -848,6 +848,33 @@ by drawing the 2D scene properly. Hosting is GitHub Pages from `/site` on main,
 not yet switched on, and the page loads GSAP, Lenis and fonts from CDNs rather
 than vendoring them.
 
+### D64 — The prop sheet described the wrong things (2026-10-05)
+
+D63's prop sheet fixed the mug, the scale and most of the phone. Looking at the
+result said the pots were still different pots, a bulbous urn on the scale and
+a flared bucket cut in half against plain tapers elsewhere, the plants were
+five species across six plates, and the phone's metal band was bright in one
+plate and invisible in another.
+
+**Three distinct holes, none of them bad luck.** POTS said "four identical
+plain terracotta pots **on the sill**", which constrains the sill and says
+nothing about the pot on the scale or the one cut in half. PLANTS did not exist
+at all: the sheet described what the plants stood in and never what they were.
+PHONE was qualitative, "dark slate" and "bright silver-grey", where the two
+values it needed were numbers; it names #22262B and #B9BCC0 now.
+
+**The lint missed all three** because it checked that every prop in frame was
+described, never whether a description could hold. It now rejects a prop under
+110 characters or one that never says what the object is NOT, since the
+negation is what closes off a substitute. Against the original sheet that rule
+catches `MUG` ("a mug"), `SCALE` and `PHONE`.
+
+**It still would not catch the old POTS**, which was 141 characters with a
+negation in it and allowed an urn anyway. A rule about the shape of a sentence
+cannot know whether the right thing was ruled out. Worth remembering before
+trusting the next check I write: all three of these were found by a person
+looking at the plates, after four measurements had reported the set was fine.
+
 ### D63 — A prop sheet, because a noun is not a description (2026-10-05)
 
 D61 made the plates agree about the room and they still did not look like one.

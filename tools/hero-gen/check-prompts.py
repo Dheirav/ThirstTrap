@@ -79,6 +79,28 @@ for k in ('THE ROOM', 'THE PROPS'):
 
 print('prop sheet defines: ' + ', '.join(sorted(sheet)) if sheet else 'prop sheet is EMPTY')
 
+# --- is each description strong enough to stop a substitution? ----------
+#
+# The first version of this lint passed while POTS said only "four identical
+# plain terracotta pots, gently tapered, with a visible rim lip" and PLANTS did
+# not exist at all. Structurally correct, and the plates came back with a
+# bulbous urn on the scale, a flared bucket cut in half, and five different
+# species of plant across six plates.
+#
+# What separates a description that holds from one that does not is a stated
+# negation. "A plain tapered pot" leaves a bowl available; "no belly, no bulge,
+# no urn or bowl shape" does not. So require each prop to rule something out,
+# and to be long enough to have said anything.
+NEG = re.compile(r'\b(no|not|never|nothing|rather than)\b', re.I)
+for prop, desc in sorted(sheet.items()):
+    flat = ' '.join(desc.split())
+    if len(flat) < 110:
+        problems.append(f'prop sheet: {prop} is only {len(flat)} characters. That is a label, '
+                        'not a description, and the generator will design its own')
+    elif not NEG.search(flat):
+        problems.append(f'prop sheet: {prop} never says what it is NOT. Without a negation a '
+                        'plausible substitute stays available and will be drawn')
+
 used = {}
 for sc in scenes:
     m = re.search(r'In frame from the prop sheet: (.+?)\. Draw each one', sc['body'], re.S)
