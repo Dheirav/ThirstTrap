@@ -575,7 +575,7 @@ private fun EventRow(
                 }
                 if (photos.isNotEmpty()) {
                     LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.padding(top = 6.dp),
                     ) {
                         items(photos, key = { it.id }) { photo ->
@@ -681,7 +681,7 @@ private fun EntryEditor(
                 )
                 if (photos.isNotEmpty()) {
                     LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         modifier = Modifier.padding(top = 12.dp),
                     ) {
                         items(photos, key = { it.id }) { photo ->

@@ -125,7 +125,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
 
             care.note?.let {
                 Card(Modifier.fillMaxWidth().padding(top = 12.dp)) {
-                    Text(it, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(14.dp))
+                    Text(it, style = MaterialTheme.typography.bodyMedium)
                 }
             }
 

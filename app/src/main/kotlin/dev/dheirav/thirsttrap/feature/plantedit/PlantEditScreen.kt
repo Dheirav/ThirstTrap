@@ -339,7 +339,7 @@ fun PlantEditScreen(
                     // as the repot warning on the log form.
                     if (state.weighingChanged) {
                         Card(Modifier.fillMaxWidth()) {
-                            Column(Modifier.padding(14.dp)) {
+                            Column() {
                                 Text(
                                     "This clears the weight setup",
                                     style = MaterialTheme.typography.titleSmall,

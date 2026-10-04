@@ -208,7 +208,7 @@ private fun AmbientRow(reading: AmbientReading, onDelete: () -> Unit) {
     // that threw a reading away looked exactly like the ones that do nothing.
     var confirming by remember { mutableStateOf(false) }
     Card(Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-        Row(Modifier.padding(12.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(
                     listOfNotNull(

@@ -154,7 +154,7 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
             // Only speaks when the plant's own noted needs make it meaningful.
             state.verdict?.let {
                 Card(Modifier.fillMaxWidth().padding(top = 20.dp)) {
-                    Text(it, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(14.dp))
+                    Text(it, style = MaterialTheme.typography.bodyMedium)
                 }
             }
 

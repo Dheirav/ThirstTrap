@@ -90,7 +90,7 @@ fun DueScreen(
         LazyColumn(
             Modifier.fillMaxSize().padding(padding),
             contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
             items(state.items, key = { it.reminder.id }) { item ->
                 // A ruled entry, not a bordered Card. Tapping between the first

@@ -171,7 +171,7 @@ fun WeightScreen(
                     Card(Modifier.fillMaxWidth().padding(top = 16.dp)) {
                         WeightChart(
                             s,
-                            Modifier.fillMaxWidth().height(200.dp).padding(10.dp)
+                            Modifier.fillMaxWidth().height(200.dp).padding(8.dp)
                                 .semantics { contentDescription = chartSummary(s) },
                             onPointTap = { editingReading = it },
                         )
@@ -224,7 +224,7 @@ fun WeightScreen(
                             Modifier
                                 .fillMaxWidth()
                                 .height(200.dp)
-                                .padding(10.dp)
+                                .padding(8.dp)
                                 .semantics { contentDescription = chartSummary(s) },
                             onPointTap = { editingReading = it },
                         )
@@ -533,7 +533,7 @@ private fun DiagnosticCard(
     onHelp: () -> Unit,
 ) {
     Card(Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
-        Column(Modifier.padding(14.dp)) {
+        Column() {
             Text(
                 when (d) {
                     DryingDiagnostic.DRYING_FASTER_THAN_USUAL -> "Drying faster than usual"
@@ -566,7 +566,7 @@ private fun DiagnosticCard(
 @Composable
 private fun NotCalibratedCard(needsRecalibration: Boolean) {
     Card(Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
-        Column(Modifier.padding(16.dp)) {
+        Column() {
             Text(
                 if (needsRecalibration) "Needs recalibrating" else "Not set up yet",
                 style = MaterialTheme.typography.titleMedium,
@@ -840,7 +840,7 @@ private fun AmbientCard(e: AmbientExplanation) {
     }.joinToString(" and ")
 
     Card(Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
-        Column(Modifier.padding(14.dp)) {
+        Column() {
             Text(
                 when (e.verdict) {
                     AmbientVerdict.EXPLAINS_FASTER,

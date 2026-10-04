@@ -1,5 +1,8 @@
 package dev.dheirav.thirsttrap.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.CardColors
@@ -29,6 +32,12 @@ fun Card(
     modifier: Modifier = Modifier,
     colors: CardColors = CardDefaults.cardColors(containerColor = Color.Transparent),
     border: BorderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    // The inset belongs to the component, not to the eighteen call sites that
+    // were each inventing it. The same hairline box inset its text by 12dp on
+    // the Plants tab and 16dp on the Due tab, which is two of the three tabs in
+    // the bottom bar disagreeing about how far a box holds its contents off its
+    // own edge.
+    contentPadding: PaddingValues = PaddingValues(Space.Entry),
     content: @Composable ColumnScope.() -> Unit,
 ) = M3Card(
     modifier = modifier,
@@ -36,5 +45,6 @@ fun Card(
     colors = colors,
     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     border = border,
-    content = content,
-)
+) {
+    Column(Modifier.padding(contentPadding), content = content)
+}

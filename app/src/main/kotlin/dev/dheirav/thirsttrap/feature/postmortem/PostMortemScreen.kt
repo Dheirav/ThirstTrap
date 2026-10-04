@@ -115,7 +115,7 @@ fun PostMortemScreen(onDone: () -> Unit, viewModel: PostMortemViewModel = hiltVi
                 // was watered every three days; it cannot say that killed it.
                 r.observations.forEach {
                     Card(Modifier.fillMaxWidth()) {
-                        Text(it, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(12.dp))
+                        Text(it, style = MaterialTheme.typography.bodyMedium)
                     }
                 }
 

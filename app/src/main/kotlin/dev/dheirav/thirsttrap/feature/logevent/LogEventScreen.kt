@@ -134,7 +134,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
             // on a weight screen that had gone back to asking to be set up.
             if (state.clearsWeightSetup) {
                 Card(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp)) {
+                    Column() {
                         Text(
                             "This clears the weight setup",
                             style = MaterialTheme.typography.titleSmall,

@@ -808,7 +808,7 @@ private fun QuickLogSheet(
             suggestedWaterMl = suggestedWaterMl,
         )
         Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.padding(top = 10.dp),
         ) {
             OutlinedButton(onClick = onPhoto, modifier = Modifier.weight(1f).height(BlockHeight)) {

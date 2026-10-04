@@ -160,7 +160,7 @@ private fun SectionLabel(text: String) {
 private fun ExperimentCard(e: ExperimentWithSubjects, onOpen: (String) -> Unit) {
     val exp = e.experiment
     Card(Modifier.fillMaxWidth().clickable { onOpen(exp.id) }) {
-        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(exp.name, style = MaterialTheme.typography.titleMedium)
             Text(exp.variable, style = MaterialTheme.typography.bodySmall)
             val status = if (exp.isConcluded) {
