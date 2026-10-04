@@ -74,12 +74,12 @@ fun WayfindingScreen(onBack: () -> Unit) {
                 "Six jobs that are about several plants at once rather than about one, " +
                     "which is why they are not on any single plant:",
             )
-            Item(MenuLabels.Dashboard.FEEDING, "What is due a feed, and the dilution maths for a given can.")
-            Item(MenuLabels.Dashboard.PROPAGATION, "Cuttings from cut to established, by stage.")
-            Item(MenuLabels.Dashboard.SCAN, "Opens whichever plant's sticker you point the camera at.")
-            Item(MenuLabels.Dashboard.PLACES, "A note and a light reading per spot in the house.")
-            Item(MenuLabels.Dashboard.FIGURES, "How often you water, what became of things, and whether the predictions have been any good.")
-            Item(MenuLabels.Dashboard.EXPERIMENTS, "Two arms, one variable, for when you want an answer rather than an impression.")
+            Item(MenuLabels.Dashboard.FEEDING, MenuLabels.Dashboard.FEEDING_WHAT)
+            Item(MenuLabels.Dashboard.PROPAGATION, MenuLabels.Dashboard.PROPAGATION_WHAT)
+            Item(MenuLabels.Dashboard.SCAN, MenuLabels.Dashboard.SCAN_WHAT)
+            Item(MenuLabels.Dashboard.PLACES, MenuLabels.Dashboard.PLACES_WHAT)
+            Item(MenuLabels.Dashboard.FIGURES, MenuLabels.Dashboard.FIGURES_WHAT)
+            Item(MenuLabels.Dashboard.EXPERIMENTS, MenuLabels.Dashboard.EXPERIMENTS_WHAT)
 
             SectionHead("Behind the dots on one plant")
             Para(

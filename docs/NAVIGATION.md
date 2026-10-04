@@ -234,8 +234,8 @@ and are not.
 | Places absorbs Room conditions (section 3) | decided, not built. `Routes.AMBIENT` still exists |
 | One Help screen (section 3) | decided, not built. `feature/help/` holds five |
 | One tab navigation pattern | **done 2026-10-04.** All three tabs now use `saveState`/`restoreState`; Due no longer appears twice in the back stack |
-| The dashboard overflow as a "More" destination | not started |
-| Four routes unreachable on a fresh install | not started. `SCAN`, `EXPERIMENTS`, `EXPERIMENT` and `STICKER` have no entry point because `advancedFeatures` defaults to false, and `WayfindingScreen` advertises two of them anyway |
+| The dashboard overflow as a "More" destination | **done 2026-10-04.** `Routes.MORE`. Six bare words became six rows with a line each, at the same two taps |
+| Four routes unreachable on a fresh install | **not a defect, on inspection.** `advancedFeatures` is a deliberate setting, discoverable in Settings with its reasoning beside it, and `WayfindingScreen` already says "Only with advanced features on" rather than advertising what the build lacks |
 
 The route count is the thing to watch. It has been wrong in this file twice now,
 both times because routes were added and the prose was not. If it is going to

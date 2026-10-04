@@ -6,6 +6,7 @@ object Routes {
     const val HOW_IT_WORKS = "help/how-it-works"
     const val TROUBLESHOOT = "help/something-wrong"
     const val INTRO = "intro"
+    const val MORE = "more"
     const val WAYFINDING = "help/wayfinding"
     const val WHY_NO_DATE = "help/why-no-date"
     const val BACKUP_HELP = "help/backups"

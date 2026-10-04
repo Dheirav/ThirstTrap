@@ -9,6 +9,7 @@ import dev.dheirav.thirsttrap.feature.help.BackupHelpScreen
 import dev.dheirav.thirsttrap.feature.help.WayfindingScreen
 import dev.dheirav.thirsttrap.feature.help.WhyNoPredictionScreen
 import dev.dheirav.thirsttrap.feature.intro.IntroScreen
+import dev.dheirav.thirsttrap.feature.more.MoreScreen
 import dev.dheirav.thirsttrap.feature.locations.LocationsScreen
 import dev.dheirav.thirsttrap.feature.weighing.WeighingScreen
 import dev.dheirav.thirsttrap.feature.stats.StatsScreen
@@ -209,15 +210,21 @@ class MainActivity : ComponentActivity() {
                                 onEditPlant = { id -> nav.navigate(Routes.plantEdit(id)) },
                                 onOpenPlant = { id -> nav.navigate(Routes.plantDetail(id)) },
                                 onLogMore = { id -> nav.navigate(Routes.logEvent(id)) },
-                                onOpenPropagation = { nav.navigate(Routes.PROPAGATION) },
                                 onOpenWeighing = { nav.navigate(Routes.WEIGHING) },
-                                onScanPot = { nav.navigate(Routes.SCAN) },
+                                onOpenMore = { nav.navigate(Routes.MORE) },
+                                onWeighPlant = { id -> nav.navigate(Routes.weight(id)) },
+                            )
+                        }
+                        composable(Routes.MORE) {
+                            MoreScreen(
+                                advanced = loaded.advancedFeatures,
+                                onBack = { nav.popBackStack() },
                                 onOpenFeeding = { nav.navigate(Routes.FERTILIZER) },
+                                onOpenPropagation = { nav.navigate(Routes.PROPAGATION) },
+                                onScanPot = { nav.navigate(Routes.SCAN) },
                                 onOpenPlaces = { nav.navigate(Routes.PLACES) },
                                 onOpenFigures = { nav.navigate(Routes.STATS) },
                                 onOpenExperiments = { nav.navigate(Routes.EXPERIMENTS) },
-                                onWeighPlant = { id -> nav.navigate(Routes.weight(id)) },
-                                advanced = loaded.advancedFeatures,
                             )
                         }
                         composable(Routes.DUE) {

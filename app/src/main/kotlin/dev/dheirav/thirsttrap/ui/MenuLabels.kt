@@ -39,6 +39,25 @@ object MenuLabels {
         const val PLACES = "Places"
         const val FIGURES = "Figures"
         const val EXPERIMENTS = "Experiments"
+
+        /**
+         * One line saying what each is for, held beside the label rather than
+         * in the two screens that show it.
+         *
+         * This file already records four help pages going stale in an hour
+         * because a label lived in two copies. These sentences were written in
+         * WayfindingScreen and are now wanted on the More screen too, which is
+         * the same trap one step later.
+         */
+        const val FEEDING_WHAT = "What is due a feed, and the dilution maths for a given can."
+        const val PROPAGATION_WHAT = "Cuttings from cut to established, by stage."
+        const val SCAN_WHAT = "Opens whichever plant's sticker you point the camera at."
+        const val PLACES_WHAT = "A note and a light reading per spot in the house."
+        const val FIGURES_WHAT =
+            "How often you water, what became of things, and whether the predictions " +
+                "have been any good."
+        const val EXPERIMENTS_WHAT =
+            "Two arms, one variable, for when you want an answer rather than an impression."
     }
 
     /** One plant's overflow: everything that is about that plant. */

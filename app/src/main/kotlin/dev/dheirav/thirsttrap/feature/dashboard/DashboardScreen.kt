@@ -123,16 +123,10 @@ fun DashboardScreen(
     onEditPlant: (String) -> Unit,
     onOpenPlant: (String) -> Unit,
     onLogMore: (String) -> Unit,
-    onOpenPropagation: () -> Unit,
     onOpenWeighing: () -> Unit,
-    onScanPot: () -> Unit,
-    onOpenFeeding: () -> Unit,
-    onOpenPlaces: () -> Unit,
-    onOpenFigures: () -> Unit,
-    onOpenExperiments: () -> Unit,
+    onOpenMore: () -> Unit,
     onWeighPlant: (String) -> Unit,
     /** Settings' "show the specialist tools". Off hides the rarer entries. */
-    advanced: Boolean,
     viewModel: DashboardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -145,7 +139,6 @@ fun DashboardScreen(
     val ctx = androidx.compose.ui.platform.LocalContext.current
 
     var sheetFor by remember { mutableStateOf<PlantAttention?>(null) }
-    var moreOpen by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
 
     // The sort order is frozen while an undo is pending. Re-sorting on the log
@@ -217,42 +210,13 @@ fun DashboardScreen(
                     IconButton(onClick = onOpenWeighing) {
                         Icon(AppIcons.weight, contentDescription = "Weigh the plants")
                     }
-                    IconButton(onClick = { moreOpen = true }) {
+                    // Opens a page, not a menu. Six bare words in a dropdown
+                    // told a reader nothing about what Figures or Places were,
+                    // and a menu is somewhere you look only once you know what
+                    // is in it. Same two taps, and now the first one explains
+                    // the choice. docs/NAVIGATION.md section 9.
+                    IconButton(onClick = onOpenMore) {
                         Icon(AppIcons.moreVert, contentDescription = "More")
-                    }
-                    AlmanacMenu(expanded = moreOpen, onDismissRequest = { moreOpen = false }) {
-                        // Jobs first, then the record, with a rule between. These
-                        // seven lived behind the gear icon, where nobody looks
-                        // for a feature.
-                        DropdownMenuItem(
-                            text = { Text(MenuLabels.Dashboard.FEEDING) },
-                            onClick = { moreOpen = false; onOpenFeeding() },
-                        )
-                        DropdownMenuItem(
-                            text = { Text(MenuLabels.Dashboard.PROPAGATION) },
-                            onClick = { moreOpen = false; onOpenPropagation() },
-                        )
-                        if (advanced) {
-                            DropdownMenuItem(
-                                text = { Text(MenuLabels.Dashboard.SCAN) },
-                                onClick = { moreOpen = false; onScanPot() },
-                            )
-                        }
-                        Rule()
-                        DropdownMenuItem(
-                            text = { Text(MenuLabels.Dashboard.PLACES) },
-                            onClick = { moreOpen = false; onOpenPlaces() },
-                        )
-                        DropdownMenuItem(
-                            text = { Text(MenuLabels.Dashboard.FIGURES) },
-                            onClick = { moreOpen = false; onOpenFigures() },
-                        )
-                        if (advanced) {
-                            DropdownMenuItem(
-                                text = { Text(MenuLabels.Dashboard.EXPERIMENTS) },
-                                onClick = { moreOpen = false; onOpenExperiments() },
-                            )
-                        }
                     }
                 },
             )
