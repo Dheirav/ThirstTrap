@@ -10,7 +10,7 @@ below what the eye resolves on this material.
 WebP is emitted alongside purely as the <picture> fallback. At these sizes it
 costs nothing to ship both.
 """
-import sys, pathlib
+import hashlib, re, sys, pathlib
 from PIL import Image
 import harmonise as _h
 
@@ -85,6 +85,35 @@ def main():
               f'{(DST / (png.stem + ".avif")).stat().st_size/1024:6.1f} KB{flag}')
     print(f'\n{"TOTAL":18} {total_src/1048576:5.2f} MB -> {total_avif/1024:6.1f} KB '
           f'({100*total_avif/total_src:.1f}%)')
+    stamp_page()
+
+
+def stamp_page():
+    """Put a content hash on every hero URL in index.html.
+
+    The plates keep their filenames forever, so a browser that has seen
+    ledger.avif once will go on showing the old painting after a regeneration.
+    python3 -m http.server sends no Cache-Control at all, which leaves the
+    browser free to guess, and it guesses in favour of the copy it already has.
+    A regeneration then looks like it did nothing, which is exactly what it
+    looked like.
+
+    The stamp is a hash of the encoded bytes rather than a timestamp, so it
+    changes when the art changes and not merely when the encoder is re-run.
+    """
+    page = DST.parent / 'index.html'
+    if not page.exists():
+        return
+    h = hashlib.sha256()
+    for f in sorted(DST.glob('*.avif')) + sorted(DST.glob('*.webp')):
+        h.update(f.read_bytes())
+    v = h.hexdigest()[:10]
+    html = page.read_text()
+    new = re.sub(r'(hero/[a-z0-9-]+\.(?:avif|webp))(\?v=[0-9a-f]+)?', rf'\1?v={v}', html)
+    if new != html:
+        page.write_text(new)
+    n = len(re.findall(r'hero/[a-z0-9-]+\.(?:avif|webp)\?v=', new))
+    print(f'{"stamped":18} {n} hero URLs in index.html with ?v={v}')
 
 
 if __name__ == '__main__':
