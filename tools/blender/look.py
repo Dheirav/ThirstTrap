@@ -184,6 +184,12 @@ def leaf_mat(name, base, alpha_png, rough=0.66):
 TEX = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'tex')
 
 
+# Set by plate.py. The albedo modulation below exists to answer a measurement
+# about the PHOTOREAL renders; in the flat-vector look the surfaces are supposed
+# to be one number, so it is skipped rather than fought.
+FLAT = False
+
+
 def textured(name, base, tex_file, strength=0.35, scale=2.0, rough=0.85):
     """A flat colour broken up by a texture, not replaced by one.
 
@@ -202,6 +208,8 @@ def textured(name, base, tex_file, strength=0.35, scale=2.0, rough=0.85):
     illustration and a photoreal plank would be a different app's render. It is
     there to stop a surface being one number, not to be noticed.
     """
+    if FLAT:
+        return mat(name, base, rough=1.0)
     m = bpy.data.materials.new(name)
     m.use_nodes = True
     nt = m.node_tree

@@ -848,6 +848,50 @@ by drawing the 2D scene properly. Hosting is GitHub Pages from `/site` on main,
 not yet switched on, and the page loads GSAP, Lenis and fonts from CDNs rather
 than vendoring them.
 
+### D65 — The room can be shaded like the plates; it is not built like them (2026-10-05)
+
+Asked to make the Blender room look like the painted plates, because a modelled
+room is the only thing that makes continuity structural instead of something
+argued about in prompts.
+
+**The shading is done and it works.** The plates are flat vector: no outlines,
+form in steps of value alone, at most three values per object, hard shadows, and
+gradients only for emitted light. Cycles was rendering the opposite, with
+textures, soft area shadows and depth of field.
+
+The usual tool is Shader to RGB with a constant ramp, which is EEVEE only, and
+EEVEE cannot open a GPU context here: a test scene with a lit sphere rendered a
+flat grey field, mean 54.9 and standard deviation 2.9. So the stepping happens
+in the compositor instead. Lighting comes out as a pass, its VALUE channel is
+posterised while hue and saturation are left alone, and that is multiplied back
+onto flat albedo. Stepping R, G and B separately would cross their boundaries at
+different moments and turn warm shadows green.
+
+**Three wrong turns, all the same mistake.** I swept exposure from 1.4 to 9.0
+across two grids on the assumption that the diffuse pass lived in 0..1. It does
+not: `probe_light.py` measured it running to 31, median 0.68, with the 95th
+percentile at 4.72, so the exposure that lands the bright end on the top stop is
+about 0.21. A hundredfold error in the wrong direction, and measuring it first
+would have cost one render instead of fifty.
+
+The second mistake was structural. Posterising normalises lighting to 0..1 by
+construction, so it destroys magnitude, and exposure cannot set both where the
+steps fall and how bright the picture is. Splitting them into exposure before
+the ramp and gain after it took the luminance RMSE against the plate from 0.121
+to 0.0497.
+
+**The content is nowhere near the paintings, and that is the real work left.**
+The ledger sheet is blank where the plate has seven handwritten rows. The city
+is flat rectangles with no lit windows, so the window reads as one slab of blue
+even though its mean colour measures correct at val 0.22 against the plate's
+0.24: the difference is structure, not hue. The plants are sparse. The roots
+camera is inside the pot rather than in the soil. The mug, phone and lamp are
+missing from framings that need them.
+
+So "make the renders look like the plates" is half answered. The look is a
+solved pipeline; the room is a set that has not been dressed. The next step is
+modelling, not shading, and it is the larger half.
+
 ### D64 — The prop sheet described the wrong things (2026-10-05)
 
 D63's prop sheet fixed the mug, the scale and most of the phone. Looking at the
