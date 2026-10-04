@@ -169,10 +169,24 @@ fun PlantDetailScreen(
                                     // started opening this page instead of the
                                     // sheet, or the full log screen would have
                                     // been left behind a long press.
+                                    // Nine items in a flat column with no
+                                    // break anywhere. Hick's cost comes down
+                                    // through categorisation rather than through
+                                    // a shorter list, and the dashboard's own
+                                    // menu already demonstrates that in this
+                                    // same app: three groups, ruled apart.
+                                    //
+                                    // Put something in the record.
                                     DropdownMenuItem(
                                         text = { Text(MenuLabels.Plant.LOG) },
                                         onClick = { menuOpen = false; onLogMore(p.id) },
                                     )
+                                    DropdownMenuItem(
+                                        text = { Text(MenuLabels.Plant.GALLERY) },
+                                        onClick = { menuOpen = false; capture.pickFromGallery() },
+                                    )
+                                    Rule()
+                                    // Find something out about it.
                                     // Second, under logging. "Something is
                                     // wrong with this plant" is something you
                                     // do at the moment you are worried, not a
@@ -183,10 +197,6 @@ fun PlantDetailScreen(
                                     DropdownMenuItem(
                                         text = { Text(MenuLabels.Plant.DIAGNOSE) },
                                         onClick = { menuOpen = false; onDiagnose(p.id) },
-                                    )
-                                    DropdownMenuItem(
-                                        text = { Text(MenuLabels.Plant.GALLERY) },
-                                        onClick = { menuOpen = false; capture.pickFromGallery() },
                                     )
                                     // "Compare photos" and "Timelapse" used to sit
                                     // here, and both opened the photo viewer in a
@@ -257,6 +267,8 @@ fun PlantDetailScreen(
                                             onClick = { menuOpen = false; onCare(p.id) },
                                         )
                                     }
+                                    Rule()
+                                    // Change the plant itself.
                                     if (advanced) {
                                         DropdownMenuItem(
                                             text = { Text(MenuLabels.Plant.STICKER) },

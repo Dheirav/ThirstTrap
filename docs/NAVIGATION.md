@@ -5,8 +5,13 @@ is that information architecture is cheap to decide and expensive to undo.
 
 ## 1. What is actually there
 
-28 routes reach the user through three tabs. Sorted by what they are, not by
+32 routes reach the user through three tabs. Sorted by what they are, not by
 where they currently live:
+
+> **Corrected 2026-10-04.** This said 28. `Routes.kt` declares 32 and
+> `MainActivity` registers 32. The figure was right when it was written and was
+> never updated as routes were added, which is the failure this document exists
+> to prevent: a map that is wrong about the build is worse than no map.
 
 | Kind | Routes |
 |---|---|
@@ -53,6 +58,13 @@ entry points for one intention.
 **Rarely and deliberately.** Backup, storage, preferences. This is Settings.
 
 ## 3. Two merges that remove screens rather than moving them
+
+> **Decided, not yet done, as of 2026-10-04.** Neither merge in this section has
+> been built. `Routes.AMBIENT` is still its own destination, so Places has not
+> absorbed Room conditions, and `feature/help/` still holds five screens rather
+> than one. The section below reads as settled because it was settled; it was
+> just never implemented. It is part 3 of the navigation workstream in
+> `docs/DESIGN-COHERENCE-PLAN.md`.
 
 **Places absorbs Room conditions.** Both answer questions about a location:
 Places holds the note and the last light reading, Room conditions holds
@@ -145,7 +157,7 @@ Added 2026-10-01, after building it. Sections 1 to 6 are the plan as written
 before any code; this is the shape that exists, and the two differ in ways worth
 recording.
 
-**28 routes, down from 28.** No net change, but not the same 28. `compare` and
+**32 routes, up from 28.** Not a net wash, and not the same set. `compare` and
 `timelapse` are gone, folded into the photo viewer (section 3's merges, carried
 further than planned), and `intro` and `help` were added. The viewer itself has
 no route at all: it is an overlay in the activity's own window, because a Dialog
@@ -212,3 +224,19 @@ Which leaves Help as four pieces of documentation, and the open question the
 user raised alongside this one: whether documentation behind Settings is itself
 too hard to find. Not decided.
 
+## 9. What is still outstanding (2026-10-04)
+
+Recorded here rather than left implied, because sections 3 and 5 read as done
+and are not.
+
+| | state |
+|---|---|
+| Places absorbs Room conditions (section 3) | decided, not built. `Routes.AMBIENT` still exists |
+| One Help screen (section 3) | decided, not built. `feature/help/` holds five |
+| One tab navigation pattern | **done 2026-10-04.** All three tabs now use `saveState`/`restoreState`; Due no longer appears twice in the back stack |
+| The dashboard overflow as a "More" destination | not started |
+| Four routes unreachable on a fresh install | not started. `SCAN`, `EXPERIMENTS`, `EXPERIMENT` and `STICKER` have no entry point because `advancedFeatures` defaults to false, and `WayfindingScreen` advertises two of them anyway |
+
+The route count is the thing to watch. It has been wrong in this file twice now,
+both times because routes were added and the prose was not. If it is going to
+drift again it would be better derived than written.
