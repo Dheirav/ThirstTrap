@@ -35,6 +35,14 @@ data class PlantDetailUiState(
     /** Keyed by care event id, so a timeline row can show its own photos. */
     val photosByEvent: Map<String, List<Photo>> = emptyMap(),
     val averageIntervalDays: Double? = null,
+    /**
+     * When this plant was last fed.
+     *
+     * Needed because fertilizerCadenceDays was stored on every plant and read by
+     * nothing: the form asked how often to feed and the app had nowhere to say
+     * it, nor anything to measure it against.
+     */
+    val lastFertilizedMillis: Long? = null,
     val loaded: Boolean = false,
 )
 
@@ -88,6 +96,9 @@ class PlantDetailViewModel @Inject constructor(
                 averageIntervalDays = averageWateringIntervalDays(
                     events.filter { it.type == CareEventType.WATERED }.map { it.timestampMillis },
                 ),
+                lastFertilizedMillis = events
+                    .filter { it.type == CareEventType.FERTILIZED }
+                    .maxOfOrNull { it.timestampMillis },
                 loaded = true,
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), PlantDetailUiState())

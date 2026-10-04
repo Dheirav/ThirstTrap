@@ -62,6 +62,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Brush
 import dev.dheirav.thirsttrap.domain.hasSpeciesCare
+import dev.dheirav.thirsttrap.domain.WateringMethod
+import dev.dheirav.thirsttrap.domain.Medium
 import dev.dheirav.thirsttrap.domain.CareEvent
 import dev.dheirav.thirsttrap.ui.TextButton
 import androidx.compose.ui.layout.ContentScale
@@ -373,6 +375,22 @@ fun PlantDetailScreen(
                                 modifier = Modifier.padding(top = 8.dp),
                             )
                         }
+                        // The feed cadence, beside the watering one. It was
+                        // asked for on the form and read by nothing, so the
+                        // answer went nowhere. A statement of fact, not a nudge:
+                        // it says what the interval is and when it last happened,
+                        // and never that anything is overdue.
+                        feedLabel(
+                            state.plant?.fertilizerCadenceDays,
+                            state.lastFertilizedMillis,
+                        )?.let {
+                            Text(
+                                it,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 4.dp),
+                            )
+                        }
                         Text(
                             "${state.totalEvents} ${if (state.totalEvents == 1) "entry" else "entries"}",
                             style = MaterialTheme.typography.bodySmall,
@@ -570,6 +588,14 @@ private fun EventRow(
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = if (isLifeEvent) FontWeight.SemiBold else FontWeight.Normal,
                 )
+                // Everything the log form collects and nothing used to show.
+                details(event)?.let {
+                    Text(
+                        it,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
                 event.note?.takeIf { it.isNotBlank() }?.let {
                     LinkedNote(it, allPlants, onOpenPlant)
                 }
@@ -918,5 +944,52 @@ private fun PlantHero(
                 )
             }
         }
+    }
+}
+
+/**
+ * The detail a stored event carries, on the one screen that reads events.
+ *
+ * Six fields were collected by the log form and displayed by nothing: method,
+ * fertilizerName, dilution, fromMedium, toMedium and cause. The app asked which
+ * fertiliser you used and then had nowhere to tell you. UI-SPEC section 4 says
+ * a timeline row shows what the event was; this is the part of that promise
+ * that was never built.
+ *
+ * Returns null rather than an empty line when there is nothing extra to say,
+ * which is most waterings, so the timeline does not grow a blank row per entry.
+ * UNKNOWN is dropped for the same reason: it is the absence of an answer, and
+ * printing "Unknown" is worse than printing nothing.
+ */
+private fun details(event: CareEvent): String? = buildList {
+    event.method?.takeIf { it != WateringMethod.UNKNOWN }?.let { add(it.label) }
+    event.fertilizerName?.takeIf { it.isNotBlank() }?.let { add(it) }
+    event.dilution?.takeIf { it.isNotBlank() }?.let { add(it) }
+    val from = event.fromMedium?.takeIf { it != Medium.UNKNOWN }
+    val to = event.toMedium?.takeIf { it != Medium.UNKNOWN }
+    when {
+        from != null && to != null -> add("${from.label} to ${to.label}")
+        to != null -> add("into ${to.label}")
+        else -> Unit
+    }
+    event.cause?.takeIf { it.isNotBlank() }?.let { add(it) }
+}.joinToString(" · ").ifBlank { null }
+
+/**
+ * "Feed every 30 days. Last fed 12 days ago."
+ *
+ * Null when the plant has no cadence set, because an interval nobody chose is
+ * not a fact about the plant. Says nothing about whether a feed is due: that
+ * would be a nudge, and the only reminder this app makes is to go and look.
+ */
+private fun feedLabel(cadenceDays: Int?, lastFedMillis: Long?): String? {
+    if (cadenceDays == null) return null
+    val every = "Feed every $cadenceDays days."
+    if (lastFedMillis == null) return "$every Not fed yet."
+    val days = ((System.currentTimeMillis() - lastFedMillis) / 86_400_000L).toInt()
+    return when {
+        days <= 0 -> "$every Last fed today."
+        days == 1 -> "$every Last fed yesterday."
+        else -> "$every Last fed $days days ago."
     }
 }
