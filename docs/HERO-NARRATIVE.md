@@ -309,3 +309,92 @@ the engine's existing `fit` stops do.
 They are painted with no fine detail, so they tolerate being upsampled further
 than a photograph would, but past about 1.6x they go soft. Every move listed
 above is inside that. Anything tighter needs its own plate.
+
+## 8. Continuity between plates
+
+Section 7 solved how one shot joins the next. This is the problem under it: the
+shots have to be the same room before any join between them is worth composing.
+
+They were not. The plates were generated one scene per chat, and the prompt file
+described a look without ever describing a place, so each scene invented its own
+setting: "a windowsill" in one, "a wooden table" in the next, "a dark wall beside
+a window" in a third. Nothing said they were the same windowsill.
+
+Measured on the fourteen shipped plates, by the horizontal centroid of the
+brightest tenth of each picture, which is where the light actually lands:
+
+    the lamp sat left in five shots and right in two, a swing of 0.56
+    it changed sides three times going down the page, and six times in portrait
+    three beats lit the same moment from opposite sides in their two orientations
+    foliage came back at hue 60 to 102 against a specified 134, olive not green
+    terracotta came back 12 to 19 degrees too orange
+
+Not all of those are the same kind of fault. The terracotta is off-spec on every
+plate but off by the same amount every time, so the pots still read as the same
+clay and nobody notices. The lamp moving is what reads as a different room,
+because a viewer tracks where the light is without being able to say that is
+what they are doing.
+
+### The room is the authority
+
+`tools/blender/world.py` already models the room once with a camera per beat, so
+it cannot disagree with itself, and its own header says this was why it was
+built. It was then never fed back into the prompts.
+
+`tools/blender/continuity.py` closes that loop. It projects the lamp into each
+of the seven cameras and reports where it falls, in camera-local coordinates
+rather than screen position, because the lamp is behind the camera in two shots
+and a projected x for a point behind the lens is mirrored nonsense. The answer:
+**the lamp is to the right of the camera in all seven shots**, 12 to 69 degrees
+off axis. Those lines are now written into each scene's prompt as fact.
+
+`tools/hero-gen/PROMPTS-hero.md` is rewritten around that. The room block is
+inside the style block rather than beside it, because `gen.mjs` sends exactly
+two things, the style block and one scene body, so anything in a third section
+would never have reached the model. Each scene attaches a render of the real
+room from its own camera, brightened so the geometry reads, which is what makes
+the generator place things in a room it can see instead of one it imagines.
+
+### What was fixed without regenerating, and what was not
+
+`tools/hero-gen/harmonise.py` rotates each plate's leaves onto one green. The
+mask takes hue 55 to 175 above a saturation floor, which in this palette is only
+leaves, and it was checked by rendering it rather than assumed. Foliage went
+from 0 of 14 plates in spec to 11 of 14, and the spread between plates closed
+from 42 degrees to single figures on everything except `roots`, which has almost
+no leaves in it, and `scale-table`, whose leaves are split between a lit group
+and a group in shadow that one rigid rotation cannot put in the same place.
+
+The pots were deliberately left alone. Their band overlaps the warm accent at
+hue 35, the lamp glow and the wood, so rotating it would turn the table red, and
+they are consistently wrong rather than inconsistently wrong.
+
+Four plates are mirrored at encode time to stop the lamp moving down the page.
+That took landscape from three side changes to one and portrait from six to one.
+`ledger-p` is the reason neither reaches zero: it is covered in handwriting and
+cannot be mirrored at any price.
+
+`finger-test` is worth recording because the obvious reading of it is wrong. Its
+unflipped plate agrees with the room, so the flip looks like a mistake, and it
+was removed on that basis. Removing it made the page worse: the plate that
+agrees with the room is the odd one out among neighbours that do not, so the
+lamp started jumping three times instead of once. It went back. Agreeing with
+its neighbours beats agreeing with the room until the set is regenerated,
+because what a viewer can check is the light moving, not which side it is on.
+
+### What is left
+
+Mirroring cannot fix the rest. `phone-closeup` wants the lamp overhead and both
+its plates are off to a side; `ledger` cannot be touched; and pushing further
+starts trading the lamp against which side hands and watering cans enter from.
+`check-plates.py` also has a known false pass on `depth-p`, which it scores 0.56
+while the lamp shade is visibly upper left, because the bright pot sits right of
+centre and drags the highlight centroid. The highlight centroid is a good proxy,
+not a perfect one.
+
+The rest is a regeneration against the rewritten prompts, then:
+
+    python3 tools/hero-gen/check-plates.py --src
+
+Both rows should read R R R R R R R with 0 changes, and the four entries in
+`FLIP` should all come out of `encode.py`.
