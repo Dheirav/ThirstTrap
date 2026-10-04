@@ -398,3 +398,36 @@ The rest is a regeneration against the rewritten prompts, then:
 
 Both rows should read R R R R R R R with 0 changes, and the four entries in
 `FLIP` should all come out of `encode.py`.
+
+### The props were still being reinvented
+
+Fixing the lamp and the layout was not enough, and the thing that gave it away
+was not a statistic. The phone looks like a different phone between the two
+plates that contain it: black bezel and a lit screen in `scale-table`, a silver
+band and a dark screen in `phone-closeup`. The mug is worse. Across the scenes
+that mention one there are three unrelated vessels: a handle-less faceted
+tumbler, a squat lidless cup, and a proper handled mug with coffee in it.
+
+The cause was in the room block. It listed the recurring objects as bare nouns,
+"a flat kitchen scale on the table, a phone lying face up beside it, a mug". A
+noun names a category, not an object, so the generator designed a new one each
+time. Saying the scenes share a room while describing none of its contents asks
+for exactly that.
+
+So there is a prop sheet now, inside the style block with the room, giving each
+recurring object a concrete description it has to be drawn to: the phone is a
+dark slate slab with a thin silver band, the mug is cream stoneware with a
+D-shaped handle that is always drawn, and so on. Each scene then names which of
+them are in frame.
+
+`check-prompts.py` lints it before a run: every prop a scene puts in frame must
+be described, every described prop must be used, and the two orientations of
+one beat must name the same props. Writing it caught a bug in itself first. The
+regex matching prop names required four characters, so `MUG` was invisible to
+both halves of the check, which means the prop that had drifted worst was the
+one the lint could not see.
+
+None of this shows up in a palette distance or a highlight centroid. It is the
+most visible continuity error in the set and the only one a person spotted
+unprompted, which is worth remembering about the measurements above: they
+score what they were built to score, and a viewer is not running them.

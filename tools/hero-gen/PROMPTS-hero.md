@@ -119,11 +119,34 @@ them.
     camera, and that statement wins over anything the attached layout image
     seems to show.
 
-    Recurring objects, which must look like the same object every time they
-    appear: four terracotta pots on the sill, a small stack of books at the left
-    end of the sill, a metal watering can, a flat kitchen scale on the table, a
-    phone lying face up beside it, a mug. Pots are all the same shape and the
-    same clay.
+    THE PROPS. These objects appear in more than one scene and must be the SAME
+    object each time, not merely the same kind of object. Draw them exactly as
+    described here and do not redesign them to suit a composition.
+
+    PHONE: one slim flat slab, dark slate body, a thin bright silver-grey metal
+    band around its edge, rounded corners, no case, no visible buttons from
+    above. Its screen is sometimes on and sometimes off and each scene says
+    which, but the body never changes.
+
+    MUG: plain cream stoneware, straight-sided, about as tall as it is wide,
+    with a solid D-shaped handle that is ALWAYS visible and always drawn. Half
+    full of dark coffee. It is a mug with a handle, never a tumbler, never a
+    beaker, never a lidded cup.
+
+    SCALE: a flat square kitchen scale, white, low and slab-like with no bowl,
+    and a small dark rectangular readout window set into its front lip.
+
+    WATERING CAN: slim galvanised metal, pale cool grey, long thin straight
+    spout, high arched handle over the top.
+
+    POTS: four identical plain terracotta pots on the sill, gently tapered,
+    with a visible rim lip and no saucer, all the same shape and the same clay.
+
+    BOOKS: a short stack of three or four hardbacks lying flat at the left end
+    of the sill, dark cloth covers, no titles.
+
+    LEDGER SHEET: one sheet of cream paper held by a single brass pin at its top
+    centre, ruled into seven rows.
 
 ## Scenes
 
@@ -138,6 +161,9 @@ measured, and what else is in frame.
     heavier rule under its heading. Each row is a short handwritten date on the
     left and the single handwritten word "Watered" on the right, identical in
     every row, down the whole page. The repetition is the subject.
+
+    In frame from the prop sheet: LEDGER SHEET, and the POTS and BOOKS on the
+    sill to the right. Draw each one exactly as the prop sheet describes it.
 
     The camera has turned left to face this wall, so the window is off to the
     right, out of frame or just clipping the right edge, and the table is behind
@@ -154,6 +180,10 @@ measured, and what else is in frame.
     into the soil. All four soil surfaces are dark and wet, because all four
     have just been watered. The night window and the moon behind the row.
 
+    In frame from the prop sheet: the four POTS, the WATERING CAN, the BOOKS
+    at the left end of the sill. Draw each one exactly as the prop sheet
+    describes it.
+
     The window fills the middle of the frame. The lamp is in front of the camera
     and up to the right, about fifty degrees off axis, so the pots are raked
     from the right and each one throws its shadow to the left along the sill.
@@ -166,6 +196,10 @@ measured, and what else is in frame.
     dished hole around it. The hand is cropped at the wrist by the edge of the
     frame. Only the finger, the soil surface and the pot rim are lit; everything
     else falls away into the dark.
+
+    In frame from the prop sheet: the POTS, one of them close; the BOOKS
+    further along the sill. Draw each one exactly as the prop sheet describes
+    it.
 
     The window is to the right of the frame and the table is further right
     again. The lamp is behind the camera and to the right, about twenty-five
@@ -183,6 +217,10 @@ measured, and what else is in frame.
     soil. The composition is the comparison: the shallow reach against the depth
     it cannot read.
 
+    In frame from the prop sheet: the SCALE and PHONE on the table, the POTS
+    and BOOKS on the sill behind, the WATERING CAN, the LEDGER SHEET on the
+    wall at the left. Draw each one exactly as the prop sheet describes it.
+
     The window is behind the pot in the middle distance, centred. The lamp is in
     front of the camera and up to the right, about forty-five degrees off axis,
     so the cut face is lit from the upper right and the pot throws a hard shadow
@@ -195,6 +233,9 @@ measured, and what else is in frame.
     runs a fresh channel where something has been pushed in and withdrawn, and
     the fine roots along its edges are visibly torn and broken, pale ends hanging
     loose. No hand, no pot rim, no room, just soil and roots and the damage.
+
+    In frame from the prop sheet: none, this is inside the soil. Draw each one
+    exactly as the prop sheet describes it.
 
     There is no room geometry in this shot, but the light is still the same lamp
     as every other scene. The lamp is up and to the right at about sixty degrees
@@ -209,6 +250,10 @@ measured, and what else is in frame.
     the wooden table. The scale has a small dark readout panel on its front lip.
     The phone lies face up on the table beside it, its screen a pale rectangle of
     warm white. Seen from slightly above. The rest of the room is dark.
+
+    In frame from the prop sheet: the SCALE with a pot on it, the PHONE, the
+    MUG, the POTS and BOOKS on the sill behind, the LEDGER SHEET on the wall
+    at the left. Draw each one exactly as the prop sheet describes it.
 
     The window is away to the left of the frame, and the table fills the centre.
     The lamp is almost straight ahead and above, about twelve degrees to the
@@ -231,6 +276,10 @@ measured, and what else is in frame.
     table and the phone's dark screen catches one soft reflection of the shade
     near its top edge. Shadows are short and drop straight down.
 
+    In frame from the prop sheet: the PHONE, the SCALE behind it, the MUG, the
+    POTS and BOOKS on the sill behind, the LEDGER SHEET on the wall at the
+    left. Draw each one exactly as the prop sheet describes it.
+
 ## Portrait versions
 
 Same seven beats in nine by sixteen. These are drawn portrait rather than cropped
@@ -239,10 +288,8 @@ into a 9:19.5 viewport keeps 82% of its width, where cropping the 16:9 kept 26%
 and upscaled it four times over.
 
 The bodies below are the landscape bodies, copied, plus a tail for the tall
-frame. The lamp sentence in particular is copied rather than rewritten. Three of
-the old portrait plates lit their beat from the opposite side to their landscape
-twin, which is the plainest possible sign that these were not one room, and it is
-the first thing `check-plates.py` tests.
+frame. The lamp sentence and the prop list in particular are copied rather than
+rewritten, because both are things that drifted when they were written twice.
 
 **ledger-p.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-palette.png`, `../../../ThirstTrap/tools/hero-gen/refs/layout-ledger-p.png`:
 
@@ -252,6 +299,9 @@ the first thing `check-plates.py` tests.
     heavier rule under its heading. Each row is a short handwritten date on the
     left and the single handwritten word "Watered" on the right, identical in
     every row, down the whole page. The repetition is the subject.
+
+    In frame from the prop sheet: LEDGER SHEET, and the POTS and BOOKS on the
+    sill to the right. Draw each one exactly as the prop sheet describes it.
 
     The camera has turned left to face this wall, so the window is off to the
     right, out of frame or just clipping the right edge, and the table is behind
@@ -267,7 +317,8 @@ the first thing `check-plates.py` tests.
     instruction in the style block. Compose for a tall frame: stack the subject
     vertically, keep it central, and let the top and bottom of the picture carry
     quiet dark areas rather than cropping a wide scene. The lamp direction
-    stated above is unchanged. Rotating the frame does not move the light.
+    stated above is unchanged. Rotating the frame does not move the light, and
+    the props are the same objects drawn the same way.
 
 **shelf-evening-p.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-palette.png`, `../../../ThirstTrap/tools/hero-gen/refs/layout-shelf-evening-p.png`:
 
@@ -276,6 +327,10 @@ the first thing `check-plates.py` tests.
     watering can tipped over the leftmost pot, water falling in a thin stream
     into the soil. All four soil surfaces are dark and wet, because all four
     have just been watered. The night window and the moon behind the row.
+
+    In frame from the prop sheet: the four POTS, the WATERING CAN, the BOOKS
+    at the left end of the sill. Draw each one exactly as the prop sheet
+    describes it.
 
     The window fills the middle of the frame. The lamp is in front of the camera
     and up to the right, about fifty degrees off axis, so the pots are raked
@@ -290,7 +345,8 @@ the first thing `check-plates.py` tests.
     instruction in the style block. Compose for a tall frame: stack the subject
     vertically, keep it central, and let the top and bottom of the picture carry
     quiet dark areas rather than cropping a wide scene. The lamp direction
-    stated above is unchanged. Rotating the frame does not move the light.
+    stated above is unchanged. Rotating the frame does not move the light, and
+    the props are the same objects drawn the same way.
 
 **finger-test-p.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-palette.png`, `../../../ThirstTrap/tools/hero-gen/refs/layout-finger-test-p.png`:
 
@@ -299,6 +355,10 @@ the first thing `check-plates.py` tests.
     dished hole around it. The hand is cropped at the wrist by the edge of the
     frame. Only the finger, the soil surface and the pot rim are lit; everything
     else falls away into the dark.
+
+    In frame from the prop sheet: the POTS, one of them close; the BOOKS
+    further along the sill. Draw each one exactly as the prop sheet describes
+    it.
 
     The window is to the right of the frame and the table is further right
     again. The lamp is behind the camera and to the right, about twenty-five
@@ -310,7 +370,8 @@ the first thing `check-plates.py` tests.
     instruction in the style block. Compose for a tall frame: stack the subject
     vertically, keep it central, and let the top and bottom of the picture carry
     quiet dark areas rather than cropping a wide scene. The lamp direction
-    stated above is unchanged. Rotating the frame does not move the light.
+    stated above is unchanged. Rotating the frame does not move the light, and
+    the props are the same objects drawn the same way.
 
 **depth-p.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-palette.png`, `../../../ThirstTrap/tools/hero-gen/refs/layout-depth-p.png`:
 
@@ -322,6 +383,10 @@ the first thing `check-plates.py` tests.
     soil. The composition is the comparison: the shallow reach against the depth
     it cannot read.
 
+    In frame from the prop sheet: the SCALE and PHONE on the table, the POTS
+    and BOOKS on the sill behind, the WATERING CAN, the LEDGER SHEET on the
+    wall at the left. Draw each one exactly as the prop sheet describes it.
+
     The window is behind the pot in the middle distance, centred. The lamp is in
     front of the camera and up to the right, about forty-five degrees off axis,
     so the cut face is lit from the upper right and the pot throws a hard shadow
@@ -331,7 +396,8 @@ the first thing `check-plates.py` tests.
     instruction in the style block. Compose for a tall frame: stack the subject
     vertically, keep it central, and let the top and bottom of the picture carry
     quiet dark areas rather than cropping a wide scene. The lamp direction
-    stated above is unchanged. Rotating the frame does not move the light.
+    stated above is unchanged. Rotating the frame does not move the light, and
+    the props are the same objects drawn the same way.
 
 **roots-p.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-palette.png`, `../../../ThirstTrap/tools/hero-gen/refs/layout-roots-p.png`:
 
@@ -340,6 +406,9 @@ the first thing `check-plates.py` tests.
     runs a fresh channel where something has been pushed in and withdrawn, and
     the fine roots along its edges are visibly torn and broken, pale ends hanging
     loose. No hand, no pot rim, no room, just soil and roots and the damage.
+
+    In frame from the prop sheet: none, this is inside the soil. Draw each one
+    exactly as the prop sheet describes it.
 
     There is no room geometry in this shot, but the light is still the same lamp
     as every other scene. The lamp is up and to the right at about sixty degrees
@@ -352,7 +421,8 @@ the first thing `check-plates.py` tests.
     instruction in the style block. Compose for a tall frame: stack the subject
     vertically, keep it central, and let the top and bottom of the picture carry
     quiet dark areas rather than cropping a wide scene. The lamp direction
-    stated above is unchanged. Rotating the frame does not move the light.
+    stated above is unchanged. Rotating the frame does not move the light, and
+    the props are the same objects drawn the same way.
 
 **scale-table-p.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-palette.png`, `../../../ThirstTrap/tools/hero-gen/refs/layout-scale-table-p.png`:
 
@@ -360,6 +430,10 @@ the first thing `check-plates.py` tests.
     the wooden table. The scale has a small dark readout panel on its front lip.
     The phone lies face up on the table beside it, its screen a pale rectangle of
     warm white. Seen from slightly above. The rest of the room is dark.
+
+    In frame from the prop sheet: the SCALE with a pot on it, the PHONE, the
+    MUG, the POTS and BOOKS on the sill behind, the LEDGER SHEET on the wall
+    at the left. Draw each one exactly as the prop sheet describes it.
 
     The window is away to the left of the frame, and the table fills the centre.
     The lamp is almost straight ahead and above, about twelve degrees to the
@@ -375,7 +449,8 @@ the first thing `check-plates.py` tests.
     instruction in the style block. Compose for a tall frame: stack the subject
     vertically, keep it central, and let the top and bottom of the picture carry
     quiet dark areas rather than cropping a wide scene. The lamp direction
-    stated above is unchanged. Rotating the frame does not move the light.
+    stated above is unchanged. Rotating the frame does not move the light, and
+    the props are the same objects drawn the same way.
 
 **phone-closeup-p.png**, attach `../../../ThirstTrap/tools/hero-gen/refs/ref-palette.png`, `../../../ThirstTrap/tools/hero-gen/refs/layout-phone-closeup-p.png`:
 
@@ -391,6 +466,10 @@ the first thing `check-plates.py` tests.
     table and the phone's dark screen catches one soft reflection of the shade
     near its top edge. Shadows are short and drop straight down.
 
+    In frame from the prop sheet: the PHONE, the SCALE behind it, the MUG, the
+    POTS and BOOKS on the sill behind, the LEDGER SHEET on the wall at the
+    left. Draw each one exactly as the prop sheet describes it.
+
     For the tall frame, the phone sits low and the scale and pot stand above and
     behind it.
 
@@ -398,7 +477,8 @@ the first thing `check-plates.py` tests.
     instruction in the style block. Compose for a tall frame: stack the subject
     vertically, keep it central, and let the top and bottom of the picture carry
     quiet dark areas rather than cropping a wide scene. The lamp direction
-    stated above is unchanged. Rotating the frame does not move the light.
+    stated above is unchanged. Rotating the frame does not move the light, and
+    the props are the same objects drawn the same way.
 
 ## Notes
 

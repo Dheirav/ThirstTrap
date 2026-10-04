@@ -848,6 +848,35 @@ by drawing the 2D scene properly. Hosting is GitHub Pages from `/site` on main,
 not yet switched on, and the page loads GSAP, Lenis and fonts from CDNs rather
 than vendoring them.
 
+### D63 — A prop sheet, because a noun is not a description (2026-10-05)
+
+D61 made the plates agree about the room and they still did not look like one.
+The tell was not in any measurement: the phone is a different phone between the
+two plates it appears in, black bezel and lit screen in `scale-table` against a
+silver band and a dark screen in `phone-closeup`, and the mug is three
+unrelated vessels across the scenes that mention one.
+
+**The room block named its recurring objects and described none of them.** "A
+flat kitchen scale on the table, a phone lying face up beside it, a mug" is a
+list of categories, so each one was designed fresh per scene. The style block
+now carries a prop sheet giving each a concrete description, and each scene
+names which are in frame.
+
+**`check-prompts.py`** lints it before an hour of generation is spent: every
+prop in frame must be described, every described prop must be used, both
+orientations of a beat must name the same props, the style block must still
+carry the room and the prop sheet, and every attachment must exist where
+gen.mjs will look for it.
+
+**Worth keeping:** writing the lint caught a bug in the lint. Its prop-name
+regex demanded four characters, so `MUG` was invisible to it, and the prop that
+had drifted worst was the one the check could not see. It now matches the
+sheet's own keys rather than guessing at capitalised words.
+
+The wider lesson is about the measurements in D61. Palette distance and
+highlight centroid score what they were built to score. A viewer is not running
+them, and the error they all missed is the one a person found immediately.
+
 ### D62 — The app now measures the claim, not just itself (2026-10-05)
 
 `PredictionEvaluation.kt` already replayed history to a past reading, took the
