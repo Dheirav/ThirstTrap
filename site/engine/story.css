@@ -42,7 +42,14 @@ a { color: inherit; }
    to finish by then. A hero that does not move cannot collide with anything. */
 .hero-title { position: fixed; inset: 0 auto 0 0; z-index: 10; width: min(100vw, 900px); display: flex; flex-direction: column; justify-content: center; padding: 0 var(--gutter); }
 /* A scrim so the title stays readable over busy art; it scrolls away with the title. */
-.hero-title::before { content: ''; position: absolute; z-index: -1; inset: 0 auto 0 0; width: min(100vw, 980px); background: linear-gradient(90deg, var(--ink) 35%, color-mix(in srgb, var(--ink) 55%, transparent) 70%, transparent); pointer-events: none; }
+/* Strengthened when the regenerated ledger plate moved its bright sheet from
+   the right of frame to directly under the title. Measured by hiding the text
+   and reading the backdrop it crosses: cream on cream was 2.9:1 at the point
+   the title is still half up, against 4.5:1 for readable. This costs nothing at
+   the top of the page, where the plate has not faded in and the backdrop is
+   already black, and it only shows while the title is dissolving into the
+   plate, which is the moment it is covering. */
+.hero-title::before { content: ''; position: absolute; z-index: -1; inset: 0 auto 0 0; width: min(100vw, 1080px); background: linear-gradient(90deg, var(--ink) 52%, color-mix(in srgb, var(--ink) 72%, transparent) 76%, transparent 100%); pointer-events: none; }
 @media (max-width: 767px) { .hero-title::before { width: 100vw; background: color-mix(in srgb, var(--ink) 78%, transparent); } }
 .hero-title .lede { font-size: clamp(1rem, 1.6vw, 1.2rem); max-width: 42ch; opacity: 0.85; }
 
