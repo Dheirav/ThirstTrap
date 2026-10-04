@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import dev.dheirav.thirsttrap.ui.EmptyState
 import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -82,24 +83,12 @@ fun LocationsScreen(
         },
     ) { padding ->
         if (state.rows.isEmpty()) {
-            Column(
-                Modifier.fillMaxSize().padding(padding).padding(32.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    if (state.loaded) "No places yet" else "",
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(
-                    "Give a plant a location when you add or edit it, or record the room " +
+            EmptyState(
+                title = if (state.loaded) "No places yet" else "",
+                body = "Give a plant a location when you add or edit it, or record the room " +
                         "conditions somewhere, and the place appears here to be described.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 8.dp),
-                )
-            }
+                modifier = Modifier.fillMaxSize().padding(padding),
+            )
             return@Scaffold
         }
 

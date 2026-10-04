@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import dev.dheirav.thirsttrap.ui.EmptyState
 import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.WateringAnswer
 import dev.dheirav.thirsttrap.ui.ScreenTitle
@@ -77,22 +78,12 @@ fun DueScreen(
         snackbarHost = { SnackbarHost(snackbarHost) },
     ) { padding ->
         if (state.loaded && state.items.isEmpty()) {
-            Column(
-                Modifier.fillMaxSize().padding(padding).padding(32.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text("Nothing to check", style = MaterialTheme.typography.headlineSmall)
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    "You're up to date. Reminders appear here when a plant is worth a look.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                )
-                Spacer(Modifier.height(24.dp))
-                TextButton(onClick = onOpenHelp) { Text("Reminders not arriving?") }
-            }
+            EmptyState(
+                title = "Nothing to check",
+                body = "You're up to date. Reminders appear here when a plant is worth a look.",
+                modifier = Modifier.fillMaxSize().padding(padding),
+                action = { TextButton(onClick = onOpenHelp) { Text("Reminders not arriving?") } },
+            )
             return@Scaffold
         }
 

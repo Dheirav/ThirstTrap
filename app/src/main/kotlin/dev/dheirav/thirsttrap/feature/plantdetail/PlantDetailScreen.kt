@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.plantdetail
 
+import dev.dheirav.thirsttrap.ui.EmptyState
 import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.MenuLabels
 import dev.dheirav.thirsttrap.ui.ScreenTitle
@@ -430,19 +431,11 @@ fun PlantDetailScreen(
 
                 if (state.loaded && state.days.isEmpty()) {
                     item {
-                        Column(
-                            Modifier.fillMaxWidth().padding(top = 48.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Text("No history yet", style = MaterialTheme.typography.titleMedium)
-                            Spacer(Modifier.height(8.dp))
-                            Text(
-                                "Log a watering or a check and it will show up here.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                textAlign = TextAlign.Center,
-                            )
-                        }
+                        EmptyState(
+                            title = "No history yet",
+                            body = "Log a watering or a check and it will show up here.",
+                            modifier = Modifier.padding(top = 48.dp),
+                        )
                     }
                 }
 

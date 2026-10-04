@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import dev.dheirav.thirsttrap.ui.EmptyState
 import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -79,24 +80,12 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
         },
     ) { padding ->
         if (state.rows.isEmpty()) {
-            Column(
-                Modifier.fillMaxSize().padding(padding).padding(32.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    if (state.loaded) "Nothing to weigh" else "",
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(
-                    "Weight only says something for a pot of soil. Plants living in water are " +
+            EmptyState(
+                title = if (state.loaded) "Nothing to weigh" else "",
+                body = "Weight only says something for a pot of soil. Plants living in water are " +
                         "left out of the round.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 8.dp),
-                )
-            }
+                modifier = Modifier.fillMaxSize().padding(padding),
+            )
             return@Scaffold
         }
 

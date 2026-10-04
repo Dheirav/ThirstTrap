@@ -39,6 +39,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -130,7 +131,13 @@ class MainActivity : ComponentActivity() {
                 // it is written: D30a found a setting nothing consulted.
                 var introDone by remember { mutableStateOf(false) }
                 if (!loaded.introSeen && !introDone) {
-                    IntroScreen(onDone = { introDone = true })
+                    // Grain here too. It was applied to the NavHost modifier
+                    // only, and this returns before that, so the first thing
+                    // anyone ever saw of this app was the one screen rendering
+                    // on flat colour, which Grain.kt calls a void.
+                    Box(Modifier.fillMaxSize().grain()) {
+                        IntroScreen(onDone = { introDone = true })
+                    }
                     return@ThirstTrapTheme
                 }
 
@@ -453,14 +460,20 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                LaunchedEffect(Unit) { ensureNotificationPermission() }
+                // Not on launch. The first time anything is actually
+                // scheduled, which is the trigger this function's own docstring
+                // named and nothing had wired.
+                val hasReminder by mainViewModel.hasReminder.collectAsStateWithLifecycle()
+                LaunchedEffect(hasReminder) {
+                    if (hasReminder) ensureNotificationPermission()
+                }
             }
         }
     }
 
     /**
      * Asked once, never gated on. If denied the app stays completely usable.
-     * Step 4 moves this to the moment the first reminder is created.
+     * Called the moment the first reminder exists, not on launch.
      */
     private fun ensureNotificationPermission() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return

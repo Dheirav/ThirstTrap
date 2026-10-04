@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.dashboard
 
+import dev.dheirav.thirsttrap.ui.EmptyState
+import dev.dheirav.thirsttrap.ui.Button
 import dev.dheirav.thirsttrap.ui.WateringAnswer
 import dev.dheirav.thirsttrap.ui.BlockHeight
 import dev.dheirav.thirsttrap.ui.MenuLabels
@@ -259,8 +261,14 @@ fun DashboardScreen(
         floatingActionButton = {
             // A ruled block, not a floating one. The shadow was the last thing
             // on the page still pretending to hover above the paper.
-            FloatingActionButton(onClick = onAddPlant) {
-                Icon(AppIcons.add, contentDescription = "Add a plant")
+            //
+            // Hidden while the list is empty. The empty state already offers
+            // "Add your first plant", and two primary actions calling the same
+            // function is the page asking one question twice.
+            if (state.items.isNotEmpty()) {
+                FloatingActionButton(onClick = onAddPlant) {
+                    Icon(AppIcons.add, contentDescription = "Add a plant")
+                }
             }
         },
     ) { padding ->
@@ -269,7 +277,13 @@ fun DashboardScreen(
             // logging budget before the user has done anything.
             !state.loaded -> Box(Modifier.fillMaxSize().padding(padding))
 
-            state.items.isEmpty() -> EmptyState(Modifier.fillMaxSize().padding(padding), onAddPlant)
+            state.items.isEmpty() -> EmptyState(
+                    title = if (state.loaded) "No plants yet" else "",
+                    body = "Add the first one and start logging. Everything stays on this device.",
+                    modifier = Modifier.fillMaxSize().padding(padding),
+                    mark = { BranchingMark(Modifier.size(140.dp, 160.dp)) },
+                    action = { Button(onClick = onAddPlant) { Text("Add your first plant") } },
+                )
 
             else -> LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(padding),
@@ -380,27 +394,6 @@ fun DashboardScreen(
     }
 }
 
-@Composable
-private fun EmptyState(modifier: Modifier, onAddPlant: () -> Unit) {
-    Column(
-        modifier = modifier.padding(32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        BranchingMark(Modifier.size(140.dp, 160.dp))
-        Spacer(Modifier.height(24.dp))
-        Text("No plants yet", style = MaterialTheme.typography.headlineSmall)
-        Spacer(Modifier.height(8.dp))
-        Text(
-            "Add the first one and start logging. Everything stays on this device.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(24.dp))
-        FilledTonalButton(onClick = onAddPlant) { Text("Add your first plant") }
-    }
-}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -663,7 +656,11 @@ private fun predictionText(prediction: Prediction): String? = when (prediction) 
     is Prediction.NeedAnotherReading -> when (prediction.reason) {
         // Telling someone to weigh a cutting in a jar is nonsense.
         SuppressionReason.WEIGHT_MEANINGLESS_FOR_MEDIUM -> null
-        SuppressionReason.NOT_CALIBRATED -> null
+        // Was null, so the one state a brand new weighable plant is actually in
+        // said nothing on its card. SuppressionHelp already carries the full
+        // explanation; this is the short form of it, and the help page is still
+        // a tap away for the rest.
+        SuppressionReason.NOT_CALIBRATED -> "Weigh it once after watering to start"
         // Said out loud rather than left blank: the row is on the list because
         // somebody un-archived it, so the useful thing is to say what it is.
         SuppressionReason.PLANT_IS_GONE -> "This one has gone"

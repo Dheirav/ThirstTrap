@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.dheirav.thirsttrap.domain.AppSettings
 import dev.dheirav.thirsttrap.domain.SettingsRepository
+import dev.dheirav.thirsttrap.domain.ReminderRepository
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -13,7 +15,22 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     settings: SettingsRepository,
+    reminders: ReminderRepository,
 ) : ViewModel() {
+    /**
+     * True once anything is actually scheduled.
+     *
+     * The notification permission used to be asked for in a LaunchedEffect(Unit)
+     * the instant the user tapped "Open the diary", so Android's own dialog
+     * about reminders arrived before the user owned a plant, let alone anything
+     * to be reminded about. The docstring on ensureNotificationPermission
+     * already named the right trigger and nothing had wired it. This is it.
+     */
+    val hasReminder: StateFlow<Boolean> =
+        reminders.observeReminders()
+            .map { it.isNotEmpty() }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     /**
      * Null until DataStore has actually answered.
      *
