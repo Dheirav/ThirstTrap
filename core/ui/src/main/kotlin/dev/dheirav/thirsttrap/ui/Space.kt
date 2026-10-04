@@ -42,3 +42,27 @@ object Space {
     /** The margin of a page, and the breathing room around an empty one. */
     val Page = 32.dp
 }
+
+/*
+ * THE CONVENTION, because the values alone are not enough.
+ *
+ * Two idioms are in use across the app: eleven screens put verticalArrangement
+ * on the root and nothing on the children, ten put nothing on the root and a
+ * padding(top =) on every child, and a few do both. Where both appear the gap
+ * the reader sees is the SUM, so the number written at a call site is not the
+ * number on screen, which is how a scale stops meaning anything.
+ *
+ * The rule, for anything written from here on:
+ *
+ *   - Gaps that are all the same -> verticalArrangement on the parent, nothing
+ *     on the children.
+ *   - Gaps that vary -> padding on each child, nothing on the parent.
+ *   - Never both on the same container. A base rhythm plus per-child extras is
+ *     defensible and this app uses it in places, but it has to be a decision
+ *     written down at that container, not an accident.
+ *
+ * The existing call sites are deliberately NOT converted. There are 133 of them
+ * across 21 screens, the payoff is maintainability rather than appearance, and
+ * doing it without being able to look at the result risks visibly wrong spacing
+ * on screens nobody has checked. It is worth doing with a device in hand.
+ */
