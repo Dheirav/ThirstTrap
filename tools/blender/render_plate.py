@@ -35,7 +35,11 @@ plate.apply(sc, steps=int(kw.get('steps', 4)), lift=kw.get('lift', 0.06),
             gain=kw.get('gain', 4.6))
 
 HANDS = {
-    'finger-test': dict(pot=(world.POTS_X[1], 0.930), yaw=-0.55, pitch=-0.58),
+    # y was 0.930, which is the pot's FRONT RIM, not its soil. The sill pots
+    # sit at y 0.985 with a top radius near 0.057, so the old number put the
+    # fingertip exactly on the lip and the finger read as going through the
+    # pot wall. Aim at the middle of the soil instead.
+    'finger-test': dict(pot=(world.POTS_X[1], 0.978), yaw=-0.55, pitch=-0.62),
     'depth':       dict(pot=(-0.18, 0.035),           yaw=-0.35, pitch=-0.55),
 }
 
@@ -53,7 +57,11 @@ for name in (shots or world.SHOTS):
     h = HANDS.get(name)
     # place_hand takes the position as one tuple, not three arguments.
     if h:
-        z = world.soil_top(*h['pot']) or (world.TABLE_Z + 0.100)
+        z = world.soil_top(*h['pot'])
+        if z is None:
+            # Silent fallbacks are how the finger ended up under the sill for
+            # several rounds. If the soil cannot be found, say so.
+            raise SystemExit(f'soil_top found no soil near {h["pot"]} for {name}')
         world.place_hand((h['pot'][0], h['pot'][1], z), yaw=h['yaw'], pitch=h['pitch'])
     else:
         world.place_hand((0, 0, -9))      # parked out of every frame

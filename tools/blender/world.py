@@ -131,6 +131,11 @@ def leafy_plant(at, leaf_m, stem_m, scale=1.0, seed=0):
     what makes it look like a plant.
     """
     rnd = random.Random(seed)
+    # Lifted clear of the soil. The leaves used to radiate from the soil surface
+    # itself, so they closed over the pot mouth and no shot ever saw dirt, which
+    # is a problem in a set of pictures about how wet the dirt is. A short rise
+    # is also simply what the plant looks like.
+    at = (at[0], at[1], at[2] + 0.022 * scale)
     outer, inner = 7, 5
     for i in range(outer):
         a = (i / outer) * math.tau + rnd.uniform(-0.18, 0.18)
@@ -276,12 +281,20 @@ def soil_top(x, y, r=0.12):
     import mathutils
     best = None
     for o in bpy.data.objects:
-        # Each plant asset names its soil differently: potted_plant_04 says
-        # _dirt, potted_plant_01 says _pebbles. Matching only one of them meant
-        # swapping the plant silently dropped the hand to table height, below
-        # the sill and out of frame.
-        if o.type != 'MESH' or not any(
-                k in o.name.lower() for k in ('_dirt', '_pebbles', '_soil', '_ground')):
+        # Each plant asset named its soil differently: potted_plant_04 said
+        # _dirt, potted_plant_01 said _pebbles. Matching only one of them
+        # dropped the hand to table height, below the sill and out of frame.
+        #
+        # It happened again when the appended pots were replaced by modelled
+        # ones, whose soil object is simply called "soil", because none of the
+        # names here start with an underscore for it. Same failure, same
+        # silence: the function returns None, the caller falls back to the
+        # table, and the finger ends up 12 cm under the sill. Matched on the
+        # bare word too now, and the caller is no longer allowed to guess.
+        nm = o.name.lower()
+        if o.type != 'MESH' or not (
+                nm.startswith('soil') or
+                any(k in nm for k in ('_dirt', '_pebbles', '_soil', '_ground'))):
             continue
         pts = [o.matrix_world @ mathutils.Vector(c) for c in o.bound_box]
         cx = sum(p.x for p in pts) / 8; cy = sum(p.y for p in pts) / 8
@@ -314,7 +327,7 @@ def place_hand(at, yaw=0.0, pitch=-0.62, into=0.012):
     for n in {o.name for o in stale}:
         if n in bpy.data.objects:
             bpy.data.objects.remove(bpy.data.objects[n], do_unlink=True)
-    skin = look.mat('skin', look.SKIN, 0.72)
+    skin = look.mat('skin', look.srgb('#8A6248'), 0.86)
     f = parts.build_finger(skin=skin)
     f.name = 'finger'
     f.location = (at[0], at[1], at[2] - into)
@@ -544,22 +557,54 @@ def build(res=(1672, 941), samples=96):
 
     # --- the ledger, pinned to the left pier
     _box((-0.86, 1.00, 1.30), (0.42, 0.20, 0.022), M['wood'])          # shelf by the ledger
-    append('potted_plant_04', (-0.78, 1.00, 1.311), scale=0.78, rot_z=1.3,
-           mats=PM, default=M['terra'])
-    append('potted_plant_04', (-0.96, 0.99, 1.311), scale=0.62, rot_z=-0.6,
-           mats=PM, default=M['terra'])
-    led = _box((-1.06, 1.00, 1.46), (0.012, 0.215, 0.285), M['paper'])
-    led.rotation_euler = (0, 0, math.radians(4))
-    rule = look.mat('rule', look.srgb('#4A4134'), 0.95)
-    for i in range(7):
-        z = 1.46 + 0.098 - i * 0.030
-        r = _box((-1.0535, 1.00, z), (0.001, 0.185, 0.0014), rule)
-        r.rotation_euler = (0, 0, math.radians(4))
-        w = _box((-1.0535, 1.012 - 0.052, z + 0.009), (0.001, 0.052, 0.009), rule)
-        w.rotation_euler = (0, 0, math.radians(4))
-    hd = _box((-1.0535, 1.00, 1.46 + 0.126), (0.001, 0.185, 0.0030), rule)
-    hd.rotation_euler = (0, 0, math.radians(4))
-    _box((-1.0535, 1.00 + 0.018, 1.46 + 0.02), (0.001, 0.0016, 0.252), rule)
+    # Moved right and shrunk. At x -0.96 the second pot stood directly under
+    # the sheet and its leaves covered the last four rows, which is the half of
+    # the page that makes the point.
+    facet_pot((-0.80, 1.00, 1.311), top_r=0.052, bot_r=0.040, h=0.090, m=M['terra'])
+    leafy_plant((-0.80, 1.00, 1.389), M['leaf'], M['stem'], scale=0.60, seed=11)
+    facet_pot((-0.665, 0.99, 1.311), top_r=0.046, bot_r=0.035, h=0.080, m=M['terra'])
+    leafy_plant((-0.665, 0.99, 1.380), M['leaf'], M['stem'], scale=0.52, seed=12)
+    # The sheet is a textured plane now, not a slab with thin boxes stacked on
+    # it for rows and solid bars for words. At render scale those read as a
+    # ruled but empty page, and the beat this shot carries is the same word
+    # written seven times. tools/blender/make_ledger.py draws it.
+    # Thin in Y, not in X. The slab was 0.012 thick along x, which is how you
+    # model paper stuck to a side reveal, but it hangs on the pier's
+    # room-facing surface. The ledger camera therefore met it at 52 degrees off
+    # square and the page foreshortened into a vertical strip, which read as a
+    # bookmark rather than a sheet of paper.
+    led = _box((-1.06, 1.002, 1.46), (0.215, 0.012, 0.285), M['paper'])
+    led.rotation_euler = (0, 0, math.radians(-4))
+    sheet_png = os.path.join(ASSETS, 'ledger-sheet.png')
+    if os.path.exists(sheet_png):
+        bpy.ops.mesh.primitive_plane_add(size=1.0, location=(-1.06, 0.9955, 1.46))
+        face = bpy.context.object
+        # One quarter turn about X is all it needs: that sends the plane's
+        # normal to -y, which is the way the pier faces, and its own up to world
+        # z. The plane's X is then the page's width and its Y the page's height,
+        # which is what the image expects. The small yaw is the tilt the paper
+        # already has.
+        face.rotation_euler = (math.radians(90), 0, math.radians(-4))
+        face.scale = (0.215, 0.285, 1.0)
+        pm = look.mat('ledgerpaper', look.srgb('#D9CDB2'), 0.95)
+        nt = pm.node_tree
+        img = nt.nodes.new('ShaderNodeTexImage')
+        img.image = bpy.data.images.load(sheet_png)
+        img.interpolation = 'Cubic'
+        nt.links.new(img.outputs['Color'],
+                     nt.nodes['Principled BSDF'].inputs['Base Color'])
+        look.put(face, pm)
+    # The divider between the date column and the word column is in the texture
+    # now, along with the rows; it was the last piece of the sheet still
+    # modelled and it rendered as a hairline floating off the paper.
+    #
+    # The pin is not, because it is the one part of this that has thickness: the
+    # plate shows a brass head catching the lamp and throwing a small shadow
+    # down the sheet, which a painted dot cannot do.
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=14, ring_count=8, radius=0.0075,
+                                         location=(-1.058, 0.990, 1.5885))
+    look.put(bpy.context.object, look.mat('pin', look.srgb('#B98B3C'), 0.42),
+             smooth=True)
 
     # --- light. One lamp, clamped right, plus the night outside. 58% of the
     # plates sit below V 0.18 and only 6% above 0.60: this is one source.
@@ -617,13 +662,13 @@ def build(res=(1672, 941), samples=96):
 # effect, and none at all on the two wide room shots, where everything in frame
 # is genuinely meant to be legible.
 SHOTS = {
- 'ledger':        ((-0.30, 0.02, 1.52), (-1.00, 0.99, 1.44), 38, 30, 4.0),
+ 'ledger':        ((-0.46, 0.26, 1.515), (-1.02, 0.99, 1.468), 40, 33, 4.0),
  'shelf-evening': ((-0.30, -0.28, 1.21), (-0.10, 0.98, 1.03), 35, 28, None),
- 'finger-test':   ((0.17, 0.47, 1.20), (-0.21, 0.975, 1.095), 55, 45, 2.8),
+ 'finger-test':   ((0.02, 0.50, 1.175), (-0.245, 0.975, 1.052), 42, 35, 2.8),
  'depth':         ((-0.18, -0.60, 0.95), (-0.18, 0.10, 0.845), 55, 45, 3.5),
  'roots':         ((-0.18, -0.34, 0.838), (-0.18, 0.10, 0.826), 58, 48, 2.2),
  'scale-table':   ((0.26, -0.82, 1.12), (0.33, 0.16, 0.91), 33, 27, None),
- 'phone-closeup': ((0.80, -0.60, 0.95), (0.70, -0.04, 0.775), 42, 34, 3.2),
+ 'phone-closeup': ((0.74, -0.52, 0.845), (0.47, 0.10, 0.818), 34, 28, 3.2),
 }
 
 
