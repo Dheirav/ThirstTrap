@@ -56,6 +56,11 @@ HANDS = {
     # shot was framed around build_finger's thin cone and wants reframing to see
     # the hand in profile, the way depth already does.
     #
+    # pitch is 0 now, and that is not a value that happened to work. The asset
+    # keeps the tilt it was sculpted with (see extract_hand.py), so the hand
+    # already reaches down; any pitch here tips that pose further and lifts the
+    # fingertip off the soil again.
+    #
     # yaw is the compass direction the FOREARM leaves along, in world terms, and
     # it has to be read off the camera rather than carried over from
     # build_finger, whose cone used the opposite convention. For finger-test the
@@ -64,11 +69,18 @@ HANDS = {
     # it pointed at the lens: the arm foreshortened into a flat slab, which read
     # as a hand lying on its side rather than reaching down.
     'finger-test': dict(pot=(world.POTS_X[1], 0.978),
-                        yaw=float(os.environ.get('TT_YAW', 0.75)),
-                        pitch=float(os.environ.get('TT_PITCH', -0.75))),
+                        yaw=float(os.environ.get('TT_YAW', 0.50)),
+                        pitch=float(os.environ.get('TT_PITCH', -0.35)),
+                        len=0.20),
     # depth gets a smaller hand than finger-test. Same arm, nearer camera: at a
     # shared 0.26 it swamped the frame and buried the mug behind the knuckles.
-    'depth':       dict(pot=(-0.18, 0.035), yaw=0.70, pitch=-0.55, len=0.20),
+    # y 0.145, not 0.035. The cutter that opens this pot spans y -0.18 to +0.10,
+    # so everything in front of 0.10 is REMOVED: the hand was reaching into the
+    # hole where the pot used to be, which is why it hung in mid air with
+    # nothing under it. The soil that survives the cut starts behind 0.10.
+    'depth':       dict(pot=(-0.18, 0.120),
+                        yaw=float(os.environ.get('TT_DYAW', -0.55)),
+                        pitch=float(os.environ.get('TT_DPITCH', 0.0)), len=0.17),
 }
 
 # Which shots the cut pot is in. Everywhere else it is struck, like a set.

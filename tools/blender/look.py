@@ -53,8 +53,12 @@ SKY        = srgb('#223040')   # night through the glass
 # Desaturating to (1.0, 0.85, 0.68) fixed the shadows and took the warm pool
 # with it. (1.0, 0.80, 0.58) splits the difference: warm enough to make a pool
 # on the table, not so saturated that it multiplies chroma into every dark.
-LAMP       = (1.0, 0.80, 0.58)
-MOON       = (0.55, 0.66, 0.88)
+# Warmed a little, on a note rather than a measurement: the room read cool
+# overall against the plates, and the lamp is what carries warmth into every
+# interior surface. The moon loses some of its blue for the same reason, since
+# it is the only other source and a strongly blue fill cancels a warm key.
+LAMP       = (1.0, 0.78, 0.53)
+MOON       = (0.63, 0.71, 0.86)
 
 
 def reset(res=(836, 470), samples=96):

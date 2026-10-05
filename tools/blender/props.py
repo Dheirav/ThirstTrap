@@ -22,8 +22,36 @@ import os
 import bmesh
 import bpy
 import math
+import mathutils
 
 import look
+
+
+def pivot(objs, at):
+    """Move each object's origin to `at`, so a later rotation turns it in place.
+
+    Both builders here put their vertices at WORLD coordinates and leave the
+    object's transform at the identity: lathe() adds loc to every vertex, and
+    slab() bakes its position into the mesh when it applies the scale the bevel
+    needs. Either way the origin sits at the world origin, so o.rotation_euler
+    swings the prop around the room on a radius equal to its distance from the
+    centre, instead of turning it where it stands.
+
+    The phone showed it plainly. Placed at (0.62, -0.17) with rot_z -0.24 it
+    rendered centred on y -0.313, which is exactly where rotating (0.62, -0.17)
+    about the world origin lands: 140 mm out, leaving 67 mm of the phone over
+    the near edge of a table that ends at -0.33. It was never floating in the
+    air; its underside sat on the table top the whole time. It was over the edge.
+
+    Every prop that takes rot_z had this, the mug and the watering can included,
+    and the error grows with distance from the room's centre, which is why it
+    showed up on the phone first.
+    """
+    at = mathutils.Vector(at)
+    for o in objs:
+        o.data.transform(mathutils.Matrix.Translation(-at))
+        o.location = at
+    return objs
 
 
 def lathe(profile, loc, m, segs=24, smooth=True, name='lathe'):
@@ -98,6 +126,7 @@ def watering_can(at, body_m, spout_m, rot_z=0.0):
           (at[0] + 0.052, at[1], at[2] + 0.112)]
     g.append(look.put(parts.tube(hp, [0.0062] * 5, name='can_handle', seg=10),
                       spout_m, smooth=True))
+    pivot(g, at)
     for o in g:
         o.rotation_euler = (0, 0, rot_z)
     return g
@@ -143,6 +172,7 @@ def mug(at, body_m, coffee_m, rot_z=0.0):
           (at[0] + 0.040, at[1], at[2] + 0.024)]
     g.append(look.put(parts.tube(hp, [0.0070, 0.0062, 0.0058, 0.0062, 0.0070],
                                  name='mug_handle', seg=10), body_m, smooth=True))
+    pivot(g, at)
     for o in g:
         o.rotation_euler = (0, 0, rot_z)
     return g
@@ -157,6 +187,7 @@ def phone(at, body_m, glass_m, rot_z=0.0):
               bevel=0.0006, name='phone_glass'),
          slab((at[0] + 0.024, at[1] + 0.059, at[2] + 0.0098), (0.020, 0.020, 0.0016),
               body_m, bevel=0.0008, name='phone_camera')]
+    pivot(g, at)
     for o in g:
         o.rotation_euler = (0, 0, rot_z)
     return g

@@ -165,18 +165,28 @@ print(f'HAND verts {len(hand.data.vertices)}  size '
 hco = np.array([(hand.matrix_world @ v.co)[:] for v in hand.data.vertices])
 tip = mathutils.Vector(hco[hco[:, 2].argmin()])
 cuff = mathutils.Vector(hco[hco[:, 2] > np.percentile(hco[:, 2], 92)].mean(axis=0))
-fwd = (cuff - tip).normalized()
-up = mathutils.Vector((0, 0, 1))
-if abs(fwd.dot(up)) > 0.98:                  # degenerate only if the arm is vertical
-    up = mathutils.Vector((0, 1, 0))
-side = fwd.cross(up).normalized()
-up = side.cross(fwd).normalized()
-frame = mathutils.Matrix((fwd, side, up)).transposed().inverted()
+# Rotate about Z ONLY, and keep the sculpt's own tilt.
+#
+# The first version built a full orthonormal frame carrying the arm onto +X
+# with world up preserved, which is correct for an arbitrary direction and
+# wrong for this mesh. The hand was sculpted already reaching DOWN into a pot,
+# and re-orienting it threw that away: measured in place, the fingertip sat at
+# z 1.014 while the lowest point of the hand was at 0.905, so the palm hung
+# 109 mm below the finger and the hand landed on the pot's rim instead of its
+# soil. The pose was right in the file and the normalisation broke it.
+#
+# Turning about the vertical axis alone puts the forearm along +X in plan while
+# leaving the downward reach exactly as modelled, so the fingertip stays the
+# lowest thing on the hand and placing it in the soil puts it in the soil.
+az = math.atan2(cuff.y - tip.y, cuff.x - tip.x)
 reach = (cuff - tip).length
-print(f'NORMALISE tip ({tip.x:+.3f},{tip.y:+.3f},{tip.z:+.3f})  reach {reach:.3f}')
+print(f'NORMALISE tip ({tip.x:+.3f},{tip.y:+.3f},{tip.z:+.3f})  reach {reach:.3f}  '
+      f'azimuth {math.degrees(az):+.1f} deg')
 
 bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-M = mathutils.Matrix.Scale(1.0 / reach, 4) @ frame.to_4x4() @ mathutils.Matrix.Translation(-tip)
+M = (mathutils.Matrix.Scale(1.0 / reach, 4)
+     @ mathutils.Matrix.Rotation(-az, 4, 'Z')
+     @ mathutils.Matrix.Translation(-tip))
 hand.data.transform(M)
 hand.matrix_world = mathutils.Matrix.Identity(4)
 # Flat shading: the room's look is faceted geometry, and a smooth-shaded organic

@@ -24,6 +24,10 @@ import look, parts, props, scene as sc_mod
 from mathutils import Vector
 
 SILL_Z, TABLE_Z, WIN_Y = 0.95, 0.755, 1.06
+# How much of the ledger texture's own brightness reaches Base Color. See the
+# note at its use: in a posterised pipeline this, not the lighting, is what
+# sets the page's rendered value.
+PAPER_DIM = float(os.environ.get('TT_PAPER', 0.48))
 
 # Objects that belong to the depth and roots shots only. See build().
 CUT_POT = []
@@ -62,6 +66,9 @@ def facet_pot(loc, top_r=0.075, bot_r=0.058, h=0.130, sides=16, m=None, cut=Fals
     parts.dress_soil(soil, bump=0.0021)
     look.put(soil, look.mat('soil', look.SOIL, 0.95), smooth=True)
     col = crust = None
+    strata = []
+    import random as _r
+    rnd_s = _r.Random(17)
     if cut:
         wet = look.mat('wet', look.srgb('#4A3422'), 0.96)
         dry = look.mat('dry', look.srgb('#9A8straight'.replace('straight', '264')), 0.98)
@@ -86,9 +93,56 @@ def facet_pot(loc, top_r=0.075, bot_r=0.058, h=0.130, sides=16, m=None, cut=Fals
             tb = parts.tube(spine, [0.0022, 0.0017, 0.0012, 0.0008, 0.0005],
                             name='root', seg=6)
             look.put(tb, root_m)
+        # --- detail in the cross-section, which is the whole subject of the shot.
+        #
+        # First attempt put four strata cylinders and ninety pale crumbs in here
+        # and both were wrong in the same way: too much contrast and too regular.
+        # The bands rendered as a grill of hard horizontal bars, and the crumb,
+        # spread over only 0.4 of the radius and half of it in the pale grit
+        # colour, piled into a popcorn trail down the middle of the face.
+        #
+        # What the plate actually shows is a nearly uniform dark mass carrying
+        # FINE speckle, with one pale gritty crust at the top. Soil is not
+        # striped. So the bands go, the crumb gets small and dark and spreads
+        # across the whole face, and the only strong value change in the column
+        # stays where the plate puts it, at the surface.
+        crumb_m = [look.mat('soilA', look.srgb('#4F3926'), 0.97),
+                   look.mat('soilB', look.srgb('#3A2A1C'), 0.97)]
+        grit_m = look.mat('grit', look.srgb('#5A5046'), 0.95)
+
+        # Grit at the bottom, where a potted plant has its drainage. Small and
+        # only a little paler than the mix, so it is a change of texture rather
+        # than a stripe.
+        for _ in range(55):
+            a0 = rnd_s.uniform(0, 6.283); rr = rnd_s.uniform(0, top_r - 0.016)
+            bpy.ops.mesh.primitive_ico_sphere_add(
+                subdivisions=1, radius=rnd_s.uniform(0.0022, 0.0042),
+                location=(loc[0] + math.cos(a0) * rr, loc[1] + math.sin(a0) * rr,
+                          loc[2] + rnd_s.uniform(0.006, 0.022)))
+            g = bpy.context.object
+            g.rotation_euler = (rnd_s.uniform(0, 3), rnd_s.uniform(0, 3), rnd_s.uniform(0, 3))
+            look.put(g, grit_m)
+            strata.append(g)
+
+        # Crumb sitting ON the cut plane, across its full width, and deliberately
+        # NOT cut: sliced visually by the face while keeping their own
+        # silhouettes, so it reads as broken earth instead of a surface a knife
+        # went through. A perfectly flat cross-section is the tell that it is
+        # geometry and not soil.
+        for _ in range(130):
+            x0 = rnd_s.uniform(-(top_r - 0.013), top_r - 0.013)
+            bpy.ops.mesh.primitive_ico_sphere_add(
+                subdivisions=1, radius=rnd_s.uniform(0.0018, 0.0040),
+                location=(loc[0] + x0, loc[1] + rnd_s.uniform(-0.0035, 0.0035),
+                          loc[2] + rnd_s.uniform(0.010, h - 0.048)))
+            c2 = bpy.context.object
+            c2.scale = (rnd_s.uniform(0.7, 1.3), rnd_s.uniform(0.5, 1.0), rnd_s.uniform(0.7, 1.3))
+            c2.rotation_euler = (rnd_s.uniform(0, 3), rnd_s.uniform(0, 3), rnd_s.uniform(0, 3))
+            look.put(c2, crumb_m[0] if rnd_s.random() < 0.55 else crumb_m[1])
+
     if cut:
         knife = _cutter(loc)
-        for ob in [body, rim, soil] + [o for o in (col, crust) if o]:
+        for ob in [body, rim, soil] + [o for o in (col, crust) if o] + strata:
             b = ob.modifiers.new('cut', 'BOOLEAN'); b.operation = 'DIFFERENCE'
             b.object = knife
         for o in bpy.data.objects:
@@ -259,7 +313,11 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     # albedo. #BCAC8A is 0.42 linear and at gain 3.2 that lands at 1.40, so the
     # roots were the thing clipping 3.6% of this frame. They want to arrive
     # near white, not start there.
-    root_m = look.mat('macroroot', look.srgb('#938872'), 0.88)
+    # Down again from #938872: this frame still clipped 2.8% where no plate
+    # clips at all, and warming the key made it worse. 0.254 linear at gain
+    # 3.2 lands at 0.81, which is pale against the crumb without touching
+    # the ceiling.
+    root_m = look.mat('macroroot', look.srgb('#8A7E66'), 0.88)
 
     tex = bpy.data.textures.new('crumb', type='CLOUDS')
     tex.noise_scale = 0.09
@@ -300,8 +358,13 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     # rather than as lumps, because flat shading has no gradient to tell you a
     # surface is round. Actual pebbles have silhouettes and cast shadows on each
     # other, and that is the whole difference.
+    # Twice as many, at half the size, and one subdivision rounder. 260 grains
+    # at subdivision 1 is a 20-face icosahedron up to 45 mm across, so each one
+    # presented four or five flat planes as large as a root and the soil read as
+    # a pile of shards rather than as crumb. The plate's dirt is finer than its
+    # roots are thick, and that relationship is what makes it read as soil.
     peb_m = look.mat('macrocrumb', look.srgb('#342618'), 0.98)
-    for _ in range(260):
+    for _ in range(520):
         side = -1 if rnd.random() < 0.5 else 1
         # Clear of the channel lip. Projecting the gap showed it occupying 15%
         # of the frame all along, so it was never missing, it was being covered:
@@ -309,8 +372,8 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
         px = at[0] + side * rnd.uniform(0.15, 1.45)
         py = at[1] + rnd.uniform(-0.75, 0.75)
         pz = at[2] + 0.055 + rnd.uniform(-0.03, 0.05)
-        r = rnd.uniform(0.012, 0.045)
-        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=r,
+        r = rnd.uniform(0.007, 0.026)
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=r,
                                               location=(px, py, pz))
         o = bpy.context.object
         o.scale = (rnd.uniform(0.7, 1.3), rnd.uniform(0.7, 1.3), rnd.uniform(0.4, 0.8))
@@ -331,7 +394,7 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     # down, thinner than the root and lighter, because torn xylem is paler than
     # the root skin around it.
     torn_m = look.mat('macrotorn', look.srgb('#A69B82'), 0.90)
-    for i in range(26):
+    for i in range(38):
         side = -1 if i % 2 else 1
         x0 = at[0] + side * rnd.uniform(0.60, 1.45)
         y0 = at[1] + rnd.uniform(-0.62, 0.62)
@@ -347,9 +410,29 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
                           at[2] + 0.085 + 0.030 * math.sin(math.pi * f) * rnd.uniform(0.3, 1.0)
                           + rnd.uniform(-0.010, 0.010)))
         r = rnd.uniform(0.0050, 0.0105)
+        inward_sign = -side
         look.put(parts.tube(spine, [r * v for v in
                                     (1.0, 0.96, 0.90, 0.83, 0.74, 0.63, 0.50, 0.36, 0.20)],
                             name='macroroot', seg=7), root_m, smooth=True)
+        # Laterals along the length. A root is not a cable: it puts out fine
+        # side branches the whole way, and the plate's do. Without them a
+        # tapering tube reads as wire however well it is lit, which is what was
+        # left after the crumb was fixed.
+        for _ in range(rnd.randint(2, 4)):
+            k = rnd.randint(2, 6)
+            base = spine[k]
+            a3 = rnd.uniform(-1.3, 1.3)
+            ln2 = rnd.uniform(0.035, 0.085)
+            lat = [base]
+            for t2 in range(1, 4):
+                f2 = t2 / 3
+                lat.append((base[0] + inward_sign * ln2 * f2 * math.cos(a3) * 0.6,
+                            base[1] + ln2 * f2 * math.sin(a3),
+                            base[2] - ln2 * f2 * rnd.uniform(0.15, 0.55)))
+            rr = r * rnd.uniform(0.22, 0.38)
+            look.put(parts.tube(lat, [rr, rr * 0.7, rr * 0.45, rr * 0.22],
+                                name='macroroot', seg=5), root_m, smooth=True)
+
         # the break
         tip = spine[-1]
         inward = -side
@@ -647,6 +730,14 @@ def place_hand(at, yaw=0.0, pitch=-0.62, into=0.012):
     # (cos ry cos rz, cos ry sin rz, -sin ry), so the arm's rise is -sin(ry):
     # ry must be the negative of the elevation. Writing -pitch here tipped the
     # arm down into the sill instead of up out of frame.
+    # glTF imports arrive in QUATERNION rotation mode, and in that mode Blender
+    # ignores rotation_euler completely: it reads rotation_quaternion instead,
+    # which the importer leaves at identity. So every yaw and pitch set here has
+    # been silently discarded since the asset was introduced, and the hand has
+    # been sitting in whatever orientation extract_hand.py baked into it. The
+    # apparent direction changes between renders came from editing that script,
+    # not from any angle set in this file.
+    h.rotation_mode = 'XYZ'
     h.rotation_euler = (0.0, pitch, yaw)
     h.location = (at[0], at[1], at[2] - into)
     bpy.context.view_layer.update()
@@ -906,8 +997,14 @@ def build(res=(1672, 941), samples=96):
 
     append('trowel_01', (0.74, 0.96, SILL_Z + 0.006), scale=0.55, rot_z=1.25,
            default=look.mat('tool', look.srgb('#3A342C'), 0.62))
-    # phone, face up, screen off
-    props.phone((0.66, -0.26, TABLE_Z), M['frame'], M['glassblack'], rot_z=-0.24)
+    # phone, face up, screen off.
+    #
+    # Pulled in from y -0.26. The body is 156 mm long, so at -0.26 it spanned
+    # -0.338 to -0.182 while the table's near edge is at -0.33: eight
+    # millimetres of it hung off the end, and the yaw put a corner further out
+    # still. A phone resting on nothing is the one thing in a still that reads
+    # instantly as wrong.
+    props.phone((0.62, -0.17, TABLE_Z), M['frame'], M['glassblack'], rot_z=-0.24)
 
     # --- foreground dressing.
     #
@@ -934,15 +1031,30 @@ def build(res=(1672, 941), samples=96):
            mats=[('_paper', look.mat('pages2', look.srgb('#8B7E68'), 0.95))],
            default=look.mat('book2', look.srgb('#3B2F26'), 0.9))
 
-    # --- the ledger, pinned to the left pier
-    _box((-0.86, 1.00, 1.30), (0.42, 0.20, 0.022), M['wood'])          # shelf by the ledger
+    # --- the ledger
+    #
+    # On a wall RETURN, not on the window pier, and this is why the shot could
+    # not be framed. The pier sits in the window plane at y 1.0, the same depth
+    # as the sill, so a camera close enough to read the page was close enough
+    # that the sill fell 41 degrees below the frame, and one far enough to hold
+    # both put the page at 11% of frame width with its date column unreadable.
+    # Four framings traded one against the other and none could have worked.
+    #
+    # The plate solves it with geometry rather than with a lens: its sheet hangs
+    # on a short wall that juts into the room, so the page is near the camera
+    # and the sill runs away behind it. The room now has that wall.
+    _box((-1.12, 0.60, 1.5), (0.12, 0.94, 3.4), M['pier'])
+    # There was a 0.42 x 0.20 plank here at z 1.30, 350 mm above the real sill
+    # and resting on nothing, carrying two pots. It read as a duplicate window
+    # sill floating in mid air, which is exactly what it was. The room has one
+    # sill, at SILL_Z, and the ledger shot should show that one.
     # Moved right and shrunk. At x -0.96 the second pot stood directly under
     # the sheet and its leaves covered the last four rows, which is the half of
     # the page that makes the point.
-    facet_pot((-0.80, 1.00, 1.311), top_r=0.052, bot_r=0.040, h=0.090, m=M['terra'])
-    leafy_plant((-0.80, 1.00, 1.389), M['leaf'], M['stem'], scale=0.60, seed=11)
-    facet_pot((-0.665, 0.99, 1.311), top_r=0.046, bot_r=0.035, h=0.080, m=M['terra'])
-    leafy_plant((-0.665, 0.99, 1.380), M['leaf'], M['stem'], scale=0.52, seed=12)
+    facet_pot((-0.80, 0.985, SILL_Z), top_r=0.052, bot_r=0.040, h=0.090, m=M['terra'])
+    leafy_plant((-0.80, 0.985, SILL_Z + 0.078), M['leaf'], M['stem'], scale=0.60, seed=11)
+    facet_pot((-0.95, 0.985, SILL_Z), top_r=0.046, bot_r=0.035, h=0.080, m=M['terra'])
+    leafy_plant((-0.95, 0.985, SILL_Z + 0.070), M['leaf'], M['stem'], scale=0.52, seed=12)
     # The sheet is a textured plane now, not a slab with thin boxes stacked on
     # it for rows and solid bars for words. At render scale those read as a
     # ruled but empty page, and the beat this shot carries is the same word
@@ -957,25 +1069,55 @@ def build(res=(1672, 941), samples=96):
     # a card propped on a shelf rather than paper pinned to a wall. Its back
     # face was also only 3 mm into the pier. Lifted clear of the shelf and
     # pressed flat against the wall.
-    led = _box((-1.06, 1.0075, 1.545), (0.215, 0.008, 0.285), M['paper'])
-    led.rotation_euler = (0, 0, math.radians(-4))
+    led = _box((-1.052, 0.60, 1.455), (0.008, 0.215, 0.285), M['paper'])
     sheet_png = os.path.join(ASSETS, 'ledger-sheet.png')
     if os.path.exists(sheet_png):
-        bpy.ops.mesh.primitive_plane_add(size=1.0, location=(-1.06, 1.0025, 1.545))
+        bpy.ops.mesh.primitive_plane_add(size=1.0, location=(-1.0445, 0.60, 1.455))
         face = bpy.context.object
         # One quarter turn about X is all it needs: that sends the plane's
         # normal to -y, which is the way the pier faces, and its own up to world
         # z. The plane's X is then the page's width and its Y the page's height,
         # which is what the image expects. The small yaw is the tilt the paper
         # already has.
-        face.rotation_euler = (math.radians(90), 0, math.radians(-4))
+        # Square to the slab, and 3.5 mm proud of it. The page carried a 3
+        # degree tilt that the slab behind it does not, and a 215 mm wide plane
+        # turned 3 degrees swings its edge 5.6 mm: more than it stood proud, so
+        # one half of it sank behind the slab and rendered as blank paper. That
+        # is where the date column went. The slab's front face is
+        # at x -1.048 and this plane went in at -1.0485, half a millimetre
+        # behind it, so every pixel of the page was the slab's plain paper
+        # material and the texture never rendered. That is why the dates did not
+        # appear, and why dimming the texture and sweeping both lights that
+        # reach it changed the sheet's value by almost nothing: none of those
+        # knobs were attached to what the camera was actually seeing.
+        #
+        # A further quarter turn about Z carries that normal from -y round to
+        # +x, which is the way the return faces.
+        face.rotation_euler = (math.radians(90), 0, math.radians(90))
         face.scale = (0.215, 0.285, 1.0)
         pm = look.mat('ledgerpaper', look.srgb('#D9CDB2'), 0.95)
         nt = pm.node_tree
         img = nt.nodes.new('ShaderNodeTexImage')
         img.image = bpy.data.images.load(sheet_png)
         img.interpolation = 'Cubic'
-        nt.links.new(img.outputs['Color'],
+        # Scaled down before it reaches Base Color, and the reason is the
+        # pipeline rather than the paper. plate.py POSTERISES the lighting, which
+        # normalises it to a handful of steps and destroys its magnitude, so a
+        # surface's final value comes from its ALBEDO times the gain and barely
+        # from how much light falls on it. Sweeping the two lights that reach
+        # this sheet across a five-fold range moved it from 0.945 to 0.936.
+        #
+        # The page's paper is (217, 205, 178), so 0.85, and at gain 3.2 that
+        # clips on almost any light at all: when the sheet moved onto the wall
+        # return it blew out over 12% of the frame. The texture keeps its own
+        # colours for every other use; this multiply is what sets the rendered
+        # value, and it is the only knob here that does anything.
+        dim = nt.nodes.new('ShaderNodeMixRGB')
+        dim.blend_type = 'MULTIPLY'
+        dim.inputs[0].default_value = 1.0
+        dim.inputs[2].default_value = (PAPER_DIM, PAPER_DIM, PAPER_DIM, 1)
+        nt.links.new(img.outputs['Color'], dim.inputs[1])
+        nt.links.new(dim.outputs[0],
                      nt.nodes['Principled BSDF'].inputs['Base Color'])
         look.put(face, pm)
     # The divider between the date column and the word column is in the texture
@@ -986,7 +1128,7 @@ def build(res=(1672, 941), samples=96):
     # plate shows a brass head catching the lamp and throwing a small shadow
     # down the sheet, which a painted dot cannot do.
     bpy.ops.mesh.primitive_uv_sphere_add(segments=14, ring_count=8, radius=0.0075,
-                                         location=(-1.058, 0.9985, 1.6735))
+                                         location=(-1.0435, 0.603, 1.5835))
     look.put(bpy.context.object, look.mat('pin', look.srgb('#B98B3C'), 0.42),
              smooth=True)
 
@@ -1071,14 +1213,19 @@ def build(res=(1672, 941), samples=96):
     # edge, printing a circular pool on the pier behind the sheet that no
     # bounced light has. A small source half a metre away falls off by inverse
     # square instead, which is the same gradient without the rim.
-    bpy.ops.object.light_add(type='AREA', location=(-1.00, 0.52, 1.47))
+    bpy.ops.object.light_add(type='AREA', location=(-0.58, 0.56, 1.56))
     lb = bpy.context.object
+    # Moved with the sheet. Its energy is solved for a half-metre throw, and
+    # when the page went onto the wall return this light stayed put and ended up
+    # 0.10 m from it: the sheet clipped 12.1% of the frame. The light now sits
+    # 0.49 m off the page's new face, so the solve below still holds.
+    #
     # 2.6 W half a metre away put the sheet at 0.866 and clipped a tenth of the
     # frame. Solved rather than nudged: the target is the plate's 0.562, so in
     # linear terms 0.562^2.2 over 0.866^2.2 is 0.39, and 2.6 x 0.39 is 1.0.
-    lb.data.energy, lb.data.size, lb.data.color = 1.0, 0.22, look.LAMP
+    lb.data.energy, lb.data.size, lb.data.color = float(os.environ.get('TT_LB', 1.0)), 0.22, look.LAMP
     lb.data.use_shadow = False
-    look.aim(lb, (-1.05, 1.00, 1.46))
+    look.aim(lb, (-1.05, 0.60, 1.455))
     # Wash for the new left wall. Deliberately separate from the ledger bounce
     # above, which is solved to put the SHEET at the plate's 0.562 and must not
     # be disturbed. Large and shadowless, because it stands in for bounce off a
@@ -1093,7 +1240,7 @@ def build(res=(1672, 941), samples=96):
     # have no edge.
     bpy.ops.object.light_add(type='AREA', location=(-0.30, -1.15, 1.95))
     lw = bpy.context.object
-    lw.data.energy, lw.data.size, lw.data.color = 3.9, 3.20, look.LAMP
+    lw.data.energy, lw.data.size, lw.data.color = float(os.environ.get('TT_LW', 3.9)), 3.20, look.LAMP
     lw.data.use_shadow = False
     look.aim(lw, (-1.45, 0.35, 1.35))
 
@@ -1120,8 +1267,27 @@ def build(res=(1672, 941), samples=96):
 # Wider stop on the close shots, where a few centimetres of focus is the whole
 # effect, and none at all on the two wide room shots, where everything in frame
 # is genuinely meant to be legible.
+# Solved, not nudged, after four framings that each traded the sheet against
+# the sill. The constraint is geometric: the sheet spans z 1.403 to 1.687 and
+# the sill sits at 0.95, so from 0.68 m away they are 41 degrees apart against a
+# 31 mm lens's 36.5 degree vertical field and CANNOT both be in frame. Scanning
+# camera position, aim and lens for a setting that holds the whole sheet plus a
+# sill pot gives this one: the page lands at screen x 0.24 filling 37% of the
+# frame's height, which is where the plate puts it.
+#
+# The ledger aim points to the RIGHT of the sheet, not at it. Aiming straight
+# at the subject centres it, and this shot wants it off to one side with the
+# sill running away behind, which is how the plate composes it. Aiming at the
+# sheet put it dead centre with blank wall filling the left third.
+#
+# The ledger aim was at the sheet's own height, 1.548, because the shot was
+# framed around a plank that floated 350 mm above the sill and has since been
+# deleted. With that gone the real sill fell right out of frame, measured at
+# screen y -0.35. Tilted down to 1.255, which is the midpoint of the 31 degrees
+# between them, so the sheet sits high in frame and the sill runs along the
+# bottom the way the plate has it.
 SHOTS = {
- 'ledger':        ((-0.34, 0.10, 1.60), (-1.03, 0.99, 1.548), 31, 26, 4.0),
+ 'ledger':        ((-0.46, 0.08, 1.46), (-0.86, 0.86, 1.385), 31, 26, 4.0),
  'shelf-evening': ((-0.30, -0.28, 1.21), (-0.10, 0.98, 1.03), 35, 28, None),
  'finger-test':   ((0.02, 0.50, 1.175), (-0.245, 0.975, 1.052), 42, 35, 2.8),
  'depth':         ((-0.60, -0.62, 0.86), (-0.12, 0.12, 0.825), 45, 38, 3.5),
