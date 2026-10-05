@@ -52,7 +52,12 @@ def facet_pot(loc, top_r=0.075, bot_r=0.058, h=0.130, sides=16, m=None, cut=Fals
                                     location=(loc[0], loc[1], loc[2] + h - 0.004))
     rim = look.put(bpy.context.object, m)
     r2 = rim.modifiers.new('s', 'SOLIDIFY'); r2.thickness = 0.007; r2.offset = -1.0
-    soil = parts._soil_grid(loc[0], loc[1], loc[2] + h - 0.030, top_r - 0.010, n=96)
+    soil = parts._soil_grid(loc[0], loc[1], loc[2] + h - 0.030, top_r - 0.010, n=116)
+    # parts.dress_soil has existed the whole time and was never called from this
+    # file, so every pot in every shot had mirror-flat dirt. In a set of pictures
+    # about how wet the soil is, and in two shots whose entire job is a finger
+    # pressed into it, the surface had no grain and took no mark.
+    parts.dress_soil(soil, bump=0.0021)
     look.put(soil, look.mat('soil', look.SOIL, 0.95), smooth=True)
     col = crust = None
     if cut:
@@ -420,6 +425,56 @@ def soil_top(x, y, r=0.12):
         top = max(p.z for p in pts)
         if best is None or top > best:
             best = top
+    return best
+
+
+# Soil vertices lifted by a dimple, so the next shot can put them back. The
+# soil meshes persist across shots in one build, so a dimple pressed for
+# finger-test would otherwise still be there in scale-table, which is a dent in
+# a pot nobody has touched.
+_DIMPLED = []
+
+
+def _undimple():
+    for mesh_name, saved in _DIMPLED:
+        me = bpy.data.meshes.get(mesh_name)
+        if me:
+            for i, z in saved:
+                me.vertices[i].co.z = z
+            me.update()
+    _DIMPLED.clear()
+
+
+def dimple_soil(at, r=0.020, depth=0.0075):
+    """Press a hole into whichever soil surface is under `at`.
+
+    Real displaced geometry rather than a dark texture, because the hole has to
+    catch the light from one side and cast into itself. That is the product's
+    whole premise rendered as one shape, and it was missing.
+    """
+    _undimple()
+    x, y = at[0], at[1]
+    best, bestd = None, 1e9
+    for o in bpy.data.objects:
+        if o.type != 'MESH' or not o.name.lower().startswith('soil'):
+            continue
+        c = sum((o.matrix_world @ Vector(v) for v in o.bound_box), Vector()) / 8
+        d = math.hypot(c.x - x, c.y - y)
+        if d < bestd:
+            best, bestd = o, d
+    if best is None or bestd > 0.14:
+        return None
+    me = best.data
+    saved = []
+    for i, v in enumerate(me.vertices):
+        dd = math.hypot(v.co.x - x, v.co.y - y)
+        if dd < r:
+            saved.append((i, v.co.z))
+            t = 1.0 - (dd / r)
+            v.co.z -= depth * (t ** 1.6)
+    me.update()
+    if saved:
+        _DIMPLED.append((me.name, saved))
     return best
 
 

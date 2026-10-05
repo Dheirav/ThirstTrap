@@ -63,8 +63,10 @@ for name in (shots or world.SHOTS):
             # several rounds. If the soil cannot be found, say so.
             raise SystemExit(f'soil_top found no soil near {h["pot"]} for {name}')
         world.place_hand((h['pot'][0], h['pot'][1], z), yaw=h['yaw'], pitch=h['pitch'])
+        world.dimple_soil((h['pot'][0], h['pot'][1]))
     else:
         world.place_hand((0, 0, -9))      # parked out of every frame
+        world._undimple()                 # and no dent in a pot nobody touched
     sc.render.resolution_x, sc.render.resolution_y = W, H
     sc.camera = world.look.camera(loc, aim, lens, None)   # no DoF in the plates
     sc.render.filepath = os.path.join(OUT, f'{name}.png')

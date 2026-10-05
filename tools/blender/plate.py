@@ -92,6 +92,7 @@ def posterise(sc, steps=4, lift=0.0, gamma=1.0, ambient=0.10,
     vl.use_pass_diffuse_direct = True
     vl.use_pass_diffuse_indirect = True
     vl.use_pass_emit = True
+    vl.use_pass_normal = True        # for the denoiser below
 
     sc.use_nodes = True
     nt = sc.node_tree
@@ -105,8 +106,28 @@ def posterise(sc, steps=4, lift=0.0, gamma=1.0, ambient=0.10,
     nt.links.new(rl.outputs['DiffDir'], add.inputs[1])
     nt.links.new(rl.outputs['DiffInd'], add.inputs[2])
 
+    # Denoise the lighting BEFORE it is stepped, and this is the whole reason
+    # the shadow edges were speckle rather than polygon.
+    #
+    # Cycles' own denoising is on, but it denoises the Combined pass. This graph
+    # never looks at Combined: it consumes DiffDir and DiffInd, which are raw.
+    # Running a constant ramp over a noisy signal does not average the noise, it
+    # promotes it: a pixel half a sample either side of a step boundary lands in
+    # a different band from its neighbour, so sampling noise becomes step
+    # assignment and every edge dithers. Hardening the lights made it worse,
+    # because a smaller source is a noisier one.
+    #
+    # Albedo and Normal are fed in because a denoiser given only colour cannot
+    # tell a soft shadow from a noisy one, and will flatten both.
+    den = nt.nodes.new('CompositorNodeDenoise')
+    nt.links.new(add.outputs[0], den.inputs['Image'])
+    if 'Albedo' in den.inputs:
+        nt.links.new(rl.outputs['DiffCol'], den.inputs['Albedo'])
+    if 'Normal' in den.inputs and 'Normal' in rl.outputs:
+        nt.links.new(rl.outputs['Normal'], den.inputs['Normal'])
+
     sep = nt.nodes.new('CompositorNodeSeparateColor'); sep.mode = 'HSV'
-    nt.links.new(add.outputs[0], sep.inputs[0])
+    nt.links.new(den.outputs[0], sep.inputs[0])
 
     # Exposure goes in BEFORE the steps, and that ordering is the whole thing.
     #
