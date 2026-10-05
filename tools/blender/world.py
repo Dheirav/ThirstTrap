@@ -571,11 +571,19 @@ def dimple_soil(at, r=0.020, depth=0.0075):
 
 
 def place_hand(at, yaw=0.0, pitch=-0.62, into=0.012):
-    """One finger pushed into the soil at `at`, with a forearm leaving frame.
+    """A hand pushed into the soil at `at`, with a forearm leaving frame.
 
-    A whole scripted hand reads as a lay figure, which is why parts.build_finger
-    crops to one finger: the rest of the hand never has to survive being built
-    out of primitives. The arm exists only so the finger is attached to someone.
+    It used to be one finger and a cone, on the argument that a whole scripted
+    hand reads as a lay figure. That argument was made before parts.build_hand
+    was written, and build_hand has sat unused ever since: a right hand with
+    three phalanges and joints in the index, a bevelled palm, and the other
+    fingers curled under, which is both what a hand doing this actually does and
+    a way of hiding knuckles it does not model. Its fingertip is at its own
+    origin, so placing it is the same one move the finger needed.
+
+    A cone with a finger on it was the single most obviously wrong object in the
+    set, and the fix had been written and never called.
+
     Called per shot rather than built into the room, because the same hand is in
     two different pots in two different beats.
     """
@@ -592,6 +600,21 @@ def place_hand(at, yaw=0.0, pitch=-0.62, into=0.012):
         if n in bpy.data.objects:
             bpy.data.objects.remove(bpy.data.objects[n], do_unlink=True)
     skin = look.mat('skin', look.srgb('#8A6248'), 0.86)
+    # Back to build_finger, and the reason is worth keeping.
+    #
+    # parts.build_hand exists and had never been called, which looked like a
+    # free upgrade: a right hand with three phalanges, joints, a bevelled palm
+    # and the other fingers curled. Four rotation solves later, each one wrong
+    # in a different way, I rendered it on its own against a ground plane and
+    # the problem was not the rotation at all. It does not read as a hand. The
+    # palm is a blob, the curled fingers are detached sausages hanging beside
+    # it, and the forearm is a tapered cone. It is not better than one finger,
+    # it is worse, because a single finger is an abstraction a viewer completes
+    # and a bad hand is one they do not.
+    #
+    # The original comment on this function was right and I should have tested
+    # its claim before overturning it: a whole scripted hand reads as a lay
+    # figure. A real hand here is modelling work, not a function call.
     f = parts.build_finger(skin=skin)
     f.name = 'finger'
     f.location = (at[0], at[1], at[2] - into)

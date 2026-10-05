@@ -61,12 +61,18 @@ with no character at all.
 
 ### What to build instead, in order
 
-1. **Use the hand that exists.** `parts.build_hand` is a modelled right hand:
-   index with three phalanges and joints, a bevelled palm, the other fingers
-   curled to hide knuckles it does not model. The fingertip is at the origin so
-   placing it is one move. Every shipping shot uses `build_finger` plus a cone
-   instead, and the hand is called only by a test script. This is the cheapest
-   large improvement available anywhere in the project.
+1. ~~**Use the hand that exists.**~~ **Tried, and it does not work.**
+   `parts.build_hand` is there and unused, and I claimed it was the cheapest
+   large improvement in the project without looking at it. Rendered on its own
+   against a ground plane it does not read as a hand: the palm is a blob, the
+   curled fingers are detached sausages beside it, and the forearm is a tapered
+   cone. It is worse than the single finger, because one finger is an
+   abstraction a viewer completes and a bad hand is one they do not.
+
+   Four rotation solves went wrong before I looked, which is the lesson rather
+   than the finding. A real hand is modelling work here, not a function call,
+   and it is the one place a character-free hero still needs a figure built
+   properly.
 2. **Widen the scale range.** The move currently travels about a metre. It
    should open wide enough to see the room and end close enough to read the
    number on the scale. That is a camera problem, not a modelling one.
@@ -86,10 +92,12 @@ attempting.
 
 Three tiers, cheapest first:
 
-**Tier 1, hands and forearms.** Days of work. Use `build_hand`, add a forearm
-with a wrist that necks in before it widens, and keep the crop at the elbow.
-This gets human presence into the frame with no face, no body and no rig. It is
-also already half done.
+**Tier 1, hands and forearms.** Days of work, and NOT already half done: see
+above, `build_hand` is unusable as it stands. A hand that survives flat shading
+needs a continuous surface rather than a pile of primitives, which means sweeping
+one mesh the way `parts.tube` already does for the finger, plus a forearm with a
+wrist that necks in before it widens. Crop at the elbow. No face, no body, no
+rig.
 
 **Tier 2, a seated silhouette from behind.** A week or two. A torso, a head, a
 hair mass, two arms, all low-poly and read almost entirely as a dark shape
