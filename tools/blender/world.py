@@ -20,7 +20,7 @@ Layout, in metres, floor at z=0:
 """
 import bpy, math, os, random, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import look, parts, scene as sc_mod
+import look, parts, props, scene as sc_mod
 from mathutils import Vector
 
 SILL_Z, TABLE_Z, WIN_Y = 0.95, 0.755, 1.06
@@ -737,10 +737,8 @@ def build(res=(1672, 941), samples=96):
                   h=0.108 * sc_i, m=M['terra'])
         leafy_plant((x, 0.985, SILL_Z + 0.094 * sc_i), M['leaf'], M['stem'],
                     scale=0.80 * sc_i, seed=i)
-    can = _box((POTS_X[0] - 0.19, 0.95, SILL_Z + 0.20), (0.115, 0.095, 0.105), M['metal'])
-    can.rotation_euler = (0, math.radians(-26), 0)
-    sp = _box((POTS_X[0] - 0.085, 0.95, SILL_Z + 0.175), (0.115, 0.022, 0.022), M['metal'])
-    sp.rotation_euler = (0, math.radians(-26), 0)
+    props.watering_can((POTS_X[0] - 0.20, 0.95, SILL_Z + 0.055),
+                       M['metal'], M['metal'], rot_z=-0.28)
     _box((POTS_X[0] - 0.012, 0.975, SILL_Z + 0.075), (0.006, 0.006, 0.105),
          look.mat('water', look.srgb('#8FA6B4'), 0.2))
 
@@ -750,12 +748,12 @@ def build(res=(1672, 941), samples=96):
         for sy in (-0.33, 0.33):
             _box((0.42 + sx, 0.06 + sy, (TABLE_Z - 0.03)/2), (0.05, 0.05, TABLE_Z - 0.03), M['wood'])
     # the scale, with the same pot standing on it
-    _box((0.30, 0.12, TABLE_Z + 0.022), (0.215, 0.185, 0.044), M['plastic'])
-    _box((0.30, 0.12, TABLE_Z + 0.048), (0.195, 0.165, 0.010), M['plastic'])
-    _box((0.30, 0.035, TABLE_Z + 0.030), (0.072, 0.012, 0.024), M['glassblack'])
-    facet_pot((0.30, 0.13, TABLE_Z + 0.053), top_r=0.078, bot_r=0.059, h=0.132,
+    props.kitchen_scale((0.30, 0.12, TABLE_Z), M['plastic'], M['glassblack'],
+                        lit_m=look.mat('readout', (0, 0, 0, 1), 1.0,
+                                       emit=look.srgb('#9FD8C4'), strength=0.75))
+    facet_pot((0.30, 0.13, TABLE_Z + 0.0345), top_r=0.078, bot_r=0.059, h=0.132,
               m=M['terra'])
-    leafy_plant((0.30, 0.13, TABLE_Z + 0.172), M['leaf'], M['stem'], scale=1.45, seed=9)
+    leafy_plant((0.30, 0.13, TABLE_Z + 0.1535), M['leaf'], M['stem'], scale=1.45, seed=9)
     # the cut pot, the depth shot, on the same table
     # The cut pot belongs to two shots and was standing in every other one: a
     # pot sliced open in the middle of `scale-table` is not a continuity detail,
@@ -834,35 +832,13 @@ def build(res=(1672, 941), samples=96):
     # every angle tried. A continuous move forces one mug position, so the
     # position should serve the move rather than split the difference between
     # two stills that no longer exist on their own.
-    # A solid cylinder has no inside. From the table cameras that reads as an
-    # upside-down slug rather than a mug, because the one thing that tells you
-    # which way up a mug is, is seeing into it. Hollowed, with a rim.
-    bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.044, depth=0.098,
-                                        location=(0.035, -0.115, TABLE_Z + 0.049))
-    mug_body = look.put(bpy.context.object, M['mug'])
-    bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.0385, depth=0.092,
-                                        location=(0.32, -0.06, TABLE_Z + 0.056))
-    hole = bpy.context.object
-    bm = mug_body.modifiers.new('hollow', 'BOOLEAN')
-    bm.operation = 'DIFFERENCE'; bm.object = hole
-    hole.hide_render = True; hole.hide_viewport = True
-    bpy.ops.mesh.primitive_torus_add(major_radius=0.036, minor_radius=0.0065,
-                                     major_segments=20, minor_segments=8,
-                                     location=(-0.017, -0.115, TABLE_Z + 0.052),
-                                     rotation=(math.radians(90), 0, 0))
-    look.put(bpy.context.object, M['mug'])
-    # and something in it. An empty cream cylinder reads as a paper cup, and
-    # the dark disc is most of what makes the plate's mug a mug.
-    bpy.ops.mesh.primitive_circle_add(vertices=22, radius=0.038, fill_type='NGON',
-                                      location=(0.035, -0.115, TABLE_Z + 0.086))
-    look.put(bpy.context.object, look.mat('coffee', look.srgb('#241509'), 0.55))
+    props.mug((0.035, -0.115, TABLE_Z), M['mug'],
+              look.mat('coffee', look.srgb('#241509'), 0.55), rot_z=2.4)
+
     append('trowel_01', (0.74, 0.96, SILL_Z + 0.006), scale=0.55, rot_z=1.25,
            default=look.mat('tool', look.srgb('#3A342C'), 0.62))
     # phone, face up, screen off
-    ph = _box((0.66, -0.26, TABLE_Z + 0.006), (0.078, 0.158, 0.009), M['frame'])
-    ph.rotation_euler = (0, 0, math.radians(-14))
-    scr = _box((0.66, -0.26, TABLE_Z + 0.0112), (0.070, 0.148, 0.001), M['glassblack'])
-    scr.rotation_euler = (0, 0, math.radians(-14))
+    props.phone((0.66, -0.26, TABLE_Z), M['frame'], M['glassblack'], rot_z=-0.24)
 
     # --- foreground dressing.
     #
