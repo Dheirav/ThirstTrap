@@ -27,7 +27,9 @@ SILL_Z, TABLE_Z, WIN_Y = 0.95, 0.755, 1.06
 
 # Objects that belong to the depth and roots shots only. See build().
 CUT_POT = []
-POTS_X = (-0.52, -0.21, 0.10, 0.41)
+# Was (-0.52, -0.21, 0.10, 0.41): exactly 0.31 apart, three times, which
+# with identical plants on top read as four pinwheels on a metronome.
+POTS_X = (-0.55, -0.23, 0.07, 0.42)
 
 
 def _box(loc, scale, m, smooth=False):
@@ -103,66 +105,120 @@ def _cutter(loc):
     return c
 
 
-def leaf(m, base, aim_xy, length, width=0.052, rise=1.25, droop=0.60):
-    ax, ay = aim_xy; n = math.hypot(ax, ay) or 1.0
-    ax, ay = ax/n, ay/n; px, py = -ay, ax
-    pts, faces, SEG = [], [], 5
+def leaf(m, base, aim_xy, length, width=0.052, rise=1.25, droop=0.60,
+         lobes=3, petiole=0.20, seed=0):
+    """One leaf: a petiole, then a blade with its widest point past the middle.
+
+    The old one was a five-segment ribbon whose width went as sin(pi*t), which
+    peaks dead centre and falls to zero at both ends. That is a kite. It also
+    had six cross-sections, so the outline was visibly polygonal at any size
+    the hero shows, and it grew straight out of the soil with no stalk.
+
+    Three changes, all of them things a leaf has and a kite does not. A bare
+    petiole over the first fifth, so the blade is held away from the stem and
+    you can see between leaves. A width profile u^1.1 * (1-u)^0.8, which peaks
+    at 0.58 and carries a flatter shoulder, so the broad part is past the
+    middle. And a shallow lobing on the edge, because an unbroken ellipse reads
+    as a petal.
+    """
+    rnd = random.Random(seed)
+    ax, ay = aim_xy
+    n = math.hypot(ax, ay) or 1.0
+    ax, ay = ax / n, ay / n
+    px, py = -ay, ax
+    SEG = 14
+    pts, faces = [], []
+    peak = 1.1 ** 1.1 * 0.8 ** 0.8          # normaliser for the profile below
     for i in range(SEG + 1):
         t = i / SEG
-        z = base[2] + rise*length*t - droop*length*t*t
-        cx, cy = base[0] + ax*length*t, base[1] + ay*length*t
-        w = width * math.sin(math.pi * min(t*1.12, 1.0)) * 0.5
-        pts += [(cx+px*w, cy+py*w, z-0.003*(1-t)), (cx, cy, z+0.005*math.sin(math.pi*t)),
-                (cx-px*w, cy-py*w, z-0.003*(1-t))]
+        z = base[2] + rise * length * t - droop * length * t * t
+        cx, cy = base[0] + ax * length * t, base[1] + ay * length * t
+        if t < petiole:
+            w = width * 0.035
+        else:
+            u = (t - petiole) / (1.0 - petiole)
+            prof = (u ** 1.1) * ((1.0 - u) ** 0.8)
+            prof /= (1.1 ** 1.1 * 0.8 ** 0.8) / ((1.1 + 0.8) ** 1.9) or 1.0
+            prof = min(prof, 1.0)
+            # shallow lobes, so the outline is not one smooth ellipse
+            prof *= 1.0 + 0.13 * math.cos(lobes * math.pi * u)
+            w = width * prof * 0.5
+        lift = 0.006 * math.sin(math.pi * t)
+        pts += [(cx + px * w, cy + py * w, z - 0.002 * (1 - t)),
+                (cx, cy, z + lift),
+                (cx - px * w, cy - py * w, z - 0.002 * (1 - t))]
     for i in range(SEG):
-        a = i*3; faces += [(a, a+1, a+4, a+3), (a+1, a+2, a+5, a+4)]
-    me = bpy.data.meshes.new('leaf'); me.from_pydata(pts, [], faces); me.update()
-    ob = bpy.data.objects.new('leaf', me); bpy.context.collection.objects.link(ob)
-    ob.modifiers.new('s', 'SOLIDIFY').thickness = 0.0015
+        a0 = i * 3
+        faces += [(a0, a0 + 1, a0 + 4, a0 + 3), (a0 + 1, a0 + 2, a0 + 5, a0 + 4)]
+    me = bpy.data.meshes.new('leaf')
+    me.from_pydata(pts, [], faces)
+    me.update()
+    ob = bpy.data.objects.new('leaf', me)
+    bpy.context.collection.objects.link(ob)
+    ob.modifiers.new('s', 'SOLIDIFY').thickness = 0.0012
     return look.put(ob, m)
 
 
 def leafy_plant(at, leaf_m, stem_m, scale=1.0, seed=0):
-    """The one plant this room grows, in a loose rosette of broad leaves.
+    """A branching shrub, which is what every plate actually shows.
 
-    The old `plant` put six leaves in a flat fan, which read as a sparse twig
-    at any distance, and the sill used a Poly Haven asset whose pot is a footed
-    goblet. Neither matches the plates, where every pot holds the same broad
-    rounded leaves on short upright stalks, and the pot is a plain taper.
+    This used to build a rosette: seven leaves on one ring and five on another,
+    all radiating from a single point at exact 2pi/n intervals. Four of those
+    on a sill at exactly 0.31 m pitch read as four identical pinwheels on a
+    metronome, and the species read as agave against plates full of broad
+    lobed leaves on stalks.
 
-    Two tiers rather than one ring: the outer leaves longer and dropping, the
-    inner ones shorter and more upright. A single ring at one length reads as a
-    paper fan, because real foliage overlaps itself and that overlap is most of
-    what makes it look like a plant.
+    A stem with nodes up it fixes both at once. Leaves arrive at four or five
+    different heights instead of one, which is what lets you see sky between
+    them, and the angles come off a wandering phase rather than an exact
+    division, so no two plants rhyme. Leaf count roughly triples, because the
+    plates carry 25 to 40 and twelve was never going to read as foliage.
     """
     rnd = random.Random(seed)
-    # Lifted clear of the soil. The leaves used to radiate from the soil surface
-    # itself, so they closed over the pot mouth and no shot ever saw dirt, which
-    # is a problem in a set of pictures about how wet the dirt is. A short rise
-    # is also simply what the plant looks like.
-    at = (at[0], at[1], at[2] + 0.022 * scale)
-    outer, inner = 7, 5
-    for i in range(outer):
-        a = (i / outer) * math.tau + rnd.uniform(-0.18, 0.18)
-        ln = (0.098 + rnd.uniform(-0.012, 0.014)) * scale
-        leaf(leaf_m, at, (math.cos(a), math.sin(a)), ln,
-             width=(0.062 + rnd.uniform(-0.006, 0.008)) * scale,
-             rise=1.05 + rnd.uniform(-0.12, 0.12), droop=0.74 + rnd.uniform(-0.1, 0.1))
-    for i in range(inner):
-        a = (i / inner) * math.tau + 0.5 + rnd.uniform(-0.2, 0.2)
-        ln = (0.066 + rnd.uniform(-0.010, 0.012)) * scale
-        leaf(leaf_m, (at[0], at[1], at[2] + 0.012 * scale),
-             (math.cos(a), math.sin(a)), ln,
-             width=(0.048 + rnd.uniform(-0.005, 0.006)) * scale,
-             rise=1.55 + rnd.uniform(-0.15, 0.15), droop=0.42 + rnd.uniform(-0.08, 0.08))
-    for i in range(4):
-        a = (i / 4) * math.tau + 0.3
-        d = (math.cos(a), math.sin(a))
-        bpy.ops.mesh.primitive_cone_add(
-            vertices=6, radius1=0.0034 * scale, radius2=0.0016 * scale,
-            depth=0.055 * scale,
-            location=(at[0] + d[0] * 0.009, at[1] + d[1] * 0.009, at[2] + 0.024 * scale))
-        look.put(bpy.context.object, stem_m)
+    lean_a = rnd.uniform(0, math.tau)
+    lean = rnd.uniform(0.06, 0.16)                 # nothing grows plumb
+    H = 0.145 * scale
+
+    def at_h(f):
+        return (at[0] + math.cos(lean_a) * lean * H * f,
+                at[1] + math.sin(lean_a) * lean * H * f,
+                at[2] + H * f)
+
+    spine = [at_h(i / 7) for i in range(8)]
+    r0 = 0.0042 * scale
+    look.put(parts.tube(spine, [r0 * (1 - 0.72 * (i / 7)) for i in range(8)],
+                        name='stem', seg=7), stem_m, smooth=True)
+
+    phase = rnd.uniform(0, math.tau)
+    nodes = 5
+    total = 0
+    for i in range(nodes):
+        f = 0.26 + 0.70 * (i / (nodes - 1))
+        nb = at_h(f)
+        # 137.5 degrees is the angle real phyllotaxis uses, and the point of it
+        # here is only that it never repeats.
+        for k in range(rnd.randint(2, 3)):
+            a = phase + (total * 2.3999) + rnd.uniform(-0.25, 0.25)
+            total += 1
+            up = 0.9 - 0.5 * f
+            ln = (0.052 + 0.030 * (1.0 - f) + rnd.uniform(-0.006, 0.008)) * scale
+            br = [(nb[0], nb[1], nb[2]),
+                  (nb[0] + math.cos(a) * ln * 0.30, nb[1] + math.sin(a) * ln * 0.30,
+                   nb[2] + 0.016 * scale * up)]
+            look.put(parts.tube(br, [r0 * 0.45, r0 * 0.30], name='stem', seg=5),
+                     stem_m, smooth=True)
+            leaf(leaf_m, br[1], (math.cos(a), math.sin(a)), ln,
+                 width=(0.040 + 0.012 * (1 - f)) * scale,
+                 rise=0.85 + up * 0.5 + rnd.uniform(-0.1, 0.1),
+                 droop=0.78 + rnd.uniform(-0.12, 0.14),
+                 lobes=rnd.choice((2, 3, 3, 4)), seed=seed * 91 + total)
+    # a couple at the apex, shorter and more upright
+    for k in range(2):
+        a = phase + total * 2.3999 + rnd.uniform(-0.3, 0.3)
+        total += 1
+        leaf(leaf_m, at_h(1.0), (math.cos(a), math.sin(a)), 0.044 * scale,
+             width=0.032 * scale, rise=1.5, droop=0.5,
+             lobes=3, seed=seed * 91 + total)
 
 
 def plant(at, leaf_m, stem_m, scale=1.0, n=6):

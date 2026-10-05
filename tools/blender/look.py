@@ -34,8 +34,13 @@ TERRA      = srgb('#6F4836')   # pot body, reads #AD723B lit and #3D271E in shad
 TERRA_DARK = srgb('#6B3F28')   # the shaded half of the pot, a separate facet colour
 SOIL       = srgb('#3A2A20')
 SOIL_LIT   = srgb('#6B5038')
-LEAF       = srgb('#2E3A26')   # dark enough that lit it lands near the measured #273022
-STEM       = srgb('#35422B')
+# Was #2E3A26, hue 96, which RENDERED at 81 because the warm lamp drags it
+# yellow, so the leaves read as dried olive. Hue 110 then overshot to 100
+# against the plates' 67 to 89, and the drag itself changed when the warm HDRI
+# ambient was removed, so it is not a fixed offset to pre-compensate for. 98
+# lands near the middle of the plates' range.
+LEAF       = srgb('#2C4020')
+STEM       = srgb('#2C3A24')
 SKIN       = srgb('#C08A5E')
 WALL       = srgb('#2A2420')
 SILL       = srgb('#4A3A2C')
