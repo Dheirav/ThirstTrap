@@ -63,7 +63,7 @@ def facet_pot(loc, top_r=0.075, bot_r=0.058, h=0.130, sides=16, m=None, cut=Fals
     look.put(soil, look.mat('soil', look.SOIL, 0.95), smooth=True)
     col = crust = None
     if cut:
-        wet = look.mat('wet', look.srgb('#2A1D14'), 0.96)
+        wet = look.mat('wet', look.srgb('#4A3422'), 0.96)
         dry = look.mat('dry', look.srgb('#9A8straight'.replace('straight', '264')), 0.98)
         bpy.ops.mesh.primitive_cylinder_add(vertices=sides, radius=top_r - 0.011,
                                             depth=h - 0.040,
@@ -389,7 +389,8 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
 ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets')
 
 
-def append(name, loc, scale=1.0, rot_z=0.0, mats=None, default=None, drop=('_ground',)):
+def append(name, loc, scale=1.0, rot_z=0.0, mats=None, default=None,
+           drop=('_ground', 'stash')):
     """Append a CC0 prop from Poly Haven and reshade it flat.
 
     The props are modelled photoreal with PBR maps; the page is flat-shaded
@@ -405,7 +406,15 @@ def append(name, loc, scale=1.0, rot_z=0.0, mats=None, default=None, drop=('_gro
     loaded = [o for o in bpy.data.objects if o not in before]
     new = [o for o in loaded if o.type == 'MESH']
     # Poly Haven ships a display base with several assets, which renders as a
-    # large pale dome sitting in the middle of the room. Names are taken before
+    # large pale dome sitting in the middle of the room.
+    #
+    # 'stash' joins it. book_encyclopedia_set_01 carries a Sphere_stash_0, a
+    # 153 mm sphere that has been sitting in this room since the books were
+    # added and shows on the sill in shelf-evening as a brown dome behind the
+    # first pot. It only became obvious when the table stack moved into
+    # phone-closeup's frame and it filled the right of it. Nothing referenced
+    # it, nothing placed it, and it was never meant to render: an appended
+    # asset's file is not a prop, it is a bag containing one. Names are taken before
     # the removals, because removing an object invalidates every Python
     # reference to it and reading .name afterwards raises.
     keep = [o.name for o in new if not any(d in o.name.lower() for d in drop)]
@@ -697,6 +706,12 @@ def build(res=(1672, 941), samples=96):
     _box((-2.20, WIN_Y + 0.06, 1.5), (2.1, 0.10, 3.4), M['wall'])       # left of the opening
     _box((2.00, WIN_Y + 0.06, 1.5), (2.1, 0.10, 3.4), M['wall'])        # right of the opening
     _box((1.28, 0.2, 1.5), (0.10, 5, 3.4), M['wall'])                   # right wall
+    # Left wall. There was never one, and nothing in five shots looked past the
+    # sill far enough to notice. ledger does: it was rewidened from 40mm to 31mm
+    # in 1f9a399 and its left third became the outside of the room, which renders
+    # as absolute black. Measured 0.057 against the plate's 0.164 there, and no
+    # amount of light fixes a surface that does not exist.
+    _box((-1.45, 0.2, 1.5), (0.10, 5, 3.4), M['wall'])                  # left wall
     for x, w in ((-1.14, 0.30), (0.80, 0.30)):                          # piers either side
         _box((x, WIN_Y, 1.5), (w, 0.11, 1.12), M['pier'])
     _box((-0.17, WIN_Y, 2.10), (2.2, 0.11, 0.18), M['pier'])            # head
@@ -795,7 +810,11 @@ def build(res=(1672, 941), samples=96):
     # it is a prop nobody struck between setups. Recorded here so the renderer
     # can hide it where it does not belong.
     _before = set(bpy.data.objects)
-    facet_pot((-0.18, 0.10, TABLE_Z), m=M['terra'], cut=True)
+    # 24 sides, not the default 16. A 16-sided cone reads as round while it is
+    # whole, because the facets run round the back out of sight; cut in half it
+    # shows four flat faces across the front and reads as a box, which is what
+    # the depth render has been showing all along.
+    facet_pot((-0.18, 0.10, TABLE_Z), sides=24, m=M['terra'], cut=True)
     leafy_plant((-0.18, 0.10, TABLE_Z + 0.104), M['leaf'], M['stem'], scale=0.9, seed=4)
     # root_cluster_01 is dropped. It was appended to give the roots beat real
     # geometry instead of the fourteen generated tubes, and flat-shaded at this
@@ -828,13 +847,21 @@ def build(res=(1672, 941), samples=96):
     shade = look.put(bpy.context.object, shade_m)
     sm = shade.modifiers.new('s', 'SOLIDIFY'); sm.thickness = 0.005; sm.offset = 1.0
     # the lit underside, which is the warm ellipse the plates all show
+    #
+    # Its strength is only meaningful if a camera can SEE it. scale-table sat at
+    # z 1.26 and the shade's rim is at 1.2595, so that camera was level with the
+    # mouth and looking at this disc edge-on: TT_GLOW at 1.6, 3.0 and 5.5 gave
+    # byte-identical frames. The camera dropped to 1.08 to look up into the shade
+    # the way every plate does. The lamp did not move, because it is also the key
+    # light for the table and raising it would dim three shots to fix one.
     # Smaller and dimmer than the shade's mouth. At full width and strength 2.6
     # it rendered as a flat white ellipse with the dark shade invisible behind
     # it, which is the one gradient the plates allow turned into a sticker.
     bpy.ops.mesh.primitive_circle_add(vertices=28, radius=0.120, fill_type='NGON',
                                       location=(LAMP_AT[0], LAMP_AT[1], LAMP_AT[2] + 0.018))
     look.put(bpy.context.object, look.mat('shadeglow', (0, 0, 0, 1), 1.0,
-                                          emit=look.LAMP + (1,), strength=0.9))
+                                          emit=look.LAMP + (1,),
+                                          strength=float(os.environ.get('TT_GLOW', 3.0))))
     # the bulb, a little below the rim so it reads as a source, not a panel
     bpy.ops.mesh.primitive_uv_sphere_add(segments=18, ring_count=10, radius=0.042,
                                          location=(LAMP_AT[0], LAMP_AT[1], LAMP_AT[2] + 0.034))
@@ -870,12 +897,25 @@ def build(res=(1672, 941), samples=96):
     props.mug((0.035, -0.115, TABLE_Z), M['mug'],
               look.mat('coffee', look.srgb('#241509'), 0.55), rot_z=2.4)
 
+    # A second can, on the table rather than the sill. Not a duplicate for its
+    # own sake: the plate's scale-table has a can standing at the right of frame
+    # and the room only had one, out on the sill where that camera cannot see it,
+    # so the right third of the shot was bare table. A watering can on the table
+    # of someone who waters by weight is also just where it would be.
+    props.watering_can((0.95, 0.21, TABLE_Z), M['metal'], M['metal'], rot_z=2.15)
+
     append('trowel_01', (0.74, 0.96, SILL_Z + 0.006), scale=0.55, rot_z=1.25,
            default=look.mat('tool', look.srgb('#3A342C'), 0.62))
     # phone, face up, screen off
     props.phone((0.66, -0.26, TABLE_Z), M['frame'], M['glassblack'], rot_z=-0.24)
 
     # --- foreground dressing.
+    #
+    # Size is set against the CAMERA, not against the table. Scaled to 0.105 and
+    # sat 0.26 m from the phone-closeup lens, this stack filled the right 40% of
+    # that frame as a near-black mass and took its dark fraction to 48.6% against
+    # the plate's 19.0%. A foreground object that crops an edge has to crop it,
+    # not fill it.
     #
     # All five review lenses reached this independently and the observal
     # recording confirms it from a third direction: every plate breaks a frame
@@ -890,7 +930,7 @@ def build(res=(1672, 941), samples=96):
     # be the kind of thing a viewer notices.
     facet_pot((-0.17, -0.52, TABLE_Z), top_r=0.066, bot_r=0.050, h=0.114, m=M['terra'])
     leafy_plant((-0.17, -0.52, TABLE_Z + 0.108), M['leaf'], M['stem'], scale=1.15, seed=21)
-    append('book_encyclopedia_set_01', (0.86, -0.42, TABLE_Z), scale=0.082, rot_z=-0.6,
+    append('book_encyclopedia_set_01', (0.80, -0.22, TABLE_Z), scale=0.055, rot_z=-0.6,
            mats=[('_paper', look.mat('pages2', look.srgb('#8B7E68'), 0.95))],
            default=look.mat('book2', look.srgb('#3B2F26'), 0.9))
 
@@ -1039,6 +1079,24 @@ def build(res=(1672, 941), samples=96):
     lb.data.energy, lb.data.size, lb.data.color = 1.0, 0.22, look.LAMP
     lb.data.use_shadow = False
     look.aim(lb, (-1.05, 1.00, 1.46))
+    # Wash for the new left wall. Deliberately separate from the ledger bounce
+    # above, which is solved to put the SHEET at the plate's 0.562 and must not
+    # be disturbed. Large and shadowless, because it stands in for bounce off a
+    # wall nobody modelled, and bounce has no edge.
+    #
+    # 11 W at size 1.60 put the wall at 0.262 against the plate's 0.164 and
+    # printed a visible disc on it: too bright AND too small, which is the same
+    # mistake the ledger bounce above already recorded making with a spot. Both
+    # halves are fixed by measurement rather than by taste. Energy scales by
+    # (0.164/0.262) ** 2.2 = 0.357, so 11.0 becomes 3.9; the source doubles in
+    # size and moves back so its falloff across the wall is gentle enough to
+    # have no edge.
+    bpy.ops.object.light_add(type='AREA', location=(-0.30, -1.15, 1.95))
+    lw = bpy.context.object
+    lw.data.energy, lw.data.size, lw.data.color = 3.9, 3.20, look.LAMP
+    lw.data.use_shadow = False
+    look.aim(lw, (-1.45, 0.35, 1.35))
+
 
     bpy.ops.object.light_add(type='AREA', location=(-0.18, -0.52, 0.95))
     cf = bpy.context.object
@@ -1068,8 +1126,8 @@ SHOTS = {
  'finger-test':   ((0.02, 0.50, 1.175), (-0.245, 0.975, 1.052), 42, 35, 2.8),
  'depth':         ((-0.60, -0.62, 0.86), (-0.12, 0.12, 0.825), 45, 38, 3.5),
  'roots':         ((0.0, -0.56, -4.44), (0.0, 0.0, -5.06), 40, 34, 2.2),
- 'scale-table':   ((0.20, -1.00, 1.26), (0.34, 0.15, 0.88), 31, 26, None),
- 'phone-closeup': ((0.70, -0.52, 0.800), (0.62, -0.17, 0.762), 33, 27, 2.2),
+ 'scale-table':   ((0.20, -1.00, 1.08), (0.34, 0.15, 1.00), 31, 26, None),
+ 'phone-closeup': ((0.74, -0.60, 0.980), (0.655, -0.265, 0.773), 33, 27, 2.2),
 }
 
 

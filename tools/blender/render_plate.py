@@ -66,7 +66,9 @@ HANDS = {
     'finger-test': dict(pot=(world.POTS_X[1], 0.978),
                         yaw=float(os.environ.get('TT_YAW', 0.75)),
                         pitch=float(os.environ.get('TT_PITCH', -0.75))),
-    'depth':       dict(pot=(-0.18, 0.035),           yaw=0.70, pitch=-0.55),
+    # depth gets a smaller hand than finger-test. Same arm, nearer camera: at a
+    # shared 0.26 it swamped the frame and buried the mug behind the knuckles.
+    'depth':       dict(pot=(-0.18, 0.035), yaw=0.70, pitch=-0.55, len=0.20),
 }
 
 # Which shots the cut pot is in. Everywhere else it is struck, like a set.
@@ -88,6 +90,7 @@ for name in (shots or world.SHOTS):
             # Silent fallbacks are how the finger ended up under the sill for
             # several rounds. If the soil cannot be found, say so.
             raise SystemExit(f'soil_top found no soil near {h["pot"]} for {name}')
+        world.HAND_LEN = h.get('len', float(os.environ.get('TT_HAND', 0.26)))
         world.place_hand((h['pot'][0], h['pot'][1], z), yaw=h['yaw'], pitch=h['pitch'])
         world.dimple_soil((h['pot'][0], h['pot'][1]))
     else:
