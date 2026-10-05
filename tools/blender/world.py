@@ -825,14 +825,20 @@ def build(res=(1672, 941), samples=96):
     # while the plate has the mug on one side and the phone on the other. The
     # room is the authority on where things are, but when it disagrees with
     # every plate about composition it is the room that is wrong.
-    # 0.32 rather than 0.02. Sweeping mug positions against BOTH table cameras
-    # found this one visible in each with the widest margin; at 0.02 it suited
-    # scale-table and fell outside phone-closeup entirely.
+    # Back to the left of the scale, and the council was right the first time.
+    #
+    # It was moved to 0.32 so one position could be visible from both table
+    # cameras, and the composition lens said that was exactly what welded those
+    # two shots into one framing. It is now also fatal: sitting between the
+    # camera and the scale, it blocks the move's closing shot completely, from
+    # every angle tried. A continuous move forces one mug position, so the
+    # position should serve the move rather than split the difference between
+    # two stills that no longer exist on their own.
     # A solid cylinder has no inside. From the table cameras that reads as an
     # upside-down slug rather than a mug, because the one thing that tells you
     # which way up a mug is, is seeing into it. Hollowed, with a rim.
     bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.044, depth=0.098,
-                                        location=(0.32, -0.06, TABLE_Z + 0.049))
+                                        location=(0.035, -0.115, TABLE_Z + 0.049))
     mug_body = look.put(bpy.context.object, M['mug'])
     bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.0385, depth=0.092,
                                         location=(0.32, -0.06, TABLE_Z + 0.056))
@@ -842,13 +848,13 @@ def build(res=(1672, 941), samples=96):
     hole.hide_render = True; hole.hide_viewport = True
     bpy.ops.mesh.primitive_torus_add(major_radius=0.036, minor_radius=0.0065,
                                      major_segments=20, minor_segments=8,
-                                     location=(0.268, -0.06, TABLE_Z + 0.052),
+                                     location=(-0.017, -0.115, TABLE_Z + 0.052),
                                      rotation=(math.radians(90), 0, 0))
     look.put(bpy.context.object, M['mug'])
     # and something in it. An empty cream cylinder reads as a paper cup, and
     # the dark disc is most of what makes the plate's mug a mug.
     bpy.ops.mesh.primitive_circle_add(vertices=22, radius=0.038, fill_type='NGON',
-                                      location=(0.32, -0.06, TABLE_Z + 0.086))
+                                      location=(0.035, -0.115, TABLE_Z + 0.086))
     look.put(bpy.context.object, look.mat('coffee', look.srgb('#241509'), 0.55))
     append('trowel_01', (0.74, 0.96, SILL_Z + 0.006), scale=0.55, rot_z=1.25,
            default=look.mat('tool', look.srgb('#3A342C'), 0.62))
@@ -857,6 +863,25 @@ def build(res=(1672, 941), samples=96):
     ph.rotation_euler = (0, 0, math.radians(-14))
     scr = _box((0.66, -0.26, TABLE_Z + 0.0112), (0.070, 0.148, 0.001), M['glassblack'])
     scr.rotation_euler = (0, 0, math.radians(-14))
+
+    # --- foreground dressing.
+    #
+    # All five review lenses reached this independently and the observal
+    # recording confirms it from a third direction: every plate breaks a frame
+    # edge with a near, dark object and six of our seven renders break none. It
+    # is what makes an empty half of frame read as deliberate rather than
+    # unfinished, and it is the cheapest thing on the list.
+    #
+    # Placed against the camera PATH rather than against any one shot, at y
+    # -0.4 to -0.6, which is in front of the table cameras and between them and
+    # the sill. Nothing here is a new kind of object: the room already contains
+    # pots, plants and books, and a prop that only exists to crop an edge would
+    # be the kind of thing a viewer notices.
+    facet_pot((-0.17, -0.52, TABLE_Z), top_r=0.066, bot_r=0.050, h=0.114, m=M['terra'])
+    leafy_plant((-0.17, -0.52, TABLE_Z + 0.108), M['leaf'], M['stem'], scale=1.15, seed=21)
+    append('book_encyclopedia_set_01', (0.86, -0.42, TABLE_Z), scale=0.082, rot_z=-0.6,
+           mats=[('_paper', look.mat('pages2', look.srgb('#8B7E68'), 0.95))],
+           default=look.mat('book2', look.srgb('#3B2F26'), 0.9))
 
     # --- the ledger, pinned to the left pier
     _box((-0.86, 1.00, 1.30), (0.42, 0.20, 0.022), M['wood'])          # shelf by the ledger

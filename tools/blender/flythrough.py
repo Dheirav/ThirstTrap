@@ -35,8 +35,28 @@ os.makedirs(OUT, exist_ok=True)
 # The beats the move passes through, in scroll order, with how long it dwells.
 # Dwell is what makes it read as shots rather than one long swoop: the camera
 # settles, the caption lands, and then it leaves.
-BEATS = ['ledger', 'shelf-evening', 'finger-test', 'depth', 'scale-table', 'phone-closeup']
-DWELL = 0.42            # fraction of each leg spent nearly stationary on the beat
+# The path, as explicit framings rather than the SHOTS dict, because two of
+# them are not shots at all.
+#
+# The first version used only the six beat cameras and travelled about a metre
+# at 31 to 36 mm throughout, which is why it read as a pan rather than a
+# journey. The observal hero opens on an aerial view of a whole room and ends on
+# the surface of a laptop; its scale range is most of its effect. So this opens
+# wide enough to see the room entire, which is the first time the set has been
+# seen whole, and tightens to the scale's readout before releasing to the phone.
+#
+#        loc                      aim                    lens  label
+PATH = [
+    ((0.25, -1.75, 1.70),   (0.10, 0.60, 1.05),    24, 'the room'),
+    ((-0.34, 0.10, 1.60),   (-1.03, 0.99, 1.548),  31, 'ledger'),
+    ((-0.30, -0.28, 1.21),  (-0.10, 0.98, 1.03),   35, 'shelf-evening'),
+    ((0.02, 0.50, 1.175),   (-0.245, 0.975, 1.052), 42, 'finger-test'),
+    ((-0.60, -0.62, 0.86),  (-0.12, 0.12, 0.825),  45, 'depth'),
+    ((0.26, -0.52, 0.95),   (0.31, 0.11, 0.800),   55, 'the number'),
+    ((0.70, -0.52, 0.800),  (0.62, -0.17, 0.762),  33, 'phone-closeup'),
+]
+BEATS = [p[3] for p in PATH]
+DWELL = 0.40            # fraction of each leg spent nearly stationary on the beat
 
 sc, M = world.build(res=(W, H), samples=SAMPLES)
 plate.apply(sc)
@@ -56,7 +76,7 @@ world.dimple_soil(hand_at)
 # legs are 0:ledger>shelf 1:shelf>finger 2:finger>depth 3:depth>scale 4:scale>phone.
 # The hand comes in while the camera is travelling toward finger-test and
 # leaves while it travels away from depth, so it is never seen arriving.
-HAND_IN, HAND_OUT = 1.55, 3.45
+HAND_IN, HAND_OUT = 2.55, 4.45
 
 cam_data = bpy.data.cameras.new('fly')
 cam = bpy.data.objects.new('fly', cam_data)
@@ -92,9 +112,9 @@ def catmull(p0, p1, p2, p3, t):
                  for a, b, c, d in zip(p0, p1, p2, p3))
 
 
-LOC = [world.SHOTS[b][0] for b in BEATS]
-AIM = [world.SHOTS[b][1] for b in BEATS]
-LENS = [world.SHOTS[b][2] for b in BEATS]
+LOC = [p[0] for p in PATH]
+AIM = [p[1] for p in PATH]
+LENS = [p[2] for p in PATH]
 # duplicate the ends so the spline starts and finishes on a real beat
 LOC = [LOC[0]] + LOC + [LOC[-1]]
 AIM = [AIM[0]] + AIM + [AIM[-1]]
@@ -121,4 +141,5 @@ for f in range(FRAMES):
     sc.render.filepath = os.path.join(OUT, f'f{f:04d}.png')
     bpy.ops.render.render(write_still=True)
     json.dump({'done': f + 1, 'total': FRAMES}, open(status, 'w'))
-    print(f'  [{f + 1}/{FRAMES}] leg {i + 1} t={t:.2f} lens {lens:.0f}', flush=True)
+    print(f'  [{f + 1}/{FRAMES}] leg {i + 1} ({BEATS[i]} to {BEATS[i + 1]}) '
+          f't={t:.2f} lens {lens:.0f}', flush=True)
