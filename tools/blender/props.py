@@ -18,6 +18,7 @@ because the single clearest tell of a primitive is an edge with no width: a
 0.3 mm chamfer catches one highlight and that is the whole difference between a
 box and a thing.
 """
+import os
 import bmesh
 import bpy
 import math
@@ -159,3 +160,111 @@ def phone(at, body_m, glass_m, rot_z=0.0):
     for o in g:
         o.rotation_euler = (0, 0, rot_z)
     return g
+
+
+# How dark each band is as a fraction of the SKY's own EMISSION, near to far.
+# Expressed against the sky rather than as three fixed hexes because the sky is
+# what they are seen against: hardcoding both let the first set drift to a 4:1
+# contrast, where the buildings were black holes and the roofline vanished.
+# Multiplying the sky colour also keeps the hue, so a band can only ever be a
+# dimmer version of the sky behind it, and the far band approaching 1.0 IS
+# atmospheric perspective rather than an imitation of it.
+BAND_K = tuple(float(v) for v in
+               os.environ.get('TT_BAND_K', '0.45,0.62,0.78').split(','))
+
+# Heights as a fraction of the old ones. The first set ran 0.55 to 2.70 above a
+# base at sill-0.35, which put 27 buildings' worth of roofline above the window
+# head: the glass was wall-to-wall city and the sky plane behind it was never
+# visible in a single pixel. A skyline you cannot see sky past is not a skyline.
+# 0.55 chosen on the measurement that matters, which is not the mean. At 0.45
+# the window mean lands nearer the plate (0.209 against 0.210) but its local
+# spread falls to 0.105, and spread is what makes a roofline legible; 0.55 gives
+# 0.203 and 0.114 against the plate's 0.126, so it trades 0.006 of mean for
+# 0.009 of the thing you actually see. It leaves a fifth of the glass as sky.
+BAND_H = float(os.environ.get('TT_BAND_H', '0.55'))
+
+# What fraction of a facade's windows are lit. See the note at its use.
+WIN_LIT = float(os.environ.get('TT_WIN_P', '0.10'))
+
+
+def skyline(win_y, sill_z, wall_m_maker, lit_warm, lit_cool, rnd, sky_hex='#323A44'):
+    """A city in three depth bands instead of six boxes on one plane.
+
+    This matters more for a moving camera than for any still. Everything beyond
+    the glass sat at a single y, so it was a painted backdrop: it slid with the
+    window frame and never moved against itself. Three bands at different
+    distances parallax at different rates as the camera travels, which is free
+    motion that a still frame cannot show and that no amount of detail on one
+    plane can fake.
+
+    The bands also get lighter and bluer with distance. Atmospheric perspective
+    is the one depth cue that survives flat shading intact, because it is a
+    change of colour rather than of shading, and in a picture with no outlines
+    and three values per object it is most of what says far away.
+    """
+    made = []
+    # The first set ran #0E131A to #212A35 against a sky of #323A44, which is
+    # roughly 4:1, and at that contrast the buildings were black holes with lit
+    # windows floating in them and no readable roofline at all. Low contrast is
+    # what lets you read a skyline; high contrast erases it.
+    # The last column is the share of lit windows that are WARM, not a label.
+    # It was 'warm' / 'cool' / None, which meant the mid band was always cool,
+    # and since the mid band carries the most buildings nearly every light in
+    # the glass came out pale blue. The plate's city is almost entirely amber:
+    # lit windows are lamps in other people's rooms, and rooms are warm. The
+    # cool ones are the minority that reads as a screen or a stairwell.
+    BANDS = [
+        # y offset from the window, how many, height range, share warm
+        (1.55, BAND_K[0], 7, (0.55, 1.30), 0.86),
+        (2.60, BAND_K[1], 9, (0.75, 1.95), 0.64),
+        (4.00, BAND_K[2], 11, (1.10, 2.70), None),
+    ]
+    for depth, k, count, (h0, h1), lit in BANDS:
+        h0, h1 = h0 * BAND_H, h1 * BAND_H
+        # Emissive, not lit, and this is the whole reason the city read as black
+        # holes. There is no light source outside the glass, so a building with
+        # an albedo and no emission can only ever arrive at the ambient floor,
+        # which measured 0.04 against a sky of 0.21. Flat art does not light its
+        # backdrop: it states a value. Emission states it, so a band sits exactly
+        # where BAND_K puts it relative to the sky and nothing in the room's
+        # lighting can drag it off.
+        m = wall_m_maker(f'city{depth}', sky_hex, k)
+        span = 2.0 + depth * 0.85            # wider bands further out, to fill the view
+        for i in range(count):
+            x = -span / 2 + span * (i + rnd.uniform(0.15, 0.85)) / count
+            h = rnd.uniform(h0, h1)
+            w = rnd.uniform(0.22, 0.52) * (1 + depth * 0.18)
+            yield_box = (x, win_y + depth, sill_z - 0.35 + h / 2), (w, 0.08, h)
+            made.append(('box', yield_box, m))
+            if not lit:
+                continue
+            # Windows on a GRID, because that is what a building is. Scattered
+            # at random they read as confetti floating in front of the sky: a
+            # facade's windows line up in columns, and it is that alignment the
+            # eye uses to decide the dark shape behind them is a building at all.
+            # Random placement was undoing the silhouette the bands exist for.
+            #
+            # The size no longer grows with depth either. It did, to keep far
+            # windows resolvable, but compensating for perspective cancels the
+            # perspective, so the far band's windows arrived the same size on
+            # screen as the near band's and flattened the three depths back into
+            # one plane.
+            ww, wh = 0.028, 0.032
+            px, pz = ww * 2.2, wh * 2.5          # pitch: glass is a minority of a wall
+            cols = max(1, int((w - 0.05) / px))
+            rows = max(1, int((h - 0.16) / pz))
+            for cx in range(cols):
+                for cz in range(rows):
+                    # Most windows are dark at night. Lighting them all is what
+                    # makes a CG city look like a circuit board. 0.10 is not a
+                    # taste call: the plate shows 22 lit windows through this
+                    # glass and a grid at 0.34 showed 77, so the rate is scaled
+                    # by 22/77. Counted with a blob count, because the mean value
+                    # of the window cannot tell 22 lights from 77 dimmer ones.
+                    if rnd.random() > WIN_LIT:
+                        continue
+                    wx = x - (cols - 1) * px / 2 + cx * px
+                    wz = sill_z - 0.35 + 0.10 + cz * pz
+                    made.append(('win', ((wx, win_y + depth - 0.05, wz), (ww, 0.01, wh)),
+                                 lit_warm if rnd.random() < lit else lit_cool))
+    return made

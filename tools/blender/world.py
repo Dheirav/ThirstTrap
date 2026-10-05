@@ -688,28 +688,46 @@ def build(res=(1672, 941), samples=96):
     # Dimmer than it was. Measured on the plate the glass sits at value 0.24,
     # and it has to stay below the lit wood or the window pulls the eye out of
     # the room, which is the opposite of what these shots are about.
-    sky = look.mat('sky', look.SKY, 0.9, emit=look.srgb('#323A44'), strength=0.56)
-    g = _box((-0.17, WIN_Y + 2.60, 1.50), (9.0, 0.02, 5.0), sky)
+    # The glass measured 0.24 on the plate and the window region 0.21, against
+    # 0.09 here, so the night outside was reading as a wall rather than as a
+    # city. Sweepable because the posterise ramp makes the relationship between
+    # emission and final value nonlinear, so it has to be measured, not solved.
+    # 0.75 puts the glass at 0.240, which is the value the glass measures on the
+    # plate. Solved rather than swept: the bands are emissive now, so the glass
+    # is its emission alone, and (0.0578 * s) ** (1/2.2) = 0.24 gives s = 0.75.
+    # The old 0.56 was fitted when the city was lit geometry hiding the sky
+    # entirely, so it was fitted against a window the viewer never saw.
+    SKY_HEX = os.environ.get('TT_SKY_HEX', '#323A44')
+    sky = look.mat('sky', look.SKY, 0.9, emit=look.srgb(SKY_HEX),
+                   strength=float(os.environ.get('TT_SKY', 0.75)))
+    # pushed back behind the far band, which now reaches WIN_Y + 4.0
+    g = _box((-0.17, WIN_Y + 6.40, 1.50), (26.0, 0.02, 14.0), sky)
     for mx in (-0.17,):
         _box((mx, WIN_Y - 0.02, 1.50), (0.022, 0.03, 1.08), M['frame'])
     _box((-0.17, WIN_Y - 0.02, 1.50), (1.92, 0.03, 0.022), M['frame'])
-    city = look.mat('city', look.srgb('#141A22'), 0.95)
-    for x, h in ((-1.30, 0.62), (-0.78, 0.95), (-0.34, 0.45), (0.14, 0.78), (0.66, 0.52),
-                 (1.15, 0.70)):
-        _box((x, WIN_Y + 1.90, 0.95 + h/2), (0.42, 0.06, h), city)
-    # The plate's window is a dark field with small warm lights scattered in it,
-    # and that scatter is most of what makes it read as a city rather than a
-    # painted panel. Six windows was too few to read as anything.
-    litw = look.mat('litwin', (0, 0, 0, 1), 1.0, emit=look.srgb('#C98A3A'), strength=1.4)
-    litc = look.mat('litwin2', (0, 0, 0, 1), 1.0, emit=look.srgb('#9FB4C6'), strength=0.8)
-    WINDOWS = [(-1.38, 1.18), (-1.22, 1.42), (-1.30, 1.30), (-0.92, 1.24),
-               (-0.80, 1.30), (-0.74, 1.52), (-0.86, 1.68), (-0.60, 1.14),
-               (-0.42, 1.36), (-0.28, 1.22), (-0.36, 1.08), (0.02, 1.46),
-               (0.18, 1.38), (0.10, 1.60), (0.26, 1.20), (0.52, 1.30),
-               (0.70, 1.18), (0.62, 1.44), (0.84, 1.26), (1.06, 1.38),
-               (1.20, 1.16), (1.12, 1.56)]
-    for i, (x, z) in enumerate(WINDOWS):
-        _box((x, WIN_Y + 1.86, z), (0.026, 0.01, 0.038), litw if i % 3 else litc)
+    # The city, in three depth bands. See props.skyline for why that is worth
+    # more to a moving camera than to any still.
+    _rnd = random.Random(11)
+    # Solved against the glass, not chosen. A lit window at strength 1.4 on a
+    # colour whose linear value is 0.588 arrives at 0.92, which is a hair off
+    # clipping and roughly four times the sky: that is why they read as holes
+    # punched in the picture rather than as lights across the way. 0.62 and 0.42
+    # put warm at 0.63 and cool at 0.52, which sits them above the 0.24 glass
+    # without letting the brightest thing in the frame be something outside it.
+    litw = look.mat('litwin', (0, 0, 0, 1), 1.0, emit=look.srgb('#C98A3A'), strength=0.62)
+    litc = look.mat('litwin2', (0, 0, 0, 1), 1.0, emit=look.srgb('#9FB4C6'), strength=0.42)
+    for kind, (loc, scale), m in props.skyline(
+            WIN_Y, SILL_Z,
+            lambda n, h, k: look.mat(n, (0, 0, 0, 1), 1.0, emit=look.srgb(h),
+                                     strength=float(os.environ.get('TT_SKY', 0.75)) * k),
+            litw, litc, _rnd, SKY_HEX):
+        o = _box(loc, scale, m)
+        # The city casts no shadow, and that is not laziness. The sky plane is
+        # the room's only light through the glass, and the far band stands
+        # between it and the window: with shadows on, adding the skyline darkened
+        # the whole interior, which is how a backdrop should never behave.
+        o.visible_shadow = False
+
     bpy.ops.mesh.primitive_circle_add(vertices=28, radius=0.135, fill_type='NGON',
                                       location=(0.60, WIN_Y + 2.45, 1.70))
     mn = bpy.context.object; mn.rotation_euler = (math.radians(90), 0, 0)
