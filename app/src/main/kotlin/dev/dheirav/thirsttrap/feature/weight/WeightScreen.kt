@@ -40,7 +40,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.Scaffold
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.material3.Switch
+import dev.dheirav.thirsttrap.ui.Switch
 import androidx.compose.material3.OutlinedTextField
 import dev.dheirav.thirsttrap.ui.AlmanacDialog
 import dev.dheirav.thirsttrap.ui.DialogText

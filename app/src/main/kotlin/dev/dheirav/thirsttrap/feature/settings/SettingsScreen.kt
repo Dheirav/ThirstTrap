@@ -19,7 +19,7 @@ import dev.dheirav.thirsttrap.ui.FilterChip
 import androidx.compose.material3.MaterialTheme
 import dev.dheirav.thirsttrap.ui.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
+import dev.dheirav.thirsttrap.ui.Switch
 import androidx.compose.material3.Text
 import dev.dheirav.thirsttrap.ui.TextButton
 import androidx.compose.material3.TopAppBar

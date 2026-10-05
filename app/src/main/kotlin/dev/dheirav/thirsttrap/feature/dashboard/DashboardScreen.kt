@@ -43,7 +43,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import dev.dheirav.thirsttrap.ui.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -84,6 +84,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathMeasure
@@ -674,13 +675,28 @@ private fun DepletionThumbnail(
     val fill = MaterialTheme.colorScheme.primary
     val tick = MaterialTheme.colorScheme.onSurfaceVariant
 
+    // Read off the photo rather than restated, because restating it is how the
+    // ring and the photo came to disagree.
+    val photoShape = MaterialTheme.shapes.medium
+
     Box(Modifier.size(total), contentAlignment = Alignment.Center) {
         if (depletion != null) {
             Canvas(Modifier.size(total)) {
                 val inset = ringStroke.toPx() / 2f
-                // Concentric with the photo: its own 8dp corner plus however
-                // far the ring sits outside it, or the two curves fight.
-                val radius = CornerRadius((12.dp + ringStroke + gap).toPx())
+                // Concentric with the photo: ITS corner plus however far the
+                // ring sits outside it, or the two curves fight.
+                //
+                // This was a hardcoded 12dp against a comment claiming the photo
+                // had an 8dp corner, while AppShapes.medium is RoundedCornerShape
+                // (0.dp). So a round-cornered ring was being drawn around a hard
+                // square: at the corners the ring bowed away from the photo by
+                // its full radius, which is the frame not wrapping the image.
+                // Three numbers that each had to be kept in step by hand, and
+                // were not. Taking the corner from the shape itself means the
+                // ring follows the photo wherever the theme puts it.
+                val photoCorner = (photoShape as? RoundedCornerShape)
+                    ?.topStart?.toPx(Size(photo.toPx(), photo.toPx()), this) ?: 0f
+                val radius = CornerRadius(photoCorner + (ringStroke + gap).toPx())
                 val outline = Path().apply {
                     addRoundRect(
                         RoundRect(
@@ -848,7 +864,11 @@ private fun LogAction(
     Box(
         modifier = Modifier
             .size(48.dp)
-            .clip(CircleShape)
+            // Square, like every other affordance. This was the one remaining
+            // circle: the ripple drew a disc on a card made entirely of right
+            // angles, which is the same two-vocabularies problem the pill
+            // toggles had, just smaller.
+            .clip(MaterialTheme.shapes.small)
             .combinedClickable(onClick = onClick, onLongClick = onLongClick)
             .semantics { contentDescription = label },
         contentAlignment = Alignment.Center,
