@@ -41,7 +41,14 @@ WALL       = srgb('#2A2420')
 SILL       = srgb('#4A3A2C')
 FRAME      = srgb('#241C16')
 SKY        = srgb('#223040')   # night through the glass
-LAMP       = (1.0, 0.72, 0.45)
+# Was (1.0, 0.72, 0.45), itself hue 27 saturation 0.55, so every surface in the
+# room got chroma multiplied onto it and the shadows kept full colour: measured
+# median saturation below value 0.18 was 0.46 to 0.59 against the plates' 0.28
+# to 0.37. A warm lamp is a warm lamp, not a saturated one.
+# Desaturating to (1.0, 0.85, 0.68) fixed the shadows and took the warm pool
+# with it. (1.0, 0.80, 0.58) splits the difference: warm enough to make a pool
+# on the table, not so saturated that it multiplies chroma into every dark.
+LAMP       = (1.0, 0.80, 0.58)
 MOON       = (0.55, 0.66, 0.88)
 
 
@@ -81,16 +88,21 @@ def reset(res=(836, 470), samples=96):
     #
     # Dim on purpose. This is ambient with direction, not a second light: the
     # lamp still does the lighting.
-    env = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                       'assets', 'hdri', 'small_empty_room_1_1k.hdr')
-    if os.path.exists(env):
-        tex = nt.nodes.new('ShaderNodeTexEnvironment')
-        tex.image = bpy.data.images.load(env)
-        nt.links.new(tex.outputs['Color'], bg.inputs['Color'])
-        bg.inputs[1].default_value = 0.22
-    else:
-        bg.inputs[0].default_value = srgb('#39414E')
-        bg.inputs[1].default_value = 0.16
+    # The HDRI is gone, and the contradiction is the reason.
+    #
+    # textured()'s docstring says an HDRI world "changed the numbers not at all,
+    # because this is an enclosed room and the world only reaches through the
+    # window". That was written, and the HDRI was then shipped anyway at 0.22.
+    # It was not inert: it was a WARM ambient, and it is what held shadow
+    # saturation at 0.51 against the plates' 0.28. The file kept the thing it
+    # documents as useless, and that thing was the largest measured deviation
+    # in the set.
+    #
+    # A cool flat fill instead. The plates' darks wash toward blue because the
+    # only light that reaches them is the window; a warm ambient is the one
+    # thing a night interior should not have.
+    bg.inputs[0].default_value = srgb('#39414E')
+    bg.inputs[1].default_value = 0.20
     return sc
 
 

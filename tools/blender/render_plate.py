@@ -29,10 +29,15 @@ for t in rest:
 os.makedirs(OUT, exist_ok=True)
 W, H = int(kw.get('w', 1672)), int(kw.get('h', 941))
 sc, M = world.build(res=(W, H), samples=SAMPLES)
-plate.apply(sc, steps=int(kw.get('steps', 4)), lift=kw.get('lift', 0.06),
-            gamma=kw.get('gamma', 0.85), light_scale=kw.get('lights', 0.25),
-            ambient=kw.get('ambient', 0.14), exposure=kw.get('exposure', 0.21),
-            gain=kw.get('gain', 4.6))
+# Solved, not swept. gain and ambient come from the pot's own albedo against
+# the plate's lit and shaded pot values: lit/shade ratio 3.83 fixes the floor,
+# and the floor fixes the gain. The old 6.5 and 0.05 were a grid search's
+# answer to a question about the whole frame's histogram, and they ran the
+# picture hot enough to clip 3.3% of phone-closeup, where no plate clips at all.
+plate.apply(sc, steps=int(kw.get('steps', 5)), lift=kw.get('lift', 0.0),
+            gamma=kw.get('gamma', 0.65), light_scale=kw.get('lights', 0.25),
+            ambient=kw.get('ambient', 0.04), exposure=kw.get('exposure', 0.30),
+            gain=kw.get('gain', 3.2))
 
 HANDS = {
     # y was 0.930, which is the pot's FRONT RIM, not its soil. The sill pots

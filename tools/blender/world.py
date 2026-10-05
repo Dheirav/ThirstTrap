@@ -540,12 +540,12 @@ def scatter(root, placements):
 def build(res=(1672, 941), samples=96):
     sc = look.reset(res=res, samples=samples)
     M = dict(
-        wall=look.textured('wall', look.srgb('#2B2219'), 'rough_plaster_brick_diff_1k.jpg',
+        wall=look.textured('wall', look.srgb('#352E27'), 'rough_plaster_brick_diff_1k.jpg',
                            strength=0.70, scale=0.6),
-        pier=look.mat('pier', look.srgb('#33281D'), 0.92),
-        sill=look.textured('sill', look.srgb('#2C2118'), 'wood_table_001_diff_1k.jpg',
+        pier=look.mat('pier', look.srgb('#403729'), 0.92),
+        sill=look.textured('sill', look.srgb('#4A3E33'), 'wood_table_001_diff_1k.jpg',
                            strength=0.80, scale=2.2),
-        wood=look.textured('wood', look.srgb('#3B2919'), 'wood_table_001_diff_1k.jpg',
+        wood=look.textured('wood', look.srgb('#5C4A3B'), 'wood_table_001_diff_1k.jpg',
                            strength=0.85, scale=1.4),
         frame=look.mat('frame', look.srgb('#1E1812'), 0.85),
         terra=look.textured('terra', look.TERRA, 'terracotta_floor_tiles_diff_1k.jpg',
@@ -554,9 +554,9 @@ def build(res=(1672, 941), samples=96):
         stem=look.mat('stem', look.STEM, 0.60),
         metal=look.mat('metal', look.srgb('#6E7276'), 0.42, ),
         paper=look.mat('paper', look.srgb('#CDBE9E'), 0.92),
-        plastic=look.mat('plastic', look.srgb('#8C867A'), 0.60),
+        plastic=look.mat('plastic', look.srgb('#6E6A61'), 0.60),
         glassblack=look.mat('screen', look.srgb('#0A0B0D'), 0.18),
-        mug=look.mat('mug', look.srgb('#796F60'), 0.76),
+        mug=look.mat('mug', look.srgb('#7A7366'), 0.76),
     )
     # --- shell
     _box((0, 0.2, -0.02), (6, 5, 0.04), M['wood'])                      # floor
@@ -573,7 +573,7 @@ def build(res=(1672, 941), samples=96):
     # Dimmer than it was. Measured on the plate the glass sits at value 0.24,
     # and it has to stay below the lit wood or the window pulls the eye out of
     # the room, which is the opposite of what these shots are about.
-    sky = look.mat('sky', look.SKY, 0.9, emit=look.srgb('#1E2A38'), strength=0.42)
+    sky = look.mat('sky', look.SKY, 0.9, emit=look.srgb('#323A44'), strength=0.56)
     g = _box((-0.17, WIN_Y + 2.60, 1.50), (9.0, 0.02, 5.0), sky)
     for mx in (-0.17,):
         _box((mx, WIN_Y - 0.02, 1.50), (0.022, 0.03, 1.08), M['frame'])
@@ -585,8 +585,8 @@ def build(res=(1672, 941), samples=96):
     # The plate's window is a dark field with small warm lights scattered in it,
     # and that scatter is most of what makes it read as a city rather than a
     # painted panel. Six windows was too few to read as anything.
-    litw = look.mat('litwin', (0, 0, 0, 1), 1.0, emit=look.srgb('#C98A3A'), strength=4.0)
-    litc = look.mat('litwin2', (0, 0, 0, 1), 1.0, emit=look.srgb('#9FB4C6'), strength=2.2)
+    litw = look.mat('litwin', (0, 0, 0, 1), 1.0, emit=look.srgb('#C98A3A'), strength=1.4)
+    litc = look.mat('litwin2', (0, 0, 0, 1), 1.0, emit=look.srgb('#9FB4C6'), strength=0.8)
     WINDOWS = [(-1.38, 1.18), (-1.22, 1.42), (-1.30, 1.30), (-0.92, 1.24),
                (-0.80, 1.30), (-0.74, 1.52), (-0.86, 1.68), (-0.60, 1.14),
                (-0.42, 1.36), (-0.28, 1.22), (-0.36, 1.08), (0.02, 1.46),
@@ -598,7 +598,7 @@ def build(res=(1672, 941), samples=96):
     bpy.ops.mesh.primitive_circle_add(vertices=28, radius=0.135, fill_type='NGON',
                                       location=(0.60, WIN_Y + 2.45, 1.70))
     mn = bpy.context.object; mn.rotation_euler = (math.radians(90), 0, 0)
-    look.put(mn, look.mat('moon', (1, 1, 1, 1), 1.0, emit=(0.95, 0.96, 1.0, 1), strength=5.0))
+    look.put(mn, look.mat('moon', (1, 1, 1, 1), 1.0, emit=(0.94, 0.92, 0.86, 1), strength=0.92))
 
     # --- the four pots on the sill, and the can pouring into the first
     soil_m = look.textured('potsoil', look.SOIL, 'farm_soil_diff_1k.jpg',
@@ -786,7 +786,7 @@ def build(res=(1672, 941), samples=96):
     # because the one thing it does have to share is the light.
     bpy.ops.object.light_add(type='AREA', location=(1.1, -0.9, -4.1))
     ml = bpy.context.object
-    ml.data.energy, ml.data.size, ml.data.color = 34.0, 0.45, look.LAMP
+    ml.data.energy, ml.data.size, ml.data.color = 52.0, 0.45, look.LAMP
     look.aim(ml, (0.0, 0.0, -5.0))
 
     # --- light. One lamp, clamped right, plus the night outside. 58% of the

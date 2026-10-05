@@ -209,8 +209,8 @@ def posterise(sc, steps=4, lift=0.0, gamma=1.0, ambient=0.10,
     return nt
 
 
-def apply(sc, steps=4, lift=0.0, gamma=0.55, light_scale=0.25,
-          ambient=0.14, exposure=0.28, gain=3.4):
+def apply(sc, steps=5, lift=0.0, gamma=0.65, light_scale=0.25,
+          ambient=0.04, exposure=0.30, gain=3.2):
     flat_materials()
     n = harden_shadows(light_scale)
     no_dof()
