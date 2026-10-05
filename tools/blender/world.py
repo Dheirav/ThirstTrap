@@ -570,6 +570,11 @@ def dimple_soil(at, r=0.020, depth=0.0075):
     return best
 
 
+# Fingertip to mid-forearm on a real arm, in metres. The asset is normalised to
+# length 1, so this is the only number that sets its size.
+HAND_LEN = 0.34
+
+
 def place_hand(at, yaw=0.0, pitch=-0.62, into=0.012):
     """A hand pushed into the soil at `at`, with a forearm leaving frame.
 
@@ -600,31 +605,43 @@ def place_hand(at, yaw=0.0, pitch=-0.62, into=0.012):
         if n in bpy.data.objects:
             bpy.data.objects.remove(bpy.data.objects[n], do_unlink=True)
     skin = look.mat('skin', look.srgb('#8A6248'), 0.86)
-    # Back to build_finger, and the reason is worth keeping.
+    # A sculpted hand, from assets/hand.glb. See tools/blender/extract_hand.py
+    # for where it comes from and how it is cut out.
     #
-    # parts.build_hand exists and had never been called, which looked like a
-    # free upgrade: a right hand with three phalanges, joints, a bevelled palm
-    # and the other fingers curled. Four rotation solves later, each one wrong
-    # in a different way, I rendered it on its own against a ground plane and
-    # the problem was not the rotation at all. It does not read as a hand. The
-    # palm is a blob, the curled fingers are detached sausages hanging beside
-    # it, and the forearm is a tapered cone. It is not better than one finger,
-    # it is worse, because a single finger is an abstraction a viewer completes
-    # and a bad hand is one they do not.
+    # The two scripted attempts are worth keeping straight, because the lesson
+    # is not "the code was buggy". build_finger draws one finger on a cone: a
+    # single finger is an abstraction a viewer completes, so it reads, but it was
+    # the most obviously wrong object in the set. parts.build_hand drew a real
+    # hand and read worse, because a bad hand is one the viewer does NOT
+    # complete; I spent four rotation solves on it before rendering it alone
+    # against a ground plane showed the rotation was never the problem. A hand
+    # is modelling work, and the right fix was to get a modelled one.
     #
-    # The original comment on this function was right and I should have tested
-    # its claim before overturning it: a whole scripted hand reads as a lay
-    # figure. A real hand here is modelling work, not a function call.
-    f = parts.build_finger(skin=skin)
-    f.name = 'finger'
-    f.location = (at[0], at[1], at[2] - into)
-    f.rotation_euler = (0.0, pitch, yaw)
+    # The asset arrives normalised: fingertip at its origin, forearm along +X,
+    # up at +Z, length 1. So placing it is scale, yaw, pitch, translate, and
+    # there is no free roll left to guess at.
+    import os
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'hand.glb')
+    before = set(bpy.data.objects)
+    bpy.ops.import_scene.gltf(filepath=path)
+    h = [o for o in bpy.data.objects if o not in before and o.type == 'MESH'][0]
+    for o in [o for o in bpy.data.objects if o not in before and o is not h]:
+        bpy.data.objects.remove(o, do_unlink=True)
+    h.name = 'finger'                     # the name the rest of the file cleans up by
+    h.data.materials.clear()
+    look.put(h, skin)
+    h.scale = (HAND_LEN, HAND_LEN, HAND_LEN)
+    # yaw turns the arm about the pot; pitch is the arm's ELEVATION, negative,
+    # because the forearm leaves frame above the hand.
+    #
+    # The signs are not free. With XYZ order, +X carries to
+    # (cos ry cos rz, cos ry sin rz, -sin ry), so the arm's rise is -sin(ry):
+    # ry must be the negative of the elevation. Writing -pitch here tipped the
+    # arm down into the sill instead of up out of frame.
+    h.rotation_euler = (0.0, pitch, yaw)
+    h.location = (at[0], at[1], at[2] - into)
     bpy.context.view_layer.update()
-    wrist = f.matrix_world @ Vector((0.128, 0.033, 0.044))
-    a = sc_mod.build_arm(wrist, (at[0] + 0.62 * math.cos(yaw),
-                                 at[1] + 0.62 * math.sin(yaw), at[2] + 0.34), skin=skin)
-    a.name = 'arm'
-    return f
+    return h
 
 
 def scatter(root, placements):

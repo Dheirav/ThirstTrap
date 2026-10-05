@@ -34,6 +34,10 @@ sc, M = world.build(res=(W, H), samples=SAMPLES)
 # and the floor fixes the gain. The old 6.5 and 0.05 were a grid search's
 # answer to a question about the whole frame's histogram, and they ran the
 # picture hot enough to clip 3.3% of phone-closeup, where no plate clips at all.
+# 0.26 rather than a real 0.34: finger-test is a 42mm close-up and a real arm
+# fills two thirds of it. See the note on HANDS above for why that shot is still
+# not solved.
+world.HAND_LEN = float(os.environ.get('TT_HAND', 0.26))
 plate.apply(sc, steps=int(kw.get('steps', 5)), lift=kw.get('lift', 0.0),
             gamma=kw.get('gamma', 0.65), light_scale=kw.get('lights', 0.25),
             ambient=kw.get('ambient', 0.04), exposure=kw.get('exposure', 0.30),
@@ -44,8 +48,25 @@ HANDS = {
     # sit at y 0.985 with a top radius near 0.057, so the old number put the
     # fingertip exactly on the lip and the finger read as going through the
     # pot wall. Aim at the middle of the soil instead.
-    'finger-test': dict(pot=(world.POTS_X[1], 0.978), yaw=-0.55, pitch=-0.62),
-    'depth':       dict(pot=(-0.18, 0.035),           yaw=-0.35, pitch=-0.55),
+    # finger-test is NOT solved. Six angles were rendered and none reads: that
+    # camera sits at (0.02, 0.50, 1.175) and looks at the pot from the front
+    # right, the arm enters from frame right, so the extended index points back
+    # toward the lens and disappears behind the hand's own mass. No yaw fixes
+    # that, because the problem is which side of the hand the camera is on. The
+    # shot was framed around build_finger's thin cone and wants reframing to see
+    # the hand in profile, the way depth already does.
+    #
+    # yaw is the compass direction the FOREARM leaves along, in world terms, and
+    # it has to be read off the camera rather than carried over from
+    # build_finger, whose cone used the opposite convention. For finger-test the
+    # camera sits at (0.02, 0.50, 1.175) looking at (-0.245, 0.975, 1.052), so
+    # frame-right is about (0.87, 0.49, 0) and the arm wants yaw +0.5. At -0.55
+    # it pointed at the lens: the arm foreshortened into a flat slab, which read
+    # as a hand lying on its side rather than reaching down.
+    'finger-test': dict(pot=(world.POTS_X[1], 0.978),
+                        yaw=float(os.environ.get('TT_YAW', 0.75)),
+                        pitch=float(os.environ.get('TT_PITCH', -0.75))),
+    'depth':       dict(pot=(-0.18, 0.035),           yaw=0.70, pitch=-0.55),
 }
 
 # Which shots the cut pot is in. Everywhere else it is struck, like a set.
