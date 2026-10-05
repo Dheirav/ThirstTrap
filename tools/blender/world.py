@@ -752,7 +752,11 @@ def build(res=(1672, 941), samples=96):
     _box((LAMP_AT[0], LAMP_AT[1], LAMP_AT[2] + 0.105 + 0.42),
          (0.008, 0.008, 0.84), shade_m)                       # flex to the ceiling
     lamp_root = None
-    append('book_encyclopedia_set_01', (-0.52, -0.14, TABLE_Z), scale=0.075, rot_z=0.5,
+    # On the sill, which is where the plate has them: a stack to the right of
+    # the sheet, reading as the near edge of the windowsill. They were on the
+    # table, out of every frame; then briefly on the ledger shelf, where they
+    # sat against the sheet as an unreadable blob.
+    append('book_encyclopedia_set_01', (-0.74, 0.985, 0.962), scale=0.075, rot_z=0.35,
            mats=[('_paper', look.mat('pages', look.srgb('#9B8D74'), 0.95))],
            default=look.mat('book', look.srgb('#43342६'.replace('६','6')), 0.88))
     # one mug beside the phone, not a whole service: the set's origin is at the
@@ -781,9 +785,9 @@ def build(res=(1672, 941), samples=96):
     append('trowel_01', (0.74, 0.96, SILL_Z + 0.006), scale=0.55, rot_z=1.25,
            default=look.mat('tool', look.srgb('#3A342C'), 0.62))
     # phone, face up, screen off
-    ph = _box((0.63, -0.14, TABLE_Z + 0.006), (0.078, 0.158, 0.009), M['frame'])
+    ph = _box((0.66, -0.26, TABLE_Z + 0.006), (0.078, 0.158, 0.009), M['frame'])
     ph.rotation_euler = (0, 0, math.radians(-14))
-    scr = _box((0.63, -0.14, TABLE_Z + 0.0112), (0.070, 0.148, 0.001), M['glassblack'])
+    scr = _box((0.66, -0.26, TABLE_Z + 0.0112), (0.070, 0.148, 0.001), M['glassblack'])
     scr.rotation_euler = (0, 0, math.radians(-14))
 
     # --- the ledger, pinned to the left pier
@@ -904,10 +908,10 @@ SHOTS = {
  'ledger':        ((-0.46, 0.26, 1.515), (-1.02, 0.99, 1.468), 40, 33, 4.0),
  'shelf-evening': ((-0.30, -0.28, 1.21), (-0.10, 0.98, 1.03), 35, 28, None),
  'finger-test':   ((0.02, 0.50, 1.175), (-0.245, 0.975, 1.052), 42, 35, 2.8),
- 'depth':         ((-0.18, -0.60, 0.95), (-0.18, 0.10, 0.845), 55, 45, 3.5),
+ 'depth':         ((-0.60, -0.62, 0.86), (-0.12, 0.12, 0.825), 45, 38, 3.5),
  'roots':         ((0.0, -0.56, -4.44), (0.0, 0.0, -5.06), 40, 34, 2.2),
- 'scale-table':   ((0.26, -0.82, 1.12), (0.33, 0.16, 0.91), 33, 27, None),
- 'phone-closeup': ((0.74, -0.52, 0.845), (0.47, 0.10, 0.818), 34, 28, 3.2),
+ 'scale-table':   ((0.20, -1.00, 1.26), (0.34, 0.15, 0.88), 31, 26, None),
+ 'phone-closeup': ((0.70, -0.52, 0.800), (0.62, -0.17, 0.762), 33, 27, 2.2),
 }
 
 
