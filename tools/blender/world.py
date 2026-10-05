@@ -252,7 +252,11 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     soil_m = look.mat('macrosoil', look.srgb('#32241A'), 0.98)
     # #CFC0A4 clipped to white at this gain. The plate's roots are pale against
     # dark crumb, which is a value relationship, not a bright material.
-    root_m = look.mat('macroroot', look.srgb('#9C8A6E'), 0.88)
+        # The roots read pale in the plate, which is a RENDERED value, not an
+    # albedo. #BCAC8A is 0.42 linear and at gain 3.2 that lands at 1.40, so the
+    # roots were the thing clipping 3.6% of this frame. They want to arrive
+    # near white, not start there.
+    root_m = look.mat('macroroot', look.srgb('#8F8572'), 0.88)
 
     tex = bpy.data.textures.new('crumb', type='CLOUDS')
     tex.noise_scale = 0.09
@@ -265,7 +269,7 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     # the shot read as flat ground. The plate's channel has crumb at the bottom
     # of it, visible but clearly further from the light.
     bpy.ops.mesh.primitive_grid_add(x_subdivisions=90, y_subdivisions=90, size=1.2,
-                                    location=(at[0], at[1], at[2] - 0.235))
+                                    location=(at[0], at[1], at[2] - 0.175))
     fl = look.put(bpy.context.object, soil_m, smooth=True)
     fd = fl.modifiers.new('crumb', 'DISPLACE')
     fd.texture = tex
@@ -276,7 +280,7 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
         # middle, so there was no channel at all: the shot was a flat field of
         # dirt. They have to be further apart than half their own width.
         bpy.ops.mesh.primitive_grid_add(x_subdivisions=160, y_subdivisions=160, size=1.6,
-                                        location=(at[0] + side * 0.95, at[1], at[2]))
+                                        location=(at[0] + side * 0.88, at[1], at[2]))
         g = look.put(bpy.context.object, soil_m, smooth=True)
         d = g.modifiers.new('crumb', 'DISPLACE')
         d.texture = tex
@@ -299,7 +303,7 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
         # Clear of the channel lip. Projecting the gap showed it occupying 15%
         # of the frame all along, so it was never missing, it was being covered:
         # pebbles crowded its edges and forty roots crossed it.
-        px = at[0] + side * rnd.uniform(0.22, 1.45)
+        px = at[0] + side * rnd.uniform(0.15, 1.45)
         py = at[1] + rnd.uniform(-0.75, 0.75)
         pz = at[2] + 0.055 + rnd.uniform(-0.03, 0.05)
         r = rnd.uniform(0.012, 0.045)
@@ -310,44 +314,73 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
         o.rotation_euler = (rnd.uniform(0, 3), rnd.uniform(0, 3), rnd.uniform(0, 3))
         look.put(o, peb_m if rnd.random() < 0.6 else soil_m)
 
-    # roots: long ones running across the banks, short torn ends at the channel
-    for i in range(28):
-        y0 = rnd.uniform(-0.62, 0.62)
-        x0 = rnd.uniform(-1.2, -0.30) if i % 2 else rnd.uniform(0.30, 1.2)
-        # Reach further so more of them bridge the channel: the torn ends over
-        # the gap are what the shot is about.
-        dx = rnd.uniform(0.34, 0.95) * (1 if x0 < 0 else -1)
-        # A real bend, not jitter. Random offsets per point give a zigzag,
-        # which is what the first version rendered: straight pale sticks with
-        # kinks. One low-frequency curve along the whole length plus a little
-        # noise is what reads as a root.
+    # Roots that END at the channel, which is the entire beat.
+    #
+    # "Each push tears the fine roots it is measuring." Every previous version
+    # ran roots clean across the gap and then added more of them, on the theory
+    # that the shot was under-populated. It was not: a denser net is still an
+    # intact one, and no scatter density produces a severed end. A root that
+    # crosses the channel says a root was there. A root that stops at the lip
+    # with pale fibre splayed out of the break says something took it off.
+    #
+    # So each one runs from its bank INWARD and terminates short of the gap,
+    # and the break is modelled: three to six fine threads fanning forward and
+    # down, thinner than the root and lighter, because torn xylem is paler than
+    # the root skin around it.
+    torn_m = look.mat('macrotorn', look.srgb('#A1977F'), 0.90)
+    for i in range(26):
+        side = -1 if i % 2 else 1
+        x0 = at[0] + side * rnd.uniform(0.60, 1.45)
+        y0 = at[1] + rnd.uniform(-0.62, 0.62)
+        # stop just short of the lip, with a little scatter so the breaks do not
+        # line up into a seam of their own
+        xe = at[0] + side * rnd.uniform(0.085, 0.145)
+        bend = rnd.uniform(-0.14, 0.14)
         spine = []
-        bend = rnd.uniform(-0.16, 0.16)
-        ph = rnd.uniform(0, math.tau)
         for t in range(9):
             f = t / 8
-            spine.append((at[0] + x0 + dx * f + rnd.uniform(-0.012, 0.012),
-                          at[1] + y0 + bend * math.sin(math.pi * f + ph * 0.2)
-                          + rnd.uniform(-0.018, 0.018),
-                          at[2] + 0.085 + 0.035 * math.sin(math.pi * f) * rnd.uniform(0.3, 1.0)
-                          + rnd.uniform(-0.012, 0.012)))
-        # Thinner. At 0.0045 to 0.0095 they rendered as ribbons laid over the
-        # soil, and the plate's are fine pale threads THROUGH it.
-        r = rnd.uniform(0.0022, 0.0052)
-        # one radius per spine point: tube() indexes them together and six
-        # points with five radii walks off the end
-        taper = [r * v for v in (1.0, 0.95, 0.88, 0.80, 0.70, 0.58, 0.45, 0.33, 0.22)]
-        tb = parts.tube(spine, taper, name='macroroot', seg=7)
-        look.put(tb, root_m, smooth=True)
-        # the torn end, pointing into the channel
-        if rnd.random() < 0.55:
-            tip = spine[-1]
-            for _ in range(rnd.randint(2, 3)):
-                a = rnd.uniform(-0.9, 0.9)
-                sp = [tip, (tip[0] + 0.05 * math.cos(a), tip[1] + 0.05 * math.sin(a),
-                            tip[2] + rnd.uniform(-0.01, 0.02))]
-                look.put(parts.tube(sp, [r * 0.26, 0.0008], name='macroroot', seg=3),
-                         root_m, smooth=True)
+            spine.append((x0 + (xe - x0) * f + rnd.uniform(-0.010, 0.010),
+                          y0 + bend * math.sin(math.pi * f) + rnd.uniform(-0.016, 0.016),
+                          at[2] + 0.085 + 0.030 * math.sin(math.pi * f) * rnd.uniform(0.3, 1.0)
+                          + rnd.uniform(-0.010, 0.010)))
+        r = rnd.uniform(0.0050, 0.0105)
+        look.put(parts.tube(spine, [r * v for v in
+                                    (1.0, 0.96, 0.90, 0.83, 0.74, 0.63, 0.50, 0.36, 0.20)],
+                            name='macroroot', seg=7), root_m, smooth=True)
+        # the break
+        tip = spine[-1]
+        inward = -side
+        for _ in range(rnd.randint(3, 6)):
+            a2 = rnd.uniform(-0.75, 0.75)
+            ln = rnd.uniform(0.018, 0.042)
+            end = (tip[0] + inward * ln * math.cos(a2),
+                   tip[1] + ln * math.sin(a2) * 0.8,
+                   tip[2] + rnd.uniform(-0.016, 0.008))
+            mid = ((tip[0] + end[0]) / 2, (tip[1] + end[1]) / 2,
+                   (tip[2] + end[2]) / 2 + rnd.uniform(0.0, 0.006))
+            look.put(parts.tube([tip, mid, end],
+                                [r * 0.26, r * 0.15, 0.0005],
+                                name='macroroot', seg=4), torn_m, smooth=True)
+
+    # a handful of short stubs left in the banks, roots whose other half is gone
+    for _ in range(9):
+        side = -1 if rnd.random() < 0.5 else 1
+        x0 = at[0] + side * rnd.uniform(0.30, 0.95)
+        y0 = at[1] + rnd.uniform(-0.6, 0.6)
+        xe = x0 - side * rnd.uniform(0.10, 0.20)
+        r = rnd.uniform(0.0020, 0.0038)
+        sp = [(x0, y0, at[2] + 0.082), ((x0 + xe) / 2, y0 + rnd.uniform(-0.01, 0.01),
+                                        at[2] + 0.094), (xe, y0, at[2] + 0.086)]
+        look.put(parts.tube(sp, [r, r * 0.7, r * 0.3], name='macroroot', seg=5),
+                 root_m, smooth=True)
+        for _ in range(rnd.randint(2, 4)):
+            a2 = rnd.uniform(-1.0, 1.0)
+            ln = rnd.uniform(0.012, 0.030)
+            look.put(parts.tube([(xe, y0, at[2] + 0.086),
+                                 (xe - side * ln * math.cos(a2), y0 + ln * math.sin(a2) * 0.8,
+                                  at[2] + 0.086 + rnd.uniform(-0.01, 0.006))],
+                                [r * 0.22, 0.0005], name='macroroot', seg=3),
+                     torn_m, smooth=True)
 
 
 ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets')
@@ -846,8 +879,17 @@ def build(res=(1672, 941), samples=96):
     # because the one thing it does have to share is the light.
     bpy.ops.object.light_add(type='AREA', location=(1.1, -0.9, -4.1))
     ml = bpy.context.object
-    ml.data.energy, ml.data.size, ml.data.color = 52.0, 0.45, look.LAMP
+    ml.data.energy, ml.data.size, ml.data.color = 56.0, 0.45, look.LAMP
     look.aim(ml, (0.0, 0.0, -5.0))
+    # and a dim fill down the channel itself. The banks shadow their own floor
+    # so completely that the trench rendered as a black slot, which is a hole in
+    # the picture rather than a hole in the soil.
+    bpy.ops.object.light_add(type='AREA', location=(0.0, -0.30, -4.62))
+    tf = bpy.context.object
+    # 9 W lit the whole set and took the frame from 37% dark to 0.7%, clipping
+    # 5.6% of it. This is a fill for one slot, not a second key.
+    tf.data.energy, tf.data.size, tf.data.color = 1.6, 0.14, look.LAMP
+    look.aim(tf, (0.0, 0.0, -5.18))
 
     # --- light. One lamp, clamped right, plus the night outside. 58% of the
     # plates sit below V 0.18 and only 6% above 0.60: this is one source.
