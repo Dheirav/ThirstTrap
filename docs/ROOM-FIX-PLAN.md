@@ -113,12 +113,36 @@ flat shading has no gradient to say a surface is round, so a displaced grid
 gives a PATTERN and reads as camouflage paint. Lumps have silhouettes and cast
 shadows on each other, and that is the whole difference.
 
-## What I would do next
+## The two follow-ups, done
 
-`roots` wants the channel back: two banks with a floor under the gap, aimed at
-squarely. Three attempts put it off the top edge, which says the camera should
-be solved from the geometry rather than nudged.
+Both said "solve it from the geometry rather than nudge it", and taking that
+literally is what made them quick.
 
-`phone-closeup` wants the mug moved so one camera can hold it with the phone.
-The mug was put on the left for `scale-table` and these two shots want it on
-opposite sides, which the plates themselves disagree about.
+**The mug.** Sweeping candidate positions against BOTH table cameras found one
+visible in each with a comfortable margin. At its old place it suited
+`scale-table` and fell outside `phone-closeup` entirely. It is in both shots
+now. It also costs something: it sits in front of the scale rather than beside
+it, where the plate has it clear. One mug and two cameras that want it on
+opposite sides is a real constraint, not a bug, and this is the compromise.
+
+**The channel.** Projecting its edges showed it had been in frame the whole
+time, at 15% of the frame's width, so it was never missing: it was being
+covered. Pebbles crowded its lip, forty roots crossed it, and each bank was
+tilted 13 degrees about its own centre, which lifted the inner edge across the
+gap and closed it as fast as widening it opened one.
+
+Then the floor under it went through both failures in turn. At 0.17 below the
+banks it was lit as brightly as they were, so the trench vanished into
+continuous dirt at two depths. At 0.42 it was a black slot, a hole in the
+picture rather than a hole in the soil. 0.235 is in shadow but still lit, which
+is what the plate has.
+
+Three cameras were nudged before any of this was measured, and all three put the
+channel off the top edge. The projection took one render.
+
+## Where it stands
+
+Six of seven are usable. `roots` is much closer and still the weakest: the
+trench reads now, but the soil is flatter than the plate's and the roots are
+more even than torn. Both are scatter-density problems rather than anything
+structural.

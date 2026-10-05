@@ -197,11 +197,14 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     tex.noise_scale = 0.09
     tex.noise_depth = 4
 
-    # A floor under the channel. Without it the gap renders as a black void,
-    # which is a hole in the picture rather than a hole in the soil: the plate's
-    # channel has crumb visible at the bottom of it, just in shadow.
+    # A floor under the channel, DEEP and in its own shadow. Without one the gap
+    # renders as a black void, which is a hole in the picture rather than a hole
+    # in the soil. At 0.17 down it was the opposite problem: lit as brightly as
+    # the banks, so the trench vanished into continuous dirt at two depths and
+    # the shot read as flat ground. The plate's channel has crumb at the bottom
+    # of it, visible but clearly further from the light.
     bpy.ops.mesh.primitive_grid_add(x_subdivisions=90, y_subdivisions=90, size=1.2,
-                                    location=(at[0], at[1], at[2] - 0.17))
+                                    location=(at[0], at[1], at[2] - 0.235))
     fl = look.put(bpy.context.object, soil_m, smooth=True)
     fd = fl.modifiers.new('crumb', 'DISPLACE')
     fd.texture = tex
@@ -212,14 +215,17 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
         # middle, so there was no channel at all: the shot was a flat field of
         # dirt. They have to be further apart than half their own width.
         bpy.ops.mesh.primitive_grid_add(x_subdivisions=160, y_subdivisions=160, size=1.6,
-                                        location=(at[0] + side * 0.865, at[1], at[2]))
+                                        location=(at[0] + side * 0.95, at[1], at[2]))
         g = look.put(bpy.context.object, soil_m, smooth=True)
         d = g.modifiers.new('crumb', 'DISPLACE')
         d.texture = tex
         d.strength = 0.11
         # Tip the banks toward each other so the gap reads as a channel with
         # depth rather than a slot cut in a flat floor.
-        g.rotation_euler = (0, math.radians(-side * 13), 0)
+        # 13 degrees rotated each bank about its own centre, which lifted the
+        # inner edge across the gap and closed the channel again as fast as
+        # widening it opened one. 6 is enough to say the walls lean in.
+        g.rotation_euler = (0, math.radians(-side * 6), 0)
 
     # Crumb, as geometry. A displaced grid gives a mottled PATTERN, which is
     # what the first four attempts rendered: the soil read as camouflage paint
@@ -229,7 +235,10 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     peb_m = look.mat('macrocrumb', look.srgb('#3E2D20'), 0.98)
     for _ in range(260):
         side = -1 if rnd.random() < 0.5 else 1
-        px = at[0] + side * rnd.uniform(0.09, 1.45)
+        # Clear of the channel lip. Projecting the gap showed it occupying 15%
+        # of the frame all along, so it was never missing, it was being covered:
+        # pebbles crowded its edges and forty roots crossed it.
+        px = at[0] + side * rnd.uniform(0.22, 1.45)
         py = at[1] + rnd.uniform(-0.75, 0.75)
         pz = at[2] + 0.055 + rnd.uniform(-0.03, 0.05)
         r = rnd.uniform(0.012, 0.045)
@@ -241,9 +250,9 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
         look.put(o, peb_m if rnd.random() < 0.6 else soil_m)
 
     # roots: long ones running across the banks, short torn ends at the channel
-    for i in range(40):
+    for i in range(28):
         y0 = rnd.uniform(-0.62, 0.62)
-        x0 = rnd.uniform(-1.2, -0.14) if i % 2 else rnd.uniform(0.14, 1.2)
+        x0 = rnd.uniform(-1.2, -0.30) if i % 2 else rnd.uniform(0.30, 1.2)
         # Reach further so more of them bridge the channel: the torn ends over
         # the gap are what the shot is about.
         dx = rnd.uniform(0.34, 0.95) * (1 if x0 < 0 else -1)
@@ -642,18 +651,21 @@ def build(res=(1672, 941), samples=96):
     # while the plate has the mug on one side and the phone on the other. The
     # room is the authority on where things are, but when it disagrees with
     # every plate about composition it is the room that is wrong.
+    # 0.32 rather than 0.02. Sweeping mug positions against BOTH table cameras
+    # found this one visible in each with the widest margin; at 0.02 it suited
+    # scale-table and fell outside phone-closeup entirely.
     bpy.ops.mesh.primitive_cylinder_add(vertices=22, radius=0.044, depth=0.098,
-                                        location=(0.02, -0.06, TABLE_Z + 0.049))
+                                        location=(0.32, -0.06, TABLE_Z + 0.049))
     look.put(bpy.context.object, M['mug'])
     bpy.ops.mesh.primitive_torus_add(major_radius=0.036, minor_radius=0.0065,
                                      major_segments=20, minor_segments=8,
-                                     location=(-0.030, -0.06, TABLE_Z + 0.052),
+                                     location=(0.268, -0.06, TABLE_Z + 0.052),
                                      rotation=(math.radians(90), 0, 0))
     look.put(bpy.context.object, M['mug'])
     # and something in it. An empty cream cylinder reads as a paper cup, and
     # the dark disc is most of what makes the plate's mug a mug.
     bpy.ops.mesh.primitive_circle_add(vertices=22, radius=0.038, fill_type='NGON',
-                                      location=(0.02, -0.06, TABLE_Z + 0.086))
+                                      location=(0.32, -0.06, TABLE_Z + 0.086))
     look.put(bpy.context.object, look.mat('coffee', look.srgb('#241509'), 0.55))
     append('trowel_01', (0.74, 0.96, SILL_Z + 0.006), scale=0.55, rot_z=1.25,
            default=look.mat('tool', look.srgb('#3A342C'), 0.62))
@@ -782,7 +794,7 @@ SHOTS = {
  'shelf-evening': ((-0.30, -0.28, 1.21), (-0.10, 0.98, 1.03), 35, 28, None),
  'finger-test':   ((0.02, 0.50, 1.175), (-0.245, 0.975, 1.052), 42, 35, 2.8),
  'depth':         ((-0.18, -0.60, 0.95), (-0.18, 0.10, 0.845), 55, 45, 3.5),
- 'roots':         ((0.0, -0.74, -4.30), (0.0, -0.05, -4.99), 42, 35, 2.2),
+ 'roots':         ((0.0, -0.56, -4.44), (0.0, 0.0, -5.06), 40, 34, 2.2),
  'scale-table':   ((0.26, -0.82, 1.12), (0.33, 0.16, 0.91), 33, 27, None),
  'phone-closeup': ((0.74, -0.52, 0.845), (0.47, 0.10, 0.818), 34, 28, 3.2),
 }
