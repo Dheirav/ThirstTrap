@@ -75,3 +75,50 @@ same soil as the pot's; nothing in the sequence can see both at once.
 
 Side by side against its plate, at size, before moving on. Every defect fixed in
 this room so far was found that way and none were found by a measurement.
+
+
+---
+
+## What happened
+
+Checked against the "done when" lines above, not against how it felt.
+
+**1. finger-test — done.** Two bugs were stacked and fixing the framing would
+have hidden the other, which is why the plan said to check the hand first.
+`soil_top` returned None for the modelled pots, because it matched the
+underscore-prefixed names the appended assets used, and the caller fell back to
+table height, putting the finger 12 cm under the sill. The hand was also aimed
+at the pot's front rim rather than its soil, so the finger read as going through
+the pot wall. Finger in the soil, window behind, wall under a third. Two pots
+rather than three.
+
+**2. phone-closeup — done.** The camera was aiming at bare table, because the
+props had moved when `scale-table` was fixed. The new one was chosen by
+projecting phone, scale, pot, mug and sill into four candidates and taking the
+one that held them. Then looking at it showed I had framed a wide shot when the
+plate is a closeup, so it moved in. Phone, scale, pot and sill are in; the mug
+is not, and the phone is not the largest shape.
+
+**3. ledger — done.** The sheet is a texture now, seven rows with dates and
+"Watered" in URW Chancery with per-row jitter. The slab was also modelled thin
+in X, which is how you build paper on a side reveal, while it hangs on the
+pier's room-facing surface: the camera met it at 52 degrees and the page
+foreshortened into a strip.
+
+**4. roots — improved, not done.** It is soil and roots filling the frame now
+instead of the whole pot, which is the right kind of picture. The channel is not
+reading and the roots are too uniform. Five passes, and the one that mattered
+was replacing the displaced grid's mottling with scattered pebble geometry:
+flat shading has no gradient to say a surface is round, so a displaced grid
+gives a PATTERN and reads as camouflage paint. Lumps have silhouettes and cast
+shadows on each other, and that is the whole difference.
+
+## What I would do next
+
+`roots` wants the channel back: two banks with a floor under the gap, aimed at
+squarely. Three attempts put it off the top edge, which says the camera should
+be solved from the geometry rather than nudged.
+
+`phone-closeup` wants the mug moved so one camera can hold it with the phone.
+The mug was put on the left for `scale-table` and these two shots want it on
+opposite sides, which the plates themselves disagree about.

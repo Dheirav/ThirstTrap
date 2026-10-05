@@ -172,6 +172,114 @@ def plant(at, leaf_m, stem_m, scale=1.0, n=6):
         look.put(bpy.context.object, stem_m)
 
 
+def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
+    """The roots beat: inside the soil, not looking at a pot.
+
+    Every other shot is the room seen from somewhere in it. This one is a macro
+    into dirt, and the room has no geometry at that scale, which is why the
+    camera kept framing the whole cut pot instead. It is built here as its own
+    small set and parked five metres under the floor, because nothing in the
+    sequence can see this and the room at the same time, so it does not have to
+    agree with the room about anything except the light.
+
+    The channel is a gap between two displaced banks rather than a groove cut
+    into one. A boolean trench in a noisy surface fights the noise at its edges
+    and reads as a seam; two banks leave a clean dark gap and the torn roots
+    bridging it are the subject anyway.
+    """
+    rnd = random.Random(seed)
+    soil_m = look.mat('macrosoil', look.srgb('#32241A'), 0.98)
+    # #CFC0A4 clipped to white at this gain. The plate's roots are pale against
+    # dark crumb, which is a value relationship, not a bright material.
+    root_m = look.mat('macroroot', look.srgb('#9C8A6E'), 0.88)
+
+    tex = bpy.data.textures.new('crumb', type='CLOUDS')
+    tex.noise_scale = 0.09
+    tex.noise_depth = 4
+
+    # A floor under the channel. Without it the gap renders as a black void,
+    # which is a hole in the picture rather than a hole in the soil: the plate's
+    # channel has crumb visible at the bottom of it, just in shadow.
+    bpy.ops.mesh.primitive_grid_add(x_subdivisions=90, y_subdivisions=90, size=1.2,
+                                    location=(at[0], at[1], at[2] - 0.17))
+    fl = look.put(bpy.context.object, soil_m, smooth=True)
+    fd = fl.modifiers.new('crumb', 'DISPLACE')
+    fd.texture = tex
+    fd.strength = 0.07
+
+    for side in (-1, 1):
+        # 0.52 apart with a size of 1.6 means the two banks OVERLAP across the
+        # middle, so there was no channel at all: the shot was a flat field of
+        # dirt. They have to be further apart than half their own width.
+        bpy.ops.mesh.primitive_grid_add(x_subdivisions=160, y_subdivisions=160, size=1.6,
+                                        location=(at[0] + side * 0.865, at[1], at[2]))
+        g = look.put(bpy.context.object, soil_m, smooth=True)
+        d = g.modifiers.new('crumb', 'DISPLACE')
+        d.texture = tex
+        d.strength = 0.11
+        # Tip the banks toward each other so the gap reads as a channel with
+        # depth rather than a slot cut in a flat floor.
+        g.rotation_euler = (0, math.radians(-side * 13), 0)
+
+    # Crumb, as geometry. A displaced grid gives a mottled PATTERN, which is
+    # what the first four attempts rendered: the soil read as camouflage paint
+    # rather than as lumps, because flat shading has no gradient to tell you a
+    # surface is round. Actual pebbles have silhouettes and cast shadows on each
+    # other, and that is the whole difference.
+    peb_m = look.mat('macrocrumb', look.srgb('#3E2D20'), 0.98)
+    for _ in range(260):
+        side = -1 if rnd.random() < 0.5 else 1
+        px = at[0] + side * rnd.uniform(0.09, 1.45)
+        py = at[1] + rnd.uniform(-0.75, 0.75)
+        pz = at[2] + 0.055 + rnd.uniform(-0.03, 0.05)
+        r = rnd.uniform(0.012, 0.045)
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=r,
+                                              location=(px, py, pz))
+        o = bpy.context.object
+        o.scale = (rnd.uniform(0.7, 1.3), rnd.uniform(0.7, 1.3), rnd.uniform(0.4, 0.8))
+        o.rotation_euler = (rnd.uniform(0, 3), rnd.uniform(0, 3), rnd.uniform(0, 3))
+        look.put(o, peb_m if rnd.random() < 0.6 else soil_m)
+
+    # roots: long ones running across the banks, short torn ends at the channel
+    for i in range(40):
+        y0 = rnd.uniform(-0.62, 0.62)
+        x0 = rnd.uniform(-1.2, -0.14) if i % 2 else rnd.uniform(0.14, 1.2)
+        # Reach further so more of them bridge the channel: the torn ends over
+        # the gap are what the shot is about.
+        dx = rnd.uniform(0.34, 0.95) * (1 if x0 < 0 else -1)
+        # A real bend, not jitter. Random offsets per point give a zigzag,
+        # which is what the first version rendered: straight pale sticks with
+        # kinks. One low-frequency curve along the whole length plus a little
+        # noise is what reads as a root.
+        spine = []
+        bend = rnd.uniform(-0.16, 0.16)
+        ph = rnd.uniform(0, math.tau)
+        for t in range(9):
+            f = t / 8
+            spine.append((at[0] + x0 + dx * f + rnd.uniform(-0.012, 0.012),
+                          at[1] + y0 + bend * math.sin(math.pi * f + ph * 0.2)
+                          + rnd.uniform(-0.018, 0.018),
+                          at[2] + 0.085 + 0.035 * math.sin(math.pi * f) * rnd.uniform(0.3, 1.0)
+                          + rnd.uniform(-0.012, 0.012)))
+        # Thinner. At 0.0045 to 0.0095 they rendered as ribbons laid over the
+        # soil, and the plate's are fine pale threads THROUGH it.
+        r = rnd.uniform(0.0022, 0.0052)
+        # one radius per spine point: tube() indexes them together and six
+        # points with five radii walks off the end
+        taper = [r * v for v in (1.0, 0.95, 0.88, 0.80, 0.70, 0.58, 0.45, 0.33, 0.22)]
+        tb = parts.tube(spine, taper, name='macroroot', seg=7)
+        look.put(tb, root_m, smooth=True)
+        # the torn end, pointing into the channel
+        if rnd.random() < 0.55:
+            tip = spine[-1]
+            for _ in range(rnd.randint(2, 3)):
+                a = rnd.uniform(-0.9, 0.9)
+                sp = [tip, (tip[0] + 0.05 * math.cos(a), tip[1] + 0.05 * math.sin(a),
+                            tip[2] + rnd.uniform(-0.01, 0.02))]
+                look.put(parts.tube(sp, [r * 0.26, 0.0008], name='macroroot', seg=3),
+                         root_m, smooth=True)
+
+
 ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets')
 
 
@@ -606,6 +714,14 @@ def build(res=(1672, 941), samples=96):
     look.put(bpy.context.object, look.mat('pin', look.srgb('#B98B3C'), 0.42),
              smooth=True)
 
+    soil_macro()
+    # The macro set gets its own key, warm and from the right like the room's,
+    # because the one thing it does have to share is the light.
+    bpy.ops.object.light_add(type='AREA', location=(1.1, -0.9, -4.1))
+    ml = bpy.context.object
+    ml.data.energy, ml.data.size, ml.data.color = 34.0, 0.45, look.LAMP
+    look.aim(ml, (0.0, 0.0, -5.0))
+
     # --- light. One lamp, clamped right, plus the night outside. 58% of the
     # plates sit below V 0.18 and only 6% above 0.60: this is one source.
     # Put the key inside the lamp's own head so the shade restricts it. A bare
@@ -666,7 +782,7 @@ SHOTS = {
  'shelf-evening': ((-0.30, -0.28, 1.21), (-0.10, 0.98, 1.03), 35, 28, None),
  'finger-test':   ((0.02, 0.50, 1.175), (-0.245, 0.975, 1.052), 42, 35, 2.8),
  'depth':         ((-0.18, -0.60, 0.95), (-0.18, 0.10, 0.845), 55, 45, 3.5),
- 'roots':         ((-0.18, -0.34, 0.838), (-0.18, 0.10, 0.826), 58, 48, 2.2),
+ 'roots':         ((0.0, -0.74, -4.30), (0.0, -0.05, -4.99), 42, 35, 2.2),
  'scale-table':   ((0.26, -0.82, 1.12), (0.33, 0.16, 0.91), 33, 27, None),
  'phone-closeup': ((0.74, -0.52, 0.845), (0.47, 0.10, 0.818), 34, 28, 3.2),
 }
