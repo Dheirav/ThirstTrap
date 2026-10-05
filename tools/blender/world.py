@@ -249,14 +249,17 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     bridging it are the subject anyway.
     """
     rnd = random.Random(seed)
-    soil_m = look.mat('macrosoil', look.srgb('#32241A'), 0.98)
+    # Darker dirt, not more light. The roots already measure p95 0.702 against the
+    # plate's 0.710; it was the soil at p50 0.259 against 0.216 that flattened the
+    # shot, so contrast ran 5.1x where the plate runs 6.5x.
+    soil_m = look.mat('macrosoil', look.srgb('#2A1E16'), 0.98)
     # #CFC0A4 clipped to white at this gain. The plate's roots are pale against
     # dark crumb, which is a value relationship, not a bright material.
         # The roots read pale in the plate, which is a RENDERED value, not an
     # albedo. #BCAC8A is 0.42 linear and at gain 3.2 that lands at 1.40, so the
     # roots were the thing clipping 3.6% of this frame. They want to arrive
     # near white, not start there.
-    root_m = look.mat('macroroot', look.srgb('#8F8572'), 0.88)
+    root_m = look.mat('macroroot', look.srgb('#938872'), 0.88)
 
     tex = bpy.data.textures.new('crumb', type='CLOUDS')
     tex.noise_scale = 0.09
@@ -297,7 +300,7 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     # rather than as lumps, because flat shading has no gradient to tell you a
     # surface is round. Actual pebbles have silhouettes and cast shadows on each
     # other, and that is the whole difference.
-    peb_m = look.mat('macrocrumb', look.srgb('#3E2D20'), 0.98)
+    peb_m = look.mat('macrocrumb', look.srgb('#342618'), 0.98)
     for _ in range(260):
         side = -1 if rnd.random() < 0.5 else 1
         # Clear of the channel lip. Projecting the gap showed it occupying 15%
@@ -327,7 +330,7 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     # and the break is modelled: three to six fine threads fanning forward and
     # down, thinner than the root and lighter, because torn xylem is paler than
     # the root skin around it.
-    torn_m = look.mat('macrotorn', look.srgb('#A1977F'), 0.90)
+    torn_m = look.mat('macrotorn', look.srgb('#A69B82'), 0.90)
     for i in range(26):
         side = -1 if i % 2 else 1
         x0 = at[0] + side * rnd.uniform(0.60, 1.45)
@@ -877,9 +880,13 @@ def build(res=(1672, 941), samples=96):
     soil_macro()
     # The macro set gets its own key, warm and from the right like the room's,
     # because the one thing it does have to share is the light.
-    bpy.ops.object.light_add(type='AREA', location=(1.1, -0.9, -4.1))
+    # Grazing, not overhead. The plate's soil runs 6.5x from its dark quarter to
+    # its bright one and the render ran 5.1x, which is a lump-shadow problem:
+    # a steep key lights the tops of the crumb and the sides equally, and only a
+    # shallow one makes each lump cast across its neighbour.
+    bpy.ops.object.light_add(type='AREA', location=(1.32, -1.00, -4.46))
     ml = bpy.context.object
-    ml.data.energy, ml.data.size, ml.data.color = 56.0, 0.45, look.LAMP
+    ml.data.energy, ml.data.size, ml.data.color = 128.0, 0.40, look.LAMP
     look.aim(ml, (0.0, 0.0, -5.0))
     # and a dim fill down the channel itself. The banks shadow their own floor
     # so completely that the trench rendered as a black slot, which is a hole in
@@ -888,7 +895,7 @@ def build(res=(1672, 941), samples=96):
     tf = bpy.context.object
     # 9 W lit the whole set and took the frame from 37% dark to 0.7%, clipping
     # 5.6% of it. This is a fill for one slot, not a second key.
-    tf.data.energy, tf.data.size, tf.data.color = 1.6, 0.14, look.LAMP
+    tf.data.energy, tf.data.size, tf.data.color = 3.2, 0.14, look.LAMP
     look.aim(tf, (0.0, 0.0, -5.18))
 
     # --- light. One lamp, clamped right, plus the night outside. 58% of the
@@ -924,6 +931,42 @@ def build(res=(1672, 941), samples=96):
     k2 = bpy.context.object
     k2.data.energy, k2.data.size, k2.data.color = 11.0, 0.10, look.LAMP
     look.aim(k2, (-0.90, 0.99, SILL_Z + 0.05))
+    # A bounce for the ledger wall, and the reason it is allowed.
+    #
+    # Measured, the ledger frame is already right everywhere except its subject:
+    # the room around the sheet sits at 0.232 against the plate's 0.216, and the
+    # sheet itself at 0.231 against 0.562. It is 1.9 m from the only lamp, so
+    # inverse square puts it in the bottom lighting step and no global exposure
+    # change can lift it without blowing out the table.
+    #
+    # This is not a second lamp. It is dim, it is warm, it casts no shadow, and
+    # it stands where light actually would bounce off the window reveal and the
+    # sill back onto that pier. One visible fixture is the rule; one bounce is
+    # how a room works.
+    # A SPOT, not an area. An area light at 7.5 W lit the whole room and clipped
+    # 10.7% of the frame; turning it down to 0.55 W then left the sheet at 0.377
+    # against the plate's 0.562, because an area light that is dim enough not to
+    # spill is too dim to do the job. A narrow cone puts the light on the sheet
+    # and nowhere else, which is what the measurement actually asked for.
+    # In FRONT of the sheet, not beside it. At x -0.70 against the sheet's
+    # -1.06 the cone arrived at a graze, so it blew out the sheet's right edge
+    # to 255 while the face it was meant to light stayed at 0.37, and it threw
+    # a visible theatrical pool on the pier behind. Nearly head on, wider, and
+    # softer at the edge: a bounce has no rim.
+    # An area light after all, but close and in front rather than far and to
+    # the side. The spot solved the graze and introduced its own tell: a cone
+    # edge, printing a circular pool on the pier behind the sheet that no
+    # bounced light has. A small source half a metre away falls off by inverse
+    # square instead, which is the same gradient without the rim.
+    bpy.ops.object.light_add(type='AREA', location=(-1.00, 0.52, 1.47))
+    lb = bpy.context.object
+    # 2.6 W half a metre away put the sheet at 0.866 and clipped a tenth of the
+    # frame. Solved rather than nudged: the target is the plate's 0.562, so in
+    # linear terms 0.562^2.2 over 0.866^2.2 is 0.39, and 2.6 x 0.39 is 1.0.
+    lb.data.energy, lb.data.size, lb.data.color = 1.0, 0.22, look.LAMP
+    lb.data.use_shadow = False
+    look.aim(lb, (-1.05, 1.00, 1.46))
+
     bpy.ops.object.light_add(type='AREA', location=(-0.18, -0.52, 0.95))
     cf = bpy.context.object
     cf.data.energy, cf.data.size, cf.data.color = 4.5, 0.12, look.LAMP
