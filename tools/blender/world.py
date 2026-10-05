@@ -805,9 +805,18 @@ def build(res=(1672, 941), samples=96):
     # 0.32 rather than 0.02. Sweeping mug positions against BOTH table cameras
     # found this one visible in each with the widest margin; at 0.02 it suited
     # scale-table and fell outside phone-closeup entirely.
-    bpy.ops.mesh.primitive_cylinder_add(vertices=22, radius=0.044, depth=0.098,
+    # A solid cylinder has no inside. From the table cameras that reads as an
+    # upside-down slug rather than a mug, because the one thing that tells you
+    # which way up a mug is, is seeing into it. Hollowed, with a rim.
+    bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.044, depth=0.098,
                                         location=(0.32, -0.06, TABLE_Z + 0.049))
-    look.put(bpy.context.object, M['mug'])
+    mug_body = look.put(bpy.context.object, M['mug'])
+    bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.0385, depth=0.092,
+                                        location=(0.32, -0.06, TABLE_Z + 0.056))
+    hole = bpy.context.object
+    bm = mug_body.modifiers.new('hollow', 'BOOLEAN')
+    bm.operation = 'DIFFERENCE'; bm.object = hole
+    hole.hide_render = True; hole.hide_viewport = True
     bpy.ops.mesh.primitive_torus_add(major_radius=0.036, minor_radius=0.0065,
                                      major_segments=20, minor_segments=8,
                                      location=(0.268, -0.06, TABLE_Z + 0.052),
@@ -844,11 +853,16 @@ def build(res=(1672, 941), samples=96):
     # room-facing surface. The ledger camera therefore met it at 52 degrees off
     # square and the page foreshortened into a vertical strip, which read as a
     # bookmark rather than a sheet of paper.
-    led = _box((-1.06, 1.002, 1.46), (0.215, 0.012, 0.285), M['paper'])
+    # Floating, and the numbers say exactly why: the sheet's bottom edge was at
+    # z 1.3175 and the shelf top at 1.311, six millimetres apart, so it read as
+    # a card propped on a shelf rather than paper pinned to a wall. Its back
+    # face was also only 3 mm into the pier. Lifted clear of the shelf and
+    # pressed flat against the wall.
+    led = _box((-1.06, 1.0075, 1.545), (0.215, 0.008, 0.285), M['paper'])
     led.rotation_euler = (0, 0, math.radians(-4))
     sheet_png = os.path.join(ASSETS, 'ledger-sheet.png')
     if os.path.exists(sheet_png):
-        bpy.ops.mesh.primitive_plane_add(size=1.0, location=(-1.06, 0.9955, 1.46))
+        bpy.ops.mesh.primitive_plane_add(size=1.0, location=(-1.06, 1.0025, 1.545))
         face = bpy.context.object
         # One quarter turn about X is all it needs: that sends the plane's
         # normal to -y, which is the way the pier faces, and its own up to world
@@ -873,7 +887,7 @@ def build(res=(1672, 941), samples=96):
     # plate shows a brass head catching the lamp and throwing a small shadow
     # down the sheet, which a painted dot cannot do.
     bpy.ops.mesh.primitive_uv_sphere_add(segments=14, ring_count=8, radius=0.0075,
-                                         location=(-1.058, 0.990, 1.5885))
+                                         location=(-1.058, 0.9985, 1.6735))
     look.put(bpy.context.object, look.mat('pin', look.srgb('#B98B3C'), 0.42),
              smooth=True)
 
@@ -990,7 +1004,7 @@ def build(res=(1672, 941), samples=96):
 # effect, and none at all on the two wide room shots, where everything in frame
 # is genuinely meant to be legible.
 SHOTS = {
- 'ledger':        ((-0.46, 0.26, 1.515), (-1.02, 0.99, 1.468), 40, 33, 4.0),
+ 'ledger':        ((-0.34, 0.10, 1.60), (-1.03, 0.99, 1.548), 31, 26, 4.0),
  'shelf-evening': ((-0.30, -0.28, 1.21), (-0.10, 0.98, 1.03), 35, 28, None),
  'finger-test':   ((0.02, 0.50, 1.175), (-0.245, 0.975, 1.052), 42, 35, 2.8),
  'depth':         ((-0.60, -0.62, 0.86), (-0.12, 0.12, 0.825), 45, 38, 3.5),
