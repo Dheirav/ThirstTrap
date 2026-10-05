@@ -1,0 +1,54 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Room, live</title>
+<!--
+  An experiment, not the page. site/ is untouched.
+
+  This is the route observal actually uses, read off their own markup: a
+  <canvas> and a Draco-compressed glb from the Blender glTF exporter, with the
+  colour and the flat shading done in the browser and the camera move written
+  in JavaScript against scroll. Their scene carries zero materials, zero
+  cameras and zero animations; ours carries materials only because their node
+  names are hand-authored and ours are whatever Blender called them.
+
+  The question this answers is narrow: does the room survive being shaded live
+  instead of by Cycles, and does the camera path still read when it is a
+  function of scroll offset rather than a frame sequence.
+-->
+<style>
+  :root { --ink:#17120E; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { background:var(--ink); }
+  body { background:var(--ink); color:#F5F0E2; font:400 16px/1.5 system-ui,sans-serif; }
+  #stage3d { position:fixed; inset:0; width:100%; height:100%; display:block; }
+  /* 700vh moved the camera three times as far per wheel notch as the
+     reference does: measured, ours travelled 19.7 units of picture per frame
+     against their 6.58, which is most of what read as the difference. Per unit
+     of movement ours was already the smoother of the two, 0.26 jerk per unit
+     against their 0.44, so the fix is scroll distance and not interpolation. */
+  .track { position:relative; height:2100vh; }
+  .beat { position:fixed; left:5vw; bottom:12vh; max-width:min(34ch,90vw);
+          font:500 clamp(1.1rem,2.4vw,1.9rem)/1.25 Georgia,serif;
+          opacity:0; visibility:hidden; text-shadow:0 2px 24px rgba(0,0,0,.8);
+          transition:opacity .25s; pointer-events:none; }
+  .hud { position:fixed; top:10px; left:12px; font:400 12px/1.4 ui-monospace,monospace;
+         color:#9a8f7e; background:rgba(0,0,0,.45); padding:6px 9px; border-radius:6px; }
+  .loader { position:fixed; inset:0; display:grid; place-items:center; background:var(--ink);
+            transition:opacity .5s,visibility .5s; font:400 13px ui-monospace,monospace; color:#7d7465; }
+  .loader.done { opacity:0; visibility:hidden; }
+</style>
+
+<canvas id="stage3d" aria-hidden="true"></canvas>
+<div class="loader" id="loader">loading the room…</div>
+<div class="hud" id="hud"></div>
+<div class="beat" id="beat"></div>
+<div class="track"></div>
+
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+} }
+</script>
+<script type="module" src="./room.js"></script>
