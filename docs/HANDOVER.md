@@ -2856,13 +2856,15 @@ launches, Room reads and writes, the camera path works, and kotlinx.serializatio
 produces a field-for-field correct backup under R8, which was the one failure
 that would have shipped silently.
 
-What remains of it is not code, and it is **still the only irreversible item on
-this list**. On 2026-10-04 the keystore was copied to the Windows Downloads
-folder with a README beside it, verified byte-identical. That is a second copy,
-not a backup: it is on the same laptop, so both go together if the machine does.
-It still needs to leave the machine, and the four properties in
-`local.properties` need to go wherever passwords go, because the `.jks` alone
-cannot sign anything. There is no recovery and no reissue.
+**The keystore is off the machine, 2026-10-06.** This was the only irreversible
+item on the list and it is closed. On 2026-10-04 it had been copied to the
+Windows Downloads folder with a README beside it, verified byte-identical, which
+was a second copy and not a backup: both lived on the same laptop and would have
+gone together with it. It has since been taken off the machine.
+
+Nothing else here is irreversible. If the signing properties ever get separated
+from the `.jks`, note that the file alone cannot sign anything: the four values
+in `local.properties` are half of it.
 
 ~~Also outstanding: `proguard-rules.pro` does not exist.~~ It does now, empty on
 purpose, with a comment saying why an empty file is better than no file: Gradle
@@ -2886,11 +2888,28 @@ layer. The navigation one is the only item that can really break things.
 both orientations, the scripted demo, hosting still not switched on. The Blender
 room at D59 could replace the plates and is not good enough to yet.
 
-**Verification debt.** Everything in D60 after the container grammar is
-build-and-test verified only, because the phone locked partway through: the
-folding sections on Add plant, the lifecycle collapse, the species prefill, the
-propagation card's new layout, and the Due tab's ruled entries. Opening Add
-plant and typing "monstera" into Species checks most of it in one go.
+~~**Verification debt.** Everything in D60 after the container grammar is
+build-and-test verified only.~~ **Cleared on device, 2026-10-06.** All five:
+
+- *Folding sections on Add plant.* WHAT IT IS, CARE PROFILE and WEIGHING arrive
+  collapsed, each carrying its own summary on the right. Setting the origin to
+  Cutting changed WHAT IT IS from "Soil" to "Soil · Cutting" without expanding
+  it, which is the point of putting a summary there.
+- *Species prefill.* Typing "monstera" answered "Filled light, dryness and the
+  depletion trigger from the Monstera notes. Change any of them below."
+- *Lifecycle collapse.* THIS PLANT IS FINISHED sits folded under Save and opens
+  on It died / Archive / Delete permanently, so the three terminal actions are
+  not loose in the form.
+- *Due tab's ruled entries.* A plant seven days unchecked produced "Time to
+  check the ZZTestPlant", the lift-the-pot line, Watered and Still wet as two
+  equal blocks, Snooze a day, then a rule.
+- *Propagation card.* Five ruled stages with counts, each with its own note, the
+  plant as a card reading "just added" with a square outlined button to advance
+  it, and "Nothing at this stage" on the empty four.
+
+Done with a throwaway plant, dated a week back and set to Cutting to reach the
+last two, then deleted. Note for whoever repeats it: `adb shell input text`
+drops at a space, so a name typed that way arrives truncated.
 
 ## Features worth considering
 

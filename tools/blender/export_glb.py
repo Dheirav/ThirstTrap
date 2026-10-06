@@ -29,7 +29,19 @@ OUT = a[0] if a else '/tmp/scene.glb'
 
 sc, M = world.build(res=(16, 16), samples=1)
 plate.flat_materials()          # strip specular and texture, keep the flat albedo
-world.place_hand((0, 0, -9))    # park the hand out of the room
+# The hand, placed at the finger-test pot exactly as render_plate.py places it.
+#
+# It used to be parked at z -9 and then deleted by the cleanup below, which
+# removes everything under the floor. That was written when the scripted hand
+# was unusable and nobody wanted it in the move; the move now travels past this
+# pot and the beat is a finger going into soil, so an empty pot is the one thing
+# that frame cannot be. The flythrough showed no hands at all because of it.
+world.HAND_LEN = 0.26
+_pot = (world.POTS_X[1], 0.978)
+_z = world.soil_top(*_pot)
+if _z is not None:
+    world.place_hand((_pot[0], _pot[1], _z), yaw=0.50, pitch=-0.35, into=0.004)
+    world.dimple_soil(_pot)
 
 # The soil macro is its own set five metres under the floor and is not part of
 # the room the camera flies through, so it is not worth the bytes.
@@ -55,7 +67,12 @@ bpy.ops.export_scene.gltf(
     use_selection=True,
     export_apply=True,              # bake the modifiers: booleans, solidify, displace
     export_materials='EXPORT',
-    export_image_format='NONE',     # the ledger texture is the only image and it can be refetched
+    # AUTO, not NONE. The ledger sheet is the only image in the room and it is
+    # the entire subject of one beat: with images stripped, the page exported as
+    # blank cream paper and the flythrough showed an empty sheet with a pin in
+    # it. 'It can be refetched' was true and useless, because nothing refetched
+    # it. It costs one small PNG.
+    export_image_format='AUTO',
     export_cameras=False,
     export_lights=False,
     export_animations=False,
