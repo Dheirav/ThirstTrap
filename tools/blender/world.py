@@ -572,22 +572,46 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     # presented four or five flat planes as large as a root and the soil read as
     # a pile of shards rather than as crumb. The plate's dirt is finer than its
     # roots are thick, and that relationship is what makes it read as soil.
-    peb_m = look.mat('macrocrumb', look.srgb('#342618'), 0.98)
+    # Darker than #342618. Scattering the crumb to the frame put six times as
+    # many lit pebbles on camera, and each one is a surface catching the key,
+    # so the dirt's median value climbed from 0.220 to 0.267 against the
+    # plate's 0.216: the shot gained its texture and lost its contrast in the
+    # same change. The pebbles have to be darker now that there are more.
+    peb_m = look.mat('macrocrumb', look.srgb('#281C11'), 0.98)
     _crumb = []
     _spec_peb, _spec_soil = [], []
-    for _ in range(1500):
-        side = -1 if rnd.random() < 0.5 else 1
-        # Clear of the channel lip. Projecting the gap showed it occupying 15%
-        # of the frame all along, so it was never missing, it was being covered:
-        # pebbles crowded its edges and forty roots crossed it.
-        px = at[0] + side * rnd.uniform(0.15, 1.45)
-        py = at[1] + rnd.uniform(-0.75, 0.75)
-        pz = at[2] + 0.055 + rnd.uniform(-0.03, 0.05)
-        r = rnd.uniform(0.004, 0.021)
+    # Scattered to the FRAME, for the same reason the roots are. 1500 grains
+    # spread over |x| 0.15 to 1.45 and |y| out to 0.75 put about sixty of them
+    # on camera, because this shot sees 0.710 across and 0.400 down: the banks
+    # rendered as two nearly bare slopes and the dirt read as a painted surface
+    # rather than as crumb, which is the one thing the geometry was added for.
+    def _grain(px, py, pz, r):
         g = ((px, py, pz), r,
              (rnd.uniform(0.7, 1.3), rnd.uniform(0.7, 1.3), rnd.uniform(0.4, 0.8)),
              (rnd.uniform(0, 3), rnd.uniform(0, 3), rnd.uniform(0, 3)))
         (_spec_peb if rnd.random() < 0.6 else _spec_soil).append(g)
+
+    for _ in range(700):
+        side = -1 if rnd.random() < 0.5 else 1
+        # Clear of the channel lip, but only just, and no further out than the
+        # frame edge plus a margin.
+        # Finer than the roots are thick, too: at 0.021 a lump was four times a
+        # root's width and the soil out-coarsened its own subject.
+        _grain(at[0] + side * rnd.uniform(0.13, 0.40),
+               at[1] + rnd.uniform(-0.24, 0.24),
+               at[2] + 0.055 + rnd.uniform(-0.03, 0.05),
+               rnd.uniform(0.003, 0.013))
+
+    # Crumb IN the crack, spilling down its walls. Every grain was held clear of
+    # the lip, so the channel rendered as a bare dark polygon with two clean
+    # edges, and a crack with smooth sides is a cut rather than a break. The
+    # plate has crumb all the way down its crevice.
+    for _ in range(260):
+        side = -1 if rnd.random() < 0.5 else 1
+        _grain(at[0] + side * rnd.uniform(0.02, 0.15),
+               at[1] + rnd.uniform(-0.24, 0.24),
+               at[2] + rnd.uniform(-0.15, 0.05),
+               rnd.uniform(0.003, 0.011))
 
     # Roots that END at the channel, which is the entire beat.
     #
@@ -604,25 +628,70 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     # the root skin around it.
     torn_m = look.mat('macrotorn', look.srgb('#A69B82'), 0.90)
     _roots = []
-    for i in range(38):
+    for i in range(14):
         side = -1 if i % 2 else 1
-        x0 = at[0] + side * rnd.uniform(0.60, 1.45)
-        y0 = at[1] + rnd.uniform(-0.62, 0.62)
-        # stop just short of the lip, with a little scatter so the breaks do not
-        # line up into a seam of their own
-        xe = at[0] + side * rnd.uniform(0.085, 0.145)
-        bend = rnd.uniform(-0.14, 0.14)
-        spine = []
-        for t in range(9):
-            f = t / 8
-            spine.append((x0 + (xe - x0) * f + rnd.uniform(-0.010, 0.010),
-                          y0 + bend * math.sin(math.pi * f) + rnd.uniform(-0.016, 0.016),
+        # Built to the FRAME, not to the set, which is the whole reason this
+        # shot kept reading as straws no matter how the roots were tuned. The
+        # camera sees 0.710 across and 0.400 down at the aim plane. These used
+        # to start 0.60 to 1.45 out and stop 0.1 short of the middle, so a root
+        # was about a metre long and a quarter of it was on screen, and y0 was
+        # spread over four times the frame height so two thirds of them missed
+        # the frame entirely. What rendered was the last tapering stretch of a
+        # smooth arc plus its tip fork, every time: no thick end, no kinks, no
+        # branch points, because all of that was off camera. Start at the frame
+        # edge instead and the whole root is in shot.
+        x0 = at[0] + side * rnd.uniform(0.30, 0.46)
+        y0 = at[1] + rnd.uniform(-0.30, 0.30)
+        # One in four arches over the channel rather than ending at it. The gap
+        # is still the subject, but with every root stopping at the same two
+        # lips the middle third of the frame was bare dirt, and the plate has
+        # roots crossing its crevice as well as torn ends hanging into it.
+        crosses = (i % 4 == 3)
+        if crosses:
+            xe = at[0] - side * rnd.uniform(0.14, 0.30)
+        else:
+            # stop just short of the lip, with a little scatter so the breaks
+            # do not line up into a seam of their own
+            xe = at[0] + side * rnd.uniform(0.085, 0.145)
+        # Kinks, not an arc. The old spine was one sine bend plus 10 mm of
+        # jitter on a 1.0 run, which at this focal length is a straight rod.
+        # The plate's roots change heading visibly at every segment, and that
+        # polygonal wander is most of what makes them read as grown rather than
+        # extruded. Walk the spine with the heading kicked each step and pulled
+        # back toward the target, so it wanders but still arrives at the lip.
+        # A root runs at an angle, not along the x axis. Every one of these
+        # used to go flat left to right, because x0 and xe differed only in x
+        # and the y walk wandered 30 mm at most, so the frame filled with
+        # parallel horizontal bars and at three of them it read as scaffolding.
+        # Give each root an end offset in y as well and they cross at angles,
+        # which is what the plate does.
+        # Slope proportional to the run, and never near zero. Drawing the end
+        # offset from a fixed range let a root that happened to land ye near y0
+        # render as a horizontal bar, and it hit the long crossing roots
+        # hardest because their run is twice as far: two of those parallel
+        # across the frame is the scaffolding look again.
+        _run = abs(xe - x0)
+        ye = y0 + _run * rnd.uniform(0.25, 0.65) * (1 if rnd.random() < 0.5 else -1)
+        # Thirteen points rather than nine: the kink matters, but a kink every
+        # eighth of a short root is a bend in a pipe. More, smaller corners.
+        N = 13
+        spine = [(x0, y0, at[2] + 0.085 + rnd.uniform(-0.008, 0.008))]
+        for t in range(1, N):
+            f = t / (N - 1)
+            py = spine[-1][1]
+            ty = y0 + (ye - y0) * f
+            spine.append((x0 + (xe - x0) * f + rnd.uniform(-0.007, 0.007),
+                          py + (ty - py) * 0.55 + rnd.uniform(-0.010, 0.010),
                           at[2] + 0.085 + 0.030 * math.sin(math.pi * f) * rnd.uniform(0.3, 1.0)
                           + rnd.uniform(-0.010, 0.010)))
-        r = rnd.uniform(0.0072, 0.0132)
+        # The old 0.0072 to 0.0132 was tuned when only the tapered tip was in
+        # shot, so it described a tip and not a root. With the base in frame it
+        # renders at full width, and the plate's thickest root is about 1.2% of
+        # the frame across, which is 0.0042 of world radius here.
+        r = rnd.uniform(0.0032, 0.0056)
         inward_sign = -side
-        _roots.append(look.put(parts.tube(spine, [r * v for v in
-                                          (1.0, 0.96, 0.90, 0.83, 0.74, 0.63, 0.50, 0.36, 0.20)],
+        _roots.append(look.put(parts.tube(spine, [r * (1.0 - 0.60 * (t / (N - 1)) ** 1.8)
+                                                  for t in range(N)],
                                           name='macroroot', seg=7), root_m, smooth=True))
         # Tuned against a MEASURED target, not by eye: the plate's roots cover
         # 13.4% of its frame above value 0.45. Before branching this shot ran
@@ -648,9 +717,15 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
             sp = []
             for t2 in range(M):
                 f2 = t2 / (M - 1)
-                sp.append((p0[0] + d[0] * length * f2 + math.cos(ba) * amp * f2 * f2,
-                           p0[1] + d[1] * length * f2 + math.sin(ba) * amp * f2 * f2,
-                           p0[2] + d[2] * length * f2 + math.sin(f2 * 2.6 + ba) * amp * 0.30))
+                # no kick on the first point, or the branch detaches from
+                # the parent it grows out of
+                j = 0.0 if t2 == 0 else length * 0.055
+                sp.append((p0[0] + d[0] * length * f2 + math.cos(ba) * amp * f2 * f2
+                           + rnd.uniform(-j, j),
+                           p0[1] + d[1] * length * f2 + math.sin(ba) * amp * f2 * f2
+                           + rnd.uniform(-j, j),
+                           p0[2] + d[2] * length * f2 + math.sin(f2 * 2.6 + ba) * amp * 0.30
+                           + rnd.uniform(-j, j)))
             _roots.append(look.put(parts.tube(sp, [rad * (1.0 - 0.45 * (t2 / (M - 1)))
                                                    for t2 in range(M)],
                                              name='macroroot', seg=7), root_m, smooth=True))
@@ -669,18 +744,18 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
                         rad * rnd.uniform(0.44, 0.62), level - 1)
 
         for _ in range(rnd.randint(2, 4)):
-            k = rnd.randint(1, 7)
+            k = rnd.randint(1, N - 2)
             base = spine[k]
             a3 = rnd.uniform(-1.4, 1.4)
             d0 = (inward_sign * math.cos(a3) * 0.6, math.sin(a3), rnd.uniform(-0.35, 0.10))
             n0 = math.sqrt(d0[0] ** 2 + d0[1] ** 2 + d0[2] ** 2) or 1.0
             _branch(base, (d0[0] / n0, d0[1] / n0, d0[2] / n0),
-                    rnd.uniform(0.070, 0.135), r * 0.40, 2)
+                    rnd.uniform(0.09, 0.17), r * 0.50, 2)
 
         # the break
         tip = spine[-1]
         inward = -side
-        for _ in range(rnd.randint(3, 6)):
+        for _ in range(0 if crosses else rnd.randint(3, 6)):
             a2 = rnd.uniform(-0.75, 0.75)
             ln = rnd.uniform(0.018, 0.042)
             end = (tip[0] + inward * ln * math.cos(a2),
