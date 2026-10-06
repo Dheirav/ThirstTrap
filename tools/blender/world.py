@@ -72,14 +72,45 @@ def facet_pot(loc, top_r=0.075, bot_r=0.058, h=0.130, sides=16, m=None, cut=Fals
     rnd_s = _r.Random(17)
     if cut:
         wet = look.mat('wet', look.srgb('#4A3422'), 0.96)
-        dry = look.mat('dry', look.srgb('#9A8straight'.replace('straight', '264')), 0.98)
+        # Two colours out of what used to be one. The grit on top keeps the pale
+        # value, because gravel in lamplight is the brightest thing in a pot;
+        # the dried layer under it drops to #74634C, a little lighter than the
+        # wet column and no more. At the old #9A8264 that layer was a cream band
+        # across the whole cut face, which is the slab this was meant to stop.
+        dry = look.mat('dry', look.srgb('#74634C'), 0.98)
+        grit_top = look.mat('grittop', look.srgb('#9A8264'), 0.96)
         bpy.ops.mesh.primitive_cylinder_add(vertices=sides, radius=top_r - 0.011,
                                             depth=h - 0.040,
                                             location=(loc[0], loc[1], loc[2] + (h - 0.040)/2 + 0.004))
         col = look.put(bpy.context.object, wet)
-        bpy.ops.mesh.primitive_cylinder_add(vertices=sides, radius=top_r - 0.0105, depth=0.030,
-                                            location=(loc[0], loc[1], loc[2] + h - 0.045))
-        crust = look.put(bpy.context.object, dry)
+        # The top dressing is GRAINS, not a slab.
+        #
+        # It was a 30 mm cylinder of one flat colour, and in cross-section that
+        # is a band of solid cream across the top of the cut: it read as a layer
+        # of butter rather than as dry soil, and the eye went to it instead of to
+        # the roots underneath. The plate's pot is topped with gravel, which is
+        # speckled by construction, so the same thing here is a scatter of pale
+        # grit sitting on the surface. A thin dark cylinder stays beneath it as
+        # the dried layer itself, close enough in value to the wet soil that it
+        # reads as the same material a little drier.
+        # No dried-layer cylinder at all, in the end.
+        #
+        # It was 30 mm of one flat colour, then 12 mm of a darker one, and at
+        # both it drew a horizontal stripe across the cut that the plate does not
+        # have: a solid band reads as a seam between two materials, and soil has
+        # no seams. Darkening it only made the stripe darker. The dryness it was
+        # there to say is carried by the gravel on top, which is the thing you
+        # would actually see, and the column below is left as one mass.
+        _top = []
+        for _ in range(240):
+            a4 = rnd_s.uniform(0, 6.283)
+            r4 = (top_r - 0.013) * math.sqrt(rnd_s.uniform(0, 1))
+            _top.append(((loc[0] + math.cos(a4) * r4, loc[1] + math.sin(a4) * r4,
+                          loc[2] + h - 0.030 + rnd_s.uniform(-0.003, 0.004)),
+                         rnd_s.uniform(0.0016, 0.0038),
+                         (rnd_s.uniform(0.8, 1.3), rnd_s.uniform(0.8, 1.3), rnd_s.uniform(0.5, 0.9)),
+                         (rnd_s.uniform(0, 3), rnd_s.uniform(0, 3), rnd_s.uniform(0, 3))))
+        strata.append(grains(_top, grit_top, subdiv=1, name='topdressing'))
         root_m = look.mat('root', look.srgb('#B8A684'), 0.85)
         import random
         rnd = random.Random(7)
