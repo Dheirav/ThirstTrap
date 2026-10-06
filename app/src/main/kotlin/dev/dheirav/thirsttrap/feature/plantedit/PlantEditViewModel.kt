@@ -72,6 +72,14 @@ data class PlantEditUiState(
     val containerDesc: String = "",
     /** Null means this plant is in its own pot, which is the ordinary case. */
     val containerId: String? = null,
+    /**
+     * Whether the pot list is showing. Separate from containerId because the
+     * switch goes on before a pot has been chosen, and a plant in its own pot
+     * is the overwhelmingly common case: offering every other plant on the
+     * shelf as a permanent row of chips puts the rare answer in front of the
+     * ordinary one, and grows with the collection.
+     */
+    val sharingOn: Boolean = false,
     val shareOptions: List<ShareOption> = emptyList(),
     val defaultWaterMl: String = "",
     val checkIntervalDays: String = "",
@@ -170,6 +178,7 @@ class PlantEditViewModel @Inject constructor(
                         location = p.location.orEmpty(),
                         containerDesc = p.containerDesc.orEmpty(),
                         containerId = p.containerId,
+                        sharingOn = p.containerId != null,
                         // Carried over, because this is a whole-state
                         // replacement racing a coroutine that only copies into
                         // it. The pot list is loaded separately and usually
@@ -268,8 +277,18 @@ class PlantEditViewModel @Inject constructor(
     fun onLocation(v: String) { _state.value = _state.value.copy(location = v) }
     fun onContainer(v: String) { _state.value = _state.value.copy(containerDesc = v) }
 
-    /** Its own pot. */
-    fun onOwnContainer() { _state.value = _state.value.copy(containerId = null) }
+    /**
+     * The switch. Turning it off puts the plant back in its own pot, because
+     * leaving a chosen container behind an off switch would save a share the
+     * form says is not happening.
+     */
+    fun onSharingToggled(on: Boolean) {
+        _state.value = if (on) {
+            _state.value.copy(sharingOn = true)
+        } else {
+            _state.value.copy(sharingOn = false, containerId = null, mintedWith = null)
+        }
+    }
 
     /**
      * Share a pot with the plant in this option.

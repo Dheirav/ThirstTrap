@@ -176,49 +176,73 @@ fun PlantEditScreen(
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                // Sharing a pot. Hidden when there is nothing to share with,
-                // because a form that offers an impossible choice is a form
-                // asking a question it already knows the answer to.
+                // Sharing a pot, behind a switch. Hidden entirely when there is
+                // nothing to share with, because a form that offers an
+                // impossible choice is asking a question it knows the answer to.
                 if (state.shareOptions.isNotEmpty()) {
-                    FieldLabel("Shares a pot with")
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        FilterChip(
-                            selected = state.containerId == null,
-                            onClick = viewModel::onOwnContainer,
-                            label = { Text("Its own") },
-                        )
-                        state.shareOptions.forEach { option ->
-                            FilterChip(
-                                selected = state.containerId != null &&
-                                    (
-                                        option.containerId == state.containerId ||
-                                            state.mintedWith == option.plantId
-                                        ),
-                                onClick = { viewModel.onShareWith(option) },
-                                label = { Text(option.plantName) },
-                            )
-                        }
-                    }
-                    // Said here rather than discovered later in the timeline.
-                    // Rows appearing on a plant you did not touch look like a
-                    // bug unless you were told they would.
-                    state.sharesWith?.let { shared ->
-                        Text(
-                            "Watering, checking and feeding will be recorded on " +
-                                "${shared.plantName} too, since it is the same pot. " +
-                                "Everything else stays on this plant alone.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        if (shared.weightTracked) {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Column(Modifier.weight(1f)) {
                             Text(
-                                "Weighing stays with ${shared.plantName}: a pot " +
-                                    "weighs as one object, so only one plant in it " +
-                                    "can be the one on the scale.",
+                                "Shares a pot",
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                            Text(
+                                "Another plant lives in the same pot or jar.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
+                        Spacer(Modifier.size(12.dp))
+                        Switch(
+                            checked = state.sharingOn,
+                            onCheckedChange = viewModel::onSharingToggled,
+                        )
+                    }
+
+                    if (state.sharingOn) {
+                        FieldLabel("With")
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            state.shareOptions.forEach { option ->
+                                FilterChip(
+                                    selected = state.containerId != null &&
+                                        (
+                                            option.containerId == state.containerId ||
+                                                state.mintedWith == option.plantId
+                                            ),
+                                    onClick = { viewModel.onShareWith(option) },
+                                    label = { Text(option.plantName) },
+                                )
+                            }
+                        }
+                        // Said here rather than discovered later in the
+                        // timeline. Rows appearing on a plant you did not touch
+                        // read as a bug unless you were told they would.
+                        state.sharesWith?.let { shared ->
+                            Text(
+                                "Watering, checking and feeding will be recorded on " +
+                                    "${shared.plantName} too, since it is the same pot. " +
+                                    "Everything else stays on this plant alone.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            if (shared.weightTracked) {
+                                Text(
+                                    "Weighing stays with ${shared.plantName}: a pot " +
+                                        "weighs as one object, so only one plant in it " +
+                                        "can be the one on the scale.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        } ?: Text(
+                            "Pick the plant it shares with.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     }
                 }
 
