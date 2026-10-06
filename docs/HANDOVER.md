@@ -11,7 +11,7 @@ Last updated: 2026-10-04
 ## Status
 
 **Phase: feature-complete, not defect-free. All 102 features are built or
-deliberately closed. Schema v14, 277 JVM tests and 16 instrumented tests
+deliberately closed. Schema v15, 302 JVM tests and 23 instrumented tests
 passing, running daily on the target phone.**
 
 **The council review is closed.** A twelve-agent council confirmed 21 findings
@@ -22,12 +22,13 @@ corrected their own original claim.
 
 Repo: https://github.com/Dheirav/ThirstTrap (branch `main`).
 
-- **277 JVM tests** across `:core:domain` and `:core:ui`, running in about a
+- **302 JVM tests** across `:core:domain` and `:core:ui`, running in about a
   second with no device attached.
-- **13 instrumented tests** in `:core:data`, covering schema migrations, the
+- **23 instrumented tests** in `:core:data`, all passing on the phone as of
+  2026-10-07, covering schema migrations, the
   reminder planning that gathers its own inputs, and the export/import round
   trip. These need a phone.
-- Schema is at **v11**, every step an auto-migration, `exportSchema` on and
+- Schema is at **v15**, every step an auto-migration, `exportSchema` on and
   `schemas/*.json` committed. `fallbackToDestructiveMigration` appears nowhere.
 - The app runs daily on a Redmi Note 15 Pro against four real plants. Most of
   the defects in the decisions log below were found that way rather than at the
@@ -49,6 +50,30 @@ Six features, all M4 Phase 2, plus one decision:
   plant, shown only where weight means anything. Saving an edit now also
   replans the check reminder, because the trigger moves the prediction that
   the interval is derived from.
+
+### Shared containers, 2026-10-06
+
+Two plants in one pot are one pot. `container_id` on `plants` groups them;
+`share_group_id` on `care_events` ties the copies of one shared event together
+so an edit or a delete reaches all of them. Watering, checking and feeding fan
+out to everyone in the pot; everything else stays on the plant it happened to.
+The reminder worker collapses a pot's due reminders into one notification
+naming every plant in it, while the rows stay one per plant.
+
+Written because the Fittonia cutting went into the parent's jar on Oct 6, which
+made the double entry real and left the jar with two reminders six days apart.
+
+Two things worth remembering. The fan-out lives in its own `ContainerSharing`
+rather than inside `PlantRepositoryImpl`, because `WeightRepositoryImpl` also
+writes a `WATERED` when a post-water weigh-in implies one nobody logged, and
+that is a real watering of a real pot: two copies of the logic would have
+drifted. And `shareGroupId` sits at the END of the domain `CareEvent` even
+though it reads better next to `plantId`, because that class is constructed
+positionally throughout the tests and inserting a parameter in the middle
+silently rebinds every one of them. It did, and the compiler caught it.
+
+The full reasoning, including the overwatering conclusion that was wrong and
+why, is in `docs/SHARED-CONTAINERS.md`.
 
 ### The habit worth keeping
 

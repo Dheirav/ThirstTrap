@@ -8,6 +8,53 @@ hours.
 
 ---
 
+## 0. WSL's own adb now works too, via usbipd (2026-10-07)
+
+Section 1 below is still true and still the simplest route. This is the other
+one, set up on 2026-10-07 so that Gradle's `connectedAndroidTest` could reach
+the phone from inside WSL, which the Windows adb cannot serve.
+
+Three things had to be true, and each failed in a way that pointed somewhere
+else first:
+
+1. **The device has to be attached to WSL.** `usbipd attach --wsl --busid <id>`
+   from PowerShell. The giveaway when it is not: `usbipd list` shows the phone
+   only under *Persisted*, which is a remembered share and not a live device,
+   while *Connected* lists everything else. Nothing about the error says this.
+2. **A udev rule, or the node is unreadable.** Attached, the phone appears as
+   `/dev/bus/usb/001/003` owned `root:root` mode 0660, and adb reports
+   `no permissions (missing udev rules?)`. `/etc/udev/rules.d/51-android.rules`
+   puts vendors `18d1` (what it presents in ADB mode) and `2717` (Xiaomi's own,
+   for fastboot and MTP) into `plugdev`. systemd and udevd both run here, so the
+   rule fires on replug and this is a one-time fix.
+3. **`adb install` hangs, and `pm install` does not.** This is the one that
+   wastes an evening. Gradle's installer streams through `install-write` and
+   stalls indefinitely over usbipd with no error and no on-device prompt, so it
+   looks like the phone is refusing. It is not: push the APK and install it from
+   the device shell and it returns `Success` immediately.
+
+```bash
+export PATH="$HOME/Android/Sdk/platform-tools:$PATH"
+APK=core/data/build/outputs/apk/androidTest/debug/data-debug-androidTest.apk
+adb push "$APK" /data/local/tmp/tt-test.apk
+adb shell pm install -r -t /data/local/tmp/tt-test.apk
+adb shell am instrument -w \
+  dev.dheirav.thirsttrap.data.test/androidx.test.runner.AndroidJUnitRunner
+adb shell rm -f /data/local/tmp/tt-test.apk
+```
+
+Add `-e class <Class>` or `-e class <Class>#<method>` to run one. This is the
+route to use for `:core:data`'s instrumented tests until the install stall is
+understood; `./gradlew :core:data:connectedDebugAndroidTest` fails at the
+install step with `Failed to install-write all apks` and never runs a test.
+
+A note on port 5037: a bind failure reading `Address already in use` does not
+mean something holds it. `networkingMode=mirrored` shares the Windows stack, so
+`ss` inside Linux cannot see a Windows owner and the obvious conclusion is that
+there is one. On 2026-10-07 there was not: `netstat.exe -ano` showed no listener
+on either side and `netsh int ipv4 show excludedportrange` showed no reservation.
+It was a stale socket and it cleared on its own. Check before killing things.
+
 ## 1. USB works — through the *Windows* adb, not WSL's
 
 **Wired debugging works.** Verified 2026-09-06 with the Note 15 Pro attached

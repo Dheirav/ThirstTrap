@@ -49,12 +49,30 @@ enum class LastWatered(val label: String, val daysAgo: Int?) {
     UNKNOWN("Not sure", null),
 }
 
+/**
+ * A pot this plant could be put in, offered as the plant already in it.
+ *
+ * There is no containers table, so a container has no name of its own and is
+ * identified by who is already standing in it. "Share a pot with the Fittonia"
+ * is also how someone would say it out loud, which is the better reason.
+ */
+data class ShareOption(
+    val plantId: String,
+    val plantName: String,
+    /** The container that plant is already in, or null if it is in its own. */
+    val containerId: String?,
+    val weightTracked: Boolean,
+)
+
 data class PlantEditUiState(
     val id: String? = null,
     val name: String = "",
     val species: String = "",
     val location: String = "",
     val containerDesc: String = "",
+    /** Null means this plant is in its own pot, which is the ordinary case. */
+    val containerId: String? = null,
+    val shareOptions: List<ShareOption> = emptyList(),
     val defaultWaterMl: String = "",
     val checkIntervalDays: String = "",
     val targetDryness: String = "",
@@ -72,6 +90,12 @@ data class PlantEditUiState(
     // prefilled, with nothing to notice.
     val depletionTriggerPct: Int = DEFAULT_DEPLETION_TRIGGER_PCT,
     val weightTracked: Boolean = true,
+    /**
+     * Set when the chosen neighbour had no container of its own, so saving has
+     * to put that plant into the new one as well. Null when joining a pot that
+     * already exists.
+     */
+    val mintedWith: String? = null,
     val weighingMethod: dev.dheirav.thirsttrap.domain.WeighingMethod =
         dev.dheirav.thirsttrap.domain.WeighingMethod.WHOLE_POT,
     val weighingStep: String = "1",
@@ -102,6 +126,17 @@ data class PlantEditUiState(
      * new plant has no anchors to invalidate, and reopening the form without
      * touching anything must not throw a drying history away.
      */
+    /**
+     * The plant whose pot we are about to mint, so it can be put in it too.
+     * Null when joining a container that already exists.
+     */
+    val sharesWith: ShareOption?
+        get() = containerId?.let { cid -> shareOptions.firstOrNull { it.containerId == cid } }
+            ?: mintedWith?.let { id -> shareOptions.firstOrNull { it.plantId == id } }
+
+    fun pendingContainerFor(plantId: String): String? =
+        if (mintedWith == plantId) containerId else null
+
     val weighingChanged: Boolean
         get() = originalWeighingMethod != null &&
             (
@@ -134,6 +169,7 @@ class PlantEditViewModel @Inject constructor(
                         species = p.species.orEmpty(),
                         location = p.location.orEmpty(),
                         containerDesc = p.containerDesc.orEmpty(),
+                        containerId = p.containerId,
                         defaultWaterMl = p.defaultWaterMl?.toInt()?.toString().orEmpty(),
                         targetDryness = p.targetDryness.orEmpty(),
                         lightNeeds = p.lightNeeds.orEmpty(),
@@ -158,6 +194,15 @@ class PlantEditViewModel @Inject constructor(
                     )
                 }
             }
+        }
+        // Who else there is to share a pot with. Archived plants are left out:
+        // offering to put a cutting in with something that is no longer on the
+        // shelf is offering a mistake.
+        viewModelScope.launch {
+            val others = repository.observePlants().first()
+                .filter { it.id != plantId && !it.archived }
+                .map { ShareOption(it.id, it.name, it.containerId, it.weightTracked) }
+            _state.value = _state.value.copy(shareOptions = others)
         }
         // A new plant's form starts on the settings default rather than the
         // data-class 0.5, so what the user sees is what a plain save stores.
@@ -215,6 +260,30 @@ class PlantEditViewModel @Inject constructor(
     }
     fun onLocation(v: String) { _state.value = _state.value.copy(location = v) }
     fun onContainer(v: String) { _state.value = _state.value.copy(containerDesc = v) }
+
+    /** Its own pot. */
+    fun onOwnContainer() { _state.value = _state.value.copy(containerId = null) }
+
+    /**
+     * Share a pot with the plant in this option.
+     *
+     * If that plant is already in a container this joins it; if it is in its
+     * own, a container is minted here and the save puts them both in it. The
+     * id is generated now rather than at save time so that choosing the same
+     * neighbour twice does not create two pots.
+     */
+    fun onShareWith(option: ShareOption) {
+        val s = _state.value
+        val target = option.containerId ?: s.pendingContainerFor(option.plantId) ?: newId()
+        _state.value = s.copy(
+            containerId = target,
+            mintedWith = if (option.containerId == null) option.plantId else null,
+            // A pot weighs as one object, so two plants in it would each build
+            // a model of the same pot and both be wrong. The neighbour keeps
+            // its weighing, since it is the one with the history.
+            weightTracked = if (option.weightTracked) false else s.weightTracked,
+        )
+    }
     fun onMedium(v: Medium) { _state.value = _state.value.copy(medium = v) }
     fun onWeightTracked(v: Boolean) { _state.value = _state.value.copy(weightTracked = v) }
 
@@ -288,6 +357,7 @@ class PlantEditViewModel @Inject constructor(
                 location = s.location.trim().takeIf { it.isNotEmpty() },
                 status = s.status,
                 containerDesc = s.containerDesc.trim().takeIf { it.isNotEmpty() },
+                containerId = s.containerId,
                 defaultWaterMl = s.defaultWaterMl.toDoubleOrNull(),
                 targetDryness = s.targetDryness.trim().takeIf { it.isNotEmpty() },
                 lightNeeds = s.lightNeeds.trim().takeIf { it.isNotEmpty() },
@@ -306,6 +376,15 @@ class PlantEditViewModel @Inject constructor(
                 archived = s.archived,
             )
             repository.upsertPlant(edited)
+
+            // Putting two plants in one pot is a change to both of them. The
+            // neighbour is written only when its pot was minted here; joining
+            // one it already had leaves it alone.
+            s.mintedWith?.let { otherId ->
+                repository.observePlant(otherId).first()?.let { other ->
+                    repository.upsertPlant(other.copy(containerId = s.containerId))
+                }
+            }
 
             // An explicit cadence, if the user gave one. Null means "work it
             // out from the log", which is what resolveIntervalDays does.

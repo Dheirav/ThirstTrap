@@ -148,6 +148,45 @@ class MigrationTest {
     }
 
     @Test
+    fun migrate14To15_leavesEveryPlantInItsOwnPot() {
+        helper.createDatabase(TEST_DB, 14).use { db ->
+            db.execSQL(
+                """
+                INSERT INTO plants (
+                    id, name, source, medium, status, depletion_trigger,
+                    dry_anchor_provisional, needs_recalibration, weight_tracked,
+                    weighing_method, weighing_step_grams,
+                    archived, created_at, updated_at
+                ) VALUES ('p1', 'Fittonia', 'bought', 'soil', 'active', 0.5, 0, 0, 1,
+                          'WHOLE_POT', 1.0, 0, 1000, 1000)
+                """.trimIndent(),
+            )
+            db.execSQL(
+                """
+                INSERT INTO care_events (
+                    id, plant_id, timestamp, tz_offset_minutes, type, created_at, updated_at
+                ) VALUES ('e1', 'p1', 2000, 330, 'WATERED', 2000, 2000)
+                """.trimIndent(),
+            )
+        }
+
+        val db = helper.runMigrationsAndValidate(TEST_DB, 15, true)
+
+        // Null on both counts is the whole contract of this migration: a plant
+        // that existed before containers is in its own pot, and an event that
+        // existed before sharing is not a copy of anything. Anything else would
+        // change the behaviour of a diary on upgrade.
+        db.query("SELECT container_id FROM plants WHERE id = 'p1'").use {
+            assertTrue("the plant did not survive the migration", it.moveToFirst())
+            assertTrue("an existing plant must not land in a container", it.isNull(0))
+        }
+        db.query("SELECT share_group_id FROM care_events WHERE id = 'e1'").use {
+            assertTrue("the event did not survive the migration", it.moveToFirst())
+            assertTrue("an existing event must not look like a shared copy", it.isNull(0))
+        }
+    }
+
+    @Test
     fun migrateAll_fromTheOldestSchemaForward() {
         helper.createDatabase(TEST_DB, 1).close()
         // Every auto-migration in sequence, validated against the exported

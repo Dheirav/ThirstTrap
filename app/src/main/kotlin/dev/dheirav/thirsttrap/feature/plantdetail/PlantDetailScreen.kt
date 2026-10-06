@@ -339,7 +339,7 @@ fun PlantDetailScreen(
                         PlantHero(
                             path = hero,
                             name = plant?.name.orEmpty(),
-                            chips = plantChips(plant),
+                            chips = plantChips(plant, state.allPlants),
                             // The cover photo is the largest image on the screen
                             // and tapping it did nothing at all.
                             onOpen = { state.photos.firstOrNull()?.let { viewing = it } },
@@ -359,7 +359,7 @@ fun PlantDetailScreen(
                                 )
                             }
                             Text(
-                                plantChips(plant).joinToString(" · "),
+                                plantChips(plant, state.allPlants).joinToString(" · "),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -886,13 +886,27 @@ private fun cadenceLabel(avgDays: Double): String = when (val d = avgDays.toInt(
  * Semi-hydro or water is different: that is a fact about the pot you cannot
  * always see, and it changes how the weight model reads.
  */
-private fun plantChips(plant: dev.dheirav.thirsttrap.domain.Plant?): List<String> = listOfNotNull(
+private fun plantChips(
+    plant: dev.dheirav.thirsttrap.domain.Plant?,
+    allPlants: List<dev.dheirav.thirsttrap.domain.Plant> = emptyList(),
+): List<String> = listOfNotNull(
     // People name a plant after what it is, and then the hero read
     // "Fittonia" over "Fittonia".
     plant?.species?.takeIf { it.isNotBlank() && !it.equals(plant.name, ignoreCase = true) },
     plant?.location?.takeIf { it.isNotBlank() },
     plant?.medium?.takeIf { it != dev.dheirav.thirsttrap.domain.Medium.SOIL }?.label?.lowercase(),
     plant?.containerDesc?.takeIf { it.isNotBlank() },
+    // Who else is in this pot. Worth a chip because the timeline will show
+    // waterings this plant never had logged against it directly, and a shared
+    // row with nothing to explain it reads as a bug rather than as a pot.
+    plant?.containerId?.let { cid ->
+        val mates = allPlants.filter { it.containerId == cid && it.id != plant.id }
+        when (mates.size) {
+            0 -> null
+            1 -> "shares a pot with ${mates[0].name}"
+            else -> "shares a pot with ${mates.size} others"
+        }
+    },
 )
 
 /**

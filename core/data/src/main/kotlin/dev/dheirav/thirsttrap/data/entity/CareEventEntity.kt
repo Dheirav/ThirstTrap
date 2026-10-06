@@ -22,11 +22,23 @@ import androidx.room.PrimaryKey
         Index(value = ["plant_id", "timestamp"], orders = [Index.Order.ASC, Index.Order.DESC]),
         Index(value = ["type", "timestamp"]),
         Index("timestamp"),
+        Index("share_group_id"),
     ],
 )
 data class CareEventEntity(
     @PrimaryKey val id: String,
     @ColumnInfo(name = "plant_id") val plantId: String,
+    /**
+     * Ties together the copies of one shared-container event, so an edit or a
+     * delete can find the whole set. Null for an ordinary event, which is every
+     * event written before containers existed.
+     *
+     * The alternative was to store the event once on the container and union it
+     * in at read time, which needs no copies and no group. It was not taken
+     * because 33 call sites across 20 files read a plant's events and every one
+     * would have had to learn about containers, against 5 that write one.
+     */
+    @ColumnInfo(name = "share_group_id") val shareGroupId: String? = null,
     /** UTC millis. Paired with tz_offset_minutes - see docs/DATA-MODEL.md. */
     val timestamp: Long,
     @ColumnInfo(name = "tz_offset_minutes") val tzOffsetMinutes: Int,

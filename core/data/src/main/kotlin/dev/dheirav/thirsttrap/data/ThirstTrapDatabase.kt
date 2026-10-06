@@ -41,7 +41,7 @@ import dev.dheirav.thirsttrap.data.entity.ExperimentSubjectEntity
  * recorded the wrong schema version, and the importer's "written by a newer
  * version of the app" warning has been comparing against a stale number.
  */
-const val DATABASE_VERSION = 14
+const val DATABASE_VERSION = 15
 
 @Database(
     entities = [PlantEntity::class, CareEventEntity::class, ReminderEntity::class, PhotoEntity::class, WeightReadingEntity::class, AmbientReadingEntity::class, LocationNoteEntity::class, FertilizerEntity::class, UsageEventEntity::class, ExperimentEntity::class, ExperimentSubjectEntity::class],
@@ -74,6 +74,10 @@ const val DATABASE_VERSION = 14
         // v14 adds two columns to plants, both with defaults matching the
         // behaviour every existing row already had.
         AutoMigration(from = 13, to = 14),
+        // v15 adds one nullable column to plants and one to care_events, for
+        // shared containers. Both default to null, which is "in its own pot"
+        // and "not a shared copy", so every existing row keeps its behaviour.
+        AutoMigration(from = 14, to = 15),
     ],
 )
 abstract class ThirstTrapDatabase : RoomDatabase() {

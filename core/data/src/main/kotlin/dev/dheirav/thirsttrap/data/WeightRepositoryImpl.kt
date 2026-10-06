@@ -28,6 +28,7 @@ class WeightRepositoryImpl @Inject constructor(
     private val weightDao: WeightDao,
     private val plantDao: PlantDao,
     private val eventDao: CareEventDao,
+    private val sharing: ContainerSharing,
 ) : WeightRepository {
 
     override fun observeWeightState(plantId: String): Flow<WeightState> =
@@ -85,17 +86,20 @@ class WeightRepositoryImpl @Inject constructor(
                     it.type == CareEventType.WATERED.name && it.amountMl != null
                 }?.amountMl
 
-            eventDao.insert(
-                CareEvent(
-                    id = newId(),
-                    plantId = plantId,
-                    timestampMillis = wateredAt,
-                    tzOffsetMinutes = tzOffsetMinutesAt(wateredAt),
-                    type = CareEventType.WATERED,
-                    amountMl = amount,
-                    note = "Logged from the post-water weigh-in",
-                ).toEntity(createdAt = now, updatedAt = now),
+            // This is a real watering of a real pot, so it shares like any
+            // other. It is the easiest one to forget, because it is written
+            // here and not through logEvent.
+            val inferred = CareEvent(
+                id = newId(),
+                plantId = plantId,
+                timestampMillis = wateredAt,
+                tzOffsetMinutes = tzOffsetMinutesAt(wateredAt),
+                type = CareEventType.WATERED,
+                amountMl = amount,
+                note = "Logged from the post-water weigh-in",
             )
+            eventDao.insert(inferred.toEntity(createdAt = now, updatedAt = now))
+            sharing.fanOut(inferred, now)
             backfilled = true
             TTLog.i(TTLog.DATA) { "backfilled watering (${amount ?: "?"} ml) for $plantId" }
         }

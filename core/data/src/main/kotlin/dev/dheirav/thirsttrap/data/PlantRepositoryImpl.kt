@@ -34,6 +34,7 @@ class PlantRepositoryImpl @Inject constructor(
     private val photoDao: PhotoDao,
     private val photoStore: PhotoStore,
     private val weightDao: WeightDao,
+    private val sharing: ContainerSharing,
 ) : PlantRepository {
 
     override fun observePlants(includeArchived: Boolean): Flow<List<Plant>> =
@@ -215,12 +216,22 @@ class PlantRepositoryImpl @Inject constructor(
         val now = System.currentTimeMillis()
         eventDao.insert(event.toEntity(createdAt = now, updatedAt = now))
         TTLog.i(TTLog.DATA) { "log ${event.type} for ${event.plantId} (${event.id})" }
+        sharing.fanOut(event, now)
         return event.id
     }
 
     override suspend fun deleteEvent(eventId: String) {
         TTLog.i(TTLog.DATA) { "delete event $eventId" }
-        eventDao.delete(eventId)
+        // Deleting one copy of a shared watering leaves the rest claiming it
+        // happened, so the whole group goes. The user watered the pot once;
+        // undoing that undoes it once.
+        val groupId = eventDao.shareGroupOf(eventId)
+        if (groupId != null) {
+            eventDao.deleteShareGroup(groupId)
+            TTLog.i(TTLog.DATA) { "  (shared event, removed the whole group $groupId)" }
+        } else {
+            eventDao.delete(eventId)
+        }
     }
 
     override suspend fun setPropagationStage(plantId: String, stage: PropagationStage) {
@@ -266,5 +277,20 @@ class PlantRepositoryImpl @Inject constructor(
             ),
         )
         TTLog.i(TTLog.DATA) { "edit event ${event.id}" }
+
+        // Correct a shared watering on one plant and the copies have to follow,
+        // or the pot's own history disagrees with itself. Identity stays put:
+        // each copy keeps its id, its plant and its group, and takes only the
+        // facts that were edited.
+        val groupId = event.shareGroupId ?: return
+        for (copy in eventDao.inShareGroup(groupId)) {
+            if (copy.id == event.id) continue
+            eventDao.upsert(
+                event.copy(id = copy.id, plantId = copy.plantId, shareGroupId = groupId)
+                    .toEntity(createdAt = copy.createdAt, updatedAt = now),
+            )
+        }
+        TTLog.i(TTLog.DATA) { "  (shared event, edit applied across group $groupId)" }
     }
+
 }

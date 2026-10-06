@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "plants",
-    indices = [Index("status"), Index("location"), Index("archived")],
+    indices = [Index("status"), Index("location"), Index("archived"), Index("container_id")],
 )
 data class PlantEntity(
     @PrimaryKey val id: String,
@@ -23,6 +23,14 @@ data class PlantEntity(
     val location: String? = null,
     val status: String,
     @ColumnInfo(name = "container_desc") val containerDesc: String? = null,
+    /**
+     * The pot or jar this plant physically shares with others, or null for a
+     * plant in its own. Opaque: there is no containers table, because a
+     * container has no properties of its own that the plants do not already
+     * carry, and a table would need a name the user would then have to invent.
+     * Plants with equal non-null values are in the same thing.
+     */
+    @ColumnInfo(name = "container_id") val containerId: String? = null,
     @ColumnInfo(name = "pot_diameter_cm") val potDiameterCm: Double? = null,
     @ColumnInfo(name = "has_drainage") val hasDrainage: Boolean? = null,
     @ColumnInfo(name = "target_dryness") val targetDryness: String? = null,

@@ -125,6 +125,11 @@ data class Plant(
     val location: String? = null,
     val status: PlantStatus = PlantStatus.ACTIVE,
     val containerDesc: String? = null,
+    /**
+     * The pot or jar this plant physically shares with others, or null for a
+     * plant in its own. Plants with equal non-null values are in the same one.
+     */
+    val containerId: String? = null,
     val potDiameterCm: Double? = null,
     val hasDrainage: Boolean? = null,
     val source: PlantSource = PlantSource.UNKNOWN,
@@ -236,6 +241,15 @@ data class CareEvent(
      * than quietly averaging over.
      */
     val propagationStage: PropagationStage? = null,
+    /**
+     * Set on every copy of one shared-container event, so an edit or a delete
+     * can find the whole set. See CareEventEntity.
+     *
+     * Last, and not next to plantId where it reads better, because this class
+     * is constructed positionally in a lot of tests and inserting a parameter
+     * in the middle silently rebinds every one of them.
+     */
+    val shareGroupId: String? = null,
 )
 
 @Serializable
