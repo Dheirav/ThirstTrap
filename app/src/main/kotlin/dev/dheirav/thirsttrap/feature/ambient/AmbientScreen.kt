@@ -171,8 +171,11 @@ fun AmbientScreen(onBack: () -> Unit, viewModel: AmbientViewModel = hiltViewMode
                     value = note,
                     onValueChange = { note = it },
                     label = { Text("Note (optional)") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                    // The app has four Note fields and the other three already
+                    // wrap. This one was the odd one out, which is the drift
+                    // DESIGN-COHERENCE-PLAN section 2 is about: a convention
+                    // that holds everywhere it was remembered.
+                    modifier = Modifier.fillMaxWidth().padding(top = Space.Entry),
                 )
                 Button(
                     onClick = { viewModel.record(location, tempValue, humidityValue, note) },

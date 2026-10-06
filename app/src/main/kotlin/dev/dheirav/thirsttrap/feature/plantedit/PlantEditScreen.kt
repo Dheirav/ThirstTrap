@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
+import dev.dheirav.thirsttrap.ui.Space
 import dev.dheirav.thirsttrap.ui.Switch
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Column
@@ -41,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.ui.AlmanacDialog
@@ -100,8 +100,8 @@ fun PlantEditScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(Space.Block),
+            verticalArrangement = Arrangement.spacedBy(Space.Block),
         ) {
             // The name is the only thing save is gated on, and seven labels
             // reading "(optional)" said that seven times without ever saying
@@ -196,7 +196,7 @@ fun PlantEditScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                        Spacer(Modifier.size(12.dp))
+                        Spacer(Modifier.size(Space.Entry))
                         Switch(
                             checked = state.sharingOn,
                             onCheckedChange = viewModel::onSharingToggled,
@@ -205,7 +205,7 @@ fun PlantEditScreen(
 
                     if (state.sharingOn) {
                         FieldLabel("With")
-                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(Space.Line)) {
                             state.shareOptions.forEach { option ->
                                 FilterChip(
                                     selected = state.containerId != null &&
@@ -247,7 +247,7 @@ fun PlantEditScreen(
                 }
 
                 FieldLabel("Growing medium")
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Space.Line)) {
                     Medium.entries.filter { it != Medium.UNKNOWN }.forEach { m ->
                         FilterChip(
                             selected = state.medium == m,
@@ -258,7 +258,7 @@ fun PlantEditScreen(
                 }
 
                 FieldLabel("Where it came from")
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Space.Line)) {
                     PlantSource.entries.filter { it != PlantSource.UNKNOWN }.forEach { s ->
                         FilterChip(
                             selected = state.source == s,
@@ -312,7 +312,15 @@ fun PlantEditScreen(
                     onValueChange = viewModel::onTargetDryness,
                     label = { Text("How dry before watering") },
                     placeholder = { Text("top 2-3 cm dry, nearly weightless, keep damp") },
-                    singleLine = true,
+                    // Wraps, like every other free-text field in the app. This
+                    // was single-line, and the species catalogue writes two
+                    // sentences into it: 148 of 164 entries are longer than the
+                    // box fits, so typing a species name was enough to clip the
+                    // care note mid-word with no user action at all. A clipped
+                    // sentence reads as broken rather than as shortened, and
+                    // UI-SPEC section 8 requires 200% font scale without
+                    // clipping, which a one-line box holding prose cannot do at
+                    // any scale.
                     modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
@@ -320,7 +328,7 @@ fun PlantEditScreen(
                     onValueChange = viewModel::onLightNeeds,
                     label = { Text("Light") },
                     placeholder = { Text("bright indirect, shade") },
-                    singleLine = true,
+                    // Same, at 92 of 164 entries.
                     modifier = Modifier.fillMaxWidth(),
                 )
                 OutlinedTextField(
@@ -355,7 +363,7 @@ fun PlantEditScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                        Spacer(Modifier.size(12.dp))
+                        Spacer(Modifier.size(Space.Entry))
                         Switch(
                             checked = state.weightTracked,
                             onCheckedChange = viewModel::onWeightTracked,
@@ -393,7 +401,7 @@ fun PlantEditScreen(
                 // scale's step are what make one reading comparable to the next.
                 if (state.medium != Medium.WATER && state.weightTracked) {
                     FieldLabel("How you weigh it")
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(Space.Line)) {
                         WeighingMethod.entries.forEach { m ->
                             FilterChip(
                                 selected = state.weighingMethod == m,
@@ -439,7 +447,7 @@ fun PlantEditScreen(
                                         "watering and they set themselves again.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.padding(top = 4.dp),
+                                    modifier = Modifier.padding(top = Space.Tight),
                                 )
                             }
                         }
@@ -455,7 +463,7 @@ fun PlantEditScreen(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Space.Line)) {
                     LastWatered.entries.forEach { w ->
                         FilterChip(
                             selected = state.lastWatered == w,
@@ -542,8 +550,8 @@ fun PlantEditScreen(
                         justAdded = null
                         onDone()
                     },
-                    contentPadding = PaddingValues(vertical = 4.dp),
-                    modifier = Modifier.padding(top = 4.dp),
+                    contentPadding = PaddingValues(vertical = Space.Tight),
+                    modifier = Modifier.padding(top = Space.Tight),
                 ) {
                     Text(
                         "Don't offer this again",
