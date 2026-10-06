@@ -4,6 +4,8 @@ import dev.dheirav.thirsttrap.ui.Disclosure
 import dev.dheirav.thirsttrap.ui.FieldLabel
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
+import androidx.compose.runtime.LaunchedEffect
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -64,13 +66,29 @@ fun PlantEditScreen(
     // The plant that was just added, held only long enough to ask about it.
     var justAdded by remember { mutableStateOf<String?>(null) }
     var confirmDelete by remember { mutableStateOf(false) }
+    // Discard protection. The back arrow used to call onDone directly, so a
+    // fifteen-control form threw everything away without a word: the one place
+    // in the app where a tap in the top-left corner destroys work.
+    //
+    // Dirty is measured, not guessed. PlantEditUiState is a data class, so the
+    // form as first loaded is kept and compared; typing one character into
+    // Species is a change and re-selecting the value already chosen is not.
+    // Nothing is asked of someone who opened the screen and changed their mind.
+    var baseline by remember { mutableStateOf<PlantEditUiState?>(null) }
+    LaunchedEffect(state.loading) {
+        if (!state.loading && baseline == null) baseline = state
+    }
+    val dirty = baseline?.let { it != state } == true
+    var confirmDiscard by remember { mutableStateOf(false) }
+    val leave: () -> Unit = { if (dirty) confirmDiscard = true else onDone() }
+    BackHandler(enabled = dirty) { confirmDiscard = true }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(if (state.isNew) "Add plant" else "Edit plant") },
                 navigationIcon = {
-                    IconButton(onClick = onDone) {
+                    IconButton(onClick = leave) {
                         Icon(AppIcons.arrowBack, contentDescription = "Back")
                     }
                 },
@@ -474,6 +492,37 @@ fun PlantEditScreen(
             },
         )
     }
+
+    if (confirmDiscard) {
+
+        AlmanacDialog(
+
+            onDismissRequest = { confirmDiscard = false },
+
+            title = if (state.isNew) "Discard this plant?" else "Discard your changes?",
+
+            confirm = {
+
+                TextButton(onClick = { confirmDiscard = false; onDone() }) { Text("Discard") }
+
+            },
+
+            dismiss = { TextButton(onClick = { confirmDiscard = false }) { Text("Keep editing") } },
+
+        ) {
+
+            DialogText(
+
+                if (state.isNew) "Nothing has been saved yet, so this plant will not exist."
+
+                else "The plant keeps what it had before you opened this screen.",
+
+            )
+
+        }
+
+    }
+
 
     if (confirmDelete) {
         AlmanacDialog(
