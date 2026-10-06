@@ -67,6 +67,7 @@ def facet_pot(loc, top_r=0.075, bot_r=0.058, h=0.130, sides=16, m=None, cut=Fals
     look.put(soil, look.mat('soil', look.SOIL, 0.95), smooth=True)
     col = crust = None
     strata = []
+    potroots = []
     import random as _r
     rnd_s = _r.Random(17)
     if cut:
@@ -125,8 +126,9 @@ def facet_pot(loc, top_r=0.075, bot_r=0.058, h=0.130, sides=16, m=None, cut=Fals
                               sy + (ey - sy) * (f ** 0.6) + math.cos(ph + f * 4.1) * wob * f,
                               sz + (ez - sz) * (f ** 1.4) + math.sin(ph * 1.7 + f * 6.4) * 0.0035))
             rad = rnd.uniform(0.0010, 0.0019)
-            look.put(parts.tube(spine, [rad * (1.0 - 0.84 * (t / (N - 1))) for t in range(N)],
-                                name='root', seg=6), root_m)
+            potroots.append(look.put(parts.tube(spine,
+                                     [rad * (1.0 - 0.84 * (t / (N - 1))) for t in range(N)],
+                                     name='root', seg=6), root_m))
             # Laterals, two to four per root and off the OUTER half of it, where
             # a root actually branches. One per root was too few to read.
             for _ in range(rnd.randint(2, 4)):
@@ -141,8 +143,8 @@ def facet_pot(loc, top_r=0.075, bot_r=0.058, h=0.130, sides=16, m=None, cut=Fals
                                 b0[1] + math.sin(a2) * ln2 * f2 * 0.7,
                                 b0[2] - ln2 * f2 * rnd.uniform(0.3, 0.9)))
                 rr = rad * rnd.uniform(0.30, 0.46)
-                look.put(parts.tube(lat, [rr, rr * 0.68, rr * 0.42, rr * 0.20],
-                                    name='root', seg=5), root_m)
+                potroots.append(look.put(parts.tube(lat, [rr, rr * 0.68, rr * 0.42, rr * 0.20],
+                                         name='root', seg=5), root_m))
 
         # --- detail in the cross-section, which is the whole subject of the shot.
         #
@@ -164,38 +166,51 @@ def facet_pot(loc, top_r=0.075, bot_r=0.058, h=0.130, sides=16, m=None, cut=Fals
         # Grit at the bottom, where a potted plant has its drainage. Small and
         # only a little paler than the mix, so it is a change of texture rather
         # than a stripe.
+        _grit = []
         for _ in range(55):
             a0 = rnd_s.uniform(0, 6.283); rr = rnd_s.uniform(0, top_r - 0.016)
-            bpy.ops.mesh.primitive_ico_sphere_add(
-                subdivisions=1, radius=rnd_s.uniform(0.0022, 0.0042),
-                location=(loc[0] + math.cos(a0) * rr, loc[1] + math.sin(a0) * rr,
-                          loc[2] + rnd_s.uniform(0.006, 0.022)))
-            g = bpy.context.object
-            g.rotation_euler = (rnd_s.uniform(0, 3), rnd_s.uniform(0, 3), rnd_s.uniform(0, 3))
-            look.put(g, grit_m)
-            strata.append(g)
+            _grit.append(((loc[0] + math.cos(a0) * rr, loc[1] + math.sin(a0) * rr,
+                           loc[2] + rnd_s.uniform(0.006, 0.022)),
+                          rnd_s.uniform(0.0022, 0.0042), (1.0, 1.0, 1.0),
+                          (rnd_s.uniform(0, 3), rnd_s.uniform(0, 3), rnd_s.uniform(0, 3))))
+        strata.append(grains(_grit, grit_m, subdiv=1, name='potgrit'))
 
         # Crumb sitting ON the cut plane, across its full width, and deliberately
         # NOT cut: sliced visually by the face while keeping their own
         # silhouettes, so it reads as broken earth instead of a surface a knife
         # went through. A perfectly flat cross-section is the tell that it is
         # geometry and not soil.
+        _fa, _fb = [], []
         for _ in range(130):
             x0 = rnd_s.uniform(-(top_r - 0.013), top_r - 0.013)
-            bpy.ops.mesh.primitive_ico_sphere_add(
-                subdivisions=1, radius=rnd_s.uniform(0.0018, 0.0040),
-                location=(loc[0] + x0, loc[1] + rnd_s.uniform(-0.0035, 0.0035),
-                          loc[2] + rnd_s.uniform(0.010, h - 0.048)))
-            c2 = bpy.context.object
-            c2.scale = (rnd_s.uniform(0.7, 1.3), rnd_s.uniform(0.5, 1.0), rnd_s.uniform(0.7, 1.3))
-            c2.rotation_euler = (rnd_s.uniform(0, 3), rnd_s.uniform(0, 3), rnd_s.uniform(0, 3))
-            look.put(c2, crumb_m[0] if rnd_s.random() < 0.55 else crumb_m[1])
+            g2 = ((loc[0] + x0, loc[1] + rnd_s.uniform(-0.0035, 0.0035),
+                   loc[2] + rnd_s.uniform(0.010, h - 0.048)),
+                  rnd_s.uniform(0.0018, 0.0040),
+                  (rnd_s.uniform(0.7, 1.3), rnd_s.uniform(0.5, 1.0), rnd_s.uniform(0.7, 1.3)),
+                  (rnd_s.uniform(0, 3), rnd_s.uniform(0, 3), rnd_s.uniform(0, 3)))
+            (_fa if rnd_s.random() < 0.55 else _fb).append(g2)
+        grains(_fa, crumb_m[0], subdiv=1, name='facecrumb')
+        grains(_fb, crumb_m[1], subdiv=1, name='facecrumb2')
 
     if cut:
-        knife = _cutter(loc)
-        for ob in [body, rim, soil] + [o for o in (col, crust) if o] + strata:
+        # TWO knives, because the pot and its contents want different cuts.
+        #
+        # The wall is opened all the way to the rim, which is what makes it read
+        # as a pot with its front off. The SOIL keeps its top surface, which is
+        # what gives the finger somewhere to press in plain view. One knife
+        # doing both is what went wrong twice over: cut to full height it took
+        # the soil's lid with the wall and the hand had nowhere to go but behind
+        # the pot; stopped short of the lid it left a collar of terracotta
+        # across the top that no plate has.
+        knife = _cutter(loc, h, keep_lid=False)
+        softknife = _cutter(loc, h, keep_lid=True)
+        grit = _join(strata, 'potgrit')
+        for ob in [body, rim]:
             b = ob.modifiers.new('cut', 'BOOLEAN'); b.operation = 'DIFFERENCE'
             b.object = knife
+        for ob in [soil] + [o for o in (col, crust) if o] + ([grit] if grit else []):
+            b = ob.modifiers.new('cut', 'BOOLEAN'); b.operation = 'DIFFERENCE'
+            b.object = softknife
         # The roots get their OWN knife, 9 mm in front of the pot's. Cut with
         # the pot's they were sliced flush and showed only their cross-sections,
         # which rendered as faint grey scratches; left uncut entirely they hung
@@ -203,18 +218,38 @@ def facet_pot(loc, top_r=0.075, bot_r=0.058, h=0.130, sides=16, m=None, cut=Fals
         # front of the soil rather than roots inside it. Nine millimetres proud
         # keeps their silhouette, which is what made the crumb read, while
         # leaving them bedded in the column.
-        rknife = _cutter(loc)
+        # Joined FIRST, then cut once. Each root used to carry its own boolean
+        # against the knife, and at 110 trunks with laterals that is 446 boolean
+        # modifiers evaluated on every render: the depth shot alone went to
+        # nearly seven minutes. One mesh and one boolean is the same result.
+        rknife = _cutter(loc, h)
         rknife.location.y -= 0.009
-        for o in bpy.data.objects:
-            if o.name.startswith('root'):
-                b = o.modifiers.new('cut', 'BOOLEAN'); b.operation = 'DIFFERENCE'
-                b.object = rknife
+        joined = _join(potroots, 'potroots')
+        if joined is not None:
+            b = joined.modifiers.new('cut', 'BOOLEAN'); b.operation = 'DIFFERENCE'
+            b.object = rknife
     return body, rim, soil
 
 
-def _cutter(loc):
-    bpy.ops.mesh.primitive_cube_add(size=1, location=(loc[0], loc[1] - 0.14, loc[2] + 0.07))
-    c = bpy.context.object; c.scale = (0.4, 0.28, 0.4)
+def _cutter(loc, h=0.130, keep_lid=True):
+    """The knife that opens the pot, stopping BELOW the soil's top surface.
+
+    It used to span the pot's whole height and more, so it took the top surface
+    away with the front wall. That left no soil anywhere a finger could reach
+    from the front: the hand had to go behind the pot to find any, where the
+    camera cannot see it, and when it stayed in front it hung over the hole.
+    Both complaints about this shot came from one cause.
+
+    The plate does the obvious thing instead, which took far too long to notice:
+    it cuts the WALL and keeps the LID. The soil surface runs the full width of
+    the pot, the finger presses it at the front in plain view, and the cross
+    section below shows the column. Stopping 12 mm under the surface leaves a
+    crust thick enough to read as ground rather than as a skin.
+    """
+    top = (loc[2] + h - 0.042) if keep_lid else (loc[2] + h + 0.08)
+    bot = loc[2] - 0.12
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(loc[0], loc[1] - 0.14, (top + bot) / 2))
+    c = bpy.context.object; c.scale = (0.4, 0.28, top - bot)
     c.hide_render = True; c.hide_viewport = True
     return c
 
@@ -347,6 +382,83 @@ def plant(at, leaf_m, stem_m, scale=1.0, n=6):
         look.put(bpy.context.object, stem_m)
 
 
+def _grain_template(subdiv):
+    """Verts and faces of one icosphere, made once and reused.
+
+    bpy.ops.mesh.primitive_ico_sphere_add is an OPERATOR: it runs context
+    handling, undo push and depsgraph work on every call. The crumb called it
+    1685 times and the scene took 364 seconds to BUILD, which is where the
+    render time had actually gone; the render itself was never slow.
+    """
+    key = ('_grain', subdiv)
+    cache = _grain_template.__dict__.setdefault('cache', {})
+    if key not in cache:
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=subdiv, radius=1.0,
+                                              location=(0, 0, 0))
+        o = bpy.context.object
+        verts = [tuple(v.co) for v in o.data.vertices]
+        faces = [tuple(pp.vertices) for pp in o.data.polygons]
+        bpy.data.objects.remove(o, do_unlink=True)
+        cache[key] = (verts, faces)
+    return cache[key]
+
+
+def grains(spec, m, subdiv=1, name='grains'):
+    """Many pebbles as ONE mesh, built in Python rather than by operator.
+
+    `spec` is (location, radius, (sx, sy, sz), (rx, ry, rz)) per grain. The
+    result is identical geometry to adding each one separately and joining
+    them, at a fraction of the cost, because nothing here touches an operator
+    or creates an object per grain.
+    """
+    tv, tf = _grain_template(subdiv)
+    verts, faces = [], []
+    for loc, r, sc3, rot in spec:
+        base = len(verts)
+        cx, sx_ = math.cos(rot[0]), math.sin(rot[0])
+        cy, sy_ = math.cos(rot[1]), math.sin(rot[1])
+        cz, sz_ = math.cos(rot[2]), math.sin(rot[2])
+        for vx, vy, vz in tv:
+            x, y, z = vx * r * sc3[0], vy * r * sc3[1], vz * r * sc3[2]
+            y, z = y * cx - z * sx_, y * sx_ + z * cx          # about X
+            x, z = x * cy + z * sy_, -x * sy_ + z * cy         # about Y
+            x, y = x * cz - y * sz_, x * sz_ + y * cz          # about Z
+            verts.append((loc[0] + x, loc[1] + y, loc[2] + z))
+        faces.extend(tuple(i + base for i in f) for f in tf)
+    me = bpy.data.meshes.new(name)
+    me.from_pydata(verts, [], faces)
+    me.update()
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.collection.objects.link(ob)
+    return look.put(ob, m)
+
+
+def _join(objs, name):
+    """Merge a list of meshes into one object.
+
+    Blender's cost here is per OBJECT, not per triangle. The macro set reached
+    4080 meshes for 437k triangles, and a seven-shot render went from five
+    minutes to over an hour: 1458 root tubes and 1500 crumb grains, each its own
+    object with its own transform, evaluation and draw. Joined, the geometry and
+    the picture are identical and the scene is a tenth of the objects.
+
+    Only safe for meshes carrying no modifiers, because join() applies the
+    ACTIVE object's modifier stack to everything it swallows. Everything passed
+    here is a plain tube or a plain sphere.
+    """
+    objs = [o for o in objs if o and o.name in bpy.data.objects]
+    if len(objs) < 2:
+        return objs[0] if objs else None
+    bpy.ops.object.select_all(action='DESELECT')
+    for o in objs:
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = objs[0]
+    bpy.ops.object.join()
+    out = bpy.context.view_layer.objects.active
+    out.name = name
+    return out
+
+
 def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     """The roots beat: inside the soil, not looking at a pot.
 
@@ -430,6 +542,8 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     # a pile of shards rather than as crumb. The plate's dirt is finer than its
     # roots are thick, and that relationship is what makes it read as soil.
     peb_m = look.mat('macrocrumb', look.srgb('#342618'), 0.98)
+    _crumb = []
+    _spec_peb, _spec_soil = [], []
     for _ in range(1500):
         side = -1 if rnd.random() < 0.5 else 1
         # Clear of the channel lip. Projecting the gap showed it occupying 15%
@@ -439,12 +553,10 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
         py = at[1] + rnd.uniform(-0.75, 0.75)
         pz = at[2] + 0.055 + rnd.uniform(-0.03, 0.05)
         r = rnd.uniform(0.004, 0.021)
-        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=r,
-                                              location=(px, py, pz))
-        o = bpy.context.object
-        o.scale = (rnd.uniform(0.7, 1.3), rnd.uniform(0.7, 1.3), rnd.uniform(0.4, 0.8))
-        o.rotation_euler = (rnd.uniform(0, 3), rnd.uniform(0, 3), rnd.uniform(0, 3))
-        look.put(o, peb_m if rnd.random() < 0.6 else soil_m)
+        g = ((px, py, pz), r,
+             (rnd.uniform(0.7, 1.3), rnd.uniform(0.7, 1.3), rnd.uniform(0.4, 0.8)),
+             (rnd.uniform(0, 3), rnd.uniform(0, 3), rnd.uniform(0, 3)))
+        (_spec_peb if rnd.random() < 0.6 else _spec_soil).append(g)
 
     # Roots that END at the channel, which is the entire beat.
     #
@@ -460,6 +572,7 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     # down, thinner than the root and lighter, because torn xylem is paler than
     # the root skin around it.
     torn_m = look.mat('macrotorn', look.srgb('#A69B82'), 0.90)
+    _roots = []
     for i in range(38):
         side = -1 if i % 2 else 1
         x0 = at[0] + side * rnd.uniform(0.60, 1.45)
@@ -477,9 +590,9 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
                           + rnd.uniform(-0.010, 0.010)))
         r = rnd.uniform(0.0072, 0.0132)
         inward_sign = -side
-        look.put(parts.tube(spine, [r * v for v in
-                                    (1.0, 0.96, 0.90, 0.83, 0.74, 0.63, 0.50, 0.36, 0.20)],
-                            name='macroroot', seg=7), root_m, smooth=True)
+        _roots.append(look.put(parts.tube(spine, [r * v for v in
+                                          (1.0, 0.96, 0.90, 0.83, 0.74, 0.63, 0.50, 0.36, 0.20)],
+                                          name='macroroot', seg=7), root_m, smooth=True))
         # Tuned against a MEASURED target, not by eye: the plate's roots cover
         # 13.4% of its frame above value 0.45. Before branching this shot ran
         # 5.9% and read as a few sticks on bare dirt; three generations of thick
@@ -507,8 +620,9 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
                 sp.append((p0[0] + d[0] * length * f2 + math.cos(ba) * amp * f2 * f2,
                            p0[1] + d[1] * length * f2 + math.sin(ba) * amp * f2 * f2,
                            p0[2] + d[2] * length * f2 + math.sin(f2 * 2.6 + ba) * amp * 0.30))
-            look.put(parts.tube(sp, [rad * (1.0 - 0.45 * (t2 / (M - 1))) for t2 in range(M)],
-                                name='macroroot', seg=7), root_m, smooth=True)
+            _roots.append(look.put(parts.tube(sp, [rad * (1.0 - 0.45 * (t2 / (M - 1)))
+                                                   for t2 in range(M)],
+                                             name='macroroot', seg=7), root_m, smooth=True))
             if level <= 0:
                 return
             for c in range(rnd.randint(2, 3)):
@@ -556,16 +670,23 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
         r = rnd.uniform(0.0020, 0.0038)
         sp = [(x0, y0, at[2] + 0.082), ((x0 + xe) / 2, y0 + rnd.uniform(-0.01, 0.01),
                                         at[2] + 0.094), (xe, y0, at[2] + 0.086)]
-        look.put(parts.tube(sp, [r, r * 0.7, r * 0.3], name='macroroot', seg=5),
-                 root_m, smooth=True)
+        _roots.append(look.put(parts.tube(sp, [r, r * 0.7, r * 0.3], name='macroroot', seg=5),
+                 root_m, smooth=True))
         for _ in range(rnd.randint(2, 4)):
             a2 = rnd.uniform(-1.0, 1.0)
             ln = rnd.uniform(0.012, 0.030)
-            look.put(parts.tube([(xe, y0, at[2] + 0.086),
+            _roots.append(look.put(parts.tube([(xe, y0, at[2] + 0.086),
                                  (xe - side * ln * math.cos(a2), y0 + ln * math.sin(a2) * 0.8,
                                   at[2] + 0.086 + rnd.uniform(-0.01, 0.006))],
                                 [r * 0.22, 0.0005], name='macroroot', seg=3),
-                     torn_m, smooth=True)
+                     torn_m, smooth=True))
+
+
+    # Two joins, and they are the whole reason this set renders in minutes
+    # rather than an hour. See _join: the cost is per object.
+    _join(_roots, 'macroroots')
+    grains(_spec_peb, peb_m, subdiv=2, name='macrocrumb')
+    grains(_spec_soil, soil_m, subdiv=2, name='macrocrumb_dark')
 
 
 ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets')
@@ -1399,7 +1520,7 @@ SHOTS = {
  'depth':         ((-0.60, -0.62, 0.86), (-0.12, 0.12, 0.825), 45, 38, 3.5),
  'roots':         ((0.0, -0.56, -4.44), (0.0, 0.0, -5.06), 40, 34, 2.2),
  'scale-table':   ((0.20, -1.00, 1.08), (0.34, 0.15, 1.00), 31, 26, None),
- 'phone-closeup': ((0.565, -0.375, 0.980), (0.47, -0.04, 0.773), 33, 27, 2.2),
+ 'phone-closeup': ((0.60, -0.40, 0.88), (0.42, 0.18, 0.84), 33, 27, 2.2),
 }
 
 

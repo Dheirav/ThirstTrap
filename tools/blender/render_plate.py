@@ -111,9 +111,17 @@ HANDS = {
     # so everything in front of 0.10 is REMOVED: the hand was reaching into the
     # hole where the pot used to be, which is why it hung in mid air with
     # nothing under it. The soil that survives the cut starts behind 0.10.
-    'depth':       dict(pot=(-0.18, 0.120),
-                        yaw=float(os.environ.get('TT_DYAW', -0.55)),
-                        pitch=float(os.environ.get('TT_DPITCH', 0.0)), len=0.17),
+    # The hand comes in from the SIDE here, not from the front, and the reason is
+    # the cut. The knife removes everything in front of y 0.100, so the soil that
+    # survives is a 65 mm strip from 0.100 to 0.165 while the hand is 150 mm
+    # long: front-on it cannot fit, and 53% of it hung over the void with
+    # nothing underneath. Swinging the arm round to yaw +0.8 lays the hand
+    # along that strip instead of across it, and measures 0% over the void.
+    # Back to a hand coming in from the RIGHT, where the camera can see it.
+    # It was swung round to the back to stop it hanging over the cut, which
+    # worked and cost the shot its subject: 0% over the void, and a hand hidden
+    # behind the pot. The real fix was the knife, not the yaw. See _cutter.
+    'depth':       dict(pot=(-0.18, 0.035), yaw=-0.55, pitch=0.0, len=0.17),
 }
 
 # Which shots the cut pot is in. Everywhere else it is struck, like a set.
