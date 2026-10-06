@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.intro
 
+import dev.dheirav.thirsttrap.ui.Flank
+
 import dev.dheirav.thirsttrap.ui.Space
 
 import androidx.compose.foundation.layout.Column
@@ -66,7 +68,7 @@ fun IntroScreen(
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(top = Space.Line),
             )
-            DoubleRule(Modifier.padding(top = Space.Entry, bottom = Space.Section))
+            DoubleRule()
 
             Point(
                 n = "1",
@@ -133,5 +135,5 @@ private fun Point(n: String, title: String, body: String, last: Boolean = false)
             )
         }
     }
-    if (!last) Rule(Modifier.padding(top = Space.Section, bottom = Space.Entry))
+    if (!last) Rule(flank = Flank.Section)
 }

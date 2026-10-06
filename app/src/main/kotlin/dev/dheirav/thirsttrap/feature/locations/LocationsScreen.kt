@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.locations
 
+import dev.dheirav.thirsttrap.ui.Flank
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -198,7 +200,7 @@ fun LocationsScreen(
                     // Light is a property of the spot, not of whichever pot
                     // happens to be standing in it, so you should not have to
                     // pick a plant first in order to ask about a window.
-                    Rule(Modifier.padding(top = 16.dp))
+                    Rule(flank = Flank.Section)
                     TextButton(
                         onClick = {
                             // Only if there is something to keep. Measuring a

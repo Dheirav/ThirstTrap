@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.care
 
+import dev.dheirav.thirsttrap.ui.Flank
+
 import dev.dheirav.thirsttrap.ui.Space
 
 import dev.dheirav.thirsttrap.ui.Rule
@@ -131,7 +133,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
                 }
             }
 
-            Rule(Modifier.padding(vertical = 16.dp))
+            Rule(flank = Flank.Section)
 
             SectionHead("Use these as this plant's settings")
             Text(

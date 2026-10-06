@@ -56,17 +56,40 @@ import androidx.compose.ui.unit.em
  * day when nothing needed doing.
  */
 
+/**
+ * How much air a rule gets. There are exactly two answers.
+ *
+ * Eighteen call sites used to pass their own padding and between them picked
+ * from seven different values: 4, 8, 12, 16, and three different pairs for the
+ * two sides. A rule's job is to say where one thing stops and the next starts,
+ * and it cannot say that consistently if the distance it holds is decided
+ * separately each time it is drawn.
+ *
+ * [Flank.Entry] is the common case and the default: a rule between entries in a
+ * list, which carries no padding at all because the entries own their own
+ * height. [Flank.Section] is a rule that ends a section, and takes a section's
+ * worth of air on both sides.
+ */
+enum class Flank { Entry, Section }
+
 /** A hairline. The workhorse - it replaces every card border in the app. */
 @Composable
 fun Rule(
     modifier: Modifier = Modifier,
+    flank: Flank = Flank.Entry,
     color: Color = MaterialTheme.colorScheme.outlineVariant,
     // A hairline by default, and one caller legitimately wants heavier: the
     // plant timeline marks a life event (repotted, medium changed, died) with a
     // 2dp tertiary rule. Leaving that as a raw HorizontalDivider would have kept
     // a second divider vocabulary alive for the sake of one deliberate exception.
     thickness: Dp = 1.dp,
-) = HorizontalDivider(modifier, thickness = thickness, color = color)
+) = HorizontalDivider(
+    modifier.then(
+        if (flank == Flank.Section) Modifier.padding(vertical = Space.Section) else Modifier,
+    ),
+    thickness = thickness,
+    color = color,
+)
 
 /**
  * The same hairline turned on its side, for a column boundary.
@@ -89,7 +112,11 @@ fun VerticalRule(
  */
 @Composable
 fun DoubleRule(modifier: Modifier = Modifier) {
-    Column(modifier) {
+    // The flank is baked in, because a DoubleRule only ever does one job: it is
+    // the rule under a running head. Eight call sites each passed their own and
+    // between them used four different pairs, which made the same piece of
+    // furniture sit differently on every screen that used it.
+    Column(modifier.padding(top = Space.Line, bottom = Space.Entry)) {
         HorizontalDivider(thickness = 2.dp, color = MaterialTheme.colorScheme.onSurface)
         androidx.compose.foundation.layout.Spacer(Modifier.height(2.dp))
         HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.onSurface)
@@ -133,7 +160,7 @@ fun Masthead(
             }
             trailing()
         }
-        DoubleRule(Modifier.padding(top = 8.dp))
+        DoubleRule()
     }
 }
 
@@ -167,7 +194,7 @@ fun SectionHead(text: String, modifier: Modifier = Modifier) {
             letterSpacing = 0.18.em,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Rule(Modifier.padding(top = 4.dp))
+        Rule()
     }
 }
 
@@ -246,9 +273,9 @@ fun AlmanacDialog(
             // bottom-heavy.
             Column(Modifier.padding(start = Space.Section, end = Space.Section, top = Space.Section, bottom = Space.Line)) {
                 ScreenTitle(title)
-                DoubleRule(Modifier.padding(top = 8.dp, bottom = 12.dp))
+                DoubleRule()
                 body()
-                Rule(Modifier.padding(top = 16.dp))
+                Rule(flank = Flank.Section)
                 Row(
                     Modifier.fillMaxWidth().padding(top = 4.dp),
                     horizontalArrangement = Arrangement.End,

@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.help
 
+import dev.dheirav.thirsttrap.ui.Flank
+
 import dev.dheirav.thirsttrap.ui.Space
 
 import androidx.compose.foundation.layout.Arrangement
@@ -128,20 +130,29 @@ fun WayfindingScreen(onBack: () -> Unit) {
                 "Nothing else in the app hides behind a hold. Tapping a photo opens the " +
                     "photo, tapping a diary entry opens the entry, and neither one can " +
                     "delete anything without asking first.",
-                top = 20,
             )
-            Rule(Modifier.padding(top = Space.Section, bottom = 24.dp))
+            Rule(flank = Flank.Section)
         }
     }
 }
 
+/**
+ * A paragraph, with the gap above it fixed.
+ *
+ * The gap used to be a parameter, `top: Int = 16`, and one of six call sites
+ * passed 20 to get a little more air before the closing note. Spacing as an
+ * argument of the content is the clearest symptom there is of a layout without
+ * a scale: it puts the decision at the call site, in raw points, where nobody
+ * can see the other five to compare against. The one call that wanted more
+ * separation was asking for a section break, and [Rule] below it already is one.
+ */
 @Composable
-private fun Para(text: String, top: Int = 16) {
+private fun Para(text: String) {
     Text(
         text,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = top.dp),
+        modifier = Modifier.padding(top = Space.Block),
     )
 }
 

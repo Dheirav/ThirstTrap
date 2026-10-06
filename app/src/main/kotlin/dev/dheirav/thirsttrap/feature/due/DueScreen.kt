@@ -126,7 +126,7 @@ fun DueScreen(
                         suggestedWaterMl = item.suggestedWaterMl,
                     )
                     TextButton(onClick = { viewModel.snooze(item) }) { Text("Snooze a day") }
-                    Rule(Modifier.padding(top = 8.dp))
+                    Rule()
                 }
             }
             if (state.items.size > 1) {

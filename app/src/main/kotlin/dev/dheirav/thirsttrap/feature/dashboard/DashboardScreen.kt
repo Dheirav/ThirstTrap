@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.dashboard
 
+import dev.dheirav.thirsttrap.ui.Flank
+
 import dev.dheirav.thirsttrap.ui.Space
 
 import dev.dheirav.thirsttrap.ui.EmptyState
@@ -782,7 +784,7 @@ private fun QuickLogSheet(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 2.dp),
         )
-        DoubleRule(Modifier.padding(top = Space.Line, bottom = 16.dp))
+        DoubleRule()
 
         WateringAnswer(
             onWatered = onWatered,
@@ -809,7 +811,7 @@ private fun QuickLogSheet(
             }
         }
 
-        Rule(Modifier.padding(top = Space.Section))
+        Rule(flank = Flank.Section)
         Row(Modifier.padding(top = 4.dp)) {
             TextButton(onClick = onHistory) { Text("History") }
             TextButton(onClick = onEdit) { Text("Edit plant") }

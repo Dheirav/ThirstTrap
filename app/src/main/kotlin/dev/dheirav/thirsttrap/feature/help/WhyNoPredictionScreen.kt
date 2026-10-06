@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.help
 
+import dev.dheirav.thirsttrap.ui.Flank
+
 import dev.dheirav.thirsttrap.ui.Space
 
 import androidx.compose.foundation.layout.Column
@@ -83,7 +85,7 @@ fun WhyNoPredictionScreen(asked: SuppressionReason?, onBack: () -> Unit) {
             } ?: SectionHead("What it can say")
 
             others.forEach { Explanation(helpFor(it), emphasised = false) }
-            Rule(Modifier.padding(top = Space.Section, bottom = 24.dp))
+            Rule(flank = Flank.Section)
         }
     }
 }
@@ -111,6 +113,6 @@ private fun Explanation(help: SuppressionHelp, emphasised: Boolean) {
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(top = 8.dp),
         )
-        Rule(Modifier.padding(top = 16.dp))
+        Rule(flank = Flank.Section)
     }
 }

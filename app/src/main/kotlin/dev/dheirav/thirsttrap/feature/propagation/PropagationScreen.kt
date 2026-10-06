@@ -154,7 +154,7 @@ private fun StageHead(label: String, count: Int, hint: String) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        Rule(Modifier.padding(top = 4.dp))
+        Rule()
         Text(
             hint,
             style = MaterialTheme.typography.bodySmall,

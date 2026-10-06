@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.help
 
+import dev.dheirav.thirsttrap.ui.Flank
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -115,7 +117,7 @@ fun BackupHelpScreen(onBack: () -> Unit) {
                     "session, since weight readings are the one thing in here that " +
                     "genuinely cannot be reconstructed from memory.",
             )
-            Rule(Modifier.padding(top = 24.dp, bottom = 24.dp))
+            Rule(flank = Flank.Section)
         }
     }
 }

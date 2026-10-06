@@ -146,7 +146,7 @@ fun DiagnoseScreen(onBack: () -> Unit, onLogEvent: (() -> Unit)? = null) {
                         Text("· $it", style = MaterialTheme.typography.bodyMedium)
                     }
 
-                    Rule(Modifier.padding(vertical = 8.dp))
+                    Rule()
                     onLogEvent?.let {
                         TextButton(onClick = it, modifier = Modifier.fillMaxWidth()) {
                             Text("Log what you found")

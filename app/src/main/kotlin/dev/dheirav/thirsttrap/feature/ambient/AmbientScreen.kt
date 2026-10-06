@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.ambient
 
+import dev.dheirav.thirsttrap.ui.Flank
+
 import dev.dheirav.thirsttrap.ui.Space
 
 import androidx.compose.foundation.layout.Arrangement
@@ -178,7 +180,7 @@ fun AmbientScreen(onBack: () -> Unit, viewModel: AmbientViewModel = hiltViewMode
                     modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                 ) { Text("Record") }
 
-                Rule(Modifier.padding(vertical = Space.Section))
+                Rule(flank = Flank.Section)
             }
 
             if (state.readings.isEmpty()) {

@@ -177,7 +177,7 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                     style = MaterialTheme.typography.titleMedium,
                     letterSpacing = 0.18.em,
                 )
-                DoubleRule(Modifier.padding(top = Space.Line, bottom = 12.dp))
+                DoubleRule()
                 weighed.forEach { r ->
                     val now = r.doneThisRound!!.grams
                     val before = r.last?.grams
@@ -199,7 +199,7 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                         )
                     }
                 }
-                Rule(Modifier.padding(top = 12.dp))
+                Rule()
                 Text(
                     "Each reading moves that plant's prediction. Nothing else to do.",
                     style = MaterialTheme.typography.bodySmall,
@@ -238,7 +238,7 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                     },
                     style = MaterialTheme.typography.headlineMedium,
                 )
-                DoubleRule(Modifier.padding(top = Space.Line, bottom = Space.Entry))
+                DoubleRule()
 
                 if (row.owesWetMark) {
                     Text(

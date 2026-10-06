@@ -189,7 +189,7 @@ fun WeightScreen(
             } else {
                 PredictionHeadline(s, onExplain = onExplainRefusal)
                 DepletionLine(s)
-                DoubleRule(Modifier.padding(top = 12.dp, bottom = 16.dp))
+                DoubleRule()
 
                 val diagKey = viewModel.diagnosticKey(s)
                 if (s.diagnostic != null && diagKey != null && diagKey !in dismissed) {
@@ -341,7 +341,7 @@ fun WeightScreen(
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(top = 4.dp),
                 )
-                DoubleRule(Modifier.padding(top = Space.Line, bottom = Space.Entry))
+                DoubleRule()
 
                 hint?.let {
                     Text(

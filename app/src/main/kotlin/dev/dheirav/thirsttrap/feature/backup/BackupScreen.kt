@@ -95,7 +95,7 @@ fun BackupScreen(onBack: () -> Unit, viewModel: BackupViewModel = hiltViewModel(
                 modifier = Modifier.fillMaxWidth(),
             ) { Text("Export a backup") }
 
-            Rule(Modifier.padding(vertical = 8.dp))
+            Rule()
 
             Text("Restore", style = MaterialTheme.typography.titleMedium)
             Text(

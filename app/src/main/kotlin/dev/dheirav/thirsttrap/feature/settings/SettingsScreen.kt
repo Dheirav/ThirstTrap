@@ -246,7 +246,7 @@ fun SettingsScreen(
             }
 
             if (BuildConfig.DEBUG) {
-                Rule(Modifier.padding(vertical = 8.dp))
+                Rule()
                 TextButton(onClick = onOpenDebug) { Text("Debug tools") }
             }
 

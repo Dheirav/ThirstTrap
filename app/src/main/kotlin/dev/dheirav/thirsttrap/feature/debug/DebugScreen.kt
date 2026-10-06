@@ -75,7 +75,7 @@ fun DebugScreen(onBack: () -> Unit, viewModel: DebugViewModel = hiltViewModel())
                 modifier = Modifier.fillMaxWidth(),
             ) { Text("Reset all reminders to +7 days") }
 
-            Rule(Modifier.padding(vertical = 8.dp))
+            Rule()
 
             FilledTonalButton(
                 onClick = { viewModel.exportToCache() },
