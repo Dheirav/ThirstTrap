@@ -396,7 +396,17 @@ fun Disclosure(
     initiallyOpen: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    var open by remember { mutableStateOf(initiallyOpen) }
+    // Keyed, because an unkeyed remember captures whatever initiallyOpen was on
+    // the FIRST composition and never looks again. The edit screen composes
+    // while the plant is still loading, when its id is null and so isNew is
+    // true, which made every section fold shut and stay shut after the plant
+    // arrived. "Folded when adding, open when editing" had therefore never
+    // worked for editing, which is the half it was written for.
+    //
+    // The cost is that toggling a section by hand is undone if initiallyOpen
+    // later changes. It changes exactly once, from loading to loaded, inside a
+    // moment of the screen opening, so there is nothing yet to undo.
+    var open by remember(initiallyOpen) { mutableStateOf(initiallyOpen) }
     Column(modifier.fillMaxWidth()) {
         Row(
             Modifier

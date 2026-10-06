@@ -170,6 +170,13 @@ class PlantEditViewModel @Inject constructor(
                         location = p.location.orEmpty(),
                         containerDesc = p.containerDesc.orEmpty(),
                         containerId = p.containerId,
+                        // Carried over, because this is a whole-state
+                        // replacement racing a coroutine that only copies into
+                        // it. The pot list is loaded separately and usually
+                        // lands first, having one suspend call to this one's
+                        // two, so building a fresh state here threw it away and
+                        // the "shares a pot with" row never appeared at all.
+                        shareOptions = _state.value.shareOptions,
                         defaultWaterMl = p.defaultWaterMl?.toInt()?.toString().orEmpty(),
                         targetDryness = p.targetDryness.orEmpty(),
                         lightNeeds = p.lightNeeds.orEmpty(),
