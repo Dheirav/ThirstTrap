@@ -2878,11 +2878,32 @@ counted four days. The model's accuracy is a claim, not a measurement.
 
 **The friend's review came back**, and D60 is what followed. Six of his eight
 lines are addressed; the colour criticism turned out not to be true of this
-code. `docs/DESIGN-COHERENCE-PLAN.md` holds ten workstreams and five are done.
-What is left there, all small: the spacing scale (15 gap values down to six),
-grouping `LogEventScreen`'s 14 event chips, giving the weighing ritual an ending
-rather than the sheet vanishing, then the first-run path and the navigation
-layer. The navigation one is the only item that can really break things.
+code. `docs/DESIGN-COHERENCE-PLAN.md` holds ten workstreams. **Updated 2026-10-06**,
+because this list had gone stale in both directions: three of the five it named
+as outstanding were already done, and the one it called small was not.
+
+Done since: the **spacing scale**, which was the real work. `Space.kt` and
+`Panel.kt`'s contentPadding had existed since the container grammar went in but
+nothing was ever converted to them, so the scale was a document rather than a
+rule; 86 stray values across 22 files now sit on the seven steps. **Rule
+flanking** followed: 26 call sites picking from seven values, down to two
+conventions, with `DoubleRule` owning its flank because it only does one job.
+`WayfindingScreen`'s `top: Int = 16` is gone with them. **Navigation part 1** is
+done and checked on the device: all three tabs share one pattern, and Plants,
+Due, Settings, Due then back now lands on Plants instead of walking four entries.
+
+Already done, found by reading the code rather than trusting this file:
+`LogEventScreen`'s chips are grouped into four, carried by spacing rather than
+four more headings; the weighing round already ends on a factual line instead of
+the sheet vanishing; and the first-run items are in, grain included.
+
+What is actually left: **navigation parts 2 to 4**, which is the destination
+graph itself (32 routes, 3 tabs, 14 entry points in two overflow menus, four
+routes unreachable on a fresh install) and is L, not small. Plus **the two
+spacing idioms**: eleven screens put `verticalArrangement` on the root, ten put
+`padding(top =)` on every child, and `CareScreen` does both, so the number
+written at a call site is not the gap on screen. That one is a judgement per
+screen rather than a mapping, which is why it did not go in with the scale.
 
 **The landing page is built**, D57 then rebuilt at D58. Seven painted plates,
 both orientations, the scripted demo, hosting still not switched on. The Blender
