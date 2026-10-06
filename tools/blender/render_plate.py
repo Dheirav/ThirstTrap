@@ -56,7 +56,38 @@ HANDS = {
     # shot was framed around build_finger's thin cone and wants reframing to see
     # the hand in profile, the way depth already does.
     #
-    # pitch is 0 now, and that is not a value that happened to work. The asset
+    # Dead centre, and it has to be. The hand is 190 mm across and the pot's
+    # mouth is 200 mm, so it fits with 5 mm a side: offset by 18 mm, the far
+    # fingers crossed the inner wall, and since the pot is a 6 mm shell they
+    # came out through the OUTSIDE of it as a pale sliver on the pot's face.
+    # There is no room to place this hand anywhere but the middle.
+    #
+    # The note below is kept because the reasoning still holds, but the offset
+    # it describes is gone: it was +18 mm and -14 mm off centre, itself already
+    # of the big offset this used to carry. That offset existed to keep a hand
+    # wider than the pot's mouth from sitting in it, and it never worked: the
+    # fingers crossed the rim and passed through the wall wherever they were put.
+    # The pot is the thing that changed. At a 200 mm mouth the hand fits inside
+    # it, the fingers reach the soil and the knuckles clear the rim, so the press
+    # point goes back near the middle where it belongs.
+    #
+    # An earlier pass solved this by minimising the count of hand vertices
+    # inside the pot, and that metric is a trap: it fell steadily as the hand
+    # grew and steepened, because the hand was leaving the TOP OF FRAME. The
+    # count went down, the picture got worse, and it took a render to see it.
+    # Kept here as the reason this one was chosen by eye.
+    #
+    # On size, for whoever tunes it next: BIGGER puts less of the hand in the pot,
+    # which is the opposite of what it looks like. Scaling happens about the fingertip,
+    # so a larger hand carries its mass further from that point and clears the
+    # rim, which sits only 28 mm above the soil; shrinking it pulls the knuckles
+    # down into the pot's mouth. Measured: at len 0.16 some 15,592 vertices sit
+    # inside the pot, at 0.20 it is 14,577, and at 0.32 it is 5,995, with the
+    # hand 1.6 times the pot's width, which is the plate's proportion.
+    #
+    # into 0.004, not 0.012. The finger dents the surface; it does not sink.
+    #
+    # pitch is no longer 0, and the old note about that is wrong now. The asset
     # keeps the tilt it was sculpted with (see extract_hand.py), so the hand
     # already reaches down; any pitch here tips that pose further and lifts the
     # fingertip off the soil again.
@@ -68,10 +99,12 @@ HANDS = {
     # frame-right is about (0.87, 0.49, 0) and the arm wants yaw +0.5. At -0.55
     # it pointed at the lens: the arm foreshortened into a flat slab, which read
     # as a hand lying on its side rather than reaching down.
-    'finger-test': dict(pot=(world.POTS_X[1], 0.978),
+    'finger-test': dict(pot=(world.POTS_X[1] + float(os.environ.get('TT_PX', 0.0)),
+                             0.978 + float(os.environ.get('TT_PY', 0.0))),
                         yaw=float(os.environ.get('TT_YAW', 0.50)),
                         pitch=float(os.environ.get('TT_PITCH', -0.35)),
-                        len=0.20),
+                        len=float(os.environ.get('TT_LEN', 0.26)),
+                        into=float(os.environ.get('TT_INTO', 0.004))),
     # depth gets a smaller hand than finger-test. Same arm, nearer camera: at a
     # shared 0.26 it swamped the frame and buried the mug behind the knuckles.
     # y 0.145, not 0.035. The cutter that opens this pot spans y -0.18 to +0.10,
@@ -103,7 +136,8 @@ for name in (shots or world.SHOTS):
             # several rounds. If the soil cannot be found, say so.
             raise SystemExit(f'soil_top found no soil near {h["pot"]} for {name}')
         world.HAND_LEN = h.get('len', float(os.environ.get('TT_HAND', 0.26)))
-        world.place_hand((h['pot'][0], h['pot'][1], z), yaw=h['yaw'], pitch=h['pitch'])
+        world.place_hand((h['pot'][0], h['pot'][1], z), yaw=h['yaw'],
+                         pitch=h['pitch'], into=h.get('into', 0.012))
         world.dimple_soil((h['pot'][0], h['pot'][1]))
     else:
         world.place_hand((0, 0, -9))      # parked out of every frame

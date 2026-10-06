@@ -79,20 +79,71 @@ def facet_pot(loc, top_r=0.075, bot_r=0.058, h=0.130, sides=16, m=None, cut=Fals
         bpy.ops.mesh.primitive_cylinder_add(vertices=sides, radius=top_r - 0.0105, depth=0.030,
                                             location=(loc[0], loc[1], loc[2] + h - 0.045))
         crust = look.put(bpy.context.object, dry)
-        root_m = look.mat('root', look.srgb('#B7A184'), 0.85)
+        root_m = look.mat('root', look.srgb('#B8A684'), 0.85)
         import random
         rnd = random.Random(7)
-        for i in range(14):
-            a0 = rnd.uniform(0, 6.283); r1 = rnd.uniform(0.020, top_r - 0.016)
-            spine = [(loc[0], loc[1], loc[2] + h - 0.050)]
-            for s in range(1, 5):
-                f = s / 4
-                spine.append((loc[0] + math.cos(a0) * r1 * f,
-                              loc[1] + math.sin(a0) * r1 * f,
-                              loc[2] + h - 0.050 - (h - 0.070) * f))
-            tb = parts.tube(spine, [0.0022, 0.0017, 0.0012, 0.0008, 0.0005],
-                            name='root', seg=6)
-            look.put(tb, root_m)
+        # A root BALL, not a fan of straws.
+        #
+        # The previous version ran 24 straight tubes radially outward from one
+        # point near the crown, and that is what it rendered as: a starburst of
+        # pale noodles filling the upper left of the face and leaving the rest of
+        # the soil empty. Three things were wrong and all three are structural.
+        #
+        # Roots do not share an origin: they leave the stem at different heights
+        # and from different points around it. They do not run straight: they
+        # leave the crown sideways, turn down, and wander. And they do not stop
+        # half way: a potted root system reaches the wall and the base, so the
+        # soil volume fills rather than one quadrant of it.
+        #
+        # The path here eases outward early (f ** 0.6) and drops late
+        # (f ** 1.4), which is that sideways-then-down turn, with a sine wobble
+        # whose amplitude grows along the root so the fine end moves more than
+        # the thick base does.
+        # 110 of them, which sounds like a lot and is not. A cut face shows only
+        # the roots that cross its plane: at 44 the face carried about twenty
+        # stubs and read as scattered fragments rather than as a mass with a
+        # section taken out of it. Density on the face is the whole effect, and
+        # it costs nothing here because the shot is one frame.
+        N = 9
+        for i in range(110):
+            a0 = rnd.uniform(0, 6.283)
+            sr = rnd.uniform(0.0, top_r * 0.30)
+            sx = loc[0] + math.cos(a0) * sr
+            sy = loc[1] + math.sin(a0) * sr
+            sz = loc[2] + h - 0.040 - rnd.uniform(0.0, 0.034)
+            reach = rnd.uniform(0.50, 1.0)
+            er = (top_r - 0.013) * reach
+            ex = loc[0] + math.cos(a0) * er
+            ey = loc[1] + math.sin(a0) * er
+            ez = sz - rnd.uniform(0.55, 1.00) * (sz - (loc[2] + 0.008))
+            wob = rnd.uniform(0.008, 0.020)
+            ph = rnd.uniform(0, 6.283)
+            spine = []
+            for t in range(N):
+                f = t / (N - 1)
+                spine.append((sx + (ex - sx) * (f ** 0.6) + math.sin(ph + f * 5.2) * wob * f,
+                              sy + (ey - sy) * (f ** 0.6) + math.cos(ph + f * 4.1) * wob * f,
+                              sz + (ez - sz) * (f ** 1.4) + math.sin(ph * 1.7 + f * 6.4) * 0.0035))
+            rad = rnd.uniform(0.0010, 0.0019)
+            look.put(parts.tube(spine, [rad * (1.0 - 0.84 * (t / (N - 1))) for t in range(N)],
+                                name='root', seg=6), root_m)
+            # Laterals, two to four per root and off the OUTER half of it, where
+            # a root actually branches. One per root was too few to read.
+            for _ in range(rnd.randint(2, 4)):
+                k = rnd.randint(3, N - 2)
+                b0 = spine[k]
+                a2 = rnd.uniform(0, 6.283)
+                ln2 = rnd.uniform(0.008, 0.020)
+                lat = [b0]
+                for t2 in range(1, 4):
+                    f2 = t2 / 3
+                    lat.append((b0[0] + math.cos(a2) * ln2 * f2,
+                                b0[1] + math.sin(a2) * ln2 * f2 * 0.7,
+                                b0[2] - ln2 * f2 * rnd.uniform(0.3, 0.9)))
+                rr = rad * rnd.uniform(0.30, 0.46)
+                look.put(parts.tube(lat, [rr, rr * 0.68, rr * 0.42, rr * 0.20],
+                                    name='root', seg=5), root_m)
+
         # --- detail in the cross-section, which is the whole subject of the shot.
         #
         # First attempt put four strata cylinders and ninety pale crumbs in here
@@ -145,10 +196,19 @@ def facet_pot(loc, top_r=0.075, bot_r=0.058, h=0.130, sides=16, m=None, cut=Fals
         for ob in [body, rim, soil] + [o for o in (col, crust) if o] + strata:
             b = ob.modifiers.new('cut', 'BOOLEAN'); b.operation = 'DIFFERENCE'
             b.object = knife
+        # The roots get their OWN knife, 9 mm in front of the pot's. Cut with
+        # the pot's they were sliced flush and showed only their cross-sections,
+        # which rendered as faint grey scratches; left uncut entirely they hung
+        # out of the face at full length and read as a bundle of pale sticks in
+        # front of the soil rather than roots inside it. Nine millimetres proud
+        # keeps their silhouette, which is what made the crumb read, while
+        # leaving them bedded in the column.
+        rknife = _cutter(loc)
+        rknife.location.y -= 0.009
         for o in bpy.data.objects:
             if o.name.startswith('root'):
                 b = o.modifiers.new('cut', 'BOOLEAN'); b.operation = 'DIFFERENCE'
-                b.object = knife
+                b.object = rknife
     return body, rim, soil
 
 
@@ -337,11 +397,17 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     fd.strength = 0.07
 
     for side in (-1, 1):
+        # 0.845, not 0.88. The plate's channel is a CRACK: an irregular gap a
+        # root's length across, with crumb spilling into it. At 0.88 the two
+        # banks left a 160 mm corridor that rendered as a wide black band down
+        # the middle of the frame, which is a hole in the picture and not a hole
+        # in the soil.
+        #
         # 0.52 apart with a size of 1.6 means the two banks OVERLAP across the
         # middle, so there was no channel at all: the shot was a flat field of
         # dirt. They have to be further apart than half their own width.
         bpy.ops.mesh.primitive_grid_add(x_subdivisions=160, y_subdivisions=160, size=1.6,
-                                        location=(at[0] + side * 0.88, at[1], at[2]))
+                                        location=(at[0] + side * 0.845, at[1], at[2]))
         g = look.put(bpy.context.object, soil_m, smooth=True)
         d = g.modifiers.new('crumb', 'DISPLACE')
         d.texture = tex
@@ -364,7 +430,7 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     # a pile of shards rather than as crumb. The plate's dirt is finer than its
     # roots are thick, and that relationship is what makes it read as soil.
     peb_m = look.mat('macrocrumb', look.srgb('#342618'), 0.98)
-    for _ in range(520):
+    for _ in range(1500):
         side = -1 if rnd.random() < 0.5 else 1
         # Clear of the channel lip. Projecting the gap showed it occupying 15%
         # of the frame all along, so it was never missing, it was being covered:
@@ -372,7 +438,7 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
         px = at[0] + side * rnd.uniform(0.15, 1.45)
         py = at[1] + rnd.uniform(-0.75, 0.75)
         pz = at[2] + 0.055 + rnd.uniform(-0.03, 0.05)
-        r = rnd.uniform(0.007, 0.026)
+        r = rnd.uniform(0.004, 0.021)
         bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=r,
                                               location=(px, py, pz))
         o = bpy.context.object
@@ -409,29 +475,62 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
                           y0 + bend * math.sin(math.pi * f) + rnd.uniform(-0.016, 0.016),
                           at[2] + 0.085 + 0.030 * math.sin(math.pi * f) * rnd.uniform(0.3, 1.0)
                           + rnd.uniform(-0.010, 0.010)))
-        r = rnd.uniform(0.0050, 0.0105)
+        r = rnd.uniform(0.0072, 0.0132)
         inward_sign = -side
         look.put(parts.tube(spine, [r * v for v in
                                     (1.0, 0.96, 0.90, 0.83, 0.74, 0.63, 0.50, 0.36, 0.20)],
                             name='macroroot', seg=7), root_m, smooth=True)
-        # Laterals along the length. A root is not a cable: it puts out fine
-        # side branches the whole way, and the plate's do. Without them a
-        # tapering tube reads as wire however well it is lit, which is what was
-        # left after the crumb was fixed.
+        # Tuned against a MEASURED target, not by eye: the plate's roots cover
+        # 13.4% of its frame above value 0.45. Before branching this shot ran
+        # 5.9% and read as a few sticks on bare dirt; three generations of thick
+        # branches ran 24.4% and read as a mat of straw with no soil left to see.
+        # Two generations at this thickness sit in between, which is the point:
+        # the subject is roots IN soil, and that needs both of them visible.
+        #
+        # Branches that BRANCH. This is the structural difference from the
+        # plate and the reason a run of tapering tubes could never match it:
+        # the plate's roots are a tree. A trunk splits into two or three, each
+        # of those splits again, and the fine ends are three or four
+        # generations out. What was here before was one straight stub per
+        # lateral, which drew whiskers on a cable.
+        #
+        # Children leave from a point ALONG the parent as well as from its tip,
+        # which is what fills the space between roots rather than only
+        # extending them.
+        def _branch(p0, d, length, rad, level):
+            M = 6
+            ba = rnd.uniform(0, math.tau)
+            amp = 0.11 * length
+            sp = []
+            for t2 in range(M):
+                f2 = t2 / (M - 1)
+                sp.append((p0[0] + d[0] * length * f2 + math.cos(ba) * amp * f2 * f2,
+                           p0[1] + d[1] * length * f2 + math.sin(ba) * amp * f2 * f2,
+                           p0[2] + d[2] * length * f2 + math.sin(f2 * 2.6 + ba) * amp * 0.30))
+            look.put(parts.tube(sp, [rad * (1.0 - 0.45 * (t2 / (M - 1))) for t2 in range(M)],
+                                name='macroroot', seg=7), root_m, smooth=True)
+            if level <= 0:
+                return
+            for c in range(rnd.randint(2, 3)):
+                k2 = M - 1 if c == 0 else rnd.randint(2, M - 2)
+                base2 = sp[k2]
+                dev = rnd.uniform(0.40, 1.05) * (1 if rnd.random() < 0.5 else -1)
+                nd = (d[0] * math.cos(dev) - d[1] * math.sin(dev),
+                      d[0] * math.sin(dev) + d[1] * math.cos(dev),
+                      d[2] + rnd.uniform(-0.30, 0.30))
+                nn = math.sqrt(nd[0] ** 2 + nd[1] ** 2 + nd[2] ** 2) or 1.0
+                _branch(base2, (nd[0] / nn, nd[1] / nn, nd[2] / nn),
+                        length * rnd.uniform(0.44, 0.70),
+                        rad * rnd.uniform(0.44, 0.62), level - 1)
+
         for _ in range(rnd.randint(2, 4)):
-            k = rnd.randint(2, 6)
+            k = rnd.randint(1, 7)
             base = spine[k]
-            a3 = rnd.uniform(-1.3, 1.3)
-            ln2 = rnd.uniform(0.035, 0.085)
-            lat = [base]
-            for t2 in range(1, 4):
-                f2 = t2 / 3
-                lat.append((base[0] + inward_sign * ln2 * f2 * math.cos(a3) * 0.6,
-                            base[1] + ln2 * f2 * math.sin(a3),
-                            base[2] - ln2 * f2 * rnd.uniform(0.15, 0.55)))
-            rr = r * rnd.uniform(0.22, 0.38)
-            look.put(parts.tube(lat, [rr, rr * 0.7, rr * 0.45, rr * 0.22],
-                                name='macroroot', seg=5), root_m, smooth=True)
+            a3 = rnd.uniform(-1.4, 1.4)
+            d0 = (inward_sign * math.cos(a3) * 0.6, math.sin(a3), rnd.uniform(-0.35, 0.10))
+            n0 = math.sqrt(d0[0] ** 2 + d0[1] ** 2 + d0[2] ** 2) or 1.0
+            _branch(base, (d0[0] / n0, d0[1] / n0, d0[2] / n0),
+                    rnd.uniform(0.070, 0.135), r * 0.40, 2)
 
         # the break
         tip = spine[-1]
@@ -873,7 +972,14 @@ def build(res=(1672, 941), samples=96):
     # its leaves are alpha cards, so against the plates' plain tapered pots and
     # broad foliage it read as a different prop in every shot that showed it.
     for i, x in enumerate(POTS_X):
-        sc_i = 0.92 + 0.10 * ((i * 7) % 3) / 2.0
+        # The second pot is the hero of finger-test and is deliberately the
+        # biggest on the sill. It is not decoration: the hand is 190 mm across
+        # and a 120 mm mouth cannot receive it, so the fingers passed THROUGH the
+        # rim no matter where the press point went. The plate gets away with a
+        # small pot because its hand has one finger extended well ahead of the
+        # others; this one's fingers are bunched, so the pot has to open wider
+        # than the hand. A sill of pots at one size was the odder thing anyway.
+        sc_i = 1.62 if i == 1 else 0.92 + 0.10 * ((i * 7) % 3) / 2.0
         facet_pot((x, 0.985, SILL_Z), top_r=0.062 * sc_i, bot_r=0.047 * sc_i,
                   h=0.108 * sc_i, m=M['terra'])
         leafy_plant((x, 0.985, SILL_Z + 0.094 * sc_i), M['leaf'], M['stem'],
@@ -1004,7 +1110,7 @@ def build(res=(1672, 941), samples=96):
     # millimetres of it hung off the end, and the yaw put a corner further out
     # still. A phone resting on nothing is the one thing in a still that reads
     # instantly as wrong.
-    props.phone((0.62, -0.17, TABLE_Z), M['frame'], M['glassblack'], rot_z=-0.24)
+    props.phone((0.47, -0.04, TABLE_Z), M['frame'], M['glassblack'], rot_z=-0.24)
 
     # --- foreground dressing.
     #
@@ -1289,11 +1395,11 @@ def build(res=(1672, 941), samples=96):
 SHOTS = {
  'ledger':        ((-0.46, 0.08, 1.46), (-0.86, 0.86, 1.385), 31, 26, 4.0),
  'shelf-evening': ((-0.30, -0.28, 1.21), (-0.10, 0.98, 1.03), 35, 28, None),
- 'finger-test':   ((0.02, 0.50, 1.175), (-0.245, 0.975, 1.052), 42, 35, 2.8),
+ 'finger-test':   ((0.05, 0.47, 1.325), (-0.245, 0.975, 1.030), 42, 35, 2.8),
  'depth':         ((-0.60, -0.62, 0.86), (-0.12, 0.12, 0.825), 45, 38, 3.5),
  'roots':         ((0.0, -0.56, -4.44), (0.0, 0.0, -5.06), 40, 34, 2.2),
  'scale-table':   ((0.20, -1.00, 1.08), (0.34, 0.15, 1.00), 31, 26, None),
- 'phone-closeup': ((0.74, -0.60, 0.980), (0.655, -0.265, 0.773), 33, 27, 2.2),
+ 'phone-closeup': ((0.565, -0.375, 0.980), (0.47, -0.04, 0.773), 33, 27, 2.2),
 }
 
 
