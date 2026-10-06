@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -167,27 +168,50 @@ class MainActivity : ComponentActivity() {
                             // above it.
                             Column {
                                 Rule()
+                                // One navigation pattern for all three tabs.
+                                //
+                                // They had three. Plants popped the back stack
+                                // to itself inclusively, Due and Settings only
+                                // set launchSingleTop, and none of them saved or
+                                // restored state. So Plants, Due, Settings, Due
+                                // left four entries with Due in twice, and every
+                                // return to Plants threw away the list's scroll
+                                // position, which is the single cheapest cause
+                                // of the app feeling slightly off to use.
+                                //
+                                // popUpTo the graph's start with saveState, plus
+                                // restoreState, is the documented pattern: one
+                                // entry per tab, and each tab remembers where it
+                                // was. launchSingleTop stops a re-tap stacking a
+                                // second copy of the tab you are already on.
+                                fun goTab(dest: String) = nav.navigate(dest) {
+                                    popUpTo(nav.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
                                 NavigationBar(
                                     containerColor = MaterialTheme.colorScheme.surface,
                                     tonalElevation = 0.dp,
                                 ) {
                                     NavigationBarItem(
                                         selected = route == Routes.DASHBOARD,
-                                        onClick = { nav.navigate(Routes.DASHBOARD) { popUpTo(Routes.DASHBOARD) { inclusive = true } } },
+                                        onClick = { goTab(Routes.DASHBOARD) },
                                         icon = { TabMark(route == Routes.DASHBOARD) { Icon(AppIcons.yard, contentDescription = null) } },
                                         label = { Text(MenuLabels.Tab.PLANTS) },
                                         colors = flatTabColors(),
                                     )
                                     NavigationBarItem(
                                         selected = route == Routes.DUE,
-                                        onClick = { nav.navigate(Routes.DUE) { launchSingleTop = true } },
+                                        onClick = { goTab(Routes.DUE) },
                                         icon = { TabMark(route == Routes.DUE) { Icon(AppIcons.notifications, contentDescription = null) } },
                                         label = { Text(MenuLabels.Tab.DUE) },
                                         colors = flatTabColors(),
                                     )
                                     NavigationBarItem(
                                         selected = route == Routes.SETTINGS,
-                                        onClick = { nav.navigate(Routes.SETTINGS) { launchSingleTop = true } },
+                                        onClick = { goTab(Routes.SETTINGS) },
                                         icon = { TabMark(route == Routes.SETTINGS) { Icon(AppIcons.settings, contentDescription = null) } },
                                         label = { Text(MenuLabels.Tab.SETTINGS) },
                                         colors = flatTabColors(),
