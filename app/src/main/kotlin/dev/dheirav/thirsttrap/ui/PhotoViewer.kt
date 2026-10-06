@@ -341,7 +341,7 @@ fun PhotoViewer(
                     // navigation bar rather than leaving a stripe of bare
                     // photo under it.
                     .windowInsetsPadding(WindowInsets.safeDrawing)
-                    .padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 12.dp),
+                    .padding(start = 16.dp, end = 16.dp, top = Space.Section, bottom = 12.dp),
                 verticalArrangement = Arrangement.spacedBy(2.dp),
             ) {
                 current.photo.caption?.takeIf { it.isNotBlank() }?.let {

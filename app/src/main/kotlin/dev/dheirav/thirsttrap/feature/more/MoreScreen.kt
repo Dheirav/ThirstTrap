@@ -95,7 +95,7 @@ fun MoreScreen(
 private fun Job(title: String, what: String, onClick: () -> Unit) {
     Column(
         Modifier.fillMaxWidth().clickable(onClickLabel = title) { onClick() }
-            .padding(vertical = 14.dp),
+            .padding(vertical = Space.Entry),
     ) {
         Text(title, style = MaterialTheme.typography.titleMedium)
         Text(

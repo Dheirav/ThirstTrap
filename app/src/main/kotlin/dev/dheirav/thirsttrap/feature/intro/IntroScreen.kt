@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.intro
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -62,9 +64,9 @@ fun IntroScreen(
             Text(
                 "A plant diary that weighs the pot",
                 style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(top = 6.dp),
+                modifier = Modifier.padding(top = Space.Line),
             )
-            DoubleRule(Modifier.padding(top = 14.dp, bottom = 20.dp))
+            DoubleRule(Modifier.padding(top = Space.Entry, bottom = Space.Section))
 
             Point(
                 n = "1",
@@ -97,7 +99,7 @@ fun IntroScreen(
                     "list: feeding, the propagation board, places, figures and experiments.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 20.dp),
+                modifier = Modifier.padding(top = Space.Section),
             )
 
             Spacer(Modifier.height(28.dp))
@@ -127,9 +129,9 @@ private fun Point(n: String, title: String, body: String, last: Boolean = false)
                 body,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 6.dp),
+                modifier = Modifier.padding(top = Space.Line),
             )
         }
     }
-    if (!last) Rule(Modifier.padding(top = 18.dp, bottom = 14.dp))
+    if (!last) Rule(Modifier.padding(top = Space.Section, bottom = Space.Entry))
 }

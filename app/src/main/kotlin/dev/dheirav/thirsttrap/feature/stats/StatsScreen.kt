@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.stats
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -90,7 +92,7 @@ fun StatsScreen(onBack: () -> Unit, viewModel: StatsViewModel = hiltViewModel())
                     "a quiet month is a quiet month rather than a gap in a run.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.padding(top = 28.dp),
+                modifier = Modifier.padding(top = Space.Page),
             )
         }
     }
@@ -177,7 +179,7 @@ private fun OutcomeTable(o: Outcomes) {
             },
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 10.dp),
+            modifier = Modifier.padding(top = Space.Line),
         )
     }
 }
@@ -269,7 +271,7 @@ private fun PredictionTable(p: dev.dheirav.thirsttrap.domain.PredictionScore) {
             },
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 6.dp),
+            modifier = Modifier.padding(top = Space.Line),
         )
     }
 }
@@ -311,7 +313,7 @@ private fun RootingTable(r: RootingStat) {
             },
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 10.dp),
+            modifier = Modifier.padding(top = Space.Line),
         )
     }
 }

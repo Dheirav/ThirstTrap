@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.light
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.background
@@ -153,17 +155,17 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
 
             // Only speaks when the plant's own noted needs make it meaningful.
             state.verdict?.let {
-                Card(Modifier.fillMaxWidth().padding(top = 20.dp)) {
+                Card(Modifier.fillMaxWidth().padding(top = Space.Section)) {
                     Text(it, style = MaterialTheme.typography.bodyMedium)
                 }
             }
 
             if (placeMode && state.here.isNotEmpty()) {
-                Column(Modifier.fillMaxWidth().padding(top = 20.dp)) {
+                Column(Modifier.fillMaxWidth().padding(top = Space.Section)) {
                     Rule()
                     state.here.forEach { resident ->
                         androidx.compose.foundation.layout.Row(
-                            Modifier.fillMaxWidth().padding(vertical = 10.dp),
+                            Modifier.fillMaxWidth().padding(vertical = Space.Line),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
                             Text(
@@ -199,7 +201,7 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 20.dp),
+                    modifier = Modifier.padding(top = Space.Section),
                 )
             }
 
@@ -210,7 +212,7 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 20.dp),
+                    modifier = Modifier.padding(top = Space.Section),
                 )
             }
 

@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.ambient
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import androidx.compose.foundation.layout.Arrangement
 import dev.dheirav.thirsttrap.ui.DialogText
 import dev.dheirav.thirsttrap.ui.AlmanacDialog
@@ -111,7 +113,7 @@ fun AmbientScreen(onBack: () -> Unit, viewModel: AmbientViewModel = hiltViewMode
                         "Where",
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(top = 20.dp),
+                        modifier = Modifier.padding(top = Space.Section),
                     )
                     Row(
                         Modifier.fillMaxWidth().padding(top = 8.dp),
@@ -161,7 +163,7 @@ fun AmbientScreen(onBack: () -> Unit, viewModel: AmbientViewModel = hiltViewMode
                     "Either one on its own is useful. Both is better.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 6.dp),
+                    modifier = Modifier.padding(top = Space.Line),
                 )
                 OutlinedTextField(
                     value = note,
@@ -176,7 +178,7 @@ fun AmbientScreen(onBack: () -> Unit, viewModel: AmbientViewModel = hiltViewMode
                     modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                 ) { Text("Record") }
 
-                Rule(Modifier.padding(vertical = 20.dp))
+                Rule(Modifier.padding(vertical = Space.Section))
             }
 
             if (state.readings.isEmpty()) {

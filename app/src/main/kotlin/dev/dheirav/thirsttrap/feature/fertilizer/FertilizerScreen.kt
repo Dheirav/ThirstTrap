@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.fertilizer
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -101,7 +103,7 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
                     singleLine = true,
                     isError = state.canText.isNotBlank() && state.canMl == null,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = Space.Line),
                 )
                 // The saved sizes are the presets, and they are the user's own.
                 // Shipping 250/500/1000 would be a guess about someone else's
@@ -150,7 +152,7 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.padding(top = 6.dp, bottom = 14.dp),
+                    modifier = Modifier.padding(top = Space.Line, bottom = Space.Entry),
                 )
             }
 
@@ -307,7 +309,7 @@ private fun FertilizerDialog(
                         label = { Text("Dilution, as the label writes it") },
                         placeholder = { Text("1:200, or 5 ml/L") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                        modifier = Modifier.fillMaxWidth().padding(top = Space.Line),
                     )
                     OutlinedTextField(
                         value = npk,
@@ -315,13 +317,13 @@ private fun FertilizerDialog(
                         label = { Text("NPK") },
                         placeholder = { Text("3-1-2") },
                         singleLine = true,
-                        modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                        modifier = Modifier.fillMaxWidth().padding(top = Space.Line),
                     )
                     OutlinedTextField(
                         value = note,
                         onValueChange = { note = it },
                         label = { Text("Note") },
-                        modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                        modifier = Modifier.fillMaxWidth().padding(top = Space.Line),
                     )
                 }
             }

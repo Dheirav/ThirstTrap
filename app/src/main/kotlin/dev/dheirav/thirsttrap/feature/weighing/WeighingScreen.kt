@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.weighing
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -168,18 +170,18 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
             Column(
                 Modifier
                     .navigationBarsPadding()
-                    .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 16.dp),
+                    .padding(start = Space.Section, end = Space.Section, top = Space.Section, bottom = 16.dp),
             ) {
                 Text(
                     "WHAT THE SCALE SAID",
                     style = MaterialTheme.typography.titleMedium,
                     letterSpacing = 0.18.em,
                 )
-                DoubleRule(Modifier.padding(top = 10.dp, bottom = 12.dp))
+                DoubleRule(Modifier.padding(top = Space.Line, bottom = 12.dp))
                 weighed.forEach { r ->
                     val now = r.doneThisRound!!.grams
                     val before = r.last?.grams
-                    Row(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
+                    Row(Modifier.fillMaxWidth().padding(vertical = Space.Line)) {
                         Text(r.plant.name, Modifier.weight(1f))
                         Text(
                             buildString {
@@ -222,7 +224,7 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                 Modifier
                     .fillMaxHeight(0.88f)
                     .navigationBarsPadding()
-                    .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 16.dp),
+                    .padding(start = Space.Section, end = Space.Section, top = Space.Section, bottom = 16.dp),
             ) {
                 Text(
                     row.plant.name.uppercase(),
@@ -236,7 +238,7 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                     },
                     style = MaterialTheme.typography.headlineMedium,
                 )
-                DoubleRule(Modifier.padding(top = 10.dp, bottom = 14.dp))
+                DoubleRule(Modifier.padding(top = Space.Line, bottom = Space.Entry))
 
                 if (row.owesWetMark) {
                     Text(
@@ -252,7 +254,7 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 14.dp),
+                        modifier = Modifier.fillMaxWidth().padding(bottom = Space.Entry),
                     ) {
                         listOf(
                             ReadingContext.ROUTINE,

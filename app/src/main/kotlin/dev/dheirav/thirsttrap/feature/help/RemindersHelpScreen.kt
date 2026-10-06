@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.help
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
 import android.content.ComponentName
@@ -198,6 +200,6 @@ private fun Section(title: String, body: String) {
         body,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = 4.dp, bottom = 20.dp),
+        modifier = Modifier.padding(top = 4.dp, bottom = Space.Section),
     )
 }

@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.experiments
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -115,7 +117,7 @@ fun ExperimentDetailScreen(
                         Modifier
                             .fillMaxWidth()
                             .clickable { onOpenPlant(s.plantId) }
-                            .padding(vertical = 6.dp),
+                            .padding(vertical = Space.Line),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {

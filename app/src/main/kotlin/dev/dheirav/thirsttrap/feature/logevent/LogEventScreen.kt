@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.logevent
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import dev.dheirav.thirsttrap.ui.FieldLabel
 import dev.dheirav.thirsttrap.ui.AppIcons
 import androidx.compose.foundation.layout.Arrangement
@@ -117,7 +119,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
             EVENT_GROUPS.forEachIndexed { i, group ->
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(top = if (i == 0) 0.dp else 10.dp),
+                    modifier = Modifier.padding(top = if (i == 0) 0.dp else Space.Line),
                 ) {
                     group.forEach { t ->
                         FilterChip(

@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.weight
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import dev.dheirav.thirsttrap.ui.AlmanacSheet
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.AppIcons
@@ -181,7 +183,7 @@ fun WeightScreen(
                             "a percentage and a prediction.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.outline,
-                        modifier = Modifier.padding(top = 6.dp),
+                        modifier = Modifier.padding(top = Space.Line),
                     )
                 }
             } else {
@@ -233,7 +235,7 @@ fun WeightScreen(
                         "The drying curve. Each drop is one cycle between waterings.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.outline,
-                        modifier = Modifier.padding(top = 6.dp),
+                        modifier = Modifier.padding(top = Space.Line),
                     )
                 }
             }
@@ -243,7 +245,7 @@ fun WeightScreen(
             // interpret them. The panel above still explains what is missing.
             FilledTonalButton(
                 onClick = { showKeypad = true },
-                modifier = Modifier.fillMaxWidth().padding(top = 20.dp),
+                modifier = Modifier.fillMaxWidth().padding(top = Space.Section),
             ) { Text("Weigh it") }
 
             if (s.readings.isNotEmpty()) {
@@ -326,7 +328,7 @@ fun WeightScreen(
                     // fixed 52dp with dead space under them.
                     .fillMaxHeight(0.88f)
                     .navigationBarsPadding()
-                    .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 16.dp),
+                    .padding(start = Space.Section, end = Space.Section, top = Space.Section, bottom = 16.dp),
             ) {
               Column(Modifier.weight(1f)) {
                 Text(
@@ -339,7 +341,7 @@ fun WeightScreen(
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier.padding(top = 4.dp),
                 )
-                DoubleRule(Modifier.padding(top = 10.dp, bottom = 14.dp))
+                DoubleRule(Modifier.padding(top = Space.Line, bottom = Space.Entry))
 
                 hint?.let {
                     Text(
@@ -375,7 +377,7 @@ fun WeightScreen(
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 14.dp),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = Space.Entry),
                 ) {
                     // The enum's own labels, not a second copy of the words -
                     // the chips and the readings table used to be able to drift.
@@ -412,7 +414,7 @@ fun WeightScreen(
                             "mark. Anything else is still recorded.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.outline,
-                        modifier = Modifier.padding(top = 10.dp),
+                        modifier = Modifier.padding(top = Space.Line),
                     )
                 }
             }
@@ -521,7 +523,7 @@ private fun DepletionLine(s: WeightState) {
         },
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = 6.dp),
+        modifier = Modifier.padding(top = Space.Line),
     )
 }
 
@@ -873,7 +875,7 @@ private fun AmbientCard(e: AmbientExplanation) {
                     "Based on outdoor weather, which is not the same as the room.",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.padding(top = 6.dp),
+                    modifier = Modifier.padding(top = Space.Line),
                 )
             }
         }
@@ -935,12 +937,12 @@ private fun ReadingEditor(
                         readingDate(reading.timestampMillis, reading.tzOffsetMinutes),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.outline,
-                        modifier = Modifier.padding(top = 6.dp),
+                        modifier = Modifier.padding(top = Space.Line),
                     )
                     FlowRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth().padding(top = 14.dp),
+                        modifier = Modifier.fillMaxWidth().padding(top = Space.Entry),
                     ) {
                         listOf(
                             ReadingContext.ROUTINE,
@@ -955,7 +957,7 @@ private fun ReadingEditor(
                         }
                     }
                     Row(
-                        Modifier.fillMaxWidth().padding(top = 14.dp),
+                        Modifier.fillMaxWidth().padding(top = Space.Entry),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {

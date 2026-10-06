@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.help
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -128,7 +130,7 @@ fun WayfindingScreen(onBack: () -> Unit) {
                     "delete anything without asking first.",
                 top = 20,
             )
-            Rule(Modifier.padding(top = 20.dp, bottom = 24.dp))
+            Rule(Modifier.padding(top = Space.Section, bottom = 24.dp))
         }
     }
 }
@@ -161,13 +163,13 @@ private fun Item(name: String, what: String) {
 /** Set apart from the list items, because this is the half nobody can guess. */
 @Composable
 private fun Gesture(action: String, result: String) {
-    Column(Modifier.fillMaxWidth().padding(top = 14.dp)) {
+    Column(Modifier.fillMaxWidth().padding(top = Space.Entry)) {
         Rule()
         Text(
             action,
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(top = 10.dp),
+            modifier = Modifier.padding(top = Space.Line),
         )
         Text(
             result,

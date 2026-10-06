@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.care
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.SectionHead
 import dev.dheirav.thirsttrap.ui.AppIcons
@@ -160,7 +162,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
                     "is the whole point of the weight screen.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 20.dp),
+                modifier = Modifier.padding(top = Space.Section),
             )
 
             care.source?.let {

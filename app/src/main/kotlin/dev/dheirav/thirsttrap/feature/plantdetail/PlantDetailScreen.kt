@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.plantdetail
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import dev.dheirav.thirsttrap.ui.EmptyState
 import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.MenuLabels
@@ -582,7 +584,7 @@ private fun EventRow(
                 // development: a mis-aimed tap landing on a destructive item in
                 // a menu positioned above the thing it was about.
                 .clickable(onClickLabel = "Open this entry") { editing = true }
-                .padding(vertical = 10.dp),
+                .padding(vertical = Space.Line),
             verticalAlignment = Alignment.Top,
         ) {
             Box(
@@ -590,7 +592,7 @@ private fun EventRow(
                 // the marker renders as a dash instead of a dot.
                 // Colour names the activity, not the urgency - so the timeline
                 // is scannable by eye without any colour meaning "bad".
-                Modifier.padding(top = 6.dp).size(8.dp)
+                Modifier.padding(top = Space.Line).size(8.dp)
                     .background(EventColors.of(event.type), MaterialTheme.shapes.extraSmall),
             )
             Spacer(Modifier.size(12.dp))
@@ -614,7 +616,7 @@ private fun EventRow(
                 if (photos.isNotEmpty()) {
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.padding(top = 6.dp),
+                        modifier = Modifier.padding(top = Space.Line),
                     ) {
                         items(photos, key = { it.id }) { photo ->
                             PlantPhoto(

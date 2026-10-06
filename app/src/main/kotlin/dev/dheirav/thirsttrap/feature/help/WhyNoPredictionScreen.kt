@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.help
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -81,7 +83,7 @@ fun WhyNoPredictionScreen(asked: SuppressionReason?, onBack: () -> Unit) {
             } ?: SectionHead("What it can say")
 
             others.forEach { Explanation(helpFor(it), emphasised = false) }
-            Rule(Modifier.padding(top = 20.dp, bottom = 24.dp))
+            Rule(Modifier.padding(top = Space.Section, bottom = 24.dp))
         }
     }
 }
@@ -102,7 +104,7 @@ private fun Explanation(help: SuppressionHelp, emphasised: Boolean) {
             help.why,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 6.dp),
+            modifier = Modifier.padding(top = Space.Line),
         )
         Text(
             help.whatToDo,

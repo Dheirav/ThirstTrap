@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.dashboard
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import dev.dheirav.thirsttrap.ui.EmptyState
 import dev.dheirav.thirsttrap.ui.Button
 import dev.dheirav.thirsttrap.ui.WateringAnswer
@@ -279,7 +281,7 @@ fun DashboardScreen(
                         // further down" about two halves of one list.
                         Column {
                             Row(
-                                Modifier.padding(vertical = 14.dp),
+                                Modifier.padding(vertical = Space.Entry),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Column(Modifier.weight(1f)) {
@@ -396,7 +398,7 @@ private fun PlantCard(
             ),
     ) {
         Row(
-            Modifier.padding(vertical = 14.dp),
+            Modifier.padding(vertical = Space.Entry),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // The most recent photo, falling back to an initial. A broken or
@@ -436,7 +438,7 @@ private fun PlantCard(
                                 .padding(start = 8.dp)
                                 .clip(MaterialTheme.shapes.extraSmall)
                                 .background(MaterialTheme.colorScheme.primaryContainer)
-                                .padding(horizontal = 6.dp, vertical = 2.dp),
+                                .padding(horizontal = Space.Line, vertical = 2.dp),
                         ) {
                             Text(
                                 "check",
@@ -765,7 +767,7 @@ private fun QuickLogSheet(
     onEdit: () -> Unit,
     weighable: Boolean,
 ) {
-    Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 32.dp)) {
+    Column(Modifier.padding(start = Space.Section, end = Space.Section, top = Space.Section, bottom = 32.dp)) {
         // The sheet gets the same furniture as a page: a head, a rule, then
         // entries. Previously it was a floating panel of pills that shared no
         // vocabulary with the list it came out of.
@@ -780,7 +782,7 @@ private fun QuickLogSheet(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = 2.dp),
         )
-        DoubleRule(Modifier.padding(top = 10.dp, bottom = 16.dp))
+        DoubleRule(Modifier.padding(top = Space.Line, bottom = 16.dp))
 
         WateringAnswer(
             onWatered = onWatered,
@@ -789,7 +791,7 @@ private fun QuickLogSheet(
         )
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(top = 10.dp),
+            modifier = Modifier.padding(top = Space.Line),
         ) {
             OutlinedButton(onClick = onPhoto, modifier = Modifier.weight(1f).height(BlockHeight)) {
                 Text("Photo")
@@ -807,7 +809,7 @@ private fun QuickLogSheet(
             }
         }
 
-        Rule(Modifier.padding(top = 20.dp))
+        Rule(Modifier.padding(top = Space.Section))
         Row(Modifier.padding(top = 4.dp)) {
             TextButton(onClick = onHistory) { Text("History") }
             TextButton(onClick = onEdit) { Text("Edit plant") }

@@ -1,5 +1,7 @@
 package dev.dheirav.thirsttrap.feature.propagation
 
+import dev.dheirav.thirsttrap.ui.Space
+
 import dev.dheirav.thirsttrap.ui.OutlinedButton
 import dev.dheirav.thirsttrap.ui.ColumnHead
 import dev.dheirav.thirsttrap.ui.Rule
@@ -157,7 +159,7 @@ private fun StageHead(label: String, count: Int, hint: String) {
             hint,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 6.dp),
+            modifier = Modifier.padding(top = Space.Line),
         )
     }
 }

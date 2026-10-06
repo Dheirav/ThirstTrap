@@ -160,7 +160,7 @@ fun FieldLabel(text: String, modifier: Modifier = Modifier) {
 /** A section head: letterspaced caps over a hairline. */
 @Composable
 fun SectionHead(text: String, modifier: Modifier = Modifier) {
-    Column(modifier.fillMaxWidth().padding(top = 20.dp)) {
+    Column(modifier.fillMaxWidth().padding(top = Space.Section)) {
         Text(
             text.uppercase(),
             style = MaterialTheme.typography.labelSmall,
@@ -244,7 +244,7 @@ fun AlmanacDialog(
             // Less at the bottom than the top, because the action row carries
             // its own button padding and a symmetric 20 left the dialog looking
             // bottom-heavy.
-            Column(Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 10.dp)) {
+            Column(Modifier.padding(start = Space.Section, end = Space.Section, top = Space.Section, bottom = Space.Line)) {
                 ScreenTitle(title)
                 DoubleRule(Modifier.padding(top = 8.dp, bottom = 12.dp))
                 body()
@@ -379,7 +379,7 @@ fun Disclosure(
                     contentDescription =
                         if (open) "$label, open. Tap to fold away." else "$label, folded. Tap to open."
                 }
-                .padding(top = 20.dp, bottom = 4.dp),
+                .padding(top = Space.Section, bottom = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
@@ -401,7 +401,7 @@ fun Disclosure(
             } else {
                 Column(Modifier.weight(1f)) {}
             }
-            Chevron(open, Modifier.padding(start = 10.dp))
+            Chevron(open, Modifier.padding(start = Space.Line))
         }
         Rule()
         AnimatedVisibility(open) { Column(content = content) }
