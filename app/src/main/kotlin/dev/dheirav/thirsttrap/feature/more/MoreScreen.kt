@@ -1,5 +1,6 @@
 package dev.dheirav.thirsttrap.feature.more
 
+import dev.dheirav.thirsttrap.ui.Flank
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -84,6 +85,28 @@ fun MoreScreen(
                     MenuLabels.Dashboard.EXPERIMENTS,
                     MenuLabels.Dashboard.EXPERIMENTS_WHAT,
                     onOpenExperiments,
+                )
+            }
+            // Say that the hidden ones exist, rather than hiding the fact too.
+            //
+            // Scanning a sticker and the experiment board are gated on the
+            // specialist-tools switch, which is off on a fresh install. That
+            // gate is right: neither is any use on day one. What was wrong is
+            // that nothing anywhere said they were there, so two screens and a
+            // whole feature had no reachable entry point at all unless you
+            // happened to scroll Settings and read a switch.
+            //
+            // A line is not a menu item. It does not compete with the six jobs
+            // above it, it cannot be tapped by mistake, and it disappears the
+            // moment the switch is on.
+            if (!advanced) {
+                Rule(flank = Flank.Section)
+                Text(
+                    "Two more, scanning a pot sticker and the experiment board, are " +
+                        "off until you turn on the specialist tools in Settings. They " +
+                        "are not much use until you have a few plants on the go.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.outline,
                 )
             }
         }
