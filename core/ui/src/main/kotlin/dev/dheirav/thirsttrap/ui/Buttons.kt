@@ -126,7 +126,20 @@ fun FilterChip(
     label: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    colors: SelectableChipColors = androidx.compose.material3.FilterChipDefaults.filterChipColors(),
+    // Filled, and with no border, so a chip stops looking like an empty text
+    // field. Material's default unselected chip is a transparent container
+    // inside a hairline outline, which at this corner radius is the same
+    // drawing as an OutlinedTextField: on the edit form that put four chips and
+    // five empty fields on one screen as nine identical rectangles, with
+    // nothing to say which you tap to choose and which you tap to type in.
+    //
+    // surfaceContainerHigh places it on the ramp Theme.kt measures: 1.30:1
+    // against the background, clearly a filled surface and still below the
+    // filled Card at 1.52:1, because a chip is smaller than a card and should
+    // not shout louder than one.
+    colors: SelectableChipColors = androidx.compose.material3.FilterChipDefaults.filterChipColors(
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+    ),
 ) = M3FilterChip(
     selected = selected,
     onClick = onClick,
@@ -135,6 +148,7 @@ fun FilterChip(
     enabled = enabled,
     shape = MaterialTheme.shapes.extraSmall,
     colors = colors,
+    border = null,
 )
 
 /**

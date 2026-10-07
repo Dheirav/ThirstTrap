@@ -43,7 +43,23 @@ useful reference, and they are also the single longest caption on the page. One
 anchor is enough to act on; the other two belong in the help screen with the
 rest of the watering model.
 
-## What this does not touch
+## The boxes, half done 2026-10-07
+
+Not the boxes, when this was written. One of the three is now fixed: an
+unselected FilterChip was a transparent container inside a hairline outline,
+which at this corner radius is the same drawing as an OutlinedTextField, so the
+form showed nine identical rectangles with nothing to say which you tap to
+choose and which you tap to type in. Chips are filled and borderless now, on
+the surface ramp Theme.kt measures, and the two vocabularies separate. It is a
+change to the wrapper in core/ui, so it holds everywhere rather than on this
+screen.
+
+Still open: the five empty full-width fields that take about a third of the
+screen while holding nothing, and the fact that a field with a value notches
+its label into the border while an empty one puts the label inside the box, so
+the same control draws two ways depending on data.
+
+## The original note
 
 Not the boxes. The 16 same-weight rectangles, the chips that look like text
 fields and the five empty full-width fields are a separate question and a

@@ -66,6 +66,15 @@ fun ScaleHelpScreen(onBack: () -> Unit) {
                     "teaches the app where you actually judge it to be dry.",
             )
             Section(
+                "How dry before watering",
+                "The slider in Edit plant sets how much of the pot's wet-to-dry range is " +
+                    "used up before it is worth watering. It only appears for a pot you " +
+                    "weigh, because it is the one number the weighing cannot work out for " +
+                    "itself. Around 30% for moisture-lovers like ferns and fittonia, 50% " +
+                    "for most foliage plants, and 70% or more for succulents and other " +
+                    "drought-lovers.",
+            )
+            Section(
                 "Very small pots",
                 "If a pot swings less than about 100 grams between wet and dry, weighing " +
                     "will not beat simply lifting it. Trust your hand.",
