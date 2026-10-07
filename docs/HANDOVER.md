@@ -11,7 +11,7 @@ Last updated: 2026-10-04
 ## Status
 
 **Phase: feature-complete, not defect-free. All 102 features are built or
-deliberately closed. Schema v15, 302 JVM tests and 23 instrumented tests
+deliberately closed. Schema v15, 324 JVM tests and 24 instrumented tests
 passing, running daily on the target phone.**
 
 **The council review is closed.** A twelve-agent council confirmed 21 findings
@@ -22,10 +22,10 @@ corrected their own original claim.
 
 Repo: https://github.com/Dheirav/ThirstTrap (branch `main`).
 
-- **302 JVM tests** across `:core:domain` and `:core:ui`, running in about a
+- **324 JVM tests** across `:core:domain` and `:core:ui`, running in about a
   second with no device attached.
-- **23 instrumented tests** in `:core:data`, all passing on the phone as of
-  2026-10-07, covering schema migrations, the
+- **24 instrumented tests** in `:core:data`, all passing on the phone as of
+  2026-10-08, covering schema migrations, the
   reminder planning that gathers its own inputs, and the export/import round
   trip. These need a phone.
 - Schema is at **v15**, every step an auto-migration, `exportSchema` on and
@@ -53,6 +53,51 @@ Six features, all M4 Phase 2, plus one decision:
   plant, shown only where weight means anything. Saving an edit now also
   replans the check reminder, because the trigger moves the prediction that
   the interval is derived from.
+
+### The 2026-10-07 pass: text, components, and one pot one clock
+
+Twenty-six commits. The parts worth knowing before touching anything:
+
+**Reminders now share a clock across a container.** The notification merge was
+not enough. Both Fittonias measured from the same shared watering came out six
+days apart, because the parent derived a one-day interval from 22 waterings and
+the cutting fell through to the seven-day default from one, and reminders due in
+different sweeps never merge. The interval is derived from the pot's whole
+watering history now, with shared copies counted once: `potWateringMillis` in
+domain. See also that it looked fine, because each daily watering pushed the
+cutting's clock out again, so its reminder would simply never have fired.
+
+**A reading could be its own predecessor.** The weighing round showed Last and
+Now as the same number, and the same line made every round summary report +0 g
+under a comment saying the change is the whole reason for carrying the pot to
+the scale. `previousReading` and `readingThisRound` are in domain with tests.
+
+**Three new things in `core/ui`, and the reason each exists.** `OutlinedTextField`
+was the one affordance never wrapped, at 34 call sites; wrapping it gave empty
+fields somewhere to be drawn quieter, and the first attempt at that used
+`outlineVariant` and put them at 1.7:1 against the page, under the 3:1 WCAG asks
+for a control. `Topic` is a sentence-case foldable, a sibling of `Disclosure`
+rather than a flag on it, because `Disclosure` sets its label in section-head
+caps. `AlmanacTitle` holds the `titleLarge` at `0.22.em` that three files were
+writing out by hand.
+
+**Spacing is done.** 365 raw dp to 110, tokens 92 to 346. The 110 remaining are
+dimensions and not gaps: Canvas stroke widths, the Switch's measured track, zero
+elevations. Proven value-preserving by expanding the tokens back and diffing all
+38 files.
+
+**Sticker sheet.** Every pot's code on one A4, saved to the gallery or shared.
+The sheet has to be a whole number of pages or it is not a paper size and the
+print dialog decides the label's size; the blank paper under a short sheet is
+what a part-used sheet of labels looks like.
+
+**Two help screens became sheets**, ScaleHelp and WhyNoPrediction, taking routes
+from 33 to 31. `StickerScreen` deliberately did not: it is told its subject by a
+route argument, so a sheet has nowhere to receive it.
+
+`docs/DESIGN-COHERENCE-PLAN.md` now carries an audit of all ten workstreams
+against the code, because reading it as a to-do list caused two pieces of
+finished work to be proposed again.
 
 ### Shared containers, 2026-10-06
 
