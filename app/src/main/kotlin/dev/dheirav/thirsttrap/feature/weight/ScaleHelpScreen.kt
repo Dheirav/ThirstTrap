@@ -52,49 +52,43 @@ fun ScaleHelpSheet(onDismiss: () -> Unit) {
             ScreenTitle("Weighing plants")
             Section(
                 initiallyOpen = true,
-                title = "Why weight beats a calendar",
-                body = "A pot loses water almost entirely by evaporation, which is steady over a " +
-                    "day. So its weight falls in a near-straight line between waterings, and " +
-                    "the slope of the last few weigh-ins says when it will next be thirsty. " +
-                    "No schedule can know that; your scale can.",
+                title = "Why weighing works",
+                body = "A watered pot is heavy and a dry one is light, and it gets " +
+                    "lighter a little at a time as the water evaporates. So if you " +
+                    "weigh it every few days, the app can see how fast this pot " +
+                    "loses water and tell you when it will run out. A calendar " +
+                    "cannot do that, because it does not know your room, your " +
+                    "soil, or how big the plant has got. All you need is a " +
+                    "kitchen scale: no probe to push into the soil, nothing to " +
+                    "subscribe to.",
             )
             Section(
-                "Any kitchen scale will do",
-                "5 or 10 gram resolution is plenty. A six-inch pot swings 300 to 400 grams " +
-                    "between soaked and dry, so the signal dwarfs the noise. A one-gram scale " +
-                    "is a luxury, not a requirement.",
+                "How to weigh it",
+                "Any kitchen scale will do. One that reads to 5 or 10 grams is " +
+                    "plenty, because a six-inch pot changes by 300 to 400 grams " +
+                    "between soaked and dry, which is far more than the scale " +
+                    "could get wrong. Doing it the same way each time matters more " +
+                    "than being exact: same scale, same saucer on or off. A " +
+                    "reading that is always ten grams out is more useful than an " +
+                    "exact one taken differently each time. The two worth most are " +
+                    "just after you water it, and just before you water it next.",
             )
             Section(
-                "Consistency matters more than precision",
-                "Same scale, same spot on the platter, same saucer situation - and not just " +
-                    "after misting. A repeatable reading that is ten grams off is far more " +
-                    "useful than an exact one taken differently each time.",
+                "How dry to let it get",
+                "This is the one thing the app cannot work out on its own, because " +
+                    "it depends on the plant rather than the pot. The slider in " +
+                    "Edit plant sets it, and it only appears for a pot you weigh. " +
+                    "Ferns and fittonia want watering at about 30% dry, most leafy " +
+                    "houseplants around 50%, and succulents 70% or more.",
             )
             Section(
-                "Weigh before and after watering",
-                "Those two are worth more than any others. The one after watering keeps the " +
-                    "full mark honest as the plant grows and the soil settles; the one before " +
-                    "teaches the app where you actually judge it to be dry.",
-            )
-            Section(
-                "How dry before watering",
-                "The slider in Edit plant sets how much of the pot's wet-to-dry range is " +
-                    "used up before it is worth watering. It only appears for a pot you " +
-                    "weigh, because it is the one number the weighing cannot work out for " +
-                    "itself. Around 30% for moisture-lovers like ferns and fittonia, 50% " +
-                    "for most foliage plants, and 70% or more for succulents and other " +
-                    "drought-lovers.",
-            )
-            Section(
-                "Very small pots",
-                "If a pot swings less than about 100 grams between wet and dry, weighing " +
-                    "will not beat simply lifting it. Trust your hand.",
-            )
-            Section(
-                "Nothing to buy beyond the scale",
-                "No sensor, no subscription, no server. Cheap moisture probes rot in weeks " +
-                    "and the clever ones stop working when their company does. A dumb scale " +
-                    "and a notebook is the method; this is just the notebook.",
+                "When weighing will not help",
+                "If a pot changes by less than about 100 grams between wet and " +
+                    "dry, you can judge it by lifting it and the scale adds " +
+                    "nothing. That is most very small pots. The same goes for a " +
+                    "sealed jar, which recycles its own water and so barely " +
+                    "changes weight at all. Turn weighing off for those in Edit " +
+                    "plant and the app stops asking.",
             )
         }
     }
