@@ -300,6 +300,12 @@ def leaf(m, base, aim_xy, length, width=0.052, rise=1.25, droop=0.60,
     at 0.58 and carries a flatter shoulder, so the broad part is past the
     middle. And a shallow lobing on the edge, because an unbroken ellipse reads
     as a petal.
+
+    What it still got wrong until 2026-10-08 was the proportion. Length against
+    width ran 1.3:1 to 1.5:1, and the apex leaves were 1.4:1, so every blade was
+    barely longer than it was wide and read as a spade. The plates carry roughly
+    3.5:1, long and narrow with a visible midrib. That one ratio is most of why
+    the foliage looked like a different species.
     """
     rnd = random.Random(seed)
     ax, ay = aim_xy
@@ -321,7 +327,10 @@ def leaf(m, base, aim_xy, length, width=0.052, rise=1.25, droop=0.60,
             prof /= (1.1 ** 1.1 * 0.8 ** 0.8) / ((1.1 + 0.8) ** 1.9) or 1.0
             prof = min(prof, 1.0)
             # shallow lobes, so the outline is not one smooth ellipse
-            prof *= 1.0 + 0.13 * math.cos(lobes * math.pi * u)
+            # Shallower than it was. 0.13 was tuned on a blade half as long
+            # again as it was wide, where it read as lobing; on a 3.2:1 blade
+            # the same amplitude reads as a ragged edge.
+            prof *= 1.0 + 0.06 * math.cos(lobes * math.pi * u)
             w = width * prof * 0.5
         lift = 0.006 * math.sin(math.pi * t)
         pts += [(cx + px * w, cy + py * w, z - 0.002 * (1 - t)),
@@ -381,14 +390,14 @@ def leafy_plant(at, leaf_m, stem_m, scale=1.0, seed=0):
             a = phase + (total * 2.3999) + rnd.uniform(-0.25, 0.25)
             total += 1
             up = 0.9 - 0.5 * f
-            ln = (0.052 + 0.030 * (1.0 - f) + rnd.uniform(-0.006, 0.008)) * scale
+            ln = (0.072 + 0.034 * (1.0 - f) + rnd.uniform(-0.007, 0.010)) * scale
             br = [(nb[0], nb[1], nb[2]),
                   (nb[0] + math.cos(a) * ln * 0.30, nb[1] + math.sin(a) * ln * 0.30,
                    nb[2] + 0.016 * scale * up)]
             look.put(parts.tube(br, [r0 * 0.45, r0 * 0.30], name='stem', seg=5),
                      stem_m, smooth=True)
             leaf(leaf_m, br[1], (math.cos(a), math.sin(a)), ln,
-                 width=(0.040 + 0.012 * (1 - f)) * scale,
+                 width=(0.023 + 0.007 * (1 - f)) * scale,
                  rise=0.85 + up * 0.5 + rnd.uniform(-0.1, 0.1),
                  droop=0.78 + rnd.uniform(-0.12, 0.14),
                  lobes=rnd.choice((2, 3, 3, 4)), seed=seed * 91 + total)
@@ -396,8 +405,8 @@ def leafy_plant(at, leaf_m, stem_m, scale=1.0, seed=0):
     for k in range(2):
         a = phase + total * 2.3999 + rnd.uniform(-0.3, 0.3)
         total += 1
-        leaf(leaf_m, at_h(1.0), (math.cos(a), math.sin(a)), 0.044 * scale,
-             width=0.032 * scale, rise=1.5, droop=0.5,
+        leaf(leaf_m, at_h(1.0), (math.cos(a), math.sin(a)), 0.060 * scale,
+             width=0.019 * scale, rise=1.5, droop=0.5,
              lobes=3, seed=seed * 91 + total)
 
 
@@ -1177,10 +1186,19 @@ def build(res=(1672, 941), samples=96):
         # the whole interior, which is how a backdrop should never behave.
         o.visible_shadow = False
 
-    bpy.ops.mesh.primitive_circle_add(vertices=28, radius=0.135, fill_type='NGON',
+    # Warmer, and smaller. Measured against the plate: its moon renders at
+    # (247, 221, 181), a red-minus-blue of +65, and this one rendered at
+    # (239, 236, 229), +9. That is a white disc, and a white disc in a warm
+    # evening frame reads as a hole in the glass rather than as the moon. The
+    # emission now carries the plate's own ratios, g/r 0.89 and b/r 0.73.
+    #
+    # The radius comes down because the disc covered 8119 pixels against the
+    # plate's 6877, and the brightest object in the frame being a fifth too big
+    # pulls the eye off the sill, which is the subject.
+    bpy.ops.mesh.primitive_circle_add(vertices=28, radius=0.124, fill_type='NGON',
                                       location=(0.60, WIN_Y + 2.45, 1.70))
     mn = bpy.context.object; mn.rotation_euler = (math.radians(90), 0, 0)
-    look.put(mn, look.mat('moon', (1, 1, 1, 1), 1.0, emit=(0.94, 0.92, 0.86, 1), strength=0.92))
+    look.put(mn, look.mat('moon', (1, 1, 1, 1), 1.0, emit=(0.98, 0.76, 0.45, 1), strength=0.92))
 
     # --- the four pots on the sill, and the can pouring into the first
     soil_m = look.textured('potsoil', look.SOIL, 'farm_soil_diff_1k.jpg',

@@ -244,10 +244,18 @@ def skyline(win_y, sill_z, wall_m_maker, lit_warm, lit_cool, rnd, sky_hex='#323A
     # the glass came out pale blue. The plate's city is almost entirely amber:
     # lit windows are lamps in other people's rooms, and rooms are warm. The
     # cool ones are the minority that reads as a screen or a stairwell.
+    #
+    # 0.86 and 0.64 were still far too cool, and the note above was describing
+    # an intent the numbers did not carry out. The mid band holds the most
+    # buildings and the most glass, so 36% cool there put pale blue squares
+    # across the middle of every window shot. Counted against the plate: cool
+    # pixels are 0.2% of its bright pixels and were 1.5% of mine, seven times
+    # over. At 0.95 and 0.90 a cool window is one or two in the whole city,
+    # which is what "the minority that reads as a screen" has to mean.
     BANDS = [
         # y offset from the window, how many, height range, share warm
-        (1.55, BAND_K[0], 7, (0.55, 1.30), 0.86),
-        (2.60, BAND_K[1], 9, (0.75, 1.95), 0.64),
+        (1.55, BAND_K[0], 7, (0.55, 1.30), 0.97),
+        (2.60, BAND_K[1], 9, (0.75, 1.95), 0.95),
         (4.00, BAND_K[2], 11, (1.10, 2.70), None),
     ]
     for depth, k, count, (h0, h1), lit in BANDS:

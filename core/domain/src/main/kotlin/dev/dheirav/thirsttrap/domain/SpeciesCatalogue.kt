@@ -103,7 +103,7 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         toxicity = "Toxic to cats and dogs.",
         commonProblems = listOf(
             "Leaves without splits usually means not enough light, not immaturity.",
-            "Yellowing lower leaves: overwatering.",
+            "Yellowing lower leaves, a few at a time from the bottom, means too much water.",
             "Weeping droplets from leaf tips is normal - it means it is well watered.",
         ),
     ),
@@ -314,6 +314,11 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         depletionTrigger = 0.45,
         humidity = "High.",
         toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Yellowing lower leaves, a few at a time, is nearly always too much water.",
+            "Brown crisp tips while the soil is damp is dry air, or salts from tap water building up.",
+            "Leaves but no flowers means not enough light. It will live in a dim corner and never bloom there.",
+        ),
     ),
 
     SpeciesCare(
@@ -341,6 +346,11 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         medium = Medium.SOIL,
         depletionTrigger = 0.7,
         toxicity = "Non-toxic.",
+        commonProblems = listOf(
+            "Shrivelled, wrinkled leaves mean either too dry or roots lost to rot. Feel the pot before deciding, because the leaf looks the same both ways.",
+            "No flowers after years is usually light, not feed.",
+            "Never cut off the bare stub a flower came from. Next year's flowers come from the same spur.",
+        ),
         note = "Do not cut off old flower spurs - it reflowers from the same ones.",
     ),
 
@@ -353,6 +363,11 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         medium = Medium.SOIL,
         depletionTrigger = 0.55,
         toxicity = "Mildly toxic; sap can irritate skin.",
+        commonProblems = listOf(
+            "Long bare stems with leaves only at the ends means not enough light. Pinch the tips out and it bushes again.",
+            "Variegation fading back to plain green is the same problem.",
+            "Crisp brown edges mean it dried out too far between waterings.",
+        ),
         note = "Roots from a cutting in water within about a week. Almost impossible to fail.",
     ),
 
@@ -365,6 +380,10 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         medium = Medium.SOIL,
         depletionTrigger = 0.55,
         toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Leggy stems reaching for a window means not enough light.",
+            "Leaf shape changing from an arrowhead to a lobed, split leaf is not a problem. That is the mature form, and it only happens once it has something to climb.",
+        ),
     ),
 
     SpeciesCare(
@@ -403,7 +422,7 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         toxicity = "Edible.",
         commonProblems = listOf(
             "Flowering makes the leaves bitter - pinch the flower buds out.",
-            "Leggy stems means too little light.",
+            "Long bare stems with leaves only at the top means not enough light. Pinch the growing tips out and it bushes from lower down.",
         ),
     ),
 
@@ -416,6 +435,11 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         medium = Medium.SOIL,
         depletionTrigger = 0.3,
         toxicity = "Edible.",
+        commonProblems = listOf(
+            "Wilting flat is thirst, and it recovers within the hour once watered. It does this often and it is not dying.",
+            "Woody bare stems by midsummer means it needs cutting back hard. Take half of it and it comes back soft.",
+            "Orange powder under the leaves is rust. Bin the plant, do not compost it.",
+        ),
         note = "Keep it in its own pot. In a shared one it takes over completely.",
     ),
 
@@ -442,6 +466,11 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         medium = Medium.SOIL,
         depletionTrigger = 0.55,
         toxicity = "Non-toxic.",
+        commonProblems = listOf(
+            "Leaves curling into a dome usually means too much direct light.",
+            "Drooping flat leaves means it is thirsty, and it perks up within a few hours.",
+            "Lower leaves yellowing and dropping one by one is normal as it grows a trunk.",
+        ),
         note = "Rotate it regularly or it leans hard toward the light.",
     ),
 
@@ -454,6 +483,11 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         medium = Medium.SOIL,
         depletionTrigger = 0.8,
         toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Shrivelled, dimpled pearls mean too dry. Plump but soft and darkening means too wet, and that one kills it.",
+            "Bare lengths of string with pearls only at the end means not enough light.",
+            "Rot starts where the strand meets the soil and runs outward. Take cuttings from the far end while you still can.",
+        ),
         note = "Shallow-rooted. A wide shallow pot suits it far better than a deep one.",
     ),
 
@@ -466,6 +500,11 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         medium = Medium.UNKNOWN,
         depletionTrigger = 0.8,
         toxicity = "Non-toxic.",
+        commonProblems = listOf(
+            "Rot at the base after a soak, with the centre leaves pulling out easily, is the commonest way these die. Shake it out and dry it upside down after every soak.",
+            "Grey, curled, papery leaves mean it is thirsty rather than dead.",
+            "Brown crisp tips usually mean the air is too dry between soaks.",
+        ),
         note = "No soil at all, so weight tracking does not apply here.",
     ),
 
@@ -515,6 +554,11 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         depletionTrigger = 0.2,
         humidity = "Very high. Effectively a terrarium-only plant indoors.",
         toxicity = "Non-toxic.",
+        commonProblems = listOf(
+            "It collapses completely within hours of drying out, and recovers if you catch it the same day.",
+            "Bare patches in the middle of the mat mean not enough light reaching under the top growth.",
+            "Browning in winter is usually dry air from heating rather than the soil.",
+        ),
         note = "Spreads into a dense mat and makes good ground cover under taller terrarium plants.",
     ),
 
@@ -528,6 +572,10 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         depletionTrigger = 0.2,
         humidity = "Very high - it will not survive open room air for long.",
         toxicity = "Non-toxic.",
+        commonProblems = listOf(
+            "Browning from the tips inward within a day or two of dry air. This is the one plant here that genuinely does need a closed case or a humid bathroom.",
+            "Going flat and grey means it dried out completely, and it rarely comes back from that.",
+        ),
     ),
 
     // --- common houseplants the first pass missed ---
@@ -556,6 +604,11 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         medium = Medium.SOIL,
         depletionTrigger = 0.55,
         toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Yellowing lower leaves means too much water, which is the commonest way these die.",
+            "Greyish patches that appear overnight are cold damage. It will not tolerate a draughty windowsill in winter.",
+            "Pale, washed-out leaves on a variegated one means too much direct sun.",
+        ),
         note = "Among the most tolerant of neglect and low light of anything with interesting foliage.",
     ),
 
@@ -596,6 +649,11 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         medium = Medium.SOIL,
         depletionTrigger = 0.75,
         toxicity = "Toxic to cats and dogs.",
+        commonProblems = listOf(
+            "Soft, blackening stems at soil level is rot from overwatering, and it is quick.",
+            "Never flowering again after the first time is normal unless it gets long uninterrupted darkness in autumn. Fourteen hours a night for six weeks sets the buds.",
+            "Stretched pale growth means not enough light.",
+        ),
         note = "Reflowering needs genuinely long dark nights for several weeks - about fourteen hours of uninterrupted darkness.",
     ),
 
@@ -608,6 +666,11 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         medium = Medium.SOIL,
         depletionTrigger = 0.75,
         toxicity = "Non-toxic.",
+        commonProblems = listOf(
+            "Bare lengths of vine with leaves far apart means not enough light.",
+            "Mushy stems at the soil are rot, and the plant is usually lost by the time you see it. Strike the tubers along the vine instead.",
+            "Shrivelled leaves mean too dry, which is much easier to fix than the opposite.",
+        ),
         note = "The little tubers along the strands root readily - lay one on soil and it becomes a new plant.",
     ),
 
@@ -620,6 +683,11 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         medium = Medium.SOIL,
         depletionTrigger = 0.45,
         toxicity = "Toxic to cats and dogs; the berries especially.",
+        commonProblems = listOf(
+            "Yellowing needles that shed everywhere means it dried out, or the air is too dry.",
+            "It is not a fern and it has thorns along the stems. Handle it with gloves when repotting.",
+            "Bare woody stems can be cut to the ground. It resprouts from the tuber.",
+        ),
         note = "Not actually a fern. It has thorns, which is a surprise the first time.",
     ),
 
@@ -647,6 +715,11 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         medium = Medium.SOIL,
         depletionTrigger = 0.35,
         toxicity = "Mildly toxic to pets.",
+        commonProblems = listOf(
+            "Leggy stems with long gaps means not enough light, or it has been left to flower.",
+            "Pinch the flower spikes off as they form. Once it flowers it puts its energy there and the leaves go dull.",
+            "Wilts flat very fast in a small pot, and recovers as fast when watered.",
+        ),
         note = "Pinch out flower spikes and the growing tips, or it goes leggy and stops making leaves.",
     ),
 
@@ -674,7 +747,7 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         toxicity = "Non-toxic to cats and dogs.",
         commonProblems = listOf(
             "Brown tips are usually tap water or dry air.",
-            "Spider mites thrive on these indoors.",
+            "Spider mites thrive on these indoors. Look for fine webbing where the leaflets meet the stem, and rinse the whole plant in the shower every few weeks to keep them down.",
         ),
     ),
 
@@ -687,6 +760,11 @@ val curatedSpeciesCatalogue: List<SpeciesCare> = listOf(
         medium = Medium.SOIL,
         depletionTrigger = 0.55,
         toxicity = "Non-toxic.",
+        commonProblems = listOf(
+            "Yellowing leaves dropping from the bottom is too much water, which is how most braided ones die.",
+            "A braided trunk going soft or dark at the base is rot inside the braid, where you cannot see it. Check it when you water.",
+            "Dropping all its leaves after being moved is shock, and it usually releafs.",
+        ),
     ),
 
     SpeciesCare(
