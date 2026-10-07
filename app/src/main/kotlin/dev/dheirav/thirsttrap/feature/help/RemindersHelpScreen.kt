@@ -124,8 +124,8 @@ fun RemindersHelpScreen(
 
             Section(
                 "Then the one that matters",
-                "This queues the real daily sweep through the system's work scheduler, " +
-                    "which is what an aggressive battery saver blocks. If a plant is due " +
+                "This asks Android to run the real daily check the same way it normally " +
+                    "would, which is the part a battery saver blocks. If a plant is due " +
                     "you will get its reminder within a minute or so. If nothing is due " +
                     "nothing arrives, and that is not a failure.",
             )

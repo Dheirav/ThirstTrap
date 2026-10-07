@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.ui.Space
+import dev.dheirav.thirsttrap.ui.TextButton
 
 /**
  * Export and import. Requirements item 10, and F10.6.
@@ -44,7 +45,11 @@ import dev.dheirav.thirsttrap.ui.Space
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BackupScreen(onBack: () -> Unit, viewModel: BackupViewModel = hiltViewModel()) {
+fun BackupScreen(
+    onBack: () -> Unit,
+    onOpenHelp: () -> Unit,
+    viewModel: BackupViewModel = hiltViewModel(),
+) {
     val status by viewModel.status.collectAsStateWithLifecycle()
 
     val createDoc = rememberLauncherForActivityResult(
@@ -109,6 +114,13 @@ fun BackupScreen(onBack: () -> Unit, viewModel: BackupViewModel = hiltViewModel(
                 enabled = status !is BackupStatus.Working,
                 modifier = Modifier.fillMaxWidth(),
             ) { Text("Import a backup") }
+
+            // Asked here, answered here. The backup help existed only two
+            // taps away under Settings, on the one screen where somebody is
+            // actually wondering what they would lose.
+            TextButton(onClick = onOpenHelp, modifier = Modifier.fillMaxWidth()) {
+                Text("What is in a backup, and what you lose without one")
+            }
 
             Spacer(Modifier.height(Space.Line))
 

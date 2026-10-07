@@ -21,7 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
-import dev.dheirav.thirsttrap.ui.SectionHead
+import dev.dheirav.thirsttrap.ui.Topic
 import dev.dheirav.thirsttrap.ui.Space
 
 /**
@@ -60,63 +60,58 @@ fun BackupHelpScreen(onBack: () -> Unit) {
                 .padding(horizontal = Space.Block),
         ) {
             Para(
-                "There is no cloud account and nothing syncs anywhere, which is " +
-                    "deliberate. It also means the backups are yours to take: if you " +
-                    "never export, there is no copy of your diary but the one on this " +
-                    "phone.",
+                "Nothing is saved anywhere but this phone, on purpose. That also " +
+                    "means nobody else is keeping a copy for you.",
             )
-
-            SectionHead("What is in a backup")
-            Para(
-                "One zip file holding every plant, every entry, every weight reading, " +
-                    "your reminders, the fertilisers, the room readings, your place " +
-                    "notes, and the photo files themselves. A small text file inside " +
-                    "it lists the counts, so you can check a backup is complete " +
-                    "without an app to open it.",
-            )
-
-            SectionHead("Photos are the part that cannot be replaced")
             Emphasis(
-                "Photos are stored inside the app, not in your gallery, so uninstalling " +
+                "Photos live inside the app, not in your gallery. Uninstalling " +
                     "ThirstTrap deletes them.",
             )
-            Para(
-                "Everything else is text and could in principle be typed again from " +
-                    "memory. A photo of what a leaf looked like six weeks ago cannot " +
-                    "be. If you are about to uninstall, reinstall, change phone or " +
-                    "move to a different build of the app, export first and keep the " +
-                    "zip somewhere outside the phone.",
-            )
-            Para(
-                "You can also save a single photo into your gallery, from the dots menu " +
-                    "when it is open full screen. That is an escape hatch rather than a " +
-                    "backup: the copy has no plant and no date attached to it, and it " +
-                    "will not know if you later change the caption or delete the entry. " +
-                    "The zip is the thing that keeps a photo and its context together.",
-            )
 
-            SectionHead("What restoring does")
-            Para(
-                "Importing merges a backup into whatever is already here rather than " +
-                    "replacing it. Entries are matched by their own identity, so " +
-                    "importing the same file twice changes nothing the second time, " +
-                    "and importing an old backup alongside newer entries keeps both.",
-            )
-            Para(
-                "What it will not do is undo anything. If you deleted a plant last " +
-                    "week and import a backup from before that, the plant comes back. " +
-                    "A delete is not recorded in the file, so there is nothing in a " +
-                    "backup that can say \"this was removed on purpose\".",
-            )
-
-            SectionHead("How often")
-            Para(
-                "There is no right answer and the app will not nag you about it. " +
-                    "Settings shows how long it has been since your last export, as a " +
-                    "fact rather than a warning. A sensible habit is after a weighing " +
-                    "session, since weight readings are the one thing in here that " +
-                    "genuinely cannot be reconstructed from memory.",
-            )
+            Topic("What a backup is") {
+                Para(
+                    "One zip file with everything in it: your plants, every entry, " +
+                        "every weight, your reminders and your photos. There is a " +
+                        "small text file inside listing the counts, so you can check " +
+                        "a backup is complete without opening the app.",
+                )
+            }
+            Topic("Why photos matter most") {
+                Para(
+                    "Everything else is words, and you could type it again from " +
+                        "memory. A photo of a leaf six weeks ago you cannot. So " +
+                        "before you uninstall, change phone, or install a different " +
+                        "build, export first and keep the zip off the phone.",
+                )
+                Para(
+                    "Saving one photo to your gallery is not a backup. The copy has " +
+                        "no plant and no date on it, and it will not follow any later " +
+                        "change. Only the zip keeps a photo and what it was of " +
+                        "together.",
+                )
+            }
+            Topic("What happens when you restore") {
+                Para(
+                    "Importing adds a backup to what is already here rather than " +
+                        "replacing it. Each entry is matched by its own id, so " +
+                        "importing the same file twice changes nothing the second " +
+                        "time, and an old backup alongside newer entries keeps both.",
+                )
+                Para(
+                    "It cannot undo anything. Delete a plant and then import a backup " +
+                        "from before, and the plant comes back: a backup has no record " +
+                        "that something was removed on purpose.",
+                )
+            }
+            Topic("How often to do it") {
+                Para(
+                    "There is no right answer and the app will not nag you. Settings " +
+                        "shows how long it has been, as a fact and not a warning. " +
+                        "After a weighing session is a good habit, because weights " +
+                        "are the one thing you could never write down again from " +
+                        "memory.",
+                )
+            }
             Rule(flank = Flank.Section)
         }
     }

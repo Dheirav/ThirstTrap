@@ -296,7 +296,10 @@ class MainActivity : ComponentActivity() {
                             IntroScreen(onDone = { nav.popBackStack() }, markSeen = false)
                         }
                         composable(Routes.BACKUP) {
-                            BackupScreen(onBack = { nav.popBackStack() })
+                            BackupScreen(
+                                onBack = { nav.popBackStack() },
+                                onOpenHelp = { nav.navigate(Routes.BACKUP_HELP) },
+                            )
                         }
                         composable(
                             route = "${Routes.WEIGHT}/{id}",
