@@ -101,9 +101,9 @@ fun MoreScreen(
             if (!advanced) {
                 Rule(flank = Flank.Section)
                 Text(
-                    "Two more, scanning a pot sticker and the experiment board, are " +
-                        "off until you turn on the specialist tools in Settings. They " +
-                        "are not much use until you have a few plants on the go.",
+                    "Two more, the pot sticker scanner and the experiment board, are " +
+                        "off until you turn on specialist tools in Settings. They need a " +
+                        "few plants to be worth it.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline,
                 )

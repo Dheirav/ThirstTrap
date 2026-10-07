@@ -113,8 +113,8 @@ fun SettingsScreen(
                 }
             }
             Text(
-                "Reminders are scheduled loosely rather than to the minute, so a 9:00 " +
-                    "reminder may arrive at 9:15. That keeps battery use negligible.",
+                "Reminders are not timed to the minute, so a 9:00 one may arrive at " +
+                    "9:15. That keeps battery use tiny.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -131,8 +131,8 @@ fun SettingsScreen(
 
             SectionHead("Watering")
             Text(
-                "How dry a new plant is allowed to get before it is worth watering. " +
-                    "Succulents want more, ferns want less. Each plant can override this.",
+                "How dry a new plant should get before watering. Succulents more, " +
+                    "ferns less. Each plant can have its own.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
