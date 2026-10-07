@@ -46,6 +46,7 @@ import dev.dheirav.thirsttrap.domain.WhenLogged
 import dev.dheirav.thirsttrap.domain.CheckResult
 import dev.dheirav.thirsttrap.domain.Medium
 import dev.dheirav.thirsttrap.domain.WateringMethod
+import dev.dheirav.thirsttrap.ui.Rule
 
 /** Features F2.3 and F2.4 - the full event picker behind the sheet's "More". */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -116,10 +117,19 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
             // more labels. Proximity is the law doing the work here, and adding
             // a fifth heading voice to fix a grouping problem would undo the
             // pass that got the app down to two.
+            //
+            // Measured on the device: a wrapped row inside a group sat 91px
+            // below the one above it and a new group sat 169px below. Proximity
+            // was doing something, but 1.9x is a soft signal and you cannot
+            // tell a group boundary from a group that simply wrapped. A rule
+            // makes it unambiguous, and it does not reopen the argument above:
+            // that was against a fifth HEADING voice, and Rule is already this
+            // app's divider, used in twenty-nine other places.
             EVENT_GROUPS.forEachIndexed { i, group ->
+                if (i > 0) Rule(Modifier.padding(top = Space.Entry))
                 FlowRow(
                     horizontalArrangement = Arrangement.spacedBy(Space.Line),
-                    modifier = Modifier.padding(top = if (i == 0) 0.dp else Space.Line),
+                    modifier = Modifier.padding(top = if (i == 0) 0.dp else Space.Entry),
                 ) {
                     group.forEach { t ->
                         FilterChip(
