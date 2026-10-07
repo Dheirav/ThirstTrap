@@ -109,8 +109,7 @@ fun PlantEditScreen(
             // once, and the rest of the form stops looking like a form.
             if (state.isNew) {
                 Text(
-                    "Only the name is needed. Everything else can wait, or stay empty, " +
-                        "because the app fills most of it in from what you log.",
+                    "Only the name is needed. The rest can stay empty.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -136,8 +135,7 @@ fun PlantEditScreen(
             // forgot, and the fix for that is attribution, not a badge.
             state.prefillFrom?.let { from ->
                 Text(
-                    "Filled ${joinNaturally(state.prefilled)} from the $from notes. " +
-                        "Change any of them below.",
+                    "Filled ${joinNaturally(state.prefilled)} from the $from notes.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline,
                 )
@@ -186,14 +184,13 @@ fun PlantEditScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Column(Modifier.weight(1f)) {
+                            // No subtitle. "Shares a pot" already says what
+                            // "Another plant lives in the same pot or jar"
+                            // said, and the caption under every control is
+                            // what made this form read as a wall.
                             Text(
                                 "Shares a pot",
                                 style = MaterialTheme.typography.bodyMedium,
-                            )
-                            Text(
-                                "Another plant lives in the same pot or jar.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
                         Spacer(Modifier.size(Space.Entry))
@@ -223,17 +220,14 @@ fun PlantEditScreen(
                         // read as a bug unless you were told they would.
                         state.sharesWith?.let { shared ->
                             Text(
-                                "Watering, checking and feeding will be recorded on " +
-                                    "${shared.plantName} too, since it is the same pot. " +
-                                    "Everything else stays on this plant alone.",
+                                "Watering, checking and feeding also log on " +
+                                    "${shared.plantName}.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                             if (shared.weightTracked) {
                                 Text(
-                                    "Weighing stays with ${shared.plantName}: a pot " +
-                                        "weighs as one object, so only one plant in it " +
-                                        "can be the one on the scale.",
+                                    "Weighing stays with ${shared.plantName}.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
@@ -263,14 +257,11 @@ fun PlantEditScreen(
                         FilterChip(
                             selected = state.source == s,
                             onClick = { viewModel.onSource(s) },
-                            label = {
-                                Column {
-                                    Text(s.label)
-                                    s.hint?.let {
-                                        Text(it, style = MaterialTheme.typography.labelSmall)
-                                    }
-                                }
-                            },
+                            // Label only. The hints made the Cutting chip double
+                            // height and 634px wide against Gift at 178, so the row
+                            // was a staircase rather than a row. PlantSource keeps
+                            // its hints for anywhere that has space for them.
+                            label = { Text(s.label) },
                         )
                     }
                 }
@@ -300,7 +291,7 @@ fun PlantEditScreen(
                     label = { Text("Usual amount of water (ml)") },
                     placeholder = { Text("75") },
                     supportingText = {
-                        Text("Watering logs this by default, so you never retype it.")
+                        Text("Watering logs this by default.")
                     },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
@@ -356,9 +347,7 @@ fun PlantEditScreen(
                         Column(Modifier.weight(1f)) {
                             Text("Weigh this pot", style = MaterialTheme.typography.bodyMedium)
                             Text(
-                                "Turn this off for a pot where weight says nothing, like a closed " +
-                                    "terrarium that recycles its own water. It leaves the weighing " +
-                                    "round and stops being asked about.",
+                                "Off for pots where weight says nothing, like a closed terrarium.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -381,10 +370,12 @@ fun PlantEditScreen(
                         style = MaterialTheme.typography.labelLarge,
                     )
                     Text(
-                        "How much of the pot's water range is used up before this plant " +
-                            "wants watering. Around 30% for moisture-lovers like ferns and " +
-                            "fittonia, 50% for most foliage plants, 70% or more for " +
-                            "succulents and other drought-lovers.",
+                        // One anchor, not three. The other two percentages were
+                        // real reference and also the longest caption on the
+                        // page; they belong with the rest of the watering model
+                        // in the help screen.
+                        "How much of the pot's water range is used before watering. " +
+                            "50% suits most foliage plants.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -426,8 +417,7 @@ fun PlantEditScreen(
                         modifier = Modifier.fillMaxWidth(),
                     )
                     Text(
-                        "A daily loss smaller than one step is rounding, not drying, so this " +
-                            "decides when the app stays quiet rather than guessing.",
+                        "Losses smaller than one step are rounding, not drying.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -441,10 +431,12 @@ fun PlantEditScreen(
                                     style = MaterialTheme.typography.titleSmall,
                                 )
                                 Text(
-                                    "Measuring it a different way changes every reading by a " +
-                                        "constant, so the full and dry marks describe a " +
-                                        "measurement that no longer exists. Weigh it once after " +
-                                        "watering and they set themselves again.",
+                                    // Shortened, but the recovery stays. This is
+                                    // the one caption here that warns about losing
+                                    // data, and a warning without the way back is
+                                    // a worse warning for being shorter.
+                                    "Changing this clears the full and dry marks. " +
+                                        "Weigh once after watering to set them again.",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.padding(top = Space.Tight),
@@ -458,8 +450,7 @@ fun PlantEditScreen(
             if (state.isNew) {
                 FieldLabel("When did you last water it?")
                 Text(
-                    "A plant you add today already has a history. This starts its first " +
-                        "reminder from the right day.",
+                    "Starts the first reminder from the right day.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -537,8 +528,7 @@ fun PlantEditScreen(
             onDismissRequest = { justAdded = null; onDone() },
             body = {
                 DialogText(
-                    "There are care notes on file for this one: how much light it wants, " +
-                        "how dry to let it get, and what usually goes wrong.",
+                    "Care notes are on file for this one.",
                 )
                 // The opt-out reads as a line of the page rather than a third
                 // button competing with the two that matter.

@@ -2307,6 +2307,11 @@ with four plants should not have to read past them.
 Read in three places and written in one, checked by grep rather than assumed,
 because a flag that gates nothing is the failure this codebase keeps producing.
 
+The off-state line in `MoreScreen`, which says the specialist tools exist rather
+than hiding that too, was the last thing in D60 nobody had seen render: it only
+appears when the switch is OFF and the only phone the app runs on has it ON.
+Confirmed on the device 2026-10-07. The verification debt from D60 is closed.
+
 ### D38 — "Watered today" did not mean today (2026-09-30)
 
 Found by following up a remark rather than by looking for it. The user mentioned
