@@ -97,10 +97,11 @@ private fun saveSheet(
 ): Boolean {
     val bmp = StickerSheet.render(viewModel.plants.value) ?: return false
     val file = StickerSheet.writeToCache(context, bmp, "thirsttrap-stickers.png") ?: return false
-    // Saved as a PNG even though the gallery helper names its mime type jpeg:
-    // a QR code is hard edges, and JPEG ringing around them is exactly what
-    // makes a printed code fail to scan.
-    return PhotoExport.saveToGallery(context, file, "thirsttrap-stickers.png")
+    // PNG, and said so. A QR is hard edges and JPEG rings around them, which is
+    // what makes a printed code fail to scan.
+    return PhotoExport.saveToGallery(
+        context, file, "thirsttrap-stickers.png", mimeType = "image/png",
+    )
 }
 
 private fun shareSheet(

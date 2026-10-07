@@ -46,7 +46,7 @@ object PhotoExport {
             context, "${context.packageName}.fileprovider", staged,
         )
         return Intent(Intent.ACTION_SEND).apply {
-            type = "image/jpeg"
+            type = if (source.extension.equals("png", ignoreCase = true)) "image/png" else "image/jpeg"
             putExtra(Intent.EXTRA_STREAM, uri)
             // The caption travels as text when there is one, because a photo of
             // a leaf is not self-explanatory to whoever receives it.
@@ -75,12 +75,23 @@ object PhotoExport {
      * a convenience, and a failed save should say so quietly and leave
      * everything else alone.
      */
-    fun saveToGallery(context: Context, source: File, displayName: String): Boolean {
+    fun saveToGallery(
+        context: Context,
+        source: File,
+        displayName: String,
+        // Declared rather than assumed. This was hardcoded to image/jpeg for
+        // the one caller that saves photos, and when the sticker sheet started
+        // saving PNGs the platform honoured the declaration over the bytes and
+        // filed them as "thirsttrap-stickers.png.jpg". The name is wrong, and a
+        // print app that trusts the extension over the header gets a JPEG that
+        // is not one.
+        mimeType: String = "image/jpeg",
+    ): Boolean {
         if (!canSaveToGallery || !source.exists()) return false
         val resolver = context.contentResolver
         val values = ContentValues().apply {
             put(MediaStore.Images.Media.DISPLAY_NAME, displayName)
-            put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+            put(MediaStore.Images.Media.MIME_TYPE, mimeType)
             put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/ThirstTrap")
             put(MediaStore.Images.Media.IS_PENDING, 1)
         }
