@@ -1,6 +1,6 @@
 # Edit plant: the captions, before and after
 
-Proposed 2026-10-07. Nothing applied yet.
+Applied 2026-10-07. The edit form in 9c0f660, Settings in the commit after it.
 
 The form carries about 400 words of permanent explanation, a paragraph under
 nearly every control. That is what makes it read as cluttered, rather than the
@@ -50,3 +50,59 @@ fields and the five empty full-width fields are a separate question and a
 separate change. Cutting #7's chip subtitles happens to fix the staircase in
 the source row, because the Cutting chip was double height and 634px wide
 against Gift at 178, but that is a side effect rather than the aim.
+
+---
+
+# The rest of the app, surveyed 2026-10-07
+
+27,484 characters of user-visible prose across 25 screens. Most of it should
+stay, and the reason is worth writing down: the edit form's problem was a
+specific one, not "too many words".
+
+## Where the same pattern recurs
+
+**Settings, and only Settings.** `SettingRow(title, subtitle, control)` is
+structurally the same thing as the edit form's "Weigh this pot" plus paragraph
+plus switch, and it has three rows whose subtitles average **279 characters**,
+five or six lines each under a toggle.
+
+| Row | Now | Proposed |
+|---|---|---|
+| Offer care notes for a new plant | Just after you add a plant, if there are notes on file for its species, the app offers them. On by default: the moment you have typed the species name is the moment they are worth reading, and nobody goes looking in a menu for something they do not know is there. It only ever asks once per plant. (303) | Offers the notes on file for a species just after you add a plant. Once per plant. (81) |
+| Look up unknown plant names online | Off by default, and the only thing in the app that can send anything anywhere. On, the care screen can resolve a name it does not recognise and link the Wikipedia article - it sends the name you typed and nothing else. It never fetches care advice, and never runs on its own. (275) | The only thing here that sends anything out: the species name, nothing else, to link its Wikipedia article. Never runs on its own. (131) |
+| Show the specialist tools | Pot stickers and the scanner, experiments, and logging room temperature by hand. None of them is useless and none of them is for everybody: stickers pay off at thirty pots and a printer, and experiments assume you want to run a controlled test on a houseplant. (260) | Pot stickers and the scanner, experiments, and logging room temperature by hand. (79) |
+
+**838 characters down to 298, applied.** The middle row is cut least on purpose: it is a
+privacy disclosure, the only switch in the app that lets anything leave the
+phone, and every fact in it is kept. What goes is the reassurance that it never
+fetches care advice, which is already implied by saying it sends the name and
+nothing else.
+
+## Where it looks similar and is not
+
+**WeightScreen has the most long prose in the app, 16 passages, and almost none
+of it is caption.** "Drying about 20% faster than usual, and where it lives is
+warmer than it was. That is the pot behaving normally in a changed room" is the
+app's answer. It is the product. Cutting it would be cutting the feature.
+
+**Empty states are required, not clutter.** `UI-SPEC.md` section 9 sets them out
+as a table and names the wording: "No plants yet. Illustration plus 'Add your
+first plant'. Not a blank screen." Half of what the survey flags on
+FertilizerScreen, LocationsScreen, StatsScreen and PlantDetailScreen is exactly
+that, and shortening it would be working against a decision already made.
+
+**Destructive-action warnings keep their recovery**, by the same rule applied to
+the weighing-method caption on the edit form.
+
+**The help screens are prose by definition.** WayfindingScreen, BackupHelpScreen,
+RemindersHelpScreen, ScaleHelpScreen and HelpScreen hold 8,384 characters
+between them and that is the whole point of them. If anything they should be
+taking text from elsewhere, which is where the cut captions went.
+
+## CareScreen, a partial case
+
+Eight long passages, of which the empty and error states stay. The candidates
+are the editorial asides, such as "Your own log will outgrow generic advice
+anyway" and "General guidance for the species, not for your pot", which say the
+same thing twice on one screen. Worth a pass, smaller than Settings, and better
+done when somebody is next in that file.

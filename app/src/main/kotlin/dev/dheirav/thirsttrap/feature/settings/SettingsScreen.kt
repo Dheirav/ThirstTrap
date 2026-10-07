@@ -57,11 +57,8 @@ fun SettingsScreen(
             SectionHead("New plants")
             SettingRow(
                 title = "Offer care notes for a new plant",
-                subtitle = "Just after you add a plant, if there are notes on file for its " +
-                    "species, the app offers them. On by default: the moment you have typed " +
-                    "the species name is the moment they are worth reading, and nobody goes " +
-                    "looking in a menu for something they do not know is there. It only ever " +
-                    "asks once per plant, and \"Don't ask again\" in that prompt turns this off.",
+                subtitle = "Offers the notes on file for a species just after you add a " +
+                    "plant. Once per plant, and \"Don't ask again\" there turns this off.",
             ) {
                 Switch(
                     checked = settings.offerCareOnAdd,
@@ -75,10 +72,11 @@ fun SettingsScreen(
             SectionHead("Network")
             SettingRow(
                 title = "Look up unknown plant names online",
-                subtitle = "Off by default, and the only thing in the app that can send " +
-                    "anything anywhere. On, the care screen can resolve a name it does not " +
-                    "recognise and link the Wikipedia article - it sends the name you typed " +
-                    "and nothing else. It never fetches care advice, and never runs on its own.",
+                // Cut least, on purpose. This is the only switch that lets
+                // anything leave the phone, so every fact stays: what sends,
+                // what it sends, what for, and that it is never automatic.
+                subtitle = "The only thing here that sends anything out: the species name, " +
+                    "nothing else, to link its Wikipedia article. Never runs on its own.",
             ) {
                 Switch(
                     checked = settings.onlineSpeciesLookup,
@@ -154,9 +152,7 @@ fun SettingsScreen(
             SettingRow(
                 title = "Show the specialist tools",
                 subtitle = "Pot stickers and the scanner, experiments, and logging room " +
-                    "temperature by hand. None of them is useless and none of them is for " +
-                    "everybody: stickers pay off at thirty pots and a printer, and " +
-                    "experiments assume you want to run a controlled test on a houseplant.",
+                    "temperature by hand.",
             ) {
                 Switch(
                     checked = settings.advancedFeatures,
