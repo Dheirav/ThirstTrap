@@ -149,39 +149,6 @@ fun AlmanacTitle(text: String, modifier: Modifier = Modifier) {
 }
 
 /**
- * The running head: what this page is, and what day it is.
- *
- * The date is the spine of an almanac. Putting it at the top of the list is not
- * decoration - it is the reason the rest of the page is arranged the way it is.
- */
-@Composable
-fun Masthead(
-    title: String,
-    date: String? = null,
-    modifier: Modifier = Modifier,
-    trailing: @Composable () -> Unit = {},
-) {
-    Column(modifier.fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                AlmanacTitle(title)
-                date?.let {
-                    Text(
-                        it,
-                        style = MaterialTheme.typography.bodySmall,
-                        letterSpacing = 0.08.em,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = Space.Hair),
-                    )
-                }
-            }
-            trailing()
-        }
-        DoubleRule()
-    }
-}
-
-/**
  * The label over one control or one group of controls inside a form.
  *
  * This is NOT [SectionHead] and the difference is the point. A section head

@@ -597,9 +597,11 @@ What they actually shared was one line: `titleLarge` at `0.22.em`, the almanac
 title voice, written out three times. That is now `AlmanacTitle` and written
 once, used by both screens and by `Masthead` itself.
 
-`Masthead` still has no callers. It is coherent, documented and unused, which is
-this project's signature defect with nothing behind it to break. Either it earns
-a page or it should go; left alone for now rather than deleted on a whim.
+`Masthead` is deleted, 2026-10-08. It was coherent, documented and unused, which
+is this project's signature defect with nothing behind it to break. It fitted
+neither screen this plan said hand-rolled it, so there was no page for it to
+earn. What was genuinely shared, the caps title voice, is `AlmanacTitle` and is
+used by both.
 
 ## The six filled "Open" buttons
 
