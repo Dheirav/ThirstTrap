@@ -189,4 +189,50 @@ class ReminderPlanningTest {
             ((due() - (now - MILLIS_PER_DAY.toLong())) / MILLIS_PER_DAY).roundToInt(),
         )
     }
+
+    @Test
+    fun twoPlantsInOnePotGetTheSameInterval() = runBlocking {
+        // The jar on 2026-10-07: the parent had been watered daily for weeks
+        // and the cutting had joined yesterday, so derived per plant the parent
+        // resolved to a day and the cutting fell through to the seven-day
+        // default. Merging notifications cannot fix that, because a one-day and
+        // a seven-day clock are never due in the same sweep.
+        val jar = "jar-1"
+        seedPlant(Plant(id = plantId, name = "Parent", containerId = jar, weightTracked = false))
+        seedPlant(Plant(id = "p2", name = "Cutting", containerId = jar, weightTracked = false))
+        seedReminder()
+        db.reminderDao().upsert(
+            Reminder(
+                id = "r2", plantId = "p2", kind = ReminderKind.CHECK,
+                intervalDays = null, nextDueAtMillis = now,
+            ).toReminderEntity(now),
+        )
+
+        // Seven daily waterings, each one shared across the jar as logEvent
+        // would write them: one group id, one row per plant.
+        for (d in -7..-1) {
+            val at = now + (d * MILLIS_PER_DAY).toLong()
+            for ((n, pid) in listOf(plantId, "p2").withIndex()) {
+                db.careEventDao().insert(
+                    CareEvent(
+                        id = "w$d-$n", plantId = pid, timestampMillis = at,
+                        tzOffsetMinutes = 330, type = CareEventType.WATERED,
+                        shareGroupId = "g$d",
+                    ).toEntity(now, now),
+                )
+            }
+        }
+
+        reminders.rescheduleFromModel(plantId, now)
+        reminders.rescheduleFromModel("p2", now)
+
+        val a = db.reminderDao().observeForPlant(plantId).first().first().nextDueAt
+        val b = db.reminderDao().observeForPlant("p2").first().first().nextDueAt
+        assertEquals("one pot, one clock", daysFromNow(a), daysFromNow(b))
+        // And the clock is the pot's one-day one, not the seven-day default.
+        // Last watered a day ago on a one-day interval means due now, which is
+        // 0; on the old per-plant fallback the cutting would have been 6.
+        assertEquals("the pot's own daily clock, not the new-plant default", 0, daysFromNow(a))
+        assertEquals(0, daysFromNow(b))
+    }
 }

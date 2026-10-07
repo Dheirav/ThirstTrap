@@ -8,6 +8,7 @@ import dev.dheirav.thirsttrap.domain.assembleWeightState
 import dev.dheirav.thirsttrap.domain.checkIntervalFromLogDays
 import dev.dheirav.thirsttrap.domain.computeNextDue
 import dev.dheirav.thirsttrap.domain.resolveIntervalDays
+import dev.dheirav.thirsttrap.domain.potWateringMillis
 import kotlinx.coroutines.flow.first
 import dev.dheirav.thirsttrap.data.dao.ReminderDao
 import dev.dheirav.thirsttrap.data.entity.ReminderEntity
@@ -53,6 +54,22 @@ class ReminderRepositoryImpl @Inject constructor(
         val readings = weightDao.observeForPlant(plantId).first().map { it.toDomainReading() }
 
         val waterings = events.filter { it.type == CareEventType.WATERED }
+
+        // The pot's watering history, not this plant's, when it shares one.
+        //
+        // Derived per plant, two plants in one jar get two different intervals
+        // because they have been in it for different lengths of time, and the
+        // notification merge cannot rescue that: the worker collapses reminders
+        // due in the same sweep, and a one-day and a seven-day clock are never
+        // due in the same sweep. Merging the inputs is what actually makes one
+        // pot ask once.
+        val potWaterings = plant.containerId?.let { cid ->
+            val mates = plantDao.inContainer(cid).map { it.id }
+            val all = mates.flatMap { id ->
+                if (id == plantId) events else eventDao.observeForPlant(id).first().map { it.toDomain() }
+            }
+            potWateringMillis(all)
+        } ?: waterings.map { it.timestampMillis }
         val state = assembleWeightState(
             plant = plant,
             readings = readings,
@@ -70,7 +87,7 @@ class ReminderRepositoryImpl @Inject constructor(
         val interval = resolveIntervalDays(
             explicitIntervalDays = explicit,
             prediction = state.prediction,
-            loggedAverageDays = checkIntervalFromLogDays(waterings.map { it.timestampMillis }),
+            loggedAverageDays = checkIntervalFromLogDays(potWaterings),
         )
 
         // An assessment is a watering, a check, or a weigh-in: all three mean
