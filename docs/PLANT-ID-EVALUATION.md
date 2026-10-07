@@ -57,6 +57,12 @@ houseplant dataset", which is a different order of work and a different project.
 
 ## What this leaves
 
+**All three options below were decided on 2026-09-30, and the answer was the
+third: identification is closed entirely.** F25c by D41 and F25b by D42. This
+section was left reading as though the decision were still open, which is how it
+came back up on 2026-10-07 and got recommended a second time. `README.md` and
+`docs/FEATURES.md` carry the settled wording.
+
 **F25c as specified is closed.** Bundling an open pretrained classifier does not
 work, and the 4.8 MB it would add to a 4.3 MB app buys nothing.
 

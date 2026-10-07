@@ -39,10 +39,13 @@ Repo: https://github.com/Dheirav/ThirstTrap (branch `main`).
 Six features, all M4 Phase 2, plus one decision:
 
 - ~~**F11** experiments, **F12** `[[plant]]` cross-links~~ - both shipped
-  2026-09-27, see D34. Remaining: **F25c** offline plant identification with
-  **F25b** as an opt-in second tier (F25 itself dropped, see D29), ~~the GMS
-  scanner replacement~~ (done, see D35), and the
-  widget ideas parked in the backlog section.
+  2026-09-27, see D34. ~~**F25c** offline plant identification with **F25b** as
+  an opt-in second tier~~ - **identification is closed entirely**, F25c on
+  2026-09-30 by D41 and F25b by D42, and `README.md` and `docs/FEATURES.md` both
+  already say so. This bullet went on listing it as remaining for a week, which
+  is the usual reason to read FEATURES.md before believing this file. ~~the GMS
+  scanner replacement~~ (done, see D35). Remaining: the widget ideas parked in
+  the backlog section.
 - ~~**F16 cloud backup** is unstarted *and undecided*.~~ Decided no, 2026-09-27,
   see D33. Local-only is the product, not a gap in it.
 - ~~The per-plant depletion trigger has no control since D28 removed the dialog
