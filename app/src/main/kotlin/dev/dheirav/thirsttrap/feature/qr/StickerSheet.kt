@@ -11,6 +11,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import com.google.zxing.qrcode.encoder.Encoder
 import dev.dheirav.thirsttrap.domain.Plant
 import dev.dheirav.thirsttrap.domain.stickerSheetLayout
+import dev.dheirav.thirsttrap.domain.stickerSheetPages
 import java.io.File
 import java.io.FileOutputStream
 
@@ -28,16 +29,22 @@ import java.io.FileOutputStream
 object StickerSheet {
 
     /**
-     * A4 width at 300dpi. The width fixes the printed size of a code: four
-     * columns across 210mm makes each label about 52mm, which is what you want
-     * taped to a pot.
+     * A4 at 300dpi, and the image is always a whole number of these.
      *
-     * The HEIGHT is not fixed, and the first version of this got that wrong. It
-     * forced a full A4 whatever the content, so four plants printed one row of
-     * codes and then two-thirds of a blank sheet. The page is as tall as what
-     * is on it; a printer fits that to paper by itself.
+     * The width fixes the printed size of a code: four columns across 210mm
+     * makes each label about 52mm, which is what you want taped to a pot.
+     *
+     * The height went wrong twice. First it was forced to a full page whatever
+     * the content, so four plants printed one row above two-thirds of blank
+     * paper. Then it was trimmed to the content, which removed the blank paper
+     * and broke printing instead: 2480x764 is not a paper size, so what comes
+     * out depends on whether the print dialog fits, fills or centres it. An
+     * image that is exactly N pages prints the same from any of them. The blank
+     * space under a short sheet is not waste to design around; that is what a
+     * part-used sheet of labels looks like.
      */
     private const val PAGE_W = 2480
+    private const val PAGE_H = 3508
 
     /**
      * Roughly 8mm at 300dpi, kept clear all the way round.
@@ -63,8 +70,9 @@ object StickerSheet {
     fun render(plants: List<Plant>): Bitmap? {
         if (plants.isEmpty()) return null
         val layout = stickerSheetLayout(plants.size, PAGE_W - MARGIN * 2, MIN_CELL)
-        val pageH = layout.rows * layout.cellPx + MARGIN * 2
-        val bmp = Bitmap.createBitmap(PAGE_W, pageH, Bitmap.Config.ARGB_8888)
+        val rowsPerPage = maxOf(1, (PAGE_H - MARGIN * 2) / layout.cellPx)
+        val pages = stickerSheetPages(layout.rows, rowsPerPage)
+        val bmp = Bitmap.createBitmap(PAGE_W, pages * PAGE_H, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bmp)
         canvas.drawColor(Color.WHITE)
 
@@ -81,8 +89,12 @@ object StickerSheet {
         plants.forEachIndexed { i, plant ->
             val col = i % layout.columns
             val row = i / layout.columns
+            // Each page carries its own margin, or rows after the first page
+            // creep up into the strip the printer cannot reach.
+            val page = row / rowsPerPage
+            val rowOnPage = row % rowsPerPage
             val x = left + col * layout.cellPx
-            val y = MARGIN + row * layout.cellPx.toFloat()
+            val y = page * PAGE_H + MARGIN + rowOnPage * layout.cellPx.toFloat()
             drawCode(canvas, plant.id, x, y, layout.cellPx.toFloat(), ink)
             // The name under the code, because a sheet of thirty identical
             // squares is unusable until you have scanned every one of them.

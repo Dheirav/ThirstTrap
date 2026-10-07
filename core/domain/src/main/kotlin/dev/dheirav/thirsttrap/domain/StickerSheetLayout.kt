@@ -40,3 +40,21 @@ fun stickerSheetLayout(count: Int, widthPx: Int, minCellPx: Int): SheetLayout {
         gutterPx = widthPx - cell * columns,
     )
 }
+
+/**
+ * How many whole pages the grid needs, so the image is an exact number of them.
+ *
+ * The first version trimmed the image to its contents, which removed a blank
+ * two-thirds of a page and broke printing: a 2480x764 image is not a paper size,
+ * so what comes out depends on whether the print dialog decides to fit, fill or
+ * centre it. An image that is exactly N pages tall prints the same way from any
+ * of them, and a label is 52mm whether you printed four or forty.
+ *
+ * The blank space under a short sheet is not waste to design around. That is
+ * what a part-used sheet of labels looks like.
+ */
+fun stickerSheetPages(rows: Int, rowsPerPage: Int): Int {
+    require(rowsPerPage > 0) { "a page must hold at least one row" }
+    if (rows <= 0) return 0
+    return (rows + rowsPerPage - 1) / rowsPerPage
+}

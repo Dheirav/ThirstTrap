@@ -51,4 +51,26 @@ class StickerSheetLayoutTest {
         assertEquals(300, l.cellPx)
         assertEquals(3, l.rows)
     }
+
+    @Test
+    fun aShortSheetIsStillAWholePage() {
+        // Four plants is one row, and the image still has to be one page or it
+        // is not a paper size and the printer decides what to do with it.
+        assertEquals(1, stickerSheetPages(rows = 1, rowsPerPage = 5))
+    }
+
+    @Test
+    fun afullPageIsOnePage() {
+        assertEquals(1, stickerSheetPages(rows = 5, rowsPerPage = 5))
+    }
+
+    @Test
+    fun oneRowOverSpillsToASecond() {
+        assertEquals(2, stickerSheetPages(rows = 6, rowsPerPage = 5))
+    }
+
+    @Test
+    fun noRowsIsNoPages() {
+        assertEquals(0, stickerSheetPages(rows = 0, rowsPerPage = 5))
+    }
 }
