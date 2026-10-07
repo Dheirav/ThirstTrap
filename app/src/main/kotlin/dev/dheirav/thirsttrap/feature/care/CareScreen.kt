@@ -66,21 +66,16 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
             ) {
                 Text("Nothing on file for this one", style = MaterialTheme.typography.titleMedium)
                 Text(
-                    "The species field is blank, or it is not something the built-in notes " +
-                        "cover. Nothing here invents advice it does not have.",
+                    "The species field is blank, or it is not something the built-in " +
+                        "notes cover.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(top = Space.Line),
                 )
-                Text(
-                    "Your own log will outgrow generic advice anyway - a few weighings say " +
-                        "more about this pot than any care sheet can.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = Space.Block),
-                )
+                // "Your own log will outgrow generic advice anyway" used to sit
+                // here, and "its own drying curve is the better answer" still
+                // sits further down the same screen. One screen said it twice.
 
                 LookupSection(
                     enabled = state.onlineLookupEnabled,
@@ -105,8 +100,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
             // about what actually kills the plant - so it says so.
             if (care.detail == CareDetail.BUNDLED) {
                 Text(
-                    "Basic notes, from the bundled plant dataset. Enough to set a starting " +
-                        "point, not enough to tell you what usually goes wrong with this one.",
+                    "Basic notes, from the bundled plant dataset.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = Space.Line),
@@ -136,9 +130,8 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
 
             SectionHead("Use these as this plant's settings")
             Text(
-                "Sets how dry it should get before watering to ${(care.depletionTrigger * 100).roundToInt()}%" +
-                    " - the one number there is no way to guess - along with the light and " +
-                    "watering notes above.",
+                "Sets the trigger to ${(care.depletionTrigger * 100).roundToInt()}%, " +
+                    "along with the light and watering notes above.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(vertical = Space.Line),
@@ -158,9 +151,8 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
             }
 
             Text(
-                "General guidance for the species, not for your pot. Once you have weighed " +
-                    "this one a few times, its own drying curve is the better answer - that " +
-                    "is the whole point of the weight screen.",
+                "General guidance for the species, not for your pot. Once you have " +
+                    "weighed this one a few times, its own drying curve is the better answer.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = Space.Section),
@@ -206,9 +198,7 @@ private fun LookupSection(
 
     if (!enabled) {
         Text(
-            "Looking the name up online is switched off. Settings has a toggle for it - " +
-                "it sends the species name and nothing else, and the rest of the app never " +
-                "touches the network either way.",
+            "Looking the name up online is switched off. Settings has a toggle for it.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -256,9 +246,8 @@ private fun LookupSection(
                     )
                 }
                 Text(
-                    "Still no care notes for this one - this says what the plant is, not how " +
-                        "to water it. Weigh the pot a few times and the app will know more " +
-                        "about it than any care sheet.",
+                    "Still no care notes for this one. This says what the plant is, not " +
+                        "how to water it.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
