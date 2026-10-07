@@ -1446,10 +1446,10 @@ def build(res=(1672, 941), samples=96):
     # a card propped on a shelf rather than paper pinned to a wall. Its back
     # face was also only 3 mm into the pier. Lifted clear of the shelf and
     # pressed flat against the wall.
-    led = _box((-1.052, 0.60, 1.455), (0.008, 0.215, 0.285), M['paper'])
+    led = _box((-1.052, 0.60, 1.400), (0.008, 0.215, 0.285), M['paper'])
     sheet_png = os.path.join(ASSETS, 'ledger-sheet.png')
     if os.path.exists(sheet_png):
-        bpy.ops.mesh.primitive_plane_add(size=1.0, location=(-1.0445, 0.60, 1.455))
+        bpy.ops.mesh.primitive_plane_add(size=1.0, location=(-1.0445, 0.60, 1.400))
         face = bpy.context.object
         # One quarter turn about X is all it needs: that sends the plane's
         # normal to -y, which is the way the pier faces, and its own up to world
@@ -1602,7 +1602,7 @@ def build(res=(1672, 941), samples=96):
     # linear terms 0.562^2.2 over 0.866^2.2 is 0.39, and 2.6 x 0.39 is 1.0.
     lb.data.energy, lb.data.size, lb.data.color = float(os.environ.get('TT_LB', 1.0)), 0.22, look.LAMP
     lb.data.use_shadow = False
-    look.aim(lb, (-1.05, 0.60, 1.455))
+    look.aim(lb, (-1.05, 0.60, 1.400))
     # Wash for the new left wall. Deliberately separate from the ledger bounce
     # above, which is solved to put the SHEET at the plate's 0.562 and must not
     # be disturbed. Large and shadowless, because it stands in for bounce off a
@@ -1664,7 +1664,13 @@ def build(res=(1672, 941), samples=96):
 # between them, so the sheet sits high in frame and the sill runs along the
 # bottom the way the plate has it.
 SHOTS = {
- 'ledger':        ((-0.46, 0.08, 1.46), (-0.86, 0.86, 1.385), 31, 26, 4.0),
+ # Pulled back and aimed lower so the sill comes into shot. It framed z 1.177
+ # to 1.593 and the pots sit at 0.95 to 1.15, so the plants the diary is ABOUT
+ # were a quarter of a metre below the bottom of the frame: a page of
+ # handwriting against a bare wall. The plate puts the sheet on the left and the
+ # sill on the right, which is what makes it a picture of a habit rather than a
+ # photograph of a list.
+ 'ledger':        ((-0.33, -0.18, 1.47), (-0.86, 0.86, 1.20), 28, 26, 4.0),
  'shelf-evening': ((-0.30, -0.28, 1.21), (-0.10, 0.98, 1.03), 35, 28, None),
  'finger-test':   ((0.05, 0.47, 1.325), (-0.245, 0.975, 1.030), 42, 35, 2.8),
  'depth':         ((-0.60, -0.62, 0.86), (-0.12, 0.12, 0.825), 45, 38, 3.5),
