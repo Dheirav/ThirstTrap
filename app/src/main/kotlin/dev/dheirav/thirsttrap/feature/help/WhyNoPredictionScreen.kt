@@ -5,25 +5,23 @@ import dev.dheirav.thirsttrap.ui.Flank
 import dev.dheirav.thirsttrap.ui.Space
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import dev.dheirav.thirsttrap.ui.AlmanacSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import dev.dheirav.thirsttrap.domain.SuppressionHelp
 import dev.dheirav.thirsttrap.domain.SuppressionReason
 import dev.dheirav.thirsttrap.domain.helpFor
-import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.SectionHead
@@ -40,32 +38,39 @@ import dev.dheirav.thirsttrap.ui.SectionHead
  * the seven refusals together are the most honest description of the model's
  * limits that exists anywhere in the app, and somebody who has hit one is the
  * person most likely to care about the others.
+ *
+ * A sheet, not a page: it is reached from a refusal, and the answer to "why
+ * won't you tell me" belongs over the thing that refused rather than somewhere
+ * you have to navigate to and come back from.
+ *
+ * `asked` used to arrive as a route argument, which made this look like it had
+ * to be a destination. It did not: both callers already hold the reason as a
+ * value, so passing it directly is simpler than encoding it in an address and
+ * parsing it back out at the other end.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WhyNoPredictionScreen(asked: SuppressionReason?, onBack: () -> Unit) {
+fun WhyNoPredictionSheet(asked: SuppressionReason?, onDismiss: () -> Unit) {
     // Both "need another reading" cases print one headline, so showing both
     // would repeat the same heading twice on one page.
     val all = SuppressionReason.entries
         .distinctBy { helpFor(it).shown }
     val others = all.filter { it != asked && helpFor(it).shown != asked?.let { a -> helpFor(a).shown } }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { ScreenTitle("Why no date") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(AppIcons.arrowBack, contentDescription = "Back")
-                    }
-                },
-            )
-        },
-    ) { padding ->
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    AlmanacSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
         Column(
-            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())
+            Modifier
+                .fillMaxWidth()
+                // Both insets: this one is long enough to reach the top of the
+                // window, and without the status bar padding its title renders
+                // under the clock.
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = Space.Block),
         ) {
+            ScreenTitle("Why no date")
             Text(
                 "The app would rather say nothing than name a day it cannot stand " +
                     "behind. A confident wrong date teaches watering by the calendar, " +

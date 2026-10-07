@@ -3,6 +3,7 @@ package dev.dheirav.thirsttrap.feature.weight
 import dev.dheirav.thirsttrap.ui.Space
 
 import dev.dheirav.thirsttrap.ui.ScreenTitle
+import dev.dheirav.thirsttrap.ui.Topic
 import dev.dheirav.thirsttrap.ui.AlmanacSheet
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -17,7 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 
 /**
  * Feature F17.20. The method fails quietly if the weighing is inconsistent.
@@ -51,8 +51,9 @@ fun ScaleHelpSheet(onDismiss: () -> Unit) {
         ) {
             ScreenTitle("Weighing plants")
             Section(
-                "Why weight beats a calendar",
-                "A pot loses water almost entirely by evaporation, which is steady over a " +
+                initiallyOpen = true,
+                title = "Why weight beats a calendar",
+                body = "A pot loses water almost entirely by evaporation, which is steady over a " +
                     "day. So its weight falls in a near-straight line between waterings, and " +
                     "the slope of the last few weigh-ins says when it will next be thirsty. " +
                     "No schedule can know that; your scale can.",
@@ -99,13 +100,22 @@ fun ScaleHelpSheet(onDismiss: () -> Unit) {
     }
 }
 
+/**
+ * One topic, folded unless it is the one you most likely came for.
+ *
+ * Seven open paragraphs is about 1500 characters arriving at once, and the
+ * reader wanting "what scale do I need" had to read past three answers to
+ * other questions to reach it. Folded, the sheet opens as seven questions and
+ * you pick yours, which is the same content and a shorter path to any of it.
+ */
 @Composable
-private fun Section(title: String, body: String) {
-    Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-    Text(
-        body,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = Space.Tight, bottom = Space.Section),
-    )
+private fun Section(title: String, body: String, initiallyOpen: Boolean = false) {
+    Topic(title, initiallyOpen = initiallyOpen) {
+        Text(
+            body,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = Space.Tight, bottom = Space.Entry),
+        )
+    }
 }

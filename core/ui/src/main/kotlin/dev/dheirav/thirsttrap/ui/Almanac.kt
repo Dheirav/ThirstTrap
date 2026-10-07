@@ -462,6 +462,52 @@ fun Disclosure(
     }
 }
 
+/**
+ * A foldable whose label is a sentence rather than a section name.
+ *
+ * [Disclosure] sets its label in the letterspaced caps of a section head, which
+ * is right for WHAT IT IS and CARE PROFILE and wrong for "Why weight beats a
+ * calendar": caps at wide tracking only work on a short word, which is what
+ * [AlmanacTitle] says about the same voice a size up.
+ *
+ * So this is a sibling rather than a parameter on that one. It shares the
+ * grammar deliberately, the same chevron and the same rule under the row, so a
+ * reader learns one gesture; what differs is the heading voice, because a help
+ * topic is a question somebody has and a form section is a name for a group of
+ * fields.
+ */
+@Composable
+fun Topic(
+    title: String,
+    modifier: Modifier = Modifier,
+    initiallyOpen: Boolean = false,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    var open by remember(initiallyOpen) { mutableStateOf(initiallyOpen) }
+    Column(modifier.fillMaxWidth()) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clickable { open = !open }
+                .semantics {
+                    contentDescription =
+                        if (open) "$title, open. Tap to fold away." else "$title, folded. Tap to open."
+                }
+                .padding(top = Space.Entry, bottom = Space.Line),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                title,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(1f),
+            )
+            Chevron(open, Modifier.padding(start = Space.Line))
+        }
+        Rule()
+        AnimatedVisibility(open) { Column(content = content) }
+    }
+}
+
 /** Two hairlines meeting at a point, pointing down when folded. */
 @Composable
 private fun Chevron(open: Boolean, modifier: Modifier = Modifier) {

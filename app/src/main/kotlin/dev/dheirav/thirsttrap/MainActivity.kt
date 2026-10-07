@@ -7,7 +7,6 @@ import dev.dheirav.thirsttrap.feature.help.HowItWorksScreen
 import dev.dheirav.thirsttrap.feature.help.TroubleshootScreen
 import dev.dheirav.thirsttrap.feature.help.BackupHelpScreen
 import dev.dheirav.thirsttrap.feature.help.WayfindingScreen
-import dev.dheirav.thirsttrap.feature.help.WhyNoPredictionScreen
 import dev.dheirav.thirsttrap.feature.intro.IntroScreen
 import dev.dheirav.thirsttrap.feature.more.MoreScreen
 import dev.dheirav.thirsttrap.feature.locations.LocationsScreen
@@ -273,17 +272,6 @@ class MainActivity : ComponentActivity() {
                                 onOpenDebug = { nav.navigate(Routes.DEBUG) },
                             )
                         }
-                        composable(
-                            route = "${Routes.WHY_NO_DATE}/{reason}",
-                            arguments = listOf(navArgument("reason") { type = NavType.StringType }),
-                        ) { entry ->
-                            val name = entry.arguments?.getString("reason")
-                            WhyNoPredictionScreen(
-                                asked = dev.dheirav.thirsttrap.domain.SuppressionReason.entries
-                                    .firstOrNull { it.name == name },
-                                onBack = { nav.popBackStack() },
-                            )
-                        }
                         composable(Routes.BACKUP_HELP) {
                             BackupHelpScreen(onBack = { nav.popBackStack() })
                         }
@@ -302,7 +290,6 @@ class MainActivity : ComponentActivity() {
                             TroubleshootScreen(
                                 onBack = { nav.popBackStack() },
                                 onOpenReminderHelp = { nav.navigate(Routes.HELP_REMINDERS) },
-                                onOpenWhyNoDate = { nav.navigate(Routes.whyNoDate()) },
                             )
                         }
                         composable(Routes.INTRO) {
@@ -317,9 +304,6 @@ class MainActivity : ComponentActivity() {
                         ) {
                             WeightScreen(
                                 onBack = { nav.popBackStack() },
-                                onExplainRefusal = { r ->
-                                    nav.navigate(Routes.whyNoDate(r.name))
-                                },
                             )
                         }
                         composable(

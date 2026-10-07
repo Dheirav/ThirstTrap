@@ -8,7 +8,6 @@ object Routes {
     const val INTRO = "intro"
     const val MORE = "more"
     const val WAYFINDING = "help/wayfinding"
-    const val WHY_NO_DATE = "help/why-no-date"
     const val BACKUP_HELP = "help/backups"
     const val HELP_REMINDERS = "help/reminders"
     const val DEBUG = "debug"
@@ -54,7 +53,6 @@ object Routes {
     fun care(plantId: String) = "$CARE/$plantId"
     fun diagnose(plantId: String) = "$DIAGNOSE/$plantId"
     /** [reason] is a SuppressionReason name, or "any" to browse all of them. */
-    fun whyNoDate(reason: String = "any") = "$WHY_NO_DATE/$reason"
     fun experiment(id: String) = "$EXPERIMENT/$id"
 
     fun plantEdit(plantId: String? = null) =

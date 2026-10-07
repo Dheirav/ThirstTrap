@@ -90,8 +90,10 @@ fun HowItWorksScreen(
 fun TroubleshootScreen(
     onBack: () -> Unit,
     onOpenReminderHelp: () -> Unit,
-    onOpenWhyNoDate: () -> Unit,
 ) {
+    // No particular reason asked about from here, so the sheet lists them all.
+    var whyNoDate by remember { mutableStateOf(false) }
+    if (whyNoDate) WhyNoPredictionSheet(asked = null, onDismiss = { whyNoDate = false })
     HelpPage("Something is wrong", onBack) {
         Entry(
             title = "Reminders are not arriving",
@@ -104,7 +106,7 @@ fun TroubleshootScreen(
             title = "It won't tell me when to water",
             body = "The seven things the app says instead of a date, what each one means, " +
                 "and what to do about it.",
-            onClick = onOpenWhyNoDate,
+            onClick = { whyNoDate = true },
         )
         // Signposting rather than a route, because the answer is genuinely
         // somewhere else and somebody who remembers it being here needs telling

@@ -90,11 +90,11 @@ import dev.dheirav.thirsttrap.domain.WeightState
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
+import dev.dheirav.thirsttrap.feature.help.WhyNoPredictionSheet
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 @Composable
 fun WeightScreen(
-    onExplainRefusal: (SuppressionReason) -> Unit,
     onBack: () -> Unit,
     viewModel: WeightViewModel = hiltViewModel(),
 ) {
@@ -109,6 +109,13 @@ fun WeightScreen(
     // into a sheet and the page became a page." Its own help was still a page.
     var showScaleHelp by remember { mutableStateOf(false) }
     if (showScaleHelp) ScaleHelpSheet(onDismiss = { showScaleHelp = false })
+    // The answer to "why won't you give me a date" belongs over the thing
+    // that refused, not a page away from it.
+    var refusal by remember { mutableStateOf<SuppressionReason?>(null) }
+    var showRefusal by remember { mutableStateOf(false) }
+    if (showRefusal) {
+        WhyNoPredictionSheet(asked = refusal, onDismiss = { showRefusal = false })
+    }
     var editingReading by remember { mutableStateOf<WeightReading?>(null) }
     // Skips the half-height stop: this sheet is a keypad, and a keypad you
     // have to drag open before you can use it is worse than no sheet.
@@ -190,7 +197,7 @@ fun WeightScreen(
                     )
                 }
             } else {
-                PredictionHeadline(s, onExplain = onExplainRefusal)
+                PredictionHeadline(s, onExplain = { r -> refusal = r; showRefusal = true })
                 DepletionLine(s)
                 DoubleRule()
 
