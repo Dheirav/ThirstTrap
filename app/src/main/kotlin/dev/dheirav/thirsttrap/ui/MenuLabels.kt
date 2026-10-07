@@ -53,6 +53,9 @@ object MenuLabels {
             "Which plants are due some, and how much of each bottle goes in your can."
         const val PROPAGATION_WHAT = "Your cuttings, from the day you take one to the day it is a plant."
         const val SCAN_WHAT = "Opens whichever plant's sticker you point the camera at."
+        const val STICKER_SHEET = "Sticker sheet"
+        const val STICKER_SHEET_WHAT =
+            "Every pot's code on one page, to print once and cut up."
         const val PLACES_WHAT = "A note and a light reading per spot in the house."
         const val FIGURES_WHAT =
             "How often you water, what became of things, and whether the predictions " +

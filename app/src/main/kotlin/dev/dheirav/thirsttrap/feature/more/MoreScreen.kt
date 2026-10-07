@@ -22,6 +22,11 @@ import dev.dheirav.thirsttrap.ui.MenuLabels
 import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.Space
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import dev.dheirav.thirsttrap.feature.qr.StickerSheetSheet
 
 /**
  * The six jobs that are not about one plant, with a line each saying what they are.
@@ -49,6 +54,9 @@ fun MoreScreen(
     onOpenFigures: () -> Unit,
     onOpenExperiments: () -> Unit,
 ) {
+    var stickerSheet by remember { mutableStateOf(false) }
+    if (stickerSheet) StickerSheetSheet(onDismiss = { stickerSheet = false })
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -76,6 +84,13 @@ fun MoreScreen(
             )
             if (advanced) {
                 Job(MenuLabels.Dashboard.SCAN, MenuLabels.Dashboard.SCAN_WHAT, onScanPot)
+                // Beside the scanner, because they are two halves of one
+                // job: this makes the labels and that reads them.
+                Job(
+                    MenuLabels.Dashboard.STICKER_SHEET,
+                    MenuLabels.Dashboard.STICKER_SHEET_WHAT,
+                    { stickerSheet = true },
+                )
             }
             Job(MenuLabels.Dashboard.PLACES, MenuLabels.Dashboard.PLACES_WHAT, onOpenPlaces)
             Job(MenuLabels.Dashboard.FIGURES, MenuLabels.Dashboard.FIGURES_WHAT, onOpenFigures)
