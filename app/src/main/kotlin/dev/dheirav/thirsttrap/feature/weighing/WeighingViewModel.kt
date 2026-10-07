@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.dheirav.thirsttrap.domain.CareEventType
+import dev.dheirav.thirsttrap.domain.previousReading
+import dev.dheirav.thirsttrap.domain.readingThisRound
 import dev.dheirav.thirsttrap.domain.Plant
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.Prediction
@@ -84,13 +86,20 @@ class WeighingViewModel @Inject constructor(
                     // A cutting in a jar of water weighs what the jar weighs.
                     .filter { it.isWeightTrackable }
                     .map { plant ->
-                        val mine = byPlant[plant.id]?.sortedBy { r -> r.timestampMillis }.orEmpty()
-                        val last = mine.lastOrNull { !it.excluded }
+                        val mine = byPlant[plant.id].orEmpty()
+                        // Bounded to before the round, which is the whole point
+                        // of showing two numbers. Unbounded, the reading just
+                        // saved was both the newest reading and its own
+                        // predecessor, so Last and Now printed the same number,
+                        // every delta in the round summary came out +0 g, and
+                        // the hint counted a pot's own fresh reading as the
+                        // "previous weight to compare against".
+                        val last = previousReading(mine, startedAtMillis)
                         val watered = wateredAt[plant.id]
                         WeighingRow(
                             plant = plant,
                             last = last,
-                            doneThisRound = mine.lastOrNull { it.timestampMillis >= startedAtMillis },
+                            doneThisRound = readingThisRound(mine, startedAtMillis),
                             lastWateredMillis = watered,
                             owesWetMark = watered != null &&
                                 now - watered in 0..POST_WATER_WINDOW_MILLIS &&
