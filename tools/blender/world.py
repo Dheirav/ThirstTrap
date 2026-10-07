@@ -1028,7 +1028,7 @@ def dimple_soil(at, r=0.020, depth=0.0075):
 HAND_LEN = 0.34
 
 
-def place_hand(at, yaw=0.0, pitch=-0.62, into=0.012):
+def place_hand(at, yaw=0.0, pitch=-0.62, into=0.012, sleeve=True):
     """A hand pushed into the soil at `at`, with a forearm leaving frame.
 
     It used to be one finger and a cone, on the argument that a whole scripted
@@ -1100,8 +1100,45 @@ def place_hand(at, yaw=0.0, pitch=-0.62, into=0.012):
     # not from any angle set in this file.
     h.rotation_mode = 'XYZ'
     h.rotation_euler = (0.0, pitch, yaw)
-    h.location = (at[0], at[1], at[2] - into)
+    base = (at[0], at[1], at[2] - into)
+    h.location = base
     bpy.context.view_layer.update()
+
+    # A sleeve, because the asset's forearm ends in a flat cross-section and
+    # there is nothing behind it.
+    #
+    # In the depth shot that cut sat in open air in the middle of the frame, so
+    # the beat read as a severed hand hovering over a pot. The plate solves it
+    # the way a photograph would: the skin stops at a cuff and a dark sleeve
+    # runs off the edge of the picture, so the FRAME does the cutting. An arm
+    # cut by the frame continues; an arm cut by nothing is an amputation.
+    #
+    # Long enough to leave any of these shots from any angle. It costs two
+    # triangles' worth of thought and nothing to render.
+    if sleeve:
+        # The arm's axis is MEASURED off the mesh, not computed from yaw and
+        # pitch. Deriving it analytically assumes the forearm lies exactly along
+        # local +X, and extract_hand.py normalises Z only, on purpose, so that
+        # the sculpt keeps its own downward tilt. The first version of this put
+        # the sleeve beside the arm rather than on the end of it.
+        import mathutils
+        mw = h.matrix_world
+        tip = mw.translation
+        far = max((mw @ v.co for v in h.data.vertices),
+                  key=lambda q: (q - tip).length)
+        reach = (far - tip).length
+        d = (far - tip).normalized()
+
+        def along(t):
+            return (tip[0] + d[0] * t, tip[1] + d[1] * t, tip[2] + d[2] * t)
+        # Just inside the cut, so the cuff covers it rather than meeting it.
+        cuff = reach * 0.86
+        spine = [along(cuff), along(cuff + 0.04), along(cuff + 0.35), along(cuff + 0.95)]
+        # Widening toward the elbow, and starting a hair proud of the arm so the
+        # skin does not poke through the cuff.
+        look.put(parts.tube(spine, [0.0205, 0.0225, 0.0265, 0.0305],
+                            name='armsleeve', seg=14),
+                 look.mat('sleeve', look.srgb('#232B38'), 0.92), smooth=True)
     return h
 
 
