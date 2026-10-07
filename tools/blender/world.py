@@ -600,27 +600,38 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
              (rnd.uniform(0, 3), rnd.uniform(0, 3), rnd.uniform(0, 3)))
         (_spec_peb if rnd.random() < 0.6 else _spec_soil).append(g)
 
-    for _ in range(700):
+    # Enough to pack, rather than enough to scatter. At 700 the grains covered
+    # about half the area they were spread over, so the flat displaced grid
+    # showed through between them everywhere and the soil read as beans on a
+    # board. Broken earth has no gaps: clods touch, overlap and bury each other,
+    # and the dark between them is a crevice rather than a backdrop.
+    #
+    # The size range widens at the same time. One narrow band of sizes is what
+    # made them read as a product rather than as earth; real crumb runs from
+    # dust to lumps, and the big ones are what give the small ones scale.
+    for _ in range(2000):
         side = -1 if rnd.random() < 0.5 else 1
-        # Clear of the channel lip, but only just, and no further out than the
-        # frame edge plus a margin.
-        # Finer than the roots are thick, too: at 0.021 a lump was four times a
-        # root's width and the soil out-coarsened its own subject.
-        _grain(at[0] + side * rnd.uniform(0.13, 0.40),
-               at[1] + rnd.uniform(-0.24, 0.24),
-               at[2] + 0.055 + rnd.uniform(-0.03, 0.05),
-               rnd.uniform(0.003, 0.013))
+        _grain(at[0] + side * rnd.uniform(0.12, 0.42),
+               at[1] + rnd.uniform(-0.26, 0.26),
+               # Lowered with the size increase, not independently of it. A
+               # clod now reaches 0.019 above its own centre, so the field that
+               # used to sit under the roots at 0.085 was burying them: the
+               # bottom third of the frame came out as pure earth with no roots
+               # in it at all. Soil in front of a root is what makes it look
+               # buried; soil over every root is just soil.
+               at[2] + 0.040 + rnd.uniform(-0.035, 0.040),
+               rnd.uniform(0.0018, 0.019))
 
     # Crumb IN the crack, spilling down its walls. Every grain was held clear of
     # the lip, so the channel rendered as a bare dark polygon with two clean
     # edges, and a crack with smooth sides is a cut rather than a break. The
     # plate has crumb all the way down its crevice.
-    for _ in range(260):
+    for _ in range(560):
         side = -1 if rnd.random() < 0.5 else 1
         _grain(at[0] + side * rnd.uniform(0.02, 0.15),
-               at[1] + rnd.uniform(-0.24, 0.24),
+               at[1] + rnd.uniform(-0.26, 0.26),
                at[2] + rnd.uniform(-0.15, 0.05),
-               rnd.uniform(0.003, 0.011))
+               rnd.uniform(0.0018, 0.015))
 
     # Roots that END at the channel, which is the entire beat.
     #
@@ -637,7 +648,7 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     # the root skin around it.
     torn_m = look.mat('macrotorn', look.srgb('#A69B82'), 0.90)
     _roots = []
-    for i in range(14):
+    for i in range(20):
         side = -1 if i % 2 else 1
         # Built to the FRAME, not to the set, which is the whole reason this
         # shot kept reading as straws no matter how the roots were tuned. The
@@ -655,6 +666,13 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
         # is still the subject, but with every root stopping at the same two
         # lips the middle third of the frame was bare dirt, and the plate has
         # roots crossing its crevice as well as torn ends hanging into it.
+        # Each root at its own depth, rather than all of them on one plane.
+        # Every root sat at 0.085, which is near the top of a frame 0.40 deep,
+        # so the lower 40% of the picture carried 2.3% root against the plate's
+        # 12.2%: a mat of roots lying on soil instead of roots running through
+        # it. Spread them and the soil buries some, half-buries others, and the
+        # ones in front read as in front BECAUSE the others are behind.
+        z0 = 0.085 + rnd.uniform(-0.085, 0.020)
         crosses = (i % 4 == 3)
         if crosses:
             xe = at[0] - side * rnd.uniform(0.14, 0.30)
@@ -684,14 +702,14 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
         # Thirteen points rather than nine: the kink matters, but a kink every
         # eighth of a short root is a bend in a pipe. More, smaller corners.
         N = 13
-        spine = [(x0, y0, at[2] + 0.085 + rnd.uniform(-0.008, 0.008))]
+        spine = [(x0, y0, at[2] + z0 + rnd.uniform(-0.008, 0.008))]
         for t in range(1, N):
             f = t / (N - 1)
             py = spine[-1][1]
             ty = y0 + (ye - y0) * f
             spine.append((x0 + (xe - x0) * f + rnd.uniform(-0.007, 0.007),
                           py + (ty - py) * 0.55 + rnd.uniform(-0.010, 0.010),
-                          at[2] + 0.085 + 0.030 * math.sin(math.pi * f) * rnd.uniform(0.3, 1.0)
+                          at[2] + z0 + 0.030 * math.sin(math.pi * f) * rnd.uniform(0.3, 1.0)
                           + rnd.uniform(-0.010, 0.010)))
         # The old 0.0072 to 0.0132 was tuned when only the tapered tip was in
         # shot, so it described a tip and not a root. With the base in frame it
@@ -800,8 +818,16 @@ def soil_macro(at=(0.0, 0.0, -5.0), seed=3):
     # Two joins, and they are the whole reason this set renders in minutes
     # rather than an hour. See _join: the cost is per object.
     _join(_roots, 'macroroots')
-    grains(_spec_peb, peb_m, subdiv=2, name='macrocrumb')
-    grains(_spec_soil, soil_m, subdiv=2, name='macrocrumb_dark')
+    # subdiv 1, not 2. A 320-face icosphere is a ball, and a field of balls is
+    # a bowl of lentils. The plate's clods are faceted: flat planes meeting at
+    # edges, each catching the light differently, which is what broken earth
+    # looks like. 80 faces gives that without returning to the shards this was
+    # at subdiv 0, because the grains are a third the size they were then.
+    #
+    # It is also cheaper. 2560 grains at 80 faces is 205k, against 960 at 320
+    # faces for 307k, so there is more soil and less geometry.
+    grains(_spec_peb, peb_m, subdiv=1, name='macrocrumb')
+    grains(_spec_soil, soil_m, subdiv=1, name='macrocrumb_dark')
 
 
 ASSETS = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets')
