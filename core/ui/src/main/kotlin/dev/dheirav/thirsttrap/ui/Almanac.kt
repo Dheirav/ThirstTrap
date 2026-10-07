@@ -125,6 +125,30 @@ fun DoubleRule(modifier: Modifier = Modifier) {
 }
 
 /**
+ * The almanac's title voice: caps at wide tracking.
+ *
+ * `titleLarge` at 0.22em was written out by hand in three places, and the tracking
+ * is the whole character of it, so three copies is three chances to drift. It only
+ * works on a short word, which is why it belongs to the masthead, the two screen
+ * titles that are the app's own name, and nothing else. [SectionHead] is the same
+ * idea a size down at 0.18em.
+ *
+ * Deliberately a text style and not a layout: the dashboard's title has to sit
+ * inside a `TopAppBar` title slot and the intro's is followed by a subtitle, so
+ * neither can take a component that owns its own column.
+ */
+@Composable
+fun AlmanacTitle(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text.uppercase(),
+        style = MaterialTheme.typography.titleLarge,
+        letterSpacing = 0.22.em,
+        color = MaterialTheme.colorScheme.onSurface,
+        modifier = modifier,
+    )
+}
+
+/**
  * The running head: what this page is, and what day it is.
  *
  * The date is the spine of an almanac. Putting it at the top of the list is not
@@ -140,15 +164,7 @@ fun Masthead(
     Column(modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
-                Text(
-                    title.uppercase(),
-                    style = MaterialTheme.typography.titleLarge,
-                    // Caps at wide tracking is the almanac title voice. It only
-                    // works on a short word, which is why it is reserved for the
-                    // masthead and section heads and used nowhere else.
-                    letterSpacing = 0.22.em,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
+                AlmanacTitle(title)
                 date?.let {
                     Text(
                         it,

@@ -557,3 +557,52 @@ not by reading the diff.
 | Reworking `PlantDetailScreen`'s overflow menu | It renders between 5 and 8 items depending on three conditions, so "Edit plant" lands in a different position per plant and muscle memory learns nothing. The right fix depends on workstream 8's decision about where the index lives |
 | Location as chips rather than free text | `knownLocations` at `Locations.kt:57-69` exists and `AmbientScreen.kt:106-125` already renders exactly the needed pattern, so this is S, but it belongs in the Add plant restructure rather than as a separate change |
 | `ScreenTitle`'s ellipsis | `Almanac.kt:158-167` sets `maxLines = 1, overflow = Ellipsis` with uppercase at 0.18em tracking, so a plant's only identifier on its own page is pre-committed to dropping characters. Allow two lines, or drop the tracking above about 1.3 font scale, and screenshot one long name at the largest system size to see which is needed. There is no `fontScale` handling anywhere in the project, so this is the start of a separate accessibility pass |
+
+---
+
+# Audited against the code, 2026-10-07
+
+This plan was written on 2026-10-04 and most of it has since been built, with
+the reasoning recorded in code comments and never marked back here. That made it
+read as a to-do list when it is a record, and on 2026-10-07 it caused two pieces
+of finished work to be proposed again. Measured state:
+
+| # | Workstream | State |
+|---|---|---|
+| 1 | Shape and fill coherence | **done.** No pill shapes remain; the only `CornerFull` left is the comment in Buttons.kt explaining the fix |
+| 2 | One heading voice | **done.** 29 `SectionHead` calls and **zero** raw `HorizontalDivider`, against 19 when this was written |
+| 3 | One container grammar | **done** |
+| 4 | The spacing scale | **done 2026-10-07.** 365 raw dp to 110, tokens 92 to 346. The 110 that remain are dimensions, not gaps: Canvas stroke widths, the Switch's measured track, zero elevations |
+| 5 | The Disclosure primitive | **done 2026-10-07**, and it was worse than described: the unkeyed `remember` meant "open when editing" had never once worked, because the screen composes before the plant loads |
+| 6 | The first-run path | **done** |
+| 7 | Safety and gesture collisions | **done** |
+| 8.1 | One tab navigation pattern | **done.** `popUpTo(findStartDestination) { saveState }` plus `restoreState` is in MainActivity |
+| 8.2 | More destination | **done.** `MoreScreen.kt`. The other half, un-gating the advanced features, was deliberately **refused**; see the Advanced toggle note in HANDOVER |
+| 8.3 | Collapse the explainers | **not done.** 7 `help/` routes remain |
+| 8.4 | Explainers become sheets | **not done**, and the two parts contradict each other: 8.3 keeps `WhyNoPredictionScreen` as a route, 8.4 takes its route away. Also not the cosmetic job it sounds like, because these screens receive their subject through route arguments via `SavedStateHandle`, so a sheet has no way to be told which plant it is about |
+| 9 | Write-only fields | **done**, except as below |
+| 10 | Docs refresh | this section |
+
+## The one correction to the plan's own evidence
+
+Section 2 lists "`Masthead` has zero call sites, and the intro and the dashboard
+each hand-roll it". The first half is still true. The second half is wrong:
+neither screen hand-rolls a masthead. The dashboard's title sits in a
+`TopAppBar` title slot, which cannot hold a component that owns its own column,
+and the intro's title is followed by a subtitle at `headlineSmall` rather than a
+date at `bodySmall`. `Masthead` fits neither, so pointing them at it would have
+been the wrong fix.
+
+What they actually shared was one line: `titleLarge` at `0.22.em`, the almanac
+title voice, written out three times. That is now `AlmanacTitle` and written
+once, used by both screens and by `Masthead` itself.
+
+`Masthead` still has no callers. It is coherent, documented and unused, which is
+this project's signature defect with nothing behind it to break. Either it earns
+a page or it should go; left alone for now rather than deleted on a whim.
+
+## The six filled "Open" buttons
+
+Also already fixed, and the fix is documented where it happened rather than
+here: see the comment on `Entry` in `HelpScreen.kt`. "A list of things to read is
+a list, and a list row is tapped."

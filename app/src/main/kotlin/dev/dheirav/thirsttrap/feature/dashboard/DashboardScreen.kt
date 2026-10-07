@@ -113,6 +113,7 @@ import dev.dheirav.thirsttrap.domain.SuppressionReason
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import dev.dheirav.thirsttrap.domain.Confidence
+import dev.dheirav.thirsttrap.ui.AlmanacTitle
 
 /**
  * The dashboard, now on real data.
@@ -201,11 +202,7 @@ fun DashboardScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "PLANTS",
-                        style = MaterialTheme.typography.titleLarge,
-                        letterSpacing = 0.22.em,
-                    )
+                    AlmanacTitle("Plants")
                 },
                 actions = {
                     // One icon, not four. Weighing is the recurring job and the

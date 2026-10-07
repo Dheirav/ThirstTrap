@@ -26,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dev.dheirav.thirsttrap.ui.Button
 import dev.dheirav.thirsttrap.ui.DoubleRule
 import dev.dheirav.thirsttrap.ui.Rule
+import dev.dheirav.thirsttrap.ui.AlmanacTitle
 
 /**
  * The first-run page. One page, three things, one button.
@@ -58,11 +59,7 @@ fun IntroScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(Space.Section),
         ) {
-            Text(
-                "THIRSTTRAP",
-                style = MaterialTheme.typography.titleLarge,
-                letterSpacing = 0.22.em,
-            )
+            AlmanacTitle("ThirstTrap")
             Text(
                 "A plant diary that weighs the pot",
                 style = MaterialTheme.typography.headlineSmall,
