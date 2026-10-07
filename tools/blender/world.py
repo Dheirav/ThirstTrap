@@ -1131,13 +1131,50 @@ def place_hand(at, yaw=0.0, pitch=-0.62, into=0.012, sleeve=True):
 
         def along(t):
             return (tip[0] + d[0] * t, tip[1] + d[1] * t, tip[2] + d[2] * t)
-        # Just inside the cut, so the cuff covers it rather than meeting it.
+
+        # The cuff radius is MEASURED off the arm, not chosen. It was 0.0205
+        # against a forearm that is 0.0545 there, so the sleeve was less than
+        # half the width of the thing it was supposed to cover: the arm's
+        # tapered end stuck out past it as a bright ring, and the join read as
+        # two different objects jammed together rather than one limb.
+        #
+        # The mesh tapers to its cut, so the cuff goes where the arm is still
+        # full and swallows the taper behind it. Measuring means this survives a
+        # change of HAND_LEN or a re-export of the asset.
         cuff = reach * 0.86
-        spine = [along(cuff), along(cuff + 0.04), along(cuff + 0.35), along(cuff + 0.95)]
-        # Widening toward the elbow, and starting a hair proud of the arm so the
-        # skin does not poke through the cuff.
-        look.put(parts.tube(spine, [0.0205, 0.0225, 0.0265, 0.0305],
-                            name='armsleeve', seg=14),
+        band = [q for q in (mw @ v.co for v in h.data.vertices)
+                if abs((q - tip).dot(d) - cuff) < reach * 0.035]
+        if band:
+            # From the band's OWN centre, not from the tip-to-far line. The
+            # forearm's centreline is offset from that line, so measuring
+            # across it inflated the radius and the sleeve came out twice the
+            # width of the arm: a dark slab over the corner of the frame.
+            c = band[0].copy()
+            for q in band[1:]:
+                c = c + q
+            c = c / len(band)
+            # A high percentile, not the max. The forearm's section is an
+            # ellipse, so the max is its wide axis and sizing a circular sleeve
+            # to that inflates it against the narrow one: at the cuff the
+            # median is 0.034 and the max 0.050, and a 0.054 sleeve on a 0.034
+            # arm is a bolster.
+            radii = sorted(((q - c) - d * ((q - c).dot(d))).length for q in band)
+            arm_r = radii[int(len(radii) * 0.62)]
+        else:
+            arm_r = 0.034
+        r = arm_r * 1.05                     # clearance, not a gap
+
+        # Short, because this arm points at the camera. d is (0.60, -0.56,
+        # 0.57) and the lens is at y -0.62, so every centimetre of sleeve comes
+        # nearer the viewer and gets bigger: at a metre long it filled the top
+        # corner of the frame as a dark wedge. It only has to reach the edge.
+        # Parallel-sided, and short. Perspective already widens it: the far end
+        # is a third of the camera distance nearer the lens, so it renders about
+        # 1.6x the cuff on its own. Widening the geometry on top of that is what
+        # made it 2.2x the forearm where the plate's is 1.1x.
+        spine = [along(cuff), along(cuff + 0.03), along(cuff + 0.10), along(cuff + 0.20)]
+        look.put(parts.tube(spine, [r, r, r * 0.99, r * 0.97],
+                            name='armsleeve', seg=16),
                  look.mat('sleeve', look.srgb('#232B38'), 0.92), smooth=True)
     return h
 
