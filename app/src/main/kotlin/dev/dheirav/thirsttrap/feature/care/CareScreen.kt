@@ -130,7 +130,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
 
             SectionHead("Use these as this plant's settings")
             Text(
-                "Sets the trigger to ${(care.depletionTrigger * 100).roundToInt()}%, " +
+                "Sets watering at ${(care.depletionTrigger * 100).roundToInt()}% dry, " +
                     "along with the light and watering notes above.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

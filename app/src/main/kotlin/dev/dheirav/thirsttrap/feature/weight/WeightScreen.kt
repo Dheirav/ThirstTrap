@@ -464,7 +464,7 @@ private fun PredictionHeadline(s: WeightState, onExplain: (SuppressionReason) ->
         is Prediction.NeedAnotherReading -> when (p.reason) {
             SuppressionReason.NO_READINGS,
             SuppressionReason.ONE_READING_NO_HISTORY -> "Weigh once more to predict" to
-                "One reading is a point, not a slope."
+                "One reading is a dot. Two make a line."
             SuppressionReason.NO_MEASURABLE_DRYING -> "Not drying measurably yet" to
                 "Give it another day and weigh again."
             SuppressionReason.NEEDS_RECALIBRATION -> "Needs recalibrating" to

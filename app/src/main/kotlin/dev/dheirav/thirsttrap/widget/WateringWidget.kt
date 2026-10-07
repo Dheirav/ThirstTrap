@@ -196,7 +196,7 @@ private fun openPlantIntent(plantId: String): Intent = Intent(
 
 /** Why it is on the list, in the app's own words rather than a severity. */
 private fun reason(item: PlantAttention): String = when {
-    item.prediction is Prediction.WaterNow -> "past its trigger, measured"
+    item.prediction is Prediction.WaterNow -> "drier than you water it"
     else -> "due for a look"
 }
 

@@ -227,8 +227,8 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
             if (state.showMedium) {
                 FieldLabel("Moved into")
                 Text(
-                    "This clears the weight calibration - the pot itself changed weight, " +
-                        "so every earlier reading is now meaningless.",
+                    "This clears the full and dry marks - the pot itself changed " +
+                        "weight, so every earlier reading now measures something else.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

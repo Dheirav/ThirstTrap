@@ -366,7 +366,7 @@ fun PlantEditScreen(
                 // about being configurable.
                 if (state.medium != Medium.WATER && state.weightTracked) {
                     Text(
-                        "Waters at ${state.depletionTriggerPct}% depleted",
+                        "Waters when it is ${state.depletionTriggerPct}% dry",
                         style = MaterialTheme.typography.labelLarge,
                     )
                     Text(
@@ -614,7 +614,7 @@ fun PlantEditScreen(
     }
 }
 
-/** "light, dryness and the depletion trigger" rather than a comma-spliced list. */
+/** "light, dryness and how dry to let it get" rather than a comma-spliced list. */
 private fun joinNaturally(parts: List<String>): String = when (parts.size) {
     0 -> ""
     1 -> parts[0]

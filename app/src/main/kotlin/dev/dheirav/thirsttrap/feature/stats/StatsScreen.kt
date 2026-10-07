@@ -230,8 +230,8 @@ private fun PredictionTable(p: dev.dheirav.thirsttrap.domain.PredictionScore) {
             buildString {
                 if (p.samples == 0) {
                     append(
-                        "Nothing to score yet. Every drying cycle that reaches its trigger " +
-                            "weight becomes a test of the model's earlier predictions.",
+                        "Nothing to score yet. Each time a pot dries down to the weight " +
+                            "you water it at, that is one test of what the app predicted.",
                     )
                 } else {
                     append("Scored on ${p.samples} predictions replayed against what the pot ")
@@ -256,7 +256,7 @@ private fun PredictionTable(p: dev.dheirav.thirsttrap.domain.PredictionScore) {
                         append("\n\nOver the ${p.comparedSamples} of those where this plant ")
                         append("had been watered often enough for a calendar to have an opinion ")
                         append("too, weighing was off by %.1f days and a calendar fitted to ".format(model))
-                        append("this plant's own interval was off by %.1f days. ".format(cal))
+                        append("this plant's usual gap was off by %.1f days. ".format(cal))
                         append(
                             when {
                                 adv > 0.25 -> "Weighing is ahead by %.1f days.".format(adv)
