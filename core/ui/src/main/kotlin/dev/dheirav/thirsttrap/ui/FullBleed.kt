@@ -3,12 +3,13 @@ package dev.dheirav.thirsttrap.ui
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Dp
+import dev.dheirav.thirsttrap.ui.Space
 
 /**
  * Lets one item in a padded list reach both screen edges.
  *
  * A `LazyColumn` with `contentPadding` applies that gutter to every item, so a
- * full-bleed hero inside one cannot simply cancel it: `Modifier.padding(-16.dp)`
+ * full-bleed hero inside one cannot simply cancel it: `Modifier.padding(-Space.Block)`
  * throws `IllegalArgumentException: Padding must be non-negative` at runtime,
  * not at compile time, which is how it reached a device.
  *

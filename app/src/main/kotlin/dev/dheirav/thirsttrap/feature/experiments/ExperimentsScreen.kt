@@ -26,7 +26,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.domain.ExperimentWithSubjects
@@ -34,6 +33,7 @@ import dev.dheirav.thirsttrap.domain.experimentDayNumber
 import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.Button
 import dev.dheirav.thirsttrap.ui.ScreenTitle
+import dev.dheirav.thirsttrap.ui.Space
 
 /**
  * F11. The list is split running/concluded rather than sorted together,
@@ -66,15 +66,15 @@ fun ExperimentsScreen(
             Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(horizontal = Space.Block),
+            verticalArrangement = Arrangement.spacedBy(Space.Entry),
         ) {
             item {
                 Button(
                     onClick = { creating = true },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 8.dp),
+                        .padding(top = Space.Line),
                 ) { Text("Start an experiment") }
             }
 
@@ -86,7 +86,7 @@ fun ExperimentsScreen(
                             "verdict on day five - is the shape this is for.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 8.dp),
+                        modifier = Modifier.padding(top = Space.Line),
                     )
                 }
             }
@@ -113,7 +113,7 @@ fun ExperimentsScreen(
             title = "New experiment",
             onDismissRequest = { creating = false },
             body = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(verticalArrangement = Arrangement.spacedBy(Space.Entry)) {
                     OutlinedTextField(
                         value = name,
                         onValueChange = { name = it },
@@ -152,7 +152,7 @@ private fun SectionLabel(text: String) {
         text,
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = 8.dp),
+        modifier = Modifier.padding(top = Space.Line),
     )
 }
 
@@ -160,7 +160,7 @@ private fun SectionLabel(text: String) {
 private fun ExperimentCard(e: ExperimentWithSubjects, onOpen: (String) -> Unit) {
     val exp = e.experiment
     Card(Modifier.fillMaxWidth().clickable { onOpen(exp.id) }) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Space.Tight)) {
             Text(exp.name, style = MaterialTheme.typography.titleMedium)
             Text(exp.variable, style = MaterialTheme.typography.bodySmall)
             val status = if (exp.isConcluded) {

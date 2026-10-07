@@ -61,14 +61,14 @@ fun RemindersHelpScreen(
         },
     ) { padding ->
         Column(
-            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
+            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(Space.Block),
         ) {
             Text(
                 "Android lets phone makers stop background apps, and this app cannot " +
                     "override that. Two settings usually fix it.",
                 style = MaterialTheme.typography.bodyMedium,
             )
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(Space.Section))
 
             if (manufacturer.contains("xiaomi") || manufacturer.contains("redmi") ||
                 manufacturer.contains("poco")
@@ -135,7 +135,7 @@ fun RemindersHelpScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) { Text("Run the real check now") }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(Space.Block))
 
             FilledTonalButton(
                 onClick = {
@@ -150,7 +150,7 @@ fun RemindersHelpScreen(
                 modifier = Modifier.fillMaxWidth(),
             ) { Text("Open this app's info page") }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(Space.Section))
             Text(
                 "One honest caveat: reminders are scheduled loosely rather than to the " +
                     "exact minute. A 9am reminder may arrive at 9:15. That keeps battery " +
@@ -200,6 +200,6 @@ private fun Section(title: String, body: String) {
         body,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = 4.dp, bottom = Space.Section),
+        modifier = Modifier.padding(top = Space.Tight, bottom = Space.Section),
     )
 }

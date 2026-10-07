@@ -33,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.domain.CareDetail
@@ -61,7 +60,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
     ) { padding ->
         if (care == null) {
             Column(
-                Modifier.fillMaxSize().padding(padding).padding(32.dp),
+                Modifier.fillMaxSize().padding(padding).padding(Space.Page),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -72,7 +71,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = Space.Line),
                 )
                 Text(
                     "Your own log will outgrow generic advice anyway - a few weighings say " +
@@ -80,7 +79,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 16.dp),
+                    modifier = Modifier.padding(top = Space.Block),
                 )
 
                 LookupSection(
@@ -93,8 +92,8 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
         }
 
         Column(
-            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(Space.Block),
+            verticalArrangement = Arrangement.spacedBy(Space.Tight),
         ) {
             care.botanical?.let {
                 Text(it, style = MaterialTheme.typography.bodyMedium,
@@ -110,7 +109,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
                         "point, not enough to tell you what usually goes wrong with this one.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = Space.Line),
                 )
             }
 
@@ -123,12 +122,12 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
                 SectionHead("What usually goes wrong")
                 care.commonProblems.forEach {
                     Text("· $it", style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 4.dp))
+                        modifier = Modifier.padding(top = Space.Tight))
                 }
             }
 
             care.note?.let {
-                Card(Modifier.fillMaxWidth().padding(top = 12.dp)) {
+                Card(Modifier.fillMaxWidth().padding(top = Space.Entry)) {
                     Text(it, style = MaterialTheme.typography.bodyMedium)
                 }
             }
@@ -142,7 +141,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
                     "watering notes above.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(vertical = 8.dp),
+                modifier = Modifier.padding(vertical = Space.Line),
             )
             Button(
                 onClick = { viewModel.applySuggestions(onBack) },
@@ -172,7 +171,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
                     "Source: $it",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = Space.Line),
                 )
             }
         }
@@ -185,7 +184,7 @@ private fun Section(title: String, body: String) {
         title,
         style = MaterialTheme.typography.titleSmall,
         fontWeight = FontWeight.SemiBold,
-        modifier = Modifier.padding(top = 12.dp),
+        modifier = Modifier.padding(top = Space.Entry),
     )
     Text(body, style = MaterialTheme.typography.bodyMedium)
 }
@@ -213,7 +212,7 @@ private fun LookupSection(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 24.dp),
+            modifier = Modifier.padding(top = Space.Section),
         )
         return
     }
@@ -221,14 +220,14 @@ private fun LookupSection(
     when (lookup) {
         LookupState.Idle -> OutlinedButton(
             onClick = onLookUp,
-            modifier = Modifier.padding(top = 24.dp),
+            modifier = Modifier.padding(top = Space.Section),
         ) { Text("Look the name up online") }
 
-        LookupState.Running -> CircularProgressIndicator(Modifier.padding(top = 24.dp))
+        LookupState.Running -> CircularProgressIndicator(Modifier.padding(top = Space.Section))
 
         is LookupState.Found -> {
             val l = lookup.lookup
-            Column(Modifier.padding(top = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(Modifier.padding(top = Space.Section), horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(l.acceptedName, style = MaterialTheme.typography.titleMedium)
                 l.family?.let {
                     Text("Family $it", style = MaterialTheme.typography.bodySmall,
@@ -242,18 +241,18 @@ private fun LookupSection(
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = 4.dp),
+                        modifier = Modifier.padding(top = Space.Tight),
                     )
                 }
                 l.wikipediaExtract?.let {
                     Text(it, style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 12.dp))
+                        modifier = Modifier.padding(top = Space.Entry))
                 }
                 l.wikipediaUrl?.let { url ->
                     AssistChip(
                         onClick = { uriHandler.openUri(url) },
                         label = { Text("Read on Wikipedia") },
-                        modifier = Modifier.padding(top = 12.dp),
+                        modifier = Modifier.padding(top = Space.Entry),
                     )
                 }
                 Text(
@@ -263,7 +262,7 @@ private fun LookupSection(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 16.dp),
+                    modifier = Modifier.padding(top = Space.Block),
                 )
             }
         }
@@ -280,7 +279,7 @@ private fun LookupSection(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 24.dp),
+            modifier = Modifier.padding(top = Space.Section),
         )
     }
 }

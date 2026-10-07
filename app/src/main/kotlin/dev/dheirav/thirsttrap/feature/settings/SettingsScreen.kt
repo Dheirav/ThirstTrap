@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.BuildConfig
+import dev.dheirav.thirsttrap.ui.Space
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,8 +52,8 @@ fun SettingsScreen(
 
     Scaffold(topBar = { TopAppBar(title = { ScreenTitle("Settings") }) }) { padding ->
         Column(
-            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(Space.Block),
+            verticalArrangement = Arrangement.spacedBy(Space.Line),
         ) {
             SectionHead("New plants")
             SettingRow(
@@ -100,8 +101,8 @@ fun SettingsScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Row(
-                Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                Modifier.fillMaxWidth().padding(vertical = Space.Tight),
+                horizontalArrangement = Arrangement.spacedBy(Space.Line),
             ) {
                 listOf(7, 9, 12, 18).forEach { hour ->
                     FilterChip(
@@ -136,8 +137,8 @@ fun SettingsScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Row(
-                Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                Modifier.fillMaxWidth().padding(vertical = Space.Tight),
+                horizontalArrangement = Arrangement.spacedBy(Space.Line),
             ) {
                 listOf(0.3 to "ferns", 0.5 to "most", 0.75 to "succulents").forEach { (v, label) ->
                     FilterChip(
@@ -196,7 +197,7 @@ fun SettingsScreen(
                 },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 4.dp),
+                modifier = Modifier.padding(top = Space.Tight),
             )
 
 
@@ -206,7 +207,7 @@ fun SettingsScreen(
                         "${formatBytes(s.photoBytes)} of photos · " +
                         "${formatBytes(s.databaseBytes)} of entries",
                     style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = Space.Line),
                 )
                 if (s.orphanFiles > 0 || s.orphanRows > 0) {
                     Text(
@@ -250,7 +251,7 @@ fun SettingsScreen(
                 "ThirstTrap ${BuildConfig.VERSION_NAME}",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 24.dp),
+                modifier = Modifier.padding(top = Space.Section),
             )
         }
     }
@@ -263,7 +264,7 @@ private fun SettingRow(title: String, subtitle: String, control: @Composable () 
         Modifier
             .fillMaxWidth()
             .heightIn(min = 48.dp)
-            .padding(vertical = 4.dp)
+            .padding(vertical = Space.Tight)
             // One node for the whole row carrying title AND the sentence that
             // explains it. Clearing the column's semantics stopped the double
             // reading but also deleted the explanation.

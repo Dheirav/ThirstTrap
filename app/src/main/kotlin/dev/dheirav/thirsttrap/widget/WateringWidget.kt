@@ -108,7 +108,7 @@ private fun Body(wanted: List<PlantAttention>) {
             .fillMaxSize()
             .background(GlanceTheme.colors.surface)
             .cornerRadius(14.dp)
-            .padding(horizontal = 12.dp, vertical = Space.Line),
+            .padding(horizontal = Space.Entry, vertical = Space.Line),
     ) {
         // Uppercase rather than letterspaced: Glance's TextStyle has no
         // letterSpacing, and caps is the half of the almanac running head that

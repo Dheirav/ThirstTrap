@@ -22,7 +22,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.MenuLabels
 import dev.dheirav.thirsttrap.ui.Rule
@@ -60,7 +59,7 @@ fun WayfindingScreen(onBack: () -> Unit) {
     ) { padding ->
         Column(
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = Space.Block),
         ) {
             Para(
                 "Three tabs along the bottom, and almost everything else lives on the " +
@@ -159,7 +158,7 @@ private fun Para(text: String) {
 /** A name and what it is for, which is the only thing a map has to say. */
 @Composable
 private fun Item(name: String, what: String) {
-    Row(Modifier.fillMaxWidth().padding(top = 12.dp), horizontalArrangement = Arrangement.Start) {
+    Row(Modifier.fillMaxWidth().padding(top = Space.Entry), horizontalArrangement = Arrangement.Start) {
         Column {
             Text(name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
             Text(
@@ -186,7 +185,7 @@ private fun Gesture(action: String, result: String) {
             result,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 2.dp),
+            modifier = Modifier.padding(top = Space.Hair),
         )
     }
 }

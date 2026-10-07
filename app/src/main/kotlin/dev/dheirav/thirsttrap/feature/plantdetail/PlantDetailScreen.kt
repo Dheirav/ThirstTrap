@@ -325,10 +325,10 @@ fun PlantDetailScreen(
                         },
                     ),
                 contentPadding = PaddingValues(
-                    start = 16.dp,
-                    end = 16.dp,
+                    start = Space.Block,
+                    end = Space.Block,
                     top = if (hero != null) 0.dp else 16.dp,
-                    bottom = 16.dp,
+                    bottom = Space.Block,
                 ),
             ) {
                 if (hero != null) {
@@ -343,13 +343,13 @@ fun PlantDetailScreen(
                             // The cover photo is the largest image on the screen
                             // and tapping it did nothing at all.
                             onOpen = { state.photos.firstOrNull()?.let { viewing = it } },
-                            modifier = Modifier.fullBleed(16.dp),
+                            modifier = Modifier.fullBleed(Space.Block),
                         )
                     }
                 }
 
                 item {
-                    Column(Modifier.padding(bottom = 16.dp)) {
+                    Column(Modifier.padding(bottom = Space.Block)) {
                         if (hero == null) {
                             plant?.species?.let {
                                 Text(
@@ -373,7 +373,7 @@ fun PlantDetailScreen(
                                 FilledTonalButton(
                                     onClick = { onCare(p.id) },
                                     modifier = Modifier
-                                        .padding(top = 8.dp)
+                                        .padding(top = Space.Line)
                                         .heightIn(min = 48.dp),
                                 ) { Text("Care notes for this species") }
                             }
@@ -386,7 +386,7 @@ fun PlantDetailScreen(
                                 cadenceLabel(avg),
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Medium,
-                                modifier = Modifier.padding(top = 8.dp),
+                                modifier = Modifier.padding(top = Space.Line),
                             )
                         }
                         // The feed cadence, beside the watering one. It was
@@ -402,14 +402,14 @@ fun PlantDetailScreen(
                                 it,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(top = 4.dp),
+                                modifier = Modifier.padding(top = Space.Tight),
                             )
                         }
                         Text(
                             "${state.totalEvents} ${if (state.totalEvents == 1) "entry" else "entries"}",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 2.dp),
+                            modifier = Modifier.padding(top = Space.Hair),
                         )
                     }
                 }
@@ -421,7 +421,7 @@ fun PlantDetailScreen(
                                 "compare against later.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 16.dp),
+                            modifier = Modifier.padding(bottom = Space.Block),
                         )
                     }
                 }
@@ -429,8 +429,8 @@ fun PlantDetailScreen(
                 if (state.photos.isNotEmpty()) {
                     item {
                         LazyRow(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier = Modifier.padding(bottom = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(Space.Line),
+                            modifier = Modifier.padding(bottom = Space.Block),
                         ) {
                             items(state.photos, key = { it.id }) { photo ->
                                 PhotoThumb(
@@ -456,7 +456,7 @@ fun PlantDetailScreen(
                                 "them in order.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.outline,
-                            modifier = Modifier.padding(bottom = 16.dp),
+                            modifier = Modifier.padding(bottom = Space.Block),
                         )
                     }
                 }
@@ -475,7 +475,7 @@ fun PlantDetailScreen(
                     stickyHeader(key = day.label) {
                         Box(
                             Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
-                                .padding(vertical = 8.dp),
+                                .padding(vertical = Space.Line),
                         ) {
                             Text(
                                 day.label,
@@ -543,7 +543,7 @@ private fun PhotoThumb(path: String, caption: String?, onOpen: () -> Unit) {
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
-                modifier = Modifier.padding(top = 4.dp).width(120.dp),
+                modifier = Modifier.padding(top = Space.Tight).width(120.dp),
             )
         }
     }
@@ -592,10 +592,10 @@ private fun EventRow(
                 // the marker renders as a dash instead of a dot.
                 // Colour names the activity, not the urgency - so the timeline
                 // is scannable by eye without any colour meaning "bad".
-                Modifier.padding(top = Space.Line).size(8.dp)
+                Modifier.padding(top = Space.Line).size(Space.Line)
                     .background(EventColors.of(event.type), MaterialTheme.shapes.extraSmall),
             )
-            Spacer(Modifier.size(12.dp))
+            Spacer(Modifier.size(Space.Entry))
             Column(Modifier.weight(1f)) {
                 Text(
                     label(event),
@@ -615,7 +615,7 @@ private fun EventRow(
                 }
                 if (photos.isNotEmpty()) {
                     LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(Space.Line),
                         modifier = Modifier.padding(top = Space.Line),
                     ) {
                         items(photos, key = { it.id }) { photo ->
@@ -717,12 +717,12 @@ private fun EntryEditor(
                     onValueChange = { note = it },
                     label = { Text("Note") },
                     placeholder = { Text("what you noticed") },
-                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = Space.Entry),
                 )
                 if (photos.isNotEmpty()) {
                     LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.padding(top = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(Space.Line),
+                        modifier = Modifier.padding(top = Space.Entry),
                     ) {
                         items(photos, key = { it.id }) { photo ->
                             PlantPhoto(
@@ -956,7 +956,7 @@ private fun PlantHero(
                 // 16dp page gutter. Its own 16dp landed the name at x=0, hard
                 // against the screen edge while every other line on the page
                 // started at 16.
-                .padding(start = 32.dp, end = 32.dp, bottom = 12.dp),
+                .padding(start = Space.Page, end = Space.Page, bottom = Space.Entry),
         ) {
             Text(
                 name,
@@ -968,7 +968,7 @@ private fun PlantHero(
                     chips.joinToString(" · "),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 2.dp),
+                    modifier = Modifier.padding(top = Space.Hair),
                 )
             }
         }

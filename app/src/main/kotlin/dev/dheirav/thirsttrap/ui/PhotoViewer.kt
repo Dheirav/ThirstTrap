@@ -49,7 +49,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import dev.dheirav.thirsttrap.ui.AlmanacMenu
 import dev.dheirav.thirsttrap.domain.Photo
 import dev.dheirav.thirsttrap.photo.PhotoExport
@@ -63,6 +62,7 @@ import java.io.File
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import dev.dheirav.thirsttrap.ui.Space
 
 /**
  * A photo, full screen, because that is what tapping a photo means.
@@ -230,7 +230,7 @@ fun PhotoViewer(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .windowInsetsPadding(WindowInsets.safeDrawing)
-                .padding(8.dp),
+                .padding(Space.Line),
         ) {
             Icon(AppIcons.close, contentDescription = "Close", tint = Color.White)
         }
@@ -239,7 +239,7 @@ fun PhotoViewer(
             Modifier
                 .align(Alignment.TopEnd)
                 .windowInsetsPadding(WindowInsets.safeDrawing)
-                .padding(8.dp),
+                .padding(Space.Line),
         ) {
             IconButton(onClick = { menu = true }) {
                 Icon(AppIcons.moreVert, contentDescription = "Photo actions", tint = Color.White)
@@ -341,8 +341,8 @@ fun PhotoViewer(
                     // navigation bar rather than leaving a stripe of bare
                     // photo under it.
                     .windowInsetsPadding(WindowInsets.safeDrawing)
-                    .padding(start = 16.dp, end = 16.dp, top = Space.Section, bottom = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(2.dp),
+                    .padding(start = Space.Block, end = Space.Block, top = Space.Section, bottom = Space.Entry),
+                verticalArrangement = Arrangement.spacedBy(Space.Hair),
             ) {
                 current.photo.caption?.takeIf { it.isNotBlank() }?.let {
                     Text(it, style = MaterialTheme.typography.bodyMedium, color = Color.White)

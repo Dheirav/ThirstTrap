@@ -37,6 +37,7 @@ import dev.dheirav.thirsttrap.ui.PlantPhoto
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import dev.dheirav.thirsttrap.ui.Space
 
 /**
  * Requirements item 24.
@@ -69,8 +70,8 @@ fun PostMortemScreen(onDone: () -> Unit, viewModel: PostMortemViewModel = hiltVi
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
                 .imePadding()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(Space.Block),
+            verticalArrangement = Arrangement.spacedBy(Space.Entry),
         ) {
             Text(
                 state.plant?.name.orEmpty(),
@@ -86,7 +87,7 @@ fun PostMortemScreen(onDone: () -> Unit, viewModel: PostMortemViewModel = hiltVi
 
             if (state.photos.isNotEmpty()) {
                 SectionHead("How it looked")
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(Space.Line)) {
                     items(state.photos.sortedBy { it.takenAtMillis }, key = { it.id }) { photo ->
                         PlantPhoto(
                             path = viewModel.pathOf(photo),

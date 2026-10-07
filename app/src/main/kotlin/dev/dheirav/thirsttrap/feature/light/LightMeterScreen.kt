@@ -85,7 +85,7 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(24.dp),
+                .padding(Space.Section),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             if (!state.hasSensor) {
@@ -100,7 +100,7 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = Space.Line),
                 )
                 return@Column
             }
@@ -109,7 +109,7 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
                 Text(
                     it,
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = 8.dp),
+                    modifier = Modifier.padding(bottom = Space.Line),
                 )
             }
 
@@ -130,15 +130,15 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
                 state.lux?.let { "${it.toInt()}" } ?: "—",
                 style = MaterialTheme.typography.displayLarge,
                 fontWeight = FontWeight.Light,
-                modifier = Modifier.padding(top = 32.dp),
+                modifier = Modifier.padding(top = Space.Page),
             )
             Text("lux", style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             state.level?.let { level ->
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(Space.Section))
                 LevelBar(level)
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(Space.Block))
                 Text(
                     level.label,
                     style = MaterialTheme.typography.headlineSmall,
@@ -149,7 +149,7 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = Space.Line),
                 )
             }
 
@@ -216,7 +216,7 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
                 )
             }
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(Space.Section))
             Button(
                 onClick = { viewModel.save(onBack) },
                 enabled = state.lux != null,
@@ -233,7 +233,7 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 24.dp),
+                modifier = Modifier.padding(top = Space.Section),
             )
         }
     }
@@ -244,7 +244,7 @@ private fun LevelBar(level: LightLevel) {
     val all = LightLevel.entries
     androidx.compose.foundation.layout.Row(
         Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(Space.Tight),
     ) {
         all.forEach { l ->
             Box(

@@ -31,9 +31,9 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.dheirav.thirsttrap.ui.Space
 
 /**
  * Export and import. Requirements item 10, and F10.6.
@@ -68,8 +68,8 @@ fun BackupScreen(onBack: () -> Unit, viewModel: BackupViewModel = hiltViewModel(
         },
     ) { padding ->
         Column(
-            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(Space.Block),
+            verticalArrangement = Arrangement.spacedBy(Space.Entry),
         ) {
             Text(
                 "Everything - plants, every entry, every photo - into one zip you keep. " +
@@ -110,7 +110,7 @@ fun BackupScreen(onBack: () -> Unit, viewModel: BackupViewModel = hiltViewModel(
                 modifier = Modifier.fillMaxWidth(),
             ) { Text("Import a backup") }
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(Space.Line))
 
             val announce = Modifier.semantics { liveRegion = LiveRegionMode.Polite }
 

@@ -84,6 +84,7 @@ import dev.dheirav.thirsttrap.feature.plantedit.PlantEditScreen
 import dev.dheirav.thirsttrap.navigation.Routes
 import dev.dheirav.thirsttrap.ui.ThirstTrapTheme
 import dev.dheirav.thirsttrap.ui.grain
+import dev.dheirav.thirsttrap.ui.Space
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -534,7 +535,7 @@ private fun TabMark(selected: Boolean, icon: @Composable () -> Unit) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
             Modifier
-                .padding(bottom = 4.dp)
+                .padding(bottom = Space.Tight)
                 .width(24.dp)
                 .height(2.dp)
                 .background(if (selected) MaterialTheme.colorScheme.onSurface else Color.Transparent),

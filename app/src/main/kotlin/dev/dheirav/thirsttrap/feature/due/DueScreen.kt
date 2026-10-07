@@ -40,9 +40,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.dheirav.thirsttrap.ui.Space
 
 /**
  * The in-app due list. It exists because HyperOS may kill the notification
@@ -89,8 +89,8 @@ fun DueScreen(
 
         LazyColumn(
             Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+            contentPadding = PaddingValues(Space.Block),
+            verticalArrangement = Arrangement.spacedBy(Space.Section),
         ) {
             items(state.items, key = { it.reminder.id }) { item ->
                 // A ruled entry, not a bordered Card. Tapping between the first
@@ -107,7 +107,7 @@ fun DueScreen(
                         sinceLabel(item.daysSinceChecked),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 4.dp, bottom = 16.dp),
+                        modifier = Modifier.padding(top = Space.Tight, bottom = Space.Block),
                     )
                     WateringAnswer(
                         onWatered = {

@@ -20,7 +20,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import dev.dheirav.thirsttrap.domain.SuppressionHelp
 import dev.dheirav.thirsttrap.domain.SuppressionReason
 import dev.dheirav.thirsttrap.domain.helpFor
@@ -65,7 +64,7 @@ fun WhyNoPredictionScreen(asked: SuppressionReason?, onBack: () -> Unit) {
     ) { padding ->
         Column(
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = Space.Block),
         ) {
             Text(
                 "The app would rather say nothing than name a day it cannot stand " +
@@ -75,7 +74,7 @@ fun WhyNoPredictionScreen(asked: SuppressionReason?, onBack: () -> Unit) {
                     "about it.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 16.dp),
+                modifier = Modifier.padding(top = Space.Block),
             )
 
             asked?.let {
@@ -92,7 +91,7 @@ fun WhyNoPredictionScreen(asked: SuppressionReason?, onBack: () -> Unit) {
 
 @Composable
 private fun Explanation(help: SuppressionHelp, emphasised: Boolean) {
-    Column(Modifier.fillMaxWidth().padding(top = 16.dp)) {
+    Column(Modifier.fillMaxWidth().padding(top = Space.Block)) {
         Text(
             "\"${help.shown}\"",
             style = if (emphasised) {
@@ -111,7 +110,7 @@ private fun Explanation(help: SuppressionHelp, emphasised: Boolean) {
         Text(
             help.whatToDo,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(top = 8.dp),
+            modifier = Modifier.padding(top = Space.Line),
         )
         Rule(flank = Flank.Section)
     }

@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import dev.dheirav.thirsttrap.ui.Space
 
 /**
  * The furniture of a printed page.
@@ -118,7 +119,7 @@ fun DoubleRule(modifier: Modifier = Modifier) {
     // furniture sit differently on every screen that used it.
     Column(modifier.padding(top = Space.Line, bottom = Space.Entry)) {
         HorizontalDivider(thickness = 2.dp, color = MaterialTheme.colorScheme.onSurface)
-        androidx.compose.foundation.layout.Spacer(Modifier.height(2.dp))
+        androidx.compose.foundation.layout.Spacer(Modifier.height(Space.Hair))
         HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.onSurface)
     }
 }
@@ -154,7 +155,7 @@ fun Masthead(
                         style = MaterialTheme.typography.bodySmall,
                         letterSpacing = 0.08.em,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 2.dp),
+                        modifier = Modifier.padding(top = Space.Hair),
                     )
                 }
             }
@@ -277,7 +278,7 @@ fun AlmanacDialog(
                 body()
                 Rule(flank = Flank.Section)
                 Row(
-                    Modifier.fillMaxWidth().padding(top = 4.dp),
+                    Modifier.fillMaxWidth().padding(top = Space.Tight),
                     horizontalArrangement = Arrangement.End,
                 ) {
                     dismiss?.invoke()
@@ -416,7 +417,7 @@ fun Disclosure(
                     contentDescription =
                         if (open) "$label, open. Tap to fold away." else "$label, folded. Tap to open."
                 }
-                .padding(top = Space.Section, bottom = 4.dp),
+                .padding(top = Space.Section, bottom = Space.Tight),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
@@ -432,7 +433,7 @@ fun Disclosure(
                     color = MaterialTheme.colorScheme.outline,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f).padding(start = 12.dp),
+                    modifier = Modifier.weight(1f).padding(start = Space.Entry),
                     textAlign = TextAlign.End,
                 )
             } else {

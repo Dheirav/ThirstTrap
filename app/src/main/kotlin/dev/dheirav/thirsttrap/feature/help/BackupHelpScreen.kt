@@ -18,11 +18,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.SectionHead
+import dev.dheirav.thirsttrap.ui.Space
 
 /**
  * What a backup is, and the one thing the app had never said out loud.
@@ -57,7 +57,7 @@ fun BackupHelpScreen(onBack: () -> Unit) {
     ) { padding ->
         Column(
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = Space.Block),
         ) {
             Para(
                 "There is no cloud account and nothing syncs anywhere, which is " +
@@ -128,7 +128,7 @@ private fun Para(text: String) {
         text,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = 12.dp),
+        modifier = Modifier.padding(top = Space.Entry),
     )
 }
 
@@ -139,6 +139,6 @@ private fun Emphasis(text: String) {
         text,
         style = MaterialTheme.typography.bodyLarge,
         fontWeight = FontWeight.SemiBold,
-        modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+        modifier = Modifier.fillMaxWidth().padding(top = Space.Entry),
     )
 }

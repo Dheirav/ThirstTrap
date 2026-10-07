@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Card as M3Card
+import dev.dheirav.thirsttrap.ui.Space
 
 /**
  * A boxed note, ruled rather than filled.

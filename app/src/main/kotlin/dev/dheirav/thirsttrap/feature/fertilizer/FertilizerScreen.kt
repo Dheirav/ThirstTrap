@@ -34,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.domain.DoseAdvice
@@ -85,7 +84,7 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
     ) { padding ->
         LazyColumn(
             Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(Space.Block),
         ) {
             item {
                 Text(
@@ -93,7 +92,7 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
                         "holding. Enter the can size and read the last column.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 12.dp),
+                    modifier = Modifier.padding(bottom = Space.Entry),
                 )
                 OutlinedTextField(
                     value = state.canText,
@@ -110,9 +109,9 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
                 // cupboard, and every wrong guess is a chip to read past.
                 if (state.savedSizes.isNotEmpty()) {
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(Space.Line),
+                        verticalArrangement = Arrangement.spacedBy(Space.Line),
+                        modifier = Modifier.fillMaxWidth().padding(top = Space.Tight),
                     ) {
                         state.savedSizes.forEach { ml ->
                             FilterChip(
@@ -133,12 +132,12 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
                 if (state.canSaveSize) {
                     TextButton(
                         onClick = viewModel::saveCurrentSize,
-                        modifier = Modifier.padding(top = 2.dp),
+                        modifier = Modifier.padding(top = Space.Hair),
                     ) { Text("Keep ${state.canText} ml as a size") }
                 } else if (onAChip) {
                     TextButton(
                         onClick = { state.canMl?.let(viewModel::forgetSize) },
-                        modifier = Modifier.padding(top = 2.dp),
+                        modifier = Modifier.padding(top = Space.Hair),
                     ) { Text("Forget ${state.canText} ml") }
                 }
 
@@ -168,14 +167,14 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
+                        modifier = Modifier.fillMaxWidth().padding(top = Space.Page),
                     )
                 }
                 return@LazyColumn
             }
 
             item {
-                Row(Modifier.fillMaxWidth().padding(bottom = 4.dp)) {
+                Row(Modifier.fillMaxWidth().padding(bottom = Space.Tight)) {
                     ColumnHead("Fertiliser", Modifier.weight(1f))
                     ColumnHead("Label", Modifier.weight(0.34f))
                     ColumnHead("Pour", Modifier.weight(0.34f))
@@ -188,7 +187,7 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
                     Modifier
                         .fillMaxWidth()
                         .clickable { editing = row.fertilizer }
-                        .padding(vertical = 12.dp),
+                        .padding(vertical = Space.Entry),
                 ) {
                     Row(verticalAlignment = Alignment.Top) {
                         Column(Modifier.weight(1f)) {
@@ -228,7 +227,7 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
                                 "${(d.suggestedWaterMl / 1000).toInt()} L and keep what is left over.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 4.dp),
+                            modifier = Modifier.padding(top = Space.Tight),
                         )
                         DoseAdvice.Unknown -> if (row.fertilizer.dilutionText != null) {
                             Text(
@@ -236,7 +235,7 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
                                     "or 5 ml/L.",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(top = 4.dp),
+                                modifier = Modifier.padding(top = Space.Tight),
                             )
                         } else Unit
                         else -> Unit
@@ -246,7 +245,7 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
                             it,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 4.dp),
+                            modifier = Modifier.padding(top = Space.Tight),
                         )
                     }
                 }

@@ -17,7 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.Button
 import dev.dheirav.thirsttrap.ui.Rule
@@ -134,7 +133,7 @@ private fun HelpPage(
     ) { padding ->
         Column(
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())
-                .padding(16.dp),
+                .padding(Space.Block),
         ) { content() }
     }
 }
@@ -160,7 +159,7 @@ private fun Entry(title: String, body: String, onClick: () -> Unit) {
             body,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 4.dp),
+            modifier = Modifier.padding(top = Space.Tight),
         )
     }
     Rule()

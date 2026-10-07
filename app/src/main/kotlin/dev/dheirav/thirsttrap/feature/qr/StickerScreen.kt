@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.dheirav.thirsttrap.ui.Space
 
 /** Requirements item 21 - the physical answer to the three-tap problem. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,7 +53,7 @@ fun StickerScreen(onBack: () -> Unit, viewModel: StickerViewModel = hiltViewMode
         },
     ) { padding ->
         Column(
-            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(24.dp),
+            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(Space.Section),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // The plant's name is not repeated here. It already sits under the
@@ -65,7 +66,7 @@ fun StickerScreen(onBack: () -> Unit, viewModel: StickerViewModel = hiltViewMode
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(vertical = 16.dp),
+                modifier = Modifier.padding(vertical = Space.Block),
             )
 
             plant?.let { p ->
@@ -76,7 +77,7 @@ fun StickerScreen(onBack: () -> Unit, viewModel: StickerViewModel = hiltViewMode
                         .fillMaxWidth()
                         .clip(MaterialTheme.shapes.medium)
                         .background(Color.White)
-                        .padding(24.dp)
+                        .padding(Space.Section)
                         .semantics {
                             contentDescription = "QR code linking to ${p.name}"
                         },
@@ -88,7 +89,7 @@ fun StickerScreen(onBack: () -> Unit, viewModel: StickerViewModel = hiltViewMode
                     p.name,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 12.dp),
+                    modifier = Modifier.padding(top = Space.Entry),
                 )
             }
 
@@ -98,7 +99,7 @@ fun StickerScreen(onBack: () -> Unit, viewModel: StickerViewModel = hiltViewMode
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 24.dp),
+                modifier = Modifier.padding(top = Space.Section),
             )
         }
     }

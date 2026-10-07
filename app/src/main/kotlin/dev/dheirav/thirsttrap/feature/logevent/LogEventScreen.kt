@@ -73,11 +73,11 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
                 .imePadding()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(Space.Block),
+            verticalArrangement = Arrangement.spacedBy(Space.Block),
         ) {
             FieldLabel("When?")
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(Space.Line)) {
                 WhenLogged.entries.forEach { w ->
                     FilterChip(
                         selected = state.whenLogged == w,
@@ -118,7 +118,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
             // pass that got the app down to two.
             EVENT_GROUPS.forEachIndexed { i, group ->
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(Space.Line),
                     modifier = Modifier.padding(top = if (i == 0) 0.dp else Space.Line),
                 ) {
                     group.forEach { t ->
@@ -147,7 +147,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
                                 "weigh it once afterwards, and the full mark sets itself again.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 4.dp),
+                            modifier = Modifier.padding(top = Space.Tight),
                         )
                     }
                 }
@@ -162,7 +162,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                 )
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Space.Line)) {
                     listOf(WateringMethod.TOP, WateringMethod.BOTTOM_SOAK).forEach { m ->
                         FilterChip(
                             selected = state.method == m,
@@ -175,7 +175,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
 
             if (state.showCheckResult) {
                 FieldLabel("How did it feel?")
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Space.Line)) {
                     listOf(
                         CheckResult.STILL_HEAVY,
                         CheckResult.GETTING_LIGHT,
@@ -196,7 +196,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
                 // not everything you pour has to be inventoried first.
                 if (cupboard.isNotEmpty()) {
                     FieldLabel("From the cupboard")
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(Space.Line)) {
                         cupboard.forEach { f ->
                             FilterChip(
                                 selected = state.fertilizerName == f.name,
@@ -232,7 +232,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Space.Line)) {
                     Medium.entries.filter { it != Medium.UNKNOWN }.forEach { m ->
                         FilterChip(
                             selected = state.toMedium == m,

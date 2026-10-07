@@ -34,6 +34,7 @@ import dev.dheirav.thirsttrap.domain.DiagnosisNode
 import dev.dheirav.thirsttrap.domain.DiagnosisTree
 import dev.dheirav.thirsttrap.domain.diagnosisTreeById
 import dev.dheirav.thirsttrap.domain.diagnosisTrees
+import dev.dheirav.thirsttrap.ui.Space
 
 /**
  * Requirements item 19.
@@ -71,8 +72,8 @@ fun DiagnoseScreen(onBack: () -> Unit, onLogEvent: (() -> Unit)? = null) {
         },
     ) { padding ->
         Column(
-            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(Space.Block),
+            verticalArrangement = Arrangement.spacedBy(Space.Entry),
         ) {
             if (tree == null) {
                 Text(
@@ -88,13 +89,13 @@ fun DiagnoseScreen(onBack: () -> Unit, onLogEvent: (() -> Unit)? = null) {
                             .heightIn(min = 64.dp)
                             .clickable { treeId = t.id; path = emptyList() },
                     ) {
-                        Column(Modifier.padding(16.dp)) {
+                        Column(Modifier.padding(Space.Block)) {
                             Text(t.title, fontWeight = FontWeight.SemiBold)
                             Text(
                                 t.opener,
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.padding(top = 4.dp),
+                                modifier = Modifier.padding(top = Space.Tight),
                             )
                         }
                     }
@@ -119,7 +120,7 @@ fun DiagnoseScreen(onBack: () -> Unit, onLogEvent: (() -> Unit)? = null) {
                                 .heightIn(min = 56.dp)
                                 .clickable { path = path + index },
                         ) {
-                            Text(answer.label, modifier = Modifier.padding(16.dp))
+                            Text(answer.label, modifier = Modifier.padding(Space.Block))
                         }
                     }
                 }
@@ -139,7 +140,7 @@ fun DiagnoseScreen(onBack: () -> Unit, onLogEvent: (() -> Unit)? = null) {
                             node.verdict,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
-                            modifier = Modifier.padding(16.dp),
+                            modifier = Modifier.padding(Space.Block),
                         )
                     }
                     node.whatToDo.forEach {

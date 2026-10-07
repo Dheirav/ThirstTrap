@@ -38,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -92,7 +91,7 @@ fun AmbientScreen(onBack: () -> Unit, viewModel: AmbientViewModel = hiltViewMode
             )
         },
     ) { padding ->
-        LazyColumn(Modifier.fillMaxSize().padding(padding), contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp)) {
+        LazyColumn(Modifier.fillMaxSize().padding(padding), contentPadding = androidx.compose.foundation.layout.PaddingValues(Space.Block)) {
             item {
                 Text(
                     "A pot dries faster in a warm dry room than a cool damp one. Recording " +
@@ -105,7 +104,7 @@ fun AmbientScreen(onBack: () -> Unit, viewModel: AmbientViewModel = hiltViewMode
                     "Nothing here changes a prediction. It only explains one.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = Space.Line),
                 )
             }
 
@@ -118,8 +117,8 @@ fun AmbientScreen(onBack: () -> Unit, viewModel: AmbientViewModel = hiltViewMode
                         modifier = Modifier.padding(top = Space.Section),
                     )
                     Row(
-                        Modifier.fillMaxWidth().padding(top = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        Modifier.fillMaxWidth().padding(top = Space.Line),
+                        horizontalArrangement = Arrangement.spacedBy(Space.Line),
                     ) {
                         state.knownLocations.take(4).forEach { known ->
                             FilterChip(
@@ -138,11 +137,11 @@ fun AmbientScreen(onBack: () -> Unit, viewModel: AmbientViewModel = hiltViewMode
                     onValueChange = { location = it },
                     label = { Text("Location") },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = Space.Entry),
                 )
                 Row(
-                    Modifier.fillMaxWidth().padding(top = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    Modifier.fillMaxWidth().padding(top = Space.Entry),
+                    horizontalArrangement = Arrangement.spacedBy(Space.Entry),
                 ) {
                     OutlinedTextField(
                         value = temp,
@@ -180,7 +179,7 @@ fun AmbientScreen(onBack: () -> Unit, viewModel: AmbientViewModel = hiltViewMode
                 Button(
                     onClick = { viewModel.record(location, tempValue, humidityValue, note) },
                     enabled = canSave,
-                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = Space.Block),
                 ) { Text("Record") }
 
                 Rule(flank = Flank.Section)
@@ -214,7 +213,7 @@ private fun AmbientRow(reading: AmbientReading, onDelete: () -> Unit) {
     // screens a TextButton otherwise means "History" or "Dismiss", so the one
     // that threw a reading away looked exactly like the ones that do nothing.
     var confirming by remember { mutableStateOf(false) }
-    Card(Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+    Card(Modifier.fillMaxWidth().padding(bottom = Space.Line)) {
         Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(
@@ -241,7 +240,7 @@ private fun AmbientRow(reading: AmbientReading, onDelete: () -> Unit) {
                         it,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(top = 2.dp),
+                        modifier = Modifier.padding(top = Space.Hair),
                     )
                 }
             }

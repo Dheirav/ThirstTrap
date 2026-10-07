@@ -94,7 +94,7 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
 
         LazyColumn(
             Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(Space.Block),
         ) {
             item {
                 Text(
@@ -105,9 +105,9 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 16.dp),
+                    modifier = Modifier.padding(bottom = Space.Block),
                 )
-                Row(Modifier.fillMaxWidth().padding(bottom = 4.dp)) {
+                Row(Modifier.fillMaxWidth().padding(bottom = Space.Tight)) {
                     ColumnHead("Plant", Modifier.weight(1f))
                     ColumnHead("Last", Modifier.weight(0.34f))
                     ColumnHead("Now", Modifier.weight(0.3f))
@@ -158,7 +158,7 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                     row2Hint(state.rows.count { it.last != null }, state.rows.size),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.padding(top = 12.dp),
+                    modifier = Modifier.padding(top = Space.Entry),
                 )
             }
         }
@@ -170,7 +170,7 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
             Column(
                 Modifier
                     .navigationBarsPadding()
-                    .padding(start = Space.Section, end = Space.Section, top = Space.Section, bottom = 16.dp),
+                    .padding(start = Space.Section, end = Space.Section, top = Space.Section, bottom = Space.Block),
             ) {
                 Text(
                     "WHAT THE SCALE SAID",
@@ -204,11 +204,11 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                     "Each reading moves that plant's prediction. Nothing else to do.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.padding(top = 12.dp),
+                    modifier = Modifier.padding(top = Space.Entry),
                 )
                 Button(
                     onClick = viewModel::dismissSummary,
-                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = Space.Block),
                 ) { Text("Done") }
             }
         }
@@ -224,7 +224,7 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                 Modifier
                     .fillMaxHeight(0.88f)
                     .navigationBarsPadding()
-                    .padding(start = Space.Section, end = Space.Section, top = Space.Section, bottom = 16.dp),
+                    .padding(start = Space.Section, end = Space.Section, top = Space.Section, bottom = Space.Block),
             ) {
                 Text(
                     row.plant.name.uppercase(),
@@ -246,14 +246,14 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                             "new full mark.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(bottom = 12.dp),
+                        modifier = Modifier.padding(bottom = Space.Entry),
                     )
                 }
 
                 Column(Modifier.weight(1f)) {
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(Space.Line),
+                        verticalArrangement = Arrangement.spacedBy(Space.Line),
                         modifier = Modifier.fillMaxWidth().padding(bottom = Space.Entry),
                     ) {
                         listOf(
@@ -276,8 +276,8 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                 }
 
                 Row(
-                    Modifier.fillMaxWidth().padding(top = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    Modifier.fillMaxWidth().padding(top = Space.Entry),
+                    horizontalArrangement = Arrangement.spacedBy(Space.Line),
                 ) {
                     Button(
                         onClick = viewModel::saveAndAdvance,
@@ -307,10 +307,10 @@ private fun Keypad(
     modifier: Modifier = Modifier,
 ) {
     val rows = listOf("123", "456", "789", ".0<")
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(Space.Line)) {
         rows.forEach { row ->
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(Space.Line),
                 modifier = Modifier.weight(1f),
             ) {
                 row.forEach { ch ->

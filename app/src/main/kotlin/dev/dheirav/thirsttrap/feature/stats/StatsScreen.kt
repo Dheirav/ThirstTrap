@@ -67,7 +67,7 @@ fun StatsScreen(onBack: () -> Unit, viewModel: StatsViewModel = hiltViewModel())
     ) { padding ->
         Column(
             Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())
-                .padding(16.dp),
+                .padding(Space.Block),
         ) {
             Text(
                 "${s.plantCount} plants, ${s.totalEvents} entries.",
@@ -101,7 +101,7 @@ fun StatsScreen(onBack: () -> Unit, viewModel: StatsViewModel = hiltViewModel())
 @Composable
 private fun WateringTable(months: List<MonthCount>) {
     val peak = months.maxOfOrNull { it.count } ?: 0
-    Row(Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 4.dp)) {
+    Row(Modifier.fillMaxWidth().padding(top = Space.Line, bottom = Space.Tight)) {
         ColumnHead("Month", Modifier.width(110.dp))
         ColumnHead("Waterings", Modifier.weight(1f))
         ColumnHead("", Modifier.width(48.dp), align = TextAlign.End)
@@ -152,7 +152,7 @@ private fun OutcomeTable(o: Outcomes) {
         ("Died" to o.died).takeIf { o.died > 0 },
         ("Unrecorded" to o.unknown).takeIf { o.unknown > 0 },
     )
-    Column(Modifier.padding(top = 8.dp)) {
+    Column(Modifier.padding(top = Space.Line)) {
         rows.forEach { (label, count) ->
             Row(
                 Modifier.fillMaxWidth().height(40.dp),
@@ -192,7 +192,7 @@ private fun OutcomeTable(o: Outcomes) {
  */
 @Composable
 private fun PredictionTable(p: dev.dheirav.thirsttrap.domain.PredictionScore) {
-    Column(Modifier.padding(top = 8.dp)) {
+    Column(Modifier.padding(top = Space.Line)) {
         Row(
             Modifier.fillMaxWidth().height(40.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -278,7 +278,7 @@ private fun PredictionTable(p: dev.dheirav.thirsttrap.domain.PredictionScore) {
 
 @Composable
 private fun RootingTable(r: RootingStat) {
-    Column(Modifier.padding(top = 8.dp)) {
+    Column(Modifier.padding(top = Space.Line)) {
         Row(
             Modifier.fillMaxWidth().height(40.dp),
             verticalAlignment = Alignment.CenterVertically,

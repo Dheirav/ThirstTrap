@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.material3.OutlinedTextField as M3OutlinedTextField
+import dev.dheirav.thirsttrap.ui.Space
 
 /**
  * The one affordance core/ui never wrapped.

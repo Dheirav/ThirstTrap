@@ -269,7 +269,7 @@ fun DashboardScreen(
                             selected = showArchived,
                             onClick = { viewModel.toggleArchived() },
                             label = { Text("${archived.size} archived") },
-                            modifier = Modifier.padding(bottom = 8.dp),
+                            modifier = Modifier.padding(bottom = Space.Line),
                         )
                     }
                 }
@@ -416,7 +416,7 @@ private fun PlantCard(
                 trigger = plant.depletionTrigger,
             )
 
-            Spacer(Modifier.size(12.dp))
+            Spacer(Modifier.size(Space.Entry))
 
             // Four rows, not seven. The card used to stack name, location,
             // watered, checked, a bar, a prediction and a cadence - five of them
@@ -437,10 +437,10 @@ private fun PlantCard(
                     if (due != null && due <= nowMillis) {
                         Box(
                             Modifier
-                                .padding(start = 8.dp)
+                                .padding(start = Space.Line)
                                 .clip(MaterialTheme.shapes.extraSmall)
                                 .background(MaterialTheme.colorScheme.primaryContainer)
-                                .padding(horizontal = Space.Line, vertical = 2.dp),
+                                .padding(horizontal = Space.Line, vertical = Space.Hair),
                         ) {
                             Text(
                                 "check",
@@ -473,7 +473,7 @@ private fun PlantCard(
                         answer,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(top = 2.dp),
+                        modifier = Modifier.padding(top = Space.Hair),
                     )
                 }
 
@@ -521,7 +521,7 @@ private fun PlantCard(
                     context,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.padding(top = 2.dp),
+                    modifier = Modifier.padding(top = Space.Hair),
                 )
             }
 
@@ -554,7 +554,7 @@ private fun PlantCard(
                 // and they were flush, so the miss between "still wet" and
                 // "watered" was a wrong entry in the diary rather than a near
                 // miss. I made that exact mistake on this row.
-                Spacer(Modifier.width(8.dp))
+                Spacer(Modifier.width(Space.Line))
 
                 // One long press per card. The row already opens the quick
                 // sheet on long press, and this held a second long press with
@@ -769,7 +769,7 @@ private fun QuickLogSheet(
     onEdit: () -> Unit,
     weighable: Boolean,
 ) {
-    Column(Modifier.padding(start = Space.Section, end = Space.Section, top = Space.Section, bottom = 32.dp)) {
+    Column(Modifier.padding(start = Space.Section, end = Space.Section, top = Space.Section, bottom = Space.Page)) {
         // The sheet gets the same furniture as a page: a head, a rule, then
         // entries. Previously it was a floating panel of pills that shared no
         // vocabulary with the list it came out of.
@@ -782,7 +782,7 @@ private fun QuickLogSheet(
             "How does the pot feel?",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = 2.dp),
+            modifier = Modifier.padding(top = Space.Hair),
         )
         DoubleRule()
 
@@ -792,7 +792,7 @@ private fun QuickLogSheet(
             suggestedWaterMl = suggestedWaterMl,
         )
         Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(Space.Line),
             modifier = Modifier.padding(top = Space.Line),
         ) {
             OutlinedButton(onClick = onPhoto, modifier = Modifier.weight(1f).height(BlockHeight)) {
@@ -812,7 +812,7 @@ private fun QuickLogSheet(
         }
 
         Rule(flank = Flank.Section)
-        Row(Modifier.padding(top = 4.dp)) {
+        Row(Modifier.padding(top = Space.Tight)) {
             TextButton(onClick = onHistory) { Text("History") }
             TextButton(onClick = onEdit) { Text("Edit plant") }
         }

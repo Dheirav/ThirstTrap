@@ -19,7 +19,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 
 /** Feature F17.20. The method fails quietly if the weighing is inconsistent. */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,7 +37,7 @@ fun ScaleHelpScreen(onBack: () -> Unit) {
         },
     ) { padding ->
         Column(
-            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
+            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(Space.Block),
         ) {
             Section(
                 "Why weight beats a calendar",
@@ -96,6 +95,6 @@ private fun Section(title: String, body: String) {
         body,
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = 4.dp, bottom = Space.Section),
+        modifier = Modifier.padding(top = Space.Tight, bottom = Space.Section),
     )
 }

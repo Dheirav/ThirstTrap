@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
+import dev.dheirav.thirsttrap.ui.Space
 
 /**
  * A page with nothing on it yet, said the same way every time.
@@ -42,17 +42,17 @@ fun EmptyState(
     action: @Composable (ColumnScope.() -> Unit)? = null,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth().padding(32.dp),
+        modifier = modifier.fillMaxWidth().padding(Space.Page),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         if (mark != null) {
             mark()
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(Space.Section))
         }
         if (title.isNotEmpty()) {
             Text(title, style = MaterialTheme.typography.titleMedium)
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(Space.Line))
         }
         Text(
             body,
@@ -61,7 +61,7 @@ fun EmptyState(
             textAlign = TextAlign.Center,
         )
         if (action != null) {
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(Space.Section))
             action()
         }
     }

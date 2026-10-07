@@ -32,7 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -79,8 +78,8 @@ fun ExperimentDetailScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+                .padding(Space.Block),
+            verticalArrangement = Arrangement.spacedBy(Space.Block),
         ) {
             if (exp == null) {
                 if (state.loaded) Text("This experiment no longer exists.")
@@ -136,7 +135,7 @@ fun ExperimentDetailScreen(
 
             if (!exp.isConcluded && state.candidates.isNotEmpty()) {
                 FieldLabel("Add a subject")
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(Space.Line)) {
                     state.candidates.forEach { p ->
                         FilterChip(
                             selected = false,

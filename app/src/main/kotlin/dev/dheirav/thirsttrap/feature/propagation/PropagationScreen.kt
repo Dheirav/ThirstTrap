@@ -36,7 +36,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.domain.PropagationCard
@@ -79,7 +78,7 @@ fun PropagationScreen(
     ) { padding ->
         if (state.loaded && state.isEmpty) {
             Column(
-                Modifier.fillMaxSize().padding(padding).padding(32.dp),
+                Modifier.fillMaxSize().padding(padding).padding(Space.Page),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -90,7 +89,7 @@ fun PropagationScreen(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = Space.Line),
                 )
             }
             return@Scaffold
@@ -101,8 +100,8 @@ fun PropagationScreen(
         // measure against, so the stages become items and their cards follow.
         LazyColumn(
             Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = Space.Block, vertical = Space.Entry),
+            verticalArrangement = Arrangement.spacedBy(Space.Line),
         ) {
             PropagationStage.entries.forEach { stage ->
                 val cards = state.columns[stage].orEmpty()
@@ -144,7 +143,7 @@ fun PropagationScreen(
  */
 @Composable
 private fun StageHead(label: String, count: Int, hint: String) {
-    Column(Modifier.fillMaxWidth().padding(top = 12.dp)) {
+    Column(Modifier.fillMaxWidth().padding(top = Space.Entry)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ColumnHead(label, modifier = Modifier.weight(1f))
             Text(
@@ -181,7 +180,7 @@ private fun CuttingCard(
     // the other, and a page of those reads as five empty boxes.
     Card(Modifier.fillMaxWidth().clickable(onClick = onOpen)) {
         Row(
-            Modifier.padding(start = 12.dp, end = 4.dp, top = 8.dp, bottom = 8.dp),
+            Modifier.padding(start = Space.Entry, end = Space.Tight, top = Space.Line, bottom = Space.Line),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(Modifier.weight(1f)) {
@@ -203,7 +202,7 @@ private fun CuttingCard(
                         "Worth a look",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.padding(top = 2.dp),
+                        modifier = Modifier.padding(top = Space.Hair),
                     )
                 }
             }

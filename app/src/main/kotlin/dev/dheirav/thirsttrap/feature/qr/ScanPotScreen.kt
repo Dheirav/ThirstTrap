@@ -32,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -45,6 +44,7 @@ import com.google.zxing.common.HybridBinarizer
 import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.Button
 import java.util.concurrent.Executors
+import dev.dheirav.thirsttrap.ui.Space
 
 /**
  * Scanning a pot sticker, entirely in-process.
@@ -163,13 +163,13 @@ fun ScanPotScreen(
                             modifier = Modifier
                                 .align(Alignment.BottomCenter)
                                 .fillMaxWidth()
-                                .padding(24.dp),
+                                .padding(Space.Section),
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                     }
                 }
                 denied -> Column(
-                    Modifier.align(Alignment.Center).padding(24.dp),
+                    Modifier.align(Alignment.Center).padding(Space.Section),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
@@ -180,7 +180,7 @@ fun ScanPotScreen(
                     )
                     Button(
                         onClick = { ask.launch(Manifest.permission.CAMERA) },
-                        modifier = Modifier.padding(top = 16.dp),
+                        modifier = Modifier.padding(top = Space.Block),
                     ) { Text("Allow the camera") }
                 }
             }

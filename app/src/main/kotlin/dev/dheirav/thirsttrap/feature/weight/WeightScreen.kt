@@ -140,7 +140,7 @@ fun WeightScreen(
 
         if (!s.plant.isWeightTrackable) {
             Column(
-                Modifier.fillMaxSize().padding(padding).padding(32.dp),
+                Modifier.fillMaxSize().padding(padding).padding(Space.Page),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -151,7 +151,7 @@ fun WeightScreen(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = Space.Line),
                 )
             }
             return@Scaffold
@@ -164,16 +164,16 @@ fun WeightScreen(
         // paragraph and twenty rows. Weighing is an act, not a view, so it moved
         // into a sheet and the page became a page.
         Column(
-            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp),
+            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(Space.Block),
         ) {
             if (!s.isCalibrated) {
                 NotCalibratedCard(needsRecalibration = s.plant.needsRecalibration)
                 // The curve, even with nothing to measure it against yet.
                 if (s.readings.count { !it.excluded } >= 2) {
-                    Card(Modifier.fillMaxWidth().padding(top = 16.dp)) {
+                    Card(Modifier.fillMaxWidth().padding(top = Space.Block)) {
                         WeightChart(
                             s,
-                            Modifier.fillMaxWidth().height(200.dp).padding(8.dp)
+                            Modifier.fillMaxWidth().height(200.dp).padding(Space.Line)
                                 .semantics { contentDescription = chartSummary(s) },
                             onPointTap = { editingReading = it },
                         )
@@ -226,7 +226,7 @@ fun WeightScreen(
                             Modifier
                                 .fillMaxWidth()
                                 .height(200.dp)
-                                .padding(8.dp)
+                                .padding(Space.Line)
                                 .semantics { contentDescription = chartSummary(s) },
                             onPointTap = { editingReading = it },
                         )
@@ -251,7 +251,7 @@ fun WeightScreen(
             if (s.readings.isNotEmpty()) {
                 SectionHead("Readings")
                 val shown = s.readings.sortedByDescending { it.timestampMillis }.take(20)
-                Row(Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 4.dp)) {
+                Row(Modifier.fillMaxWidth().padding(top = Space.Line, bottom = Space.Tight)) {
                     ColumnHead("Weight", Modifier.weight(0.32f))
                     ColumnHead("When", Modifier.weight(0.38f))
                     ColumnHead("Note", Modifier.weight(0.30f))
@@ -265,7 +265,7 @@ fun WeightScreen(
                             .clickable(
                                 onClickLabel = "Edit this reading",
                             ) { editingReading = r }
-                            .padding(vertical = 8.dp),
+                            .padding(vertical = Space.Line),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
@@ -303,7 +303,7 @@ fun WeightScreen(
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = Space.Line),
                 )
             }
         }
@@ -328,7 +328,7 @@ fun WeightScreen(
                     // fixed 52dp with dead space under them.
                     .fillMaxHeight(0.88f)
                     .navigationBarsPadding()
-                    .padding(start = Space.Section, end = Space.Section, top = Space.Section, bottom = 16.dp),
+                    .padding(start = Space.Section, end = Space.Section, top = Space.Section, bottom = Space.Block),
             ) {
               Column(Modifier.weight(1f)) {
                 Text(
@@ -339,7 +339,7 @@ fun WeightScreen(
                 Text(
                     if (entry.isBlank()) "grams, pot and all" else "$entry g",
                     style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = Space.Tight),
                 )
                 DoubleRule()
 
@@ -348,7 +348,7 @@ fun WeightScreen(
                         it,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(bottom = 12.dp),
+                        modifier = Modifier.padding(bottom = Space.Entry),
                     )
                 }
 
@@ -370,13 +370,13 @@ fun WeightScreen(
                             "becomes the new full mark.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(bottom = 12.dp),
+                        modifier = Modifier.padding(bottom = Space.Entry),
                     )
                 }
 
                 FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(Space.Line),
+                    verticalArrangement = Arrangement.spacedBy(Space.Line),
                     modifier = Modifier.fillMaxWidth().padding(bottom = Space.Entry),
                 ) {
                     // The enum's own labels, not a second copy of the words -
@@ -404,7 +404,7 @@ fun WeightScreen(
                 Button(
                     onClick = { viewModel.save {}; showKeypad = false },
                     enabled = entry.isNotBlank(),
-                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                    modifier = Modifier.fillMaxWidth().padding(top = Space.Entry),
                 ) { Text("Save this weight") }
 
                 if (!s.isCalibrated) {
@@ -488,8 +488,8 @@ private fun PredictionHeadline(s: WeightState, onExplain: (SuppressionReason) ->
         (s.prediction as? Prediction.NeedAnotherReading)?.let { p ->
             TextButton(
                 onClick = { onExplain(p.reason) },
-                contentPadding = PaddingValues(vertical = 4.dp),
-                modifier = Modifier.padding(top = 4.dp),
+                contentPadding = PaddingValues(vertical = Space.Tight),
+                modifier = Modifier.padding(top = Space.Tight),
             ) {
                 Text("Why not?", style = MaterialTheme.typography.labelLarge)
             }
@@ -534,7 +534,7 @@ private fun DiagnosticCard(
     onDismiss: () -> Unit,
     onHelp: () -> Unit,
 ) {
-    Card(Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+    Card(Modifier.fillMaxWidth().padding(bottom = Space.Block)) {
         Column() {
             Text(
                 when (d) {
@@ -555,7 +555,7 @@ private fun DiagnosticCard(
                 },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 4.dp),
+                modifier = Modifier.padding(top = Space.Tight),
             )
             Row {
                 TextButton(onClick = onHelp) { Text("How to weigh") }
@@ -567,7 +567,7 @@ private fun DiagnosticCard(
 
 @Composable
 private fun NotCalibratedCard(needsRecalibration: Boolean) {
-    Card(Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+    Card(Modifier.fillMaxWidth().padding(bottom = Space.Block)) {
         Column() {
             Text(
                 if (needsRecalibration) "Needs recalibrating" else "Not set up yet",
@@ -585,7 +585,7 @@ private fun NotCalibratedCard(needsRecalibration: Boolean) {
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(vertical = 8.dp),
+                modifier = Modifier.padding(vertical = Space.Line),
             )
             // No button. The page carries one "Weigh it" already, a few
             // hundred pixels below and visible at the same time, and this card
@@ -606,10 +606,10 @@ private fun Keypad(
     // rows share the height they are given rather than each taking a fixed
     // 52dp, so on a tall phone the keys are genuinely large.
     val rows = listOf("123", "456", "789", ".0<")
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(Space.Line)) {
         rows.forEach { row ->
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(Space.Line),
                 modifier = Modifier.weight(1f),
             ) {
                 row.forEach { ch ->
@@ -806,7 +806,7 @@ private fun AmbientWaiting(gap: AmbientGap) {
         wordingFor(gap),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.outline,
-        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+        modifier = Modifier.fillMaxWidth().padding(bottom = Space.Block),
     )
 }
 
@@ -841,7 +841,7 @@ private fun AmbientCard(e: AmbientExplanation) {
         }
     }.joinToString(" and ")
 
-    Card(Modifier.fillMaxWidth().padding(bottom = 16.dp)) {
+    Card(Modifier.fillMaxWidth().padding(bottom = Space.Block)) {
         Column() {
             Text(
                 when (e.verdict) {
@@ -868,7 +868,7 @@ private fun AmbientCard(e: AmbientExplanation) {
                 },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 4.dp),
+                modifier = Modifier.padding(top = Space.Tight),
             )
             if (e.source == AmbientSource.WEATHER) {
                 Text(
@@ -940,8 +940,8 @@ private fun ReadingEditor(
                         modifier = Modifier.padding(top = Space.Line),
                     )
                     FlowRow(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(Space.Line),
+                        verticalArrangement = Arrangement.spacedBy(Space.Line),
                         modifier = Modifier.fillMaxWidth().padding(top = Space.Entry),
                     ) {
                         listOf(

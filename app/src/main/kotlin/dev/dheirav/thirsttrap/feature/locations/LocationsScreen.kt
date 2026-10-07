@@ -30,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.ui.AppIcons
@@ -42,6 +41,7 @@ import dev.dheirav.thirsttrap.ui.ScreenTitle
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import dev.dheirav.thirsttrap.ui.Space
 
 private val measured = SimpleDateFormat("d MMM", Locale.getDefault())
 
@@ -96,7 +96,7 @@ fun LocationsScreen(
 
         LazyColumn(
             Modifier.fillMaxSize().padding(padding),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(Space.Block),
         ) {
             item {
                 Text(
@@ -105,9 +105,9 @@ fun LocationsScreen(
                         "to measure it.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 16.dp),
+                    modifier = Modifier.padding(bottom = Space.Block),
                 )
-                Row(Modifier.fillMaxWidth().padding(bottom = 4.dp)) {
+                Row(Modifier.fillMaxWidth().padding(bottom = Space.Tight)) {
                     ColumnHead("Place", Modifier.weight(1f))
                     ColumnHead("Plants", Modifier.weight(0.28f))
                     ColumnHead("Light", Modifier.weight(0.42f))
@@ -119,7 +119,7 @@ fun LocationsScreen(
                     Modifier
                         .fillMaxWidth()
                         .clickable { editing = row }
-                        .padding(vertical = 12.dp),
+                        .padding(vertical = Space.Entry),
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
@@ -149,7 +149,7 @@ fun LocationsScreen(
                                 } ?: ""),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.outline,
-                            modifier = Modifier.padding(top = 2.dp),
+                            modifier = Modifier.padding(top = Space.Hair),
                         )
                     }
                     row.latestAmbient?.let { a ->
@@ -163,7 +163,7 @@ fun LocationsScreen(
                                     ", ${measured.format(Date(a.timestampMillis))}",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.outline,
-                                modifier = Modifier.padding(top = 2.dp),
+                                modifier = Modifier.padding(top = Space.Hair),
                             )
                         }
                     }
@@ -172,7 +172,7 @@ fun LocationsScreen(
                             it,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 4.dp),
+                            modifier = Modifier.padding(top = Space.Tight),
                         )
                     }
                 }
@@ -195,7 +195,7 @@ fun LocationsScreen(
                     OutlinedTextField(
                         value = text,
                         onValueChange = { text = it },
-                        modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
+                        modifier = Modifier.fillMaxWidth().padding(top = Space.Entry),
                     )
                     // Light is a property of the spot, not of whichever pot
                     // happens to be standing in it, so you should not have to
@@ -212,7 +212,7 @@ fun LocationsScreen(
                             editing = null
                             onMeasure(row.name)
                         },
-                        modifier = Modifier.padding(top = 4.dp),
+                        modifier = Modifier.padding(top = Space.Tight),
                     ) {
                         Text(
                             row.note?.lux?.let { "Measure the light again" }

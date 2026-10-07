@@ -56,7 +56,7 @@ fun IntroScreen(
                 .fillMaxSize()
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
-                .padding(24.dp),
+                .padding(Space.Section),
         ) {
             Text(
                 "THIRSTTRAP",
@@ -118,7 +118,7 @@ fun IntroScreen(
 
 @Composable
 private fun Point(n: String, title: String, body: String, last: Boolean = false) {
-    Row(Modifier.fillMaxWidth().padding(top = 4.dp)) {
+    Row(Modifier.fillMaxWidth().padding(top = Space.Tight)) {
         Text(
             n,
             style = MaterialTheme.typography.titleMedium,
