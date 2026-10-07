@@ -76,7 +76,6 @@ import dev.dheirav.thirsttrap.feature.postmortem.PostMortemScreen
 import dev.dheirav.thirsttrap.feature.qr.StickerScreen
 import dev.dheirav.thirsttrap.feature.propagation.PropagationScreen
 import dev.dheirav.thirsttrap.feature.settings.SettingsScreen
-import dev.dheirav.thirsttrap.feature.weight.ScaleHelpScreen
 import dev.dheirav.thirsttrap.feature.weight.WeightScreen
 import dev.dheirav.thirsttrap.feature.logevent.LogEventScreen
 import dev.dheirav.thirsttrap.feature.plantdetail.PlantDetailScreen
@@ -295,7 +294,6 @@ class MainActivity : ComponentActivity() {
                             HowItWorksScreen(
                                 onBack = { nav.popBackStack() },
                                 onOpenIntro = { nav.navigate(Routes.INTRO) },
-                                onOpenScaleHelp = { nav.navigate(Routes.SCALE_HELP) },
                                 onOpenWayfinding = { nav.navigate(Routes.WAYFINDING) },
                                 onOpenBackupHelp = { nav.navigate(Routes.BACKUP_HELP) },
                             )
@@ -319,7 +317,6 @@ class MainActivity : ComponentActivity() {
                         ) {
                             WeightScreen(
                                 onBack = { nav.popBackStack() },
-                                onOpenScaleHelp = { nav.navigate(Routes.SCALE_HELP) },
                                 onExplainRefusal = { r ->
                                     nav.navigate(Routes.whyNoDate(r.name))
                                 },
@@ -428,9 +425,6 @@ class MainActivity : ComponentActivity() {
                                 onBack = { nav.popBackStack() },
                                 onOpenPlant = { id -> nav.navigate(Routes.plantDetail(id)) },
                             )
-                        }
-                        composable(Routes.SCALE_HELP) {
-                            ScaleHelpScreen(onBack = { nav.popBackStack() })
                         }
                         composable(Routes.DEBUG) {
                             DebugScreen(onBack = { nav.popBackStack() })

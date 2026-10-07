@@ -96,7 +96,6 @@ import kotlin.math.roundToInt
 fun WeightScreen(
     onExplainRefusal: (SuppressionReason) -> Unit,
     onBack: () -> Unit,
-    onOpenScaleHelp: () -> Unit,
     viewModel: WeightViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -106,6 +105,10 @@ fun WeightScreen(
     val ambient by viewModel.ambientInsight.collectAsStateWithLifecycle()
     val dismissed by viewModel.dismissed.collectAsStateWithLifecycle()
     var showKeypad by remember { mutableStateOf(false) }
+    // This screen wrote the rule: "Weighing is an act, not a view, so it moved
+    // into a sheet and the page became a page." Its own help was still a page.
+    var showScaleHelp by remember { mutableStateOf(false) }
+    if (showScaleHelp) ScaleHelpSheet(onDismiss = { showScaleHelp = false })
     var editingReading by remember { mutableStateOf<WeightReading?>(null) }
     // Skips the half-height stop: this sheet is a keypad, and a keypad you
     // have to drag open before you can use it is worse than no sheet.
@@ -127,7 +130,7 @@ fun WeightScreen(
                     }
                 },
                 actions = {
-                    TextButton(onClick = onOpenScaleHelp) { Text("Help") }
+                    TextButton(onClick = { showScaleHelp = true }) { Text("Help") }
                 },
             )
         },
@@ -196,7 +199,7 @@ fun WeightScreen(
                     DiagnosticCard(
                         d = s.diagnostic!!,
                         onDismiss = { viewModel.dismissDiagnostic(diagKey) },
-                        onHelp = onOpenScaleHelp,
+                        onHelp = { showScaleHelp = true },
                     )
                 }
                 // Says why when it has nothing, rather than vanishing. A silent

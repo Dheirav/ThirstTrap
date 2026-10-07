@@ -16,7 +16,6 @@ object Routes {
     const val SETTINGS = "settings"
     const val LOG_EVENT = "plant/log"
     const val WEIGHT = "plant/weight"
-    const val SCALE_HELP = "help/scale"
     const val LIGHT = "plant/light"
     const val PLACE_LIGHT = "place/light"
     const val PROPAGATION = "propagation"

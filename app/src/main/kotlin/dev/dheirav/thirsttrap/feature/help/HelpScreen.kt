@@ -21,6 +21,11 @@ import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.Button
 import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import dev.dheirav.thirsttrap.feature.weight.ScaleHelpSheet
 
 /**
  * Two screens, because they answer two different questions.
@@ -43,10 +48,13 @@ import dev.dheirav.thirsttrap.ui.ScreenTitle
 fun HowItWorksScreen(
     onBack: () -> Unit,
     onOpenIntro: () -> Unit,
-    onOpenScaleHelp: () -> Unit,
     onOpenWayfinding: () -> Unit,
     onOpenBackupHelp: () -> Unit,
 ) {
+    // Weighing help is a sheet, not a destination, so this screen owns it
+    // rather than navigating to it. See ScaleHelpSheet.
+    var scaleHelp by remember { mutableStateOf(false) }
+    if (scaleHelp) ScaleHelpSheet(onDismiss = { scaleHelp = false })
     HelpPage("How the app works", onBack) {
         // Reading order rather than alphabetical: why it exists, the one
         // mechanic it rests on, where things are, and then the thing you only
@@ -60,7 +68,7 @@ fun HowItWorksScreen(
         Entry(
             title = "Weighing a pot",
             body = "What to weigh, when, and what to do about a pot too heavy to lift.",
-            onClick = onOpenScaleHelp,
+            onClick = { scaleHelp = true },
         )
         Entry(
             title = "Finding your way around",

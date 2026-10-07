@@ -3,42 +3,53 @@ package dev.dheirav.thirsttrap.feature.weight
 import dev.dheirav.thirsttrap.ui.Space
 
 import dev.dheirav.thirsttrap.ui.ScreenTitle
-import dev.dheirav.thirsttrap.ui.AppIcons
+import dev.dheirav.thirsttrap.ui.AlmanacSheet
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 
-/** Feature F17.20. The method fails quietly if the weighing is inconsistent. */
+/**
+ * Feature F17.20. The method fails quietly if the weighing is inconsistent.
+ *
+ * A sheet rather than a page, which is the rule WeightScreen already wrote for
+ * itself: "Weighing is an act, not a view, so it moved into a sheet and the
+ * page became a page." This is the other half of that. Something you read and
+ * return from does not need an address, a back arrow and a place on the
+ * navigation stack; it needs to appear over what you were looking at and then
+ * get out of the way.
+ *
+ * It also takes a help topic out of the destination graph, where every topic
+ * being a destination is why "read this" once needed a navigation control and
+ * got the heaviest one available.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScaleHelpScreen(onBack: () -> Unit) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { ScreenTitle("Weighing plants") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(AppIcons.arrowBack, contentDescription = "Back")
-                    }
-                },
-            )
-        },
-    ) { padding ->
+fun ScaleHelpSheet(onDismiss: () -> Unit) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    AlmanacSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
         Column(
-            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(Space.Block),
+            Modifier
+                .fillMaxWidth()
+                // Both insets, because this sheet is long enough to expand to
+                // the full height of the window: without the top one the title
+                // renders under the status bar clock, which is what it did.
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .verticalScroll(rememberScrollState())
+                .padding(Space.Block),
         ) {
+            ScreenTitle("Weighing plants")
             Section(
                 "Why weight beats a calendar",
                 "A pot loses water almost entirely by evaporation, which is steady over a " +
