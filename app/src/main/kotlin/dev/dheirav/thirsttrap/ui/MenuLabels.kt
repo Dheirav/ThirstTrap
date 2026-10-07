@@ -33,7 +33,7 @@ object MenuLabels {
 
     /** The dashboard's overflow: jobs that are about several plants at once. */
     object Dashboard {
-        const val FEEDING = "Feeding"
+        const val FEEDING = "Fertiliser"
         const val PROPAGATION = "Propagation board"
         const val SCAN = "Scan a pot sticker"
         const val PLACES = "Places"
@@ -49,15 +49,17 @@ object MenuLabels {
          * WayfindingScreen and are now wanted on the More screen too, which is
          * the same trap one step later.
          */
-        const val FEEDING_WHAT = "What is due a feed, and the dilution maths for a given can."
-        const val PROPAGATION_WHAT = "Cuttings from cut to established, by stage."
+        const val FEEDING_WHAT =
+            "Which plants are due some, and how much of each bottle goes in your can."
+        const val PROPAGATION_WHAT = "Your cuttings, from the day you take one to the day it is a plant."
         const val SCAN_WHAT = "Opens whichever plant's sticker you point the camera at."
         const val PLACES_WHAT = "A note and a light reading per spot in the house."
         const val FIGURES_WHAT =
             "How often you water, what became of things, and whether the predictions " +
                 "have been any good."
         const val EXPERIMENTS_WHAT =
-            "Two arms, one variable, for when you want an answer rather than an impression."
+            "Try something on some plants and not others, when you want to know " +
+                "rather than guess."
     }
 
     /** One plant's overflow: everything that is about that plant. */

@@ -46,6 +46,7 @@ import dev.dheirav.thirsttrap.ui.ColumnHead
 import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import kotlin.math.roundToInt
+import dev.dheirav.thirsttrap.ui.MenuLabels
 
 /** 1000 rather than 1000.0, so a chip reads like a can. */
 private fun Double.tidy(): String =
@@ -68,7 +69,10 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { ScreenTitle("Feeding") },
+                // From the same constant as the menu entry that opens it, because this
+                // file's own MenuLabels comment is about a label living in two
+                // copies and going stale.
+                title = { ScreenTitle(MenuLabels.Dashboard.FEEDING) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(AppIcons.arrowBack, contentDescription = "Back")
