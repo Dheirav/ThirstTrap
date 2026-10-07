@@ -43,7 +43,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import dev.dheirav.thirsttrap.ui.Switch
-import androidx.compose.material3.OutlinedTextField
+import dev.dheirav.thirsttrap.ui.OutlinedTextField
 import dev.dheirav.thirsttrap.ui.AlmanacDialog
 import dev.dheirav.thirsttrap.ui.DialogText
 import androidx.compose.material3.Text

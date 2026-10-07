@@ -29,7 +29,7 @@ import dev.dheirav.thirsttrap.ui.FilterChip
 import androidx.compose.material3.Icon
 import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import dev.dheirav.thirsttrap.ui.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text

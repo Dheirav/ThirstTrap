@@ -39,7 +39,7 @@ import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import dev.dheirav.thirsttrap.ui.OutlinedTextField
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.foundation.layout.WindowInsets
