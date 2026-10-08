@@ -214,14 +214,19 @@ last two, which need the user rather than the code.
    rather than "Weight and prediction".
 5. ~~Advanced toggle for stickers, QR, experiments and room conditions.~~ Done,
    D39. Off by default.
-6. **Keystore, `signingConfig`, and a real `versionName`.** Not started, and the
-   one step that cannot be done for the user: a password must not be invented or
-   committed. Generate the keystore, keep it out of the repo, and back it up
-   somewhere that is not the laptop, because losing it means never being able to
-   update an existing install. `versionCode` must increment on every build handed
-   out.
-7. **Tag a release, attach the APK, write install notes** mentioning Obtainium
-   for anyone who wants updates without a store.
+6. ~~Keystore, `signingConfig`, and a real `versionName`.~~ Done. The keystore
+   lives at `~/thirsttrap-release.jks` with its four properties in
+   `local.properties`, and the backup is off the machine. `versionCode` is the
+   git commit count rather than a typed integer, because the typed one stayed at
+   1 through two different signed releases, so neither could update the other.
+   `versionName` is 0.2.0 and Settings shows the code beside it, which is what a
+   tester quotes back.
+7. **Tag a release and attach the APK.** Install notes are written, at
+   `docs/INSTALL.md`, covering the unknown-sources dialog, the Play Protect
+   warning, MIUI's extra scan, the version line to quote in a bug report, and
+   why uninstalling loses the photos when a backup does not. Still to do is the
+   tag itself with the APK attached, and Obtainium for anyone who wants updates
+   without a store.
 
 Found along the way rather than planned, each written up in the decisions log:
 `ImportIdempotenceTest` had not compiled since the F11/F12 commit so the whole
