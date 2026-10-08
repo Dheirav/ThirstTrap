@@ -72,7 +72,7 @@ android {
         // Shown in Settings and written into every backup, so it is what a
         // tester will quote back. The code goes next to it there, because the
         // name alone does not say which of several builds they are on.
-        versionName = "0.2.0"
+        versionName = "0.2.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
