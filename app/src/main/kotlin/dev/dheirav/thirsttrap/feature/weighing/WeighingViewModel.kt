@@ -66,6 +66,17 @@ class WeighingViewModel @Inject constructor(
     /** Session start, so "done" means done in this round rather than ever. */
     private val startedAtMillis = System.currentTimeMillis()
 
+    /** Whether any reading got saved this round, so leaving is not giving up. */
+    private var flowCompleted = false
+
+    init {
+        // One OPENED per round, not per plant: the round is the flow, and the
+        // plants are what it walks through.
+        viewModelScope.launch {
+            usage.record(dev.dheirav.thirsttrap.domain.UsageKind.FLOW_OPENED, FLOW)
+        }
+    }
+
     val state: StateFlow<WeighingUiState> =
         combine(
             plants.observePlants(includeArchived = false),
@@ -180,11 +191,18 @@ class WeighingViewModel @Inject constructor(
                 if (s != context) {
                     usage.record(
                         dev.dheirav.thirsttrap.domain.UsageKind.SUGGESTION_OVERRIDDEN,
-                        "weighing_round",
+                        FLOW,
                         row.plant.id,
                         "${s.name}->${context.name}",
                     )
                 }
+            }
+            if (!flowCompleted) {
+                // Once per round, on the first reading. Recording one per plant
+                // would push completions above opens and make the abandon rate
+                // meaningless.
+                flowCompleted = true
+                usage.record(dev.dheirav.thirsttrap.domain.UsageKind.FLOW_COMPLETED, FLOW)
             }
             weights.addReading(row.plant.id, grams, context)
             // A reading changes the prediction, and the prediction is what the
@@ -220,4 +238,15 @@ class WeighingViewModel @Inject constructor(
         val next = rows.indices.firstOrNull { it > index && rows[it].doneThisRound == null }
         if (next == null) close() else open(next)
     }
+
+    override fun onCleared() {
+        if (!flowCompleted) {
+            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                usage.record(dev.dheirav.thirsttrap.domain.UsageKind.FLOW_ABANDONED, FLOW)
+            }
+        }
+        super.onCleared()
+    }
+
+    private companion object { const val FLOW = "weighing_round" }
 }

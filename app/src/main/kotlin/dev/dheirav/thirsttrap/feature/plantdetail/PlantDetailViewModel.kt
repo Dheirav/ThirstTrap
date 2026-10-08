@@ -51,6 +51,7 @@ class PlantDetailViewModel @Inject constructor(
     private val repository: PlantRepository,
     private val photos: PhotoRepository,
     private val reminders: dev.dheirav.thirsttrap.domain.ReminderRepository,
+    private val usage: dev.dheirav.thirsttrap.domain.UsageRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -124,9 +125,31 @@ class PlantDetailViewModel @Inject constructor(
         viewModelScope.launch { repository.updateEvent(event) }
     }
 
+    /**
+     * The photo flow, which recorded nothing at all before this.
+     *
+     * Unlike logging and weighing there is no screen to open and close: the
+     * camera is somebody else's activity and all this gets back is a uri or
+     * nothing. So opening is the launch, completing is a uri that imports, and
+     * giving up is coming back empty, which is the common case of pointing the
+     * camera at a plant and deciding the light is wrong.
+     */
+    fun photoFlowOpened() {
+        viewModelScope.launch {
+            usage.record(dev.dheirav.thirsttrap.domain.UsageKind.FLOW_OPENED, PHOTO_FLOW, plantId)
+        }
+    }
+
+    fun photoFlowCancelled() {
+        viewModelScope.launch {
+            usage.record(dev.dheirav.thirsttrap.domain.UsageKind.FLOW_ABANDONED, PHOTO_FLOW, plantId)
+        }
+    }
+
     fun addPhoto(uri: Uri) {
         viewModelScope.launch {
             (photos as? PhotoRepositoryImpl)?.importPhoto(plantId, uri)
+            usage.record(dev.dheirav.thirsttrap.domain.UsageKind.FLOW_COMPLETED, PHOTO_FLOW, plantId)
         }
     }
 
@@ -191,4 +214,6 @@ class PlantDetailViewModel @Inject constructor(
         val date = java.time.Instant.ofEpochMilli(event.timestampMillis).atZone(zone).toLocalDate()
         return date.format(java.time.format.DateTimeFormatter.ofPattern("d MMM yyyy"))
     }
+
+    private companion object { const val PHOTO_FLOW = "photo" }
 }

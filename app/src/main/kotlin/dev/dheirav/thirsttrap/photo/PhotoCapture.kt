@@ -9,6 +9,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -62,9 +63,27 @@ class PhotoCaptureLaunchers(
     val pickFromGallery: () -> Unit,
 )
 
+/**
+ * [onOpened] and [onCancelled] default to nothing, so a caller that does not
+ * care is unchanged. They exist for the friction report: a camera launched and
+ * backed out of is the photo flow's version of giving up, and it leaves no
+ * trace anywhere else.
+ */
 @Composable
-fun rememberPhotoCapture(onPhoto: (Uri) -> Unit): PhotoCaptureLaunchers {
+fun rememberPhotoCapture(
+    onOpened: () -> Unit = {},
+    onCancelled: () -> Unit = {},
+    // Last, so the two existing call sites keep working as trailing lambdas.
+    // Adding a parameter ahead of one silently rebinds it to the new last
+    // parameter, which is how the shareGroupId change broke every positional
+    // CareEvent call.
+    onPhoto: (Uri) -> Unit,
+): PhotoCaptureLaunchers {
     val context = LocalContext.current
+    // The returned launchers are remember(context), so a lambda captured
+    // directly would be the one from the first composition forever. Harmless
+    // while these only call a view model, and a trap the moment they do not.
+    val opened by rememberUpdatedState(onOpened)
     var pendingUri by rememberSaveable { mutableStateOf<String?>(null) }
     // Survives the Activity being destroyed behind the permission dialog, for
     // the same reason pendingUri does.
@@ -73,8 +92,14 @@ fun rememberPhotoCapture(onPhoto: (Uri) -> Unit): PhotoCaptureLaunchers {
     val camera = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { ok ->
         val uri = pendingUri
         pendingUri = null
-        if (!ok) { Log.i(TAG, "capture cancelled"); return@rememberLauncherForActivityResult }
-        if (uri == null) { Log.w(TAG, "capture returned but destination was lost"); return@rememberLauncherForActivityResult }
+        if (!ok) {
+            Log.i(TAG, "capture cancelled"); onCancelled()
+            return@rememberLauncherForActivityResult
+        }
+        if (uri == null) {
+            Log.w(TAG, "capture returned but destination was lost"); onCancelled()
+            return@rememberLauncherForActivityResult
+        }
         Log.i(TAG, "capture ok: $uri")
         onPhoto(Uri.parse(uri))
     }
@@ -104,13 +129,18 @@ fun rememberPhotoCapture(onPhoto: (Uri) -> Unit): PhotoCaptureLaunchers {
             // No second prompt and no explanation the user did not ask for.
             // They said no to the camera; the gallery needs nothing.
             Log.i(TAG, "camera permission refused, no capture")
+            onCancelled()
         }
     }
 
     val gallery = rememberLauncherForActivityResult(
         ActivityResultContracts.PickVisualMedia(),
     ) { uri ->
-        if (uri == null) Log.i(TAG, "gallery pick cancelled") else onPhoto(uri)
+        if (uri == null) {
+            Log.i(TAG, "gallery pick cancelled"); onCancelled()
+        } else {
+            onPhoto(uri)
+        }
     }
 
     return remember(context) {
@@ -119,6 +149,7 @@ fun rememberPhotoCapture(onPhoto: (Uri) -> Unit): PhotoCaptureLaunchers {
                 val held = ContextCompat.checkSelfPermission(
                     context, Manifest.permission.CAMERA,
                 ) == PackageManager.PERMISSION_GRANTED
+                opened()
                 if (held) {
                     launchCamera()
                 } else {
@@ -127,6 +158,7 @@ fun rememberPhotoCapture(onPhoto: (Uri) -> Unit): PhotoCaptureLaunchers {
                 }
             },
             pickFromGallery = {
+                opened()
                 gallery.launch(
                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly),
                 )

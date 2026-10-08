@@ -84,8 +84,20 @@ class WeightViewModel @Inject constructor(
     private val _dismissed = MutableStateFlow<Set<String>>(emptySet())
     val dismissed: StateFlow<Set<String>> = _dismissed.asStateFlow()
 
+    /**
+     * Whether a reading got saved, so leaving does not get counted as giving up.
+     */
+    private var flowCompleted = false
+
     init {
         viewModelScope.launch { _dismissed.value = settings.dismissedDiagnostics() }
+        // This flow recorded only SUGGESTION_OVERRIDDEN, and only when the
+        // context chip was changed, so a person who accepts the suggestion left
+        // no trace at all: 82 readings on this device and zero usage rows. The
+        // report was blind on the one path the app is actually for.
+        viewModelScope.launch {
+            usage.record(dev.dheirav.thirsttrap.domain.UsageKind.FLOW_OPENED, FLOW, plantId)
+        }
     }
 
     /**
@@ -123,11 +135,17 @@ class WeightViewModel @Inject constructor(
                 if (s != saved) {
                     usage.record(
                         dev.dheirav.thirsttrap.domain.UsageKind.SUGGESTION_OVERRIDDEN,
-                        "weigh",
+                        FLOW,
                         plantId,
                         "${s.name}->${saved.name}",
                     )
                 }
+            }
+            if (!flowCompleted) {
+                flowCompleted = true
+                usage.record(
+                    dev.dheirav.thirsttrap.domain.UsageKind.FLOW_COMPLETED, FLOW, plantId,
+                )
             }
             val backfilledWatering = repository.addReading(plantId, grams, saved)
             rescheduleFromPrediction()
@@ -179,4 +197,17 @@ class WeightViewModel @Inject constructor(
         if (reminders.observeForPlant(plantId).first().isEmpty()) return
         reminders.rescheduleFromModel(plantId, System.currentTimeMillis())
     }
+
+    override fun onCleared() {
+        if (!flowCompleted) {
+            // viewModelScope is already dead here, so this needs its own
+            // short-lived scope, the same as LogEventViewModel.
+            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                usage.record(dev.dheirav.thirsttrap.domain.UsageKind.FLOW_ABANDONED, FLOW, plantId)
+            }
+        }
+        super.onCleared()
+    }
+
+    private companion object { const val FLOW = "weigh" }
 }

@@ -113,7 +113,10 @@ fun PlantDetailScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val neighbors by viewModel.neighbors.collectAsStateWithLifecycle()
     val plant = state.plant
-    val capture = dev.dheirav.thirsttrap.photo.rememberPhotoCapture { viewModel.addPhoto(it) }
+    val capture = dev.dheirav.thirsttrap.photo.rememberPhotoCapture(
+        onOpened = viewModel::photoFlowOpened,
+        onCancelled = viewModel::photoFlowCancelled,
+    ) { viewModel.addPhoto(it) }
     var viewing by remember { mutableStateOf<Photo?>(null) }
     var menuOpen by remember { mutableStateOf(false) }
 
