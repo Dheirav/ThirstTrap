@@ -1,9 +1,12 @@
 package dev.dheirav.thirsttrap.feature.help
 
 import dev.dheirav.thirsttrap.ui.Space
+import dev.dheirav.thirsttrap.ui.GoChevron
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,7 +28,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import dev.dheirav.thirsttrap.feature.weight.ScaleHelpSheet
 
 /**
  * Two screens, because they answer two different questions.
@@ -52,10 +54,16 @@ fun HowItWorksScreen(
     onOpenWayfinding: () -> Unit,
     onOpenBackupHelp: () -> Unit,
 ) {
-    // Weighing help is a sheet, not a destination, so this screen owns it
-    // rather than navigating to it. See ScaleHelpSheet.
-    var scaleHelp by remember { mutableStateOf(false) }
-    if (scaleHelp) ScaleHelpSheet(onDismiss = { scaleHelp = false })
+    // Weighing help is not listed here. It is a sheet rather than a page,
+    // because WeightScreen opens the same sheet from a Help button in its own
+    // app bar and from its diagnostic card, which is help at the moment of
+    // use. Listed among three pages it was the one entry that opened a
+    // different kind of thing, and a list whose items behave differently is
+    // the thing this whole pass was fixing.
+    //
+    // Nothing is lost by dropping it. It is offered every time somebody
+    // actually weighs a pot, and the tipping trick for a pot too heavy to
+    // lift is also point 1 of "What this app is for", which is still here.
     HelpPage("How the app works", onBack) {
         // Reading order rather than alphabetical: why it exists, the one
         // mechanic it rests on, where things are, and then the thing you only
@@ -78,14 +86,13 @@ fun HowItWorksScreen(
             onClick = onOpenIntro,
         )
         Entry(
-            title = "Weighing a pot",
-            body = "What to weigh, when, and what to do about a pot too heavy to lift.",
-            onClick = { scaleHelp = true },
-        )
-        Entry(
-            title = "Finding your way around",
-            body = "What is on each tab, what is behind the two dots menus, and the only " +
-                "two gestures the app cannot tell you about itself.",
+            // Not "finding your way around" any more: that is what the tour
+            // does, and two entries offering the same thing is the choice
+            // nobody wants to make. This one is the reference for the parts a
+            // spotlight can point at but cannot enumerate.
+            title = "What is in the menus",
+            body = "What is behind the two dots menus, what the photo viewer can do, and " +
+                "the only two gestures the app cannot tell you about itself.",
             onClick = onOpenWayfinding,
         )
         Entry(
@@ -127,7 +134,7 @@ fun TroubleshootScreen(
             "A plant that does not look right is handled on the plant itself: open it, " +
                 "then \"Something looks wrong\" in its menu. It needs to know which " +
                 "plant you mean, which is why it is not here.",
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
@@ -135,31 +142,6 @@ fun TroubleshootScreen(
 
 /** The frame both share, so they cannot drift apart. */
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun HelpPage(
-    title: String,
-    onBack: () -> Unit,
-    content: @Composable () -> Unit,
-) {
-    Scaffold(
-        topBar = {
-            androidx.compose.material3.TopAppBar(
-                title = { ScreenTitle(title) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(AppIcons.arrowBack, contentDescription = "Back")
-                    }
-                },
-            )
-        },
-    ) { padding ->
-        Column(
-            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())
-                .padding(Space.Block),
-        ) { content() }
-    }
-}
-
 @Composable
 private fun Entry(title: String, body: String, onClick: () -> Unit) {
     // The whole entry is the target, not a button under it.
@@ -170,19 +152,23 @@ private fun Entry(title: String, body: String, onClick: () -> Unit) {
     // was carrying six primaries, each the same visual weight as "Log it", for
     // the act of reading a page. A list of things to read is a list, and a list
     // row is tapped.
-    Column(
+    Row(
         Modifier
             .fillMaxWidth()
             .clickable(onClickLabel = title) { onClick() }
             .padding(top = Space.Entry, bottom = Space.Entry),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(title, style = MaterialTheme.typography.titleMedium)
-        Text(
-            body,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = Space.Tight),
-        )
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.titleMedium)
+            Text(
+                body,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = Space.Tight),
+            )
+        }
+        GoChevron(Modifier.padding(start = Space.Block))
     }
     Rule()
 }

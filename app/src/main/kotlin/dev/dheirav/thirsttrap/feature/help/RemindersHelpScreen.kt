@@ -26,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import dev.dheirav.thirsttrap.ui.SectionHead
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -48,117 +49,111 @@ fun RemindersHelpScreen(
     val context = LocalContext.current
     val manufacturer = remember { Build.MANUFACTURER.lowercase() }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { ScreenTitle("Reminders not arriving?") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(AppIcons.arrowBack, contentDescription = "Back")
-                    }
-                },
-            )
-        },
-    ) { padding ->
-        Column(
-            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(Space.Block),
+    // Short because ScreenTitle is letterspaced caps on one line with an
+    // ellipsis, and 23 characters truncated to "REMINDERS NOT ARRIVI..." at
+    // 130% font scale, which is one notch above the default slider position.
+    // Measured on the device; the next longest title in the app is 20 and
+    // survives 130% with room, so this was the only one over the line.
+    //
+    // It can be this short because you only arrive by tapping an entry that
+    // already reads "Reminders are not arriving", so the title is not where
+    // the question gets asked.
+    HelpPage("No reminders?", onBack) {
+        HelpPara(
+            "Android lets phone makers stop background apps, and this app cannot " +
+                "override that. Two settings usually fix it.",
+        )
+        Spacer(Modifier.height(Space.Section))
+
+        if (manufacturer.contains("xiaomi") || manufacturer.contains("redmi") ||
+            manufacturer.contains("poco")
         ) {
-            Text(
-                "Android lets phone makers stop background apps, and this app cannot " +
-                    "override that. Two settings usually fix it.",
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Spacer(Modifier.height(Space.Section))
-
-            if (manufacturer.contains("xiaomi") || manufacturer.contains("redmi") ||
-                manufacturer.contains("poco")
-            ) {
-                Section(
-                    "1. Turn on Autostart",
-                    "Autostart is NOT on the app's own info page - it is a separate list:\n" +
-                        "Settings → Apps → Permissions → Autostart → ThirstTrap.\n\n" +
-                        "It is off by default on Xiaomi phones, and without it the daily " +
-                        "check never runs. The button below goes straight there.",
-                )
-                FilledTonalButton(
-                    onClick = { openXiaomiAutostart(context) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) { Text("Open the Autostart list") }
-                Spacer(Modifier.height(20.dp))
-
-                Section(
-                    "2. Turn OFF \"Pause app activity if unused\"",
-                    "On the app's info page. Android turns this on by default; it stops " +
-                        "notifications and revokes permissions when an app has not been " +
-                        "opened for a while - which is exactly what a reminder app must not " +
-                        "have done to it.",
-                )
-                Section(
-                    "3. Remove the battery restriction",
-                    "App info → Battery saver → No restrictions.",
-                )
-            } else {
-                Section(
-                    "1. Allow background activity",
-                    "Find ThirstTrap in your phone's app settings and allow it to run in " +
-                        "the background, or exclude it from battery optimisation.",
-                )
-            }
-
-            // Two buttons, because they answer two different questions and the
-            // page used to conflate them. The first posts a notification in
-            // this process: it proves the permission and the channel work and
-            // says nothing at all about background work. Only the second goes
-            // through WorkManager, which is the thing an OEM blocks.
             Section(
-                "Then test it",
-                "The first button posts a notification straight away. If it arrives, " +
-                    "notifications are allowed, which is worth knowing but is not the " +
-                    "same question.",
+                "1. Turn on Autostart",
+                "Autostart is NOT on the app's own info page - it is a separate list:\n" +
+                    "Settings → Apps → Permissions → Autostart → ThirstTrap.\n\n" +
+                    "It is off by default on Xiaomi phones, and without it the daily " +
+                    "check never runs. The button below goes straight there.",
             )
-
             FilledTonalButton(
-                onClick = { viewModel.fireTestNotification(context) },
+                onClick = { openXiaomiAutostart(context) },
                 modifier = Modifier.fillMaxWidth(),
-            ) { Text("Check notifications work") }
+            ) { Text("Open the Autostart list") }
+            Spacer(Modifier.height(20.dp))
 
             Section(
-                "Then the one that matters",
-                "This asks Android to run the real daily check the same way it normally " +
-                    "would, which is the part a battery saver blocks. If a plant is due " +
-                    "you will get its reminder within a minute or so. If nothing is due " +
-                    "nothing arrives, and that is not a failure.",
+                "2. Turn OFF \"Pause app activity if unused\"",
+                "On the app's info page. Android turns this on by default; it stops " +
+                    "notifications and revokes permissions when an app has not been " +
+                    "opened for a while - which is exactly what a reminder app must not " +
+                    "have done to it.",
             )
-
-            FilledTonalButton(
-                onClick = { viewModel.runTheRealSweep(context) },
-                modifier = Modifier.fillMaxWidth(),
-            ) { Text("Run the real check now") }
-
-            Spacer(Modifier.height(Space.Block))
-
-            FilledTonalButton(
-                onClick = {
-                    runCatching {
-                        context.startActivity(
-                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                data = android.net.Uri.parse("package:${context.packageName}")
-                            },
-                        )
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-            ) { Text("Open this app's info page") }
-
-            Spacer(Modifier.height(Space.Section))
-            Text(
-                "One honest caveat: reminders are scheduled loosely rather than to the " +
-                    "exact minute. A 9am reminder may arrive at 9:15. That keeps battery " +
-                    "use negligible and avoids a permission Android grants sparingly.",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            Section(
+                "3. Remove the battery restriction",
+                "App info → Battery saver → No restrictions.",
+            )
+        } else {
+            Section(
+                "1. Allow background activity",
+                "Find ThirstTrap in your phone's app settings and allow it to run in " +
+                    "the background, or exclude it from battery optimisation.",
             )
         }
+
+        // Two buttons, because they answer two different questions and the
+        // page used to conflate them. The first posts a notification in
+        // this process: it proves the permission and the channel work and
+        // says nothing at all about background work. Only the second goes
+        // through WorkManager, which is the thing an OEM blocks.
+        Section(
+            "Then test it",
+            "The first button posts a notification straight away. If it arrives, " +
+                "notifications are allowed, which is worth knowing but is not the " +
+                "same question.",
+        )
+
+        FilledTonalButton(
+            onClick = { viewModel.fireTestNotification(context) },
+            modifier = Modifier.fillMaxWidth(),
+        ) { Text("Check notifications work") }
+
+        Section(
+            "Then the one that matters",
+            "This asks Android to run the real daily check the same way it normally " +
+                "would, which is the part a battery saver blocks. If a plant is due " +
+                "you will get its reminder within a minute or so. If nothing is due " +
+                "nothing arrives, and that is not a failure.",
+        )
+
+        FilledTonalButton(
+            onClick = { viewModel.runTheRealSweep(context) },
+            modifier = Modifier.fillMaxWidth(),
+        ) { Text("Run the real check now") }
+
+        Spacer(Modifier.height(Space.Block))
+
+        FilledTonalButton(
+            onClick = {
+                runCatching {
+                    context.startActivity(
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = android.net.Uri.parse("package:${context.packageName}")
+                        },
+                    )
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+        ) { Text("Open this app's info page") }
+
+        Spacer(Modifier.height(Space.Section))
+        Text(
+            "One honest caveat: reminders are scheduled loosely rather than to the " +
+                "exact minute. A 9am reminder may arrive at 9:15. That keeps battery " +
+                "use negligible and avoids a permission Android grants sparingly.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        HelpPageEnd()
     }
 }
 
@@ -193,13 +188,15 @@ private fun openXiaomiAutostart(context: Context) {
     }
 }
 
+/**
+ * A heading and its paragraph, in the same voice as every other help page.
+ *
+ * This was a local titleMedium SemiBold heading with no rule, so the one page
+ * somebody reaches while something is already broken was also the page that
+ * looked least like the others. SectionHead and HelpPara are the shared pair.
+ */
 @Composable
 private fun Section(title: String, body: String) {
-    Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-    Text(
-        body,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = Space.Tight, bottom = Space.Section),
-    )
+    SectionHead(title)
+    HelpPara(body)
 }

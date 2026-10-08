@@ -479,6 +479,29 @@ fun Topic(
 @Composable
 private fun Chevron(open: Boolean, modifier: Modifier = Modifier) {
     val turn by animateFloatAsState(if (open) 180f else 0f, label = "chevron")
+    ChevronMark(turn, modifier)
+}
+
+/**
+ * The same mark, turned to point the way out: this row goes somewhere.
+ *
+ * A row that navigates had no affordance at all. It used to carry a full-width
+ * filled button reading "Open", which was removed because a filled button means
+ * "writes the record" in this app's button vocabulary, and a help page writes
+ * nothing. Correct, but it left a title, a description and a rule, none of which
+ * says it can be tapped.
+ *
+ * So it borrows [Topic]'s grammar rather than inventing a third one. Same
+ * hairlines, same place on the right, same rule beneath. A reader who has
+ * learned that a chevron row opens something is right both times; the direction
+ * is the only thing that differs, down for unfolds here and right for goes
+ * elsewhere.
+ */
+@Composable
+fun GoChevron(modifier: Modifier = Modifier) = ChevronMark(-90f, modifier)
+
+@Composable
+private fun ChevronMark(turn: Float, modifier: Modifier = Modifier) {
     val ink = MaterialTheme.colorScheme.onSurfaceVariant
     Canvas(modifier.size(12.dp).rotate(turn)) {
         val w = size.width

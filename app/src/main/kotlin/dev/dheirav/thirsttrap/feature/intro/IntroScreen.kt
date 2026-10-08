@@ -27,6 +27,8 @@ import dev.dheirav.thirsttrap.ui.Button
 import dev.dheirav.thirsttrap.ui.DoubleRule
 import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.AlmanacTitle
+import androidx.compose.foundation.layout.ColumnScope
+import dev.dheirav.thirsttrap.feature.help.HelpPage
 
 /**
  * The first-run page. One page, three things, one button.
@@ -51,6 +53,17 @@ fun IntroScreen(
     markSeen: Boolean = true,
     viewModel: IntroViewModel = hiltViewModel(),
 ) {
+    // Two shapes, because this page has two jobs. On first run it is a
+    // greeting: its own masthead, no app bar, nothing to go back to, and one
+    // button out. Re-read from Help it is the fourth item in a list of pages,
+    // and it used to arrive with no app bar and no back arrow while every
+    // other page in that list had both, which made it look like a different
+    // app had opened. So the reference reading gets the standard help page.
+    if (!markSeen) {
+        HelpPage("What this app is for", onBack = onDone) { Points() }
+        return
+    }
+
     Scaffold { padding ->
         Column(
             Modifier
@@ -67,6 +80,23 @@ fun IntroScreen(
             )
             DoubleRule()
 
+            Points()
+
+            Spacer(Modifier.height(28.dp))
+            Button(
+                onClick = { viewModel.dismiss(onDone) },
+                modifier = Modifier.fillMaxWidth(),
+                // Says what it does. "Add your first plant" was a label for a
+                // button that only dismisses, and wrong twice over for anyone
+                // who already has plants and is seeing this after an update.
+            ) { Text("Open the diary") }
+        }
+    }
+}
+
+/** The three claims, identical in both readings of this page. */
+@Composable
+private fun ColumnScope.Points() {
             Point(
                 n = "1",
                 title = "It weighs pots, and that is the point",
@@ -96,21 +126,11 @@ fun IntroScreen(
             Text(
                 "Everything beyond the daily loop lives behind the three dots on the plants " +
                     "list: feeding, the propagation board, places, figures and experiments.",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = Space.Section),
             )
 
-            Spacer(Modifier.height(28.dp))
-            Button(
-                onClick = { if (markSeen) viewModel.dismiss(onDone) else onDone() },
-                modifier = Modifier.fillMaxWidth(),
-                // Says what it does. "Add your first plant" was a label for a
-                // button that only dismisses, and wrong twice over for anyone
-                // who already has plants and is seeing this after an update.
-            ) { Text(if (markSeen) "Open the diary" else "Back") }
-        }
-    }
 }
 
 @Composable

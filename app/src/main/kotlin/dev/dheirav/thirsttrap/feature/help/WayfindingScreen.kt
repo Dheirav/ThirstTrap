@@ -1,159 +1,94 @@
 package dev.dheirav.thirsttrap.feature.help
 
-import dev.dheirav.thirsttrap.ui.Flank
-
 import dev.dheirav.thirsttrap.ui.Space
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import dev.dheirav.thirsttrap.ui.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
-import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.MenuLabels
 import dev.dheirav.thirsttrap.ui.Rule
-import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.SectionHead
 
 /**
- * Where things are, and the two gestures nothing on screen can tell you about.
+ * What is inside the two menus, what the photo viewer can do, and the two
+ * gestures nothing on screen can tell you about.
  *
- * Not a tour and not coach marks. Overlay tooltips pointing at buttons on first
- * run would fight everything else here: no chrome, no nagging, no tone of
- * voice, and they get dismissed unread anyway. The first-run page explains what
- * the app is *for*; this one answers "where is the thing I want", which is a
- * different question and the one somebody asks in week two.
+ * It used to open with the three tabs and a map of the app. The guided tour
+ * does that now, and does it better, because it points at the real control
+ * instead of naming it. So the orientation half is gone and what is left is the
+ * half a tour cannot carry: a spotlight can say "everything about this plant is
+ * behind these dots" but it cannot list the eight things that are there without
+ * becoming eight steps nobody would sit through.
  *
- * The gesture table at the bottom is the part that earns its place. Every other
- * route in the app is a plain tap and therefore learnable by trying, which was
- * the point of D48. Two long presses survive as shortcuts, and a shortcut
- * nobody knows about is not a shortcut. docs/NAVIGATION.md section 7.
+ * The gesture table at the bottom is the part that earns its place, and the
+ * tour structurally cannot replace it: a tap-through step asks for a tap. Every
+ * other route in the app is a plain tap and therefore learnable by trying,
+ * which was the point of D48. Two long presses survive as shortcuts, and a
+ * shortcut nobody knows about is not a shortcut. docs/NAVIGATION.md section 7.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WayfindingScreen(onBack: () -> Unit) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { ScreenTitle("Finding your way") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(AppIcons.arrowBack, contentDescription = "Back")
-                    }
-                },
-            )
-        },
-    ) { padding ->
-        Column(
-            Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())
-                .padding(horizontal = Space.Block),
-        ) {
-            Para(
-                "Three tabs along the bottom, and almost everything else lives on the " +
-                    "plant it belongs to. If you are looking for something and cannot " +
-                    "find it, it is behind one of the two overflow menus below.",
-            )
+    HelpPage("What is in the menus", onBack) {
+        HelpPara(
+            "Almost everything lives on the plant it belongs to. The rest is behind " +
+                "one of these two menus.",
+        )
 
-            SectionHead("The three tabs")
-            Item(MenuLabels.Tab.PLANTS, "Everything you are keeping, each with its state and two quick log buttons. The plus button adds one.")
-            Item(MenuLabels.Tab.DUE, "Only what is asking for attention today. Empty is the normal state and means nothing is wrong.")
-            Item(MenuLabels.Tab.SETTINGS, "Backup, reminders, appearance, and two help buttons: how the app works, and something is wrong.")
+        SectionHead("Behind the dots on the Plants tab")
+        Item(MenuLabels.Dashboard.FEEDING, MenuLabels.Dashboard.FEEDING_WHAT)
+        Item(MenuLabels.Dashboard.PROPAGATION, MenuLabels.Dashboard.PROPAGATION_WHAT)
+        Item(MenuLabels.Dashboard.SCAN, MenuLabels.Dashboard.SCAN_WHAT)
+        Item(MenuLabels.Dashboard.PLACES, MenuLabels.Dashboard.PLACES_WHAT)
+        Item(MenuLabels.Dashboard.FIGURES, MenuLabels.Dashboard.FIGURES_WHAT)
+        Item(MenuLabels.Dashboard.EXPERIMENTS, MenuLabels.Dashboard.EXPERIMENTS_WHAT)
 
-            SectionHead("Behind the dots on the Plants tab")
-            Para(
-                "Six jobs that are about several plants at once rather than about one, " +
-                    "which is why they are not on any single plant:",
-            )
-            Item(MenuLabels.Dashboard.FEEDING, MenuLabels.Dashboard.FEEDING_WHAT)
-            Item(MenuLabels.Dashboard.PROPAGATION, MenuLabels.Dashboard.PROPAGATION_WHAT)
-            Item(MenuLabels.Dashboard.SCAN, MenuLabels.Dashboard.SCAN_WHAT)
-            Item(MenuLabels.Dashboard.PLACES, MenuLabels.Dashboard.PLACES_WHAT)
-            Item(MenuLabels.Dashboard.FIGURES, MenuLabels.Dashboard.FIGURES_WHAT)
-            Item(MenuLabels.Dashboard.EXPERIMENTS, MenuLabels.Dashboard.EXPERIMENTS_WHAT)
+        SectionHead("Behind the dots on one plant")
+        Item(MenuLabels.Plant.LOG, "A watering, check, repot or feed, with a date.")
+        Item(MenuLabels.Plant.GALLERY, "A photo you already took, rather than a new one.")
+        Item(MenuLabels.Plant.DIAGNOSE, "What the log and the weight can and cannot tell you, and what to rule out first.")
+        Item(MenuLabels.Plant.WEIGHT, "Weigh the pot and get a date when there is one worth giving. The reason the app exists.")
+        Item(MenuLabels.Plant.LIGHT, "A light-sensor reading, filed against the place.")
+        Item(MenuLabels.Plant.LOOKUP, "Only when there are no care notes on file.")
+        Item(MenuLabels.Plant.STICKER, "Advanced features only. A QR label for the pot, so scanning it opens this plant.")
+        Item(MenuLabels.Plant.EDIT, "Name, species, pot, how dry it is allowed to get.")
 
-            SectionHead("Behind the dots on one plant")
-            Para(
-                "Everything that is about that plant. The two you will use most are at " +
-                    "the top and the camera has its own button beside the dots.",
-            )
-            Item(MenuLabels.Plant.LOG, "A watering with an amount, a check, a repot, a feed, anything with a date.")
-            Item(MenuLabels.Plant.GALLERY, "Adds a photo you already took, instead of taking a new one.")
-            Item(MenuLabels.Plant.DIAGNOSE, "Walks you through what the log and the weight can and cannot tell you, and what to rule out first. Ends with a button to log what you found.")
-            Item(MenuLabels.Plant.WEIGHT, "Weigh the pot, see how far down its range it has come, and get a date when there is one worth giving. This is the one the app exists for.")
-            Item(MenuLabels.Plant.LIGHT, "Uses the phone's light sensor and files the reading against the place.")
-            Item(MenuLabels.Plant.LOOKUP, "Only appears when there are no care notes on file for it.")
-            Item(MenuLabels.Plant.STICKER, "Only with advanced features on. Prints a QR label for the pot, so scanning it opens this plant.")
-            Item(MenuLabels.Plant.EDIT, "Name, species, pot, how dry it is allowed to get.")
+        SectionHead("Photos")
+        HelpPara(
+            "Tap a photo to open it full screen. Everything photos can do is in " +
+                "there: swipe between them, Oldest and Latest for either end, Play " +
+                "to run through them in order. Its dots menu pins one against " +
+                "another with \"Compare with this\", and shares or saves a copy.",
+        )
 
-            SectionHead("Photos")
-            Para(
-                "Tap any photo to open it full screen. Everything photos can do is in " +
-                    "there rather than in a menu: swipe between them, Oldest and Latest " +
-                    "to jump either end, Play to run through them in order, and in the " +
-                    "dots menu, \"Compare with this\" to pin one and swipe the other " +
-                    "half against it. That menu also shares a photo, or saves a copy " +
-                    "into your gallery.",
-            )
+        SectionHead("Two gestures worth knowing")
+        HelpPara(
+            "Everything opens on a plain tap, so you can learn the app by trying " +
+                "it. Two exceptions, both shortcuts to something a tap also reaches:",
+        )
+        Gesture(
+            "Hold a plant on the Plants tab",
+            "The quick sheet: water, still wet, photo, weigh, edit. All of it is " +
+                "also on the plant's page.",
+        )
+        Gesture(
+            "Hold the water drop on a plant",
+            "Asks for the amount and how you watered, instead of logging your usual.",
+        )
 
-            SectionHead("Two gestures worth knowing")
-            Para(
-                "Everything in the app opens on a plain tap, so you can find your way " +
-                    "around by trying things. There are exactly two exceptions, both " +
-                    "shortcuts past something you can also reach by tapping:",
-            )
-            Gesture(
-                "Hold a plant on the Plants tab",
-                "The quick sheet: water, still wet, photo, weigh, edit. Everything in it " +
-                    "is also on the plant's own page, which a tap opens.",
-            )
-            Gesture(
-                "Hold the water drop on a plant",
-                "Asks for the amount and how you watered, instead of logging your usual " +
-                    "amount straight away.",
-            )
-
-            Para(
-                "Nothing else in the app hides behind a hold. Tapping a photo opens the " +
-                    "photo, tapping a diary entry opens the entry, and neither one can " +
-                    "delete anything without asking first.",
-            )
-            Rule(flank = Flank.Section)
-        }
+        HelpPara(
+            "Nothing else hides behind a hold, and nothing deletes without asking.",
+        )
+        HelpPageEnd()
     }
 }
 
-/**
- * A paragraph, with the gap above it fixed.
- *
- * The gap used to be a parameter, `top: Int = 16`, and one of six call sites
- * passed 20 to get a little more air before the closing note. Spacing as an
- * argument of the content is the clearest symptom there is of a layout without
- * a scale: it puts the decision at the call site, in raw points, where nobody
- * can see the other five to compare against. The one call that wanted more
- * separation was asking for a section break, and [Rule] below it already is one.
- */
-@Composable
-private fun Para(text: String) {
-    Text(
-        text,
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = Space.Block),
-    )
-}
 
 /** A name and what it is for, which is the only thing a map has to say. */
 @Composable
@@ -163,7 +98,7 @@ private fun Item(name: String, what: String) {
             Text(name, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.SemiBold)
             Text(
                 what,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
@@ -183,7 +118,7 @@ private fun Gesture(action: String, result: String) {
         )
         Text(
             result,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = Space.Hair),
         )
