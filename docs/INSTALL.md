@@ -28,11 +28,12 @@ Android 8 and newer is required.
 Open Settings inside the app and look at the bottom line. It reads something
 like:
 
-    ThirstTrap 0.2.0 (226)
+    ThirstTrap 0.2.0
 
-The number in brackets is the one that matters, because several builds can share
-a name while I am changing things. Quote the whole line when you tell me
-something is wrong, otherwise I cannot tell which version you were looking at.
+Quote that when you tell me something is wrong. It will not always pin down the
+exact build, because I may hand you two that share a version name while I am
+changing things, so if it matters I will ask you roughly when you installed it
+or ask you to export a backup, which records the version inside the file.
 
 ## Updating
 

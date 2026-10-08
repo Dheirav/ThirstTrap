@@ -3,6 +3,7 @@ package dev.dheirav.thirsttrap.feature.more
 import dev.dheirav.thirsttrap.ui.Flank
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,12 +17,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import dev.dheirav.thirsttrap.ui.AppIcons
 import dev.dheirav.thirsttrap.ui.IconButton
 import dev.dheirav.thirsttrap.ui.MenuLabels
 import dev.dheirav.thirsttrap.ui.Rule
 import dev.dheirav.thirsttrap.ui.ScreenTitle
 import dev.dheirav.thirsttrap.ui.Space
+import dev.dheirav.thirsttrap.ui.GoChevron
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
@@ -127,20 +130,36 @@ fun MoreScreen(
     }
 }
 
-/** A row, like every other list in this app. Not a filled button. */
+/**
+ * A row, like every other list in this app. Not a filled button.
+ *
+ * With a chevron, because "not a filled button" had become "no affordance at
+ * all": a title, a description and a rule, and nothing saying a row could be
+ * pressed. These seven are the jobs that belong to no single plant, so they are
+ * already the hardest things in the app to find, and the tour's last step
+ * points at the dots that lead here. Arriving at a page that does not look
+ * interactive is the wrong end to that.
+ *
+ * Same mark as the help list and as Topic, turned to point the way out, so one
+ * gesture covers all three.
+ */
 @Composable
 private fun Job(title: String, what: String, onClick: () -> Unit) {
-    Column(
+    Row(
         Modifier.fillMaxWidth().clickable(onClickLabel = title) { onClick() }
             .padding(vertical = Space.Entry),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(title, style = MaterialTheme.typography.titleMedium)
-        Text(
-            what,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(top = Space.Tight),
-        )
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.titleMedium)
+            Text(
+                what,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = Space.Tight),
+            )
+        }
+        GoChevron(Modifier.padding(start = Space.Block))
     }
     Rule()
 }

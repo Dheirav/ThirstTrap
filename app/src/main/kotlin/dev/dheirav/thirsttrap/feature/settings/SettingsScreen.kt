@@ -247,11 +247,14 @@ fun SettingsScreen(
                 TextButton(onClick = onOpenDebug) { Text("Debug tools") }
             }
 
-            // The code as well as the name. Several builds can share a name
-            // while people are testing, and "I am on 0.2.0" does not say which
-            // one, so the thing a tester reports back has to identify a commit.
+            // The name only. The version code is the git commit count, which
+            // is the right way to derive it and the wrong thing to put in front
+            // of somebody keeping a plant diary: it reads as a build number
+            // from a machine rather than anything about their plants. Every
+            // backup file still records the version, so a build is still
+            // identifiable from the data when it matters.
             Text(
-                "ThirstTrap ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+                "ThirstTrap ${BuildConfig.VERSION_NAME}",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = Space.Section),

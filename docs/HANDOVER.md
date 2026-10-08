@@ -2985,10 +2985,27 @@ purpose, with a comment saying why an empty file is better than no file: Gradle
 does not complain about a missing one, so nobody could tell "no rules are
 needed" apart from "the rules file went missing".
 
-**A week of ordinary use.** The one thing still genuinely unverified. Every
-prediction property is tested against synthetic curves, and `PredictionEvaluation`
-replays real readings, but nobody has yet watched the app say "four days" and
-counted four days. The model's accuracy is a claim, not a measurement.
+**A week of ordinary use.** Still unverified, but less of it than this entry
+used to claim. Every prediction property is tested against synthetic curves, and
+`PredictionEvaluation` replays real readings.
+
+~~The model's accuracy is a claim, not a measurement.~~ It is measured, and the
+Figures screen has been showing the number for a while without anyone reading
+it. On 2026-10-08, on the device, with 5 plants and 136 entries: typical
+prediction error 1.0 days against 2.4 days for watering by the calendar, scored
+on 30 predictions replayed against what the pot actually did, with no consistent
+lean early or late. On the 12 of those where a plant had been watered often
+enough for a calendar to have an opinion too, weighing was off by 0.8 days and a
+calendar fitted to that plant's usual gap by 2.4, so the screen reports weighing
+ahead by 1.5 days.
+
+That is the differentiator holding up on real data, and it is the first number
+in this project that answers "is the premise true" rather than "does the code
+work". Worth saying what it is not: the replay is retrospective, scoring past
+predictions against what the pot went on to do. Nobody has yet watched the app
+say "four days" prospectively and counted four days, which is a different test
+and the one this entry's heading is really about. One person's plants, one
+climate, one set of pots, so it is evidence rather than proof.
 
 **The friend's review came back**, and D60 is what followed. Six of his eight
 lines are addressed; the colour criticism turned out not to be true of this
