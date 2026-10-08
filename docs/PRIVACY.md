@@ -76,9 +76,25 @@ will.
 
 ## Analytics, advertising and tracking
 
-None. There is no analytics library in the app, no crash reporting, no
-advertising, and no third-party tracking of any kind. Nothing measures how you
-use it, because nothing in the app sends anything about how you use it.
+There is no analytics library in the app, no crash reporting, no advertising, and
+no third-party tracking of any kind. Nothing about how you use the app is sent
+anywhere, to me or to anybody else.
+
+The app does keep one record about its own use, and it stays on your phone. When
+you open a logging screen it notes that the screen was opened, whether you saved
+or backed out without saving, and whether you changed a figure it suggested. It
+records the action and never the content: no notes, no amounts, no weights, no
+photographs, nothing you typed.
+
+It exists because the most useful thing to know about an app is what people give
+up on, and giving up leaves no trace in a diary by design. A watering log that
+quietly went unused for a fortnight is invisible unless something counts the
+times a screen was opened and closed again.
+
+Those rows live in the same local database as everything else, go into your
+backup with the rest of it, and are deleted with the app. If you ever tell me
+something in the app is awkward, they are what would let me find out where,
+and only if you chose to send me a backup.
 
 ## Backups, and what they mean for your privacy
 
