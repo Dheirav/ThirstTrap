@@ -83,7 +83,12 @@ fun DueScreen(
             EmptyState(
                 title = "Nothing to check",
                 body = "You're up to date. Reminders appear here when a plant is worth a look.",
-                modifier = Modifier.fillMaxSize().padding(padding),
+                // The tour points at this too, not only at the populated list.
+                // Its caption is "empty is the normal state and means nothing
+                // is wrong", and the target used to sit on the LazyColumn
+                // alone, so the step skipped itself in the one case it was
+                // written for and the counter jumped from 8 to 10.
+                modifier = Modifier.fillMaxSize().padding(padding).tourTarget(TourTarget.DUE_LIST),
                 action = { TextButton(onClick = onOpenHelp) { Text("Reminders not arriving?") } },
             )
             return@Scaffold

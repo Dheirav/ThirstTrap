@@ -47,6 +47,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import dev.dheirav.thirsttrap.ui.Card
 import androidx.compose.material3.CardDefaults
@@ -304,10 +305,17 @@ fun DashboardScreen(
                     }
                 }
 
-                items(items, key = { it.plant.id }) { item ->
+                itemsIndexed(items, key = { _, item -> item.plant.id }) { index, item ->
                     PlantCard(
                         item = item,
                         nowMillis = now,
+                        // Only the first row is a tour target. TourController
+                        // keeps one slot per target, so when every row claimed
+                        // PLANT_CARD the spotlight landed on whichever row
+                        // positioned last - the bottom one, and a different one
+                        // after a scroll. "Tap a plant" then meant one
+                        // arbitrary plant.
+                        isTourAnchor = index == 0,
                         onQuickWater = {
                             viewModel.logWatered(item.plant.id, item.suggestedWaterMl) { event ->
                                 announce(event, wateredMessage(item.plant.name, item.suggestedWaterMl))
@@ -370,6 +378,7 @@ fun DashboardScreen(
 private fun PlantCard(
     item: PlantAttention,
     nowMillis: Long,
+    isTourAnchor: Boolean,
     onQuickWater: () -> Unit,
     onQuickCheck: () -> Unit,
     onOpen: () -> Unit,
@@ -383,7 +392,7 @@ private fun PlantCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .tourTarget(TourTarget.PLANT_CARD)
+            .then(if (isTourAnchor) Modifier.tourTarget(TourTarget.PLANT_CARD) else Modifier)
             // Tapping a plant opens the plant. It used to open the quick-log
             // sheet, with the plant's own page behind a long press, which is
             // backwards from what every list on the phone does and made the
@@ -542,7 +551,7 @@ private fun PlantCard(
             // but offering to water it is the same mistake as predicting a
             // date for it.
             if (!plant.status.isGone) {
-                Box(Modifier.tourTarget(TourTarget.STILL_WET_BUTTON)) {
+                Box(if (isTourAnchor) Modifier.tourTarget(TourTarget.STILL_WET_BUTTON) else Modifier) {
                     LogAction(
                         icon = AppIcons.stillWet,
                         label = "Log checked, still wet for ${plant.name}",
@@ -565,7 +574,7 @@ private fun PlantCard(
                 // an invisible boundary between them, so holding the row and
                 // holding the droplet did different things. The sheet's "More"
                 // calls onLogMore with the same plant id, so nothing is lost.
-                Box(Modifier.tourTarget(TourTarget.WATER_BUTTON)) {
+                Box(if (isTourAnchor) Modifier.tourTarget(TourTarget.WATER_BUTTON) else Modifier) {
                     LogAction(
                         icon = AppIcons.waterDrop,
                         loggedIcon = AppIcons.waterDropFilled,

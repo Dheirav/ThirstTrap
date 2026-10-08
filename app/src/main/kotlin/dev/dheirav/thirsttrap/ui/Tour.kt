@@ -225,12 +225,12 @@ fun TourOverlay(
 ) {
     val step = tour.step ?: return
     val density = LocalDensity.current
-    val hole = tour.bounds[step.target]?.second?.let { with(density) { it.inflate(8.dp.toPx()) } }
+    val spotted = tour.bounds[step.target]?.second?.let { with(density) { it.inflate(8.dp.toPx()) } }
     val ring = MaterialTheme.colorScheme.primary
 
     // A target that never appears: skip a looking step, or carry out a tap step's navigation.
-    LaunchedEffect(tour.index, hole == null) {
-        if (hole == null) {
+    LaunchedEffect(tour.index, spotted == null) {
+        if (spotted == null) {
             delay(900)
             if (tour.bounds[step.target] == null) {
                 if (step.tapToContinue) onMissing(step) else tour.next()
@@ -248,6 +248,20 @@ fun TourOverlay(
     BoxWithConstraints(Modifier.fillMaxSize()) {
         val width = constraints.maxWidth.toFloat()
         val height = constraints.maxHeight.toFloat()
+
+        // Held inside the screen. A target against an edge - the two dots in
+        // the app bar are flush right - inflated to a rect whose far side lay
+        // off-screen, and the ring was drawn with that side missing. Inset by
+        // half the stroke so the whole ring lands on glass.
+        val edge = with(density) { 2.dp.toPx() }
+        val hole = spotted?.let {
+            Rect(
+                left = it.left.coerceIn(edge, width - edge),
+                top = it.top.coerceIn(edge, height - edge),
+                right = it.right.coerceIn(edge, width - edge),
+                bottom = it.bottom.coerceIn(edge, height - edge),
+            )
+        }
 
         // The dimmed screen, with the target cut out. Draws only; touches are handled below.
         Canvas(Modifier.fillMaxSize()) {

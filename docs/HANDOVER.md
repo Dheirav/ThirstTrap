@@ -2927,6 +2927,33 @@ The five UI items that stood here are done, D48. Two of them uncovered defects
 that were not part of the ask, which is the argument for doing this kind of work
 by using the app rather than by reading it.
 
+**The guided tour is in, and driving it found three defects, 2026-10-08.**
+`app/.../ui/Tour.kt` holds an eleven step walkthrough reached from Settings via
+"How the app works" then "Show me around". Two of its steps are tap-through:
+the spotlight leaves the real control uncovered and the tour only advances when
+you actually tap it, which is why `TourScriptTest` asserts that no step which
+writes is ever a tap-through one. Nothing on the tour logs anything, and that is
+now measured rather than assumed: the dashboard's text is byte-identical before
+and after a full run.
+
+The three defects all came from driving it on the device, not from reading it,
+and none of them would have shown up in a unit test:
+
+- Every plant row claimed `PLANT_CARD`, and `TourController.bounds` keeps one
+  slot per target, so the spotlight landed on whichever row positioned last.
+  That was the bottom row, and a different row after a scroll, so "Tap a plant"
+  meant one arbitrary plant. Only the first row is a target now.
+- The Due step's target sat on the `LazyColumn` alone, which is not composed
+  when the empty state shows. The step therefore skipped itself in the exact
+  case its own caption describes, "empty is the normal state", and the counter
+  jumped from 8 to 10. The empty state carries the target too now.
+- A target flush against a screen edge inflated to a rect whose far side lay
+  off-screen, and the ring was drawn with that side missing. The hole is held
+  inside the screen, inset by half the stroke.
+
+The lesson is the same one as D48: these were all visible in two minutes of
+using the thing and invisible in the source.
+
 **Signing is done.** D39's park is lifted. A release keystore exists at
 `~/thirsttrap-release.jks`, `local.properties` carries the four properties, and
 a signed release APK was built, installed and smoke-tested on the device: it
@@ -2934,11 +2961,20 @@ launches, Room reads and writes, the camera path works, and kotlinx.serializatio
 produces a field-for-field correct backup under R8, which was the one failure
 that would have shipped silently.
 
-**The keystore is off the machine, 2026-10-06.** This was the only irreversible
-item on the list and it is closed. On 2026-10-04 it had been copied to the
-Windows Downloads folder with a README beside it, verified byte-identical, which
-was a second copy and not a backup: both lived on the same laptop and would have
-gone together with it. It has since been taken off the machine.
+**The keystore is backed up off the machine, 2026-10-06.** This was the only
+irreversible item on the list and it is closed. On 2026-10-04 it had been copied
+to the Windows Downloads folder with a README beside it, verified byte-identical,
+which was a second copy and not a backup: both lived on the same laptop and would
+have gone together with it. That duplicate is gone and the backup now lives off
+the machine.
+
+What this does not mean is that the laptop has no keystore. The original is still
+at `~/thirsttrap-release.jks`, created 2026-10-01 and unmodified since, because
+`assembleRelease` reads it there and a signed build is impossible without it. An
+earlier reading of this entry took "off the machine" to mean the file had been
+removed, and concluded wrongly that no signed build could be produced here. It
+can: a signed release was built on 2026-10-08 at commit 9b1479a, certificate
+SHA-256 `60427626df3b...98c1b`, `CN=Dheirav Prakash`.
 
 Nothing else here is irreversible. If the signing properties ever get separated
 from the `.jks`, note that the file alone cannot sign anything: the four values
