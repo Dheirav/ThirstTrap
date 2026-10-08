@@ -60,14 +60,14 @@ private val gitVersionCode: Int = try {
 
 android {
     namespace = "dev.dheirav.thirsttrap"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "dev.dheirav.thirsttrap"
         // minSdk 26: java.time with no desugaring, notification channels as a
         // first-class concept. The target phone is API 36; see docs/DEVICE.md.
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = gitVersionCode
         // Shown in Settings and written into every backup, so it is what a
         // tester will quote back. The code goes next to it there, because the

@@ -3,6 +3,49 @@
 Drafted 2026-10-08 against the app as it stands: `dev.dheirav.thirsttrap`,
 versionCode 1, versionName 0.1.0-M0, minSdk 26, targetSdk 35.
 
+**Updated later the same day, twice.** The version scheme changed: versionCode is
+the git commit count now and versionName is 0.2.0. And two things were found
+that this draft did not know about, one of which cannot be undone and one of
+which blocks the upload outright. Both are below, before the form, because they
+matter more than the form does.
+
+## Do not let Google generate the app signing key
+
+This cannot be changed afterwards, and getting it wrong costs your testers their
+photos.
+
+Play App Signing means Google holds the key that signs what people actually
+download. Android only accepts an update signed with the same certificate as the
+installed app, and there is no override. So if Google generates a fresh key, the
+Play build carries a different certificate from every APK sideloaded from
+`thirsttrap-release.jks`, Android refuses the update, and the only route across
+is to uninstall first. Photos live in the app's private storage and are not in a
+backup, so an uninstall destroys them permanently.
+
+At app creation there is an option to provide your own app signing key instead.
+Take it, and upload `~/thirsttrap-release.jks`. The Play build then carries the
+same certificate as everything already handed out, and the store version lands
+as an ordinary update. Google's own advice is to let them generate it, which is
+better key hygiene in the abstract and wrong here, because it breaks continuity
+with builds already on people's phones.
+
+The option exists at creation time only. Certificate to expect, verified with
+`apksigner` on the 2026-10-01 and 2026-10-08 builds, which match:
+`60427626df3b4f5ac61e893b7f96c89845eec971743d297c2abf2fd02f598c1b`,
+`CN=Dheirav Prakash`.
+
+## targetSdk 35 will be rejected
+
+Play requires new apps to target API 36, Android 16, and that came into force on
+2026-08-31, which has passed. This app is `compileSdk 35` and `targetSdk 35`, so
+an upload fails before any of the rest of this document matters.
+
+It is not a one-line bump. SDK platform 36 is not installed, and AGP is 8.7.3
+which is unlikely to accept `compileSdk 36`, so this probably pulls AGP forward,
+and KSP is pinned to the Kotlin version (`2.0.21-1.0.28`) with Hilt at 2.52, so
+the upgrade can cascade. Do it as its own piece of work with the tests as the
+check, not as a step while filling in a form.
+
 ## The create-app form
 
 | Field | What to put | Why |

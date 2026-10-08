@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "dev.dheirav.thirsttrap.data"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
