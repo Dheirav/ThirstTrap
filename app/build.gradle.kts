@@ -28,6 +28,36 @@ private val signingProps = Properties().apply {
 private val keystorePath: String? = signingProps.getProperty("releaseKeystore")
 private val hasKeystore = keystorePath != null && rootProject.file(keystorePath).exists()
 
+/**
+ * The version code, counted off the git history rather than typed in.
+ *
+ * It has to rise with every build handed out. Play refuses a duplicate code
+ * permanently, and a phone will not take an update whose code is not higher
+ * than the one it already has. A hand-edited integer failed that twice: the
+ * release of 2026-10-01 and the one of 2026-10-08 are different APKs and both
+ * claim version 1, so neither can ever update the other.
+ *
+ * The commit count only grows, so it cannot be forgotten and cannot repeat.
+ * The one thing that would break it is rewriting published history, which
+ * would make it go backwards; that is already ruled out for this repo.
+ *
+ * Read through `providers.exec` so the configuration cache stays valid, and
+ * falls back to [VERSION_CODE_FLOOR] when there is no git at all, because
+ * someone building from a source archive should still get an APK. The floor is
+ * deliberately below the real count: a fallback build must never outrank a
+ * real one and silently block its update.
+ */
+private val VERSION_CODE_FLOOR = 1
+
+private val gitVersionCode: Int = try {
+    providers.exec {
+        commandLine("git", "rev-list", "--count", "HEAD")
+        workingDir = rootProject.projectDir
+    }.standardOutput.asText.get().trim().toIntOrNull() ?: VERSION_CODE_FLOOR
+} catch (_: Exception) {
+    VERSION_CODE_FLOOR
+}
+
 android {
     namespace = "dev.dheirav.thirsttrap"
     compileSdk = 35
@@ -38,8 +68,11 @@ android {
         // first-class concept. The target phone is API 36; see docs/DEVICE.md.
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0-M0"
+        versionCode = gitVersionCode
+        // Shown in Settings and written into every backup, so it is what a
+        // tester will quote back. The code goes next to it there, because the
+        // name alone does not say which of several builds they are on.
+        versionName = "0.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

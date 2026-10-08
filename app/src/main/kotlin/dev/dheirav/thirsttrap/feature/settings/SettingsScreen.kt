@@ -247,8 +247,11 @@ fun SettingsScreen(
                 TextButton(onClick = onOpenDebug) { Text("Debug tools") }
             }
 
+            // The code as well as the name. Several builds can share a name
+            // while people are testing, and "I am on 0.2.0" does not say which
+            // one, so the thing a tester reports back has to identify a commit.
             Text(
-                "ThirstTrap ${BuildConfig.VERSION_NAME}",
+                "ThirstTrap ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = Space.Section),
