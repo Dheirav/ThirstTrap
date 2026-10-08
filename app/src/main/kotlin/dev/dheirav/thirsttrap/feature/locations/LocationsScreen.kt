@@ -109,7 +109,10 @@ fun LocationsScreen(
                 )
                 Row(Modifier.fillMaxWidth().padding(bottom = Space.Tight)) {
                     ColumnHead("Place", Modifier.weight(1f))
-                    ColumnHead("Plants", Modifier.weight(0.28f))
+                    // 0.28 fitted "PLANTS" at normal size and about three and a
+                    // half characters at 200%. Widened so the head survives a
+                    // larger scale before the ellipsis has to do anything.
+                    ColumnHead("Plants", Modifier.weight(0.4f))
                     ColumnHead("Light", Modifier.weight(0.42f))
                 }
                 Rule()
@@ -132,7 +135,9 @@ fun LocationsScreen(
                             style = MaterialTheme.typography.bodyMedium,
                             color = if (row.plantCount == 0) MaterialTheme.colorScheme.outline
                             else MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.weight(0.28f),
+                            // Matches the head above it. A cell and its head on
+                            // different weights is a column that does not line up.
+                            modifier = Modifier.weight(0.4f),
                         )
                         Text(
                             row.note?.level?.label ?: "-",

@@ -194,6 +194,13 @@ fun ColumnHead(text: String, modifier: Modifier = Modifier, align: TextAlign = T
         letterSpacing = 0.14.em,
         textAlign = align,
         color = MaterialTheme.colorScheme.outline,
+        // One line, truncated rather than wrapped. A table column is narrow by
+        // definition and these heads are single words in letterspaced caps, so
+        // at a large font scale there is nowhere to break: "PLANTS" came out as
+        // "PLA" over "NTS", which reads as a mistake rather than as a word that
+        // did not fit. An ellipsis at least says what happened.
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
         modifier = modifier,
     )
 }

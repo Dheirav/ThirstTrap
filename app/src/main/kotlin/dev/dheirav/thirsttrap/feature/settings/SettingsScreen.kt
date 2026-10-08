@@ -76,8 +76,15 @@ fun SettingsScreen(
                 // Cut least, on purpose. This is the only switch that lets
                 // anything leave the phone, so every fact stays: what sends,
                 // what it sends, what for, and that it is never automatic.
+                //
+                // Both services named, because it said "Wikipedia" and the
+                // lookup calls GBIF first to turn a typed name into a species
+                // and only then Wikipedia for the summary. One service short of
+                // the truth on the one screen that exists to tell the truth
+                // about network use.
                 subtitle = "The only thing here that sends anything out: the species name, " +
-                    "nothing else, to link its Wikipedia article. Never runs on its own.",
+                    "nothing else, to GBIF to identify it and Wikipedia for a summary. " +
+                    "Never runs on its own.",
             ) {
                 Switch(
                     checked = settings.onlineSpeciesLookup,

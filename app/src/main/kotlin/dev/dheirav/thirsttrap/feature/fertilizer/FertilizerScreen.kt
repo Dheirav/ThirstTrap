@@ -195,7 +195,12 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
                 ) {
                     Row(verticalAlignment = Alignment.Top) {
                         Column(Modifier.weight(1f)) {
-                            Text(row.fertilizer.name, style = MaterialTheme.typography.bodyMedium)
+                            // bodyLarge, so the row has a head. The name was
+                            // bodyMedium and so is the note under the row, which
+                            // left the fertiliser's name the same size as a
+                            // remark about it. Name 16, note 14, and the NPK and
+                            // dilution stay 12 as the table values they are.
+                            Text(row.fertilizer.name, style = MaterialTheme.typography.bodyLarge)
                             row.fertilizer.npk?.let {
                                 Text(
                                     it,

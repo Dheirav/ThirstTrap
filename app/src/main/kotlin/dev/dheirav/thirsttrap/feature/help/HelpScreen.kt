@@ -160,7 +160,12 @@ private fun Entry(title: String, body: String, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(Modifier.weight(1f)) {
-            Text(title, style = MaterialTheme.typography.titleMedium)
+            // titleLarge, not titleMedium. titleMedium and bodyMedium are 16sp
+            // and 14sp, but the title is serif and the description sans, and a
+            // serif at 16 reads smaller than a sans at 14, so the heading
+            // looked subordinate to its own subtitle once the subtitle went up
+            // to 14. A size up puts it back without touching the body.
+            Text(title, style = MaterialTheme.typography.titleLarge)
             Text(
                 body,
                 style = MaterialTheme.typography.bodyMedium,
