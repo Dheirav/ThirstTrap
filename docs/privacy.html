@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>ThirstTrap privacy policy</title>
+  <style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+  <link rel="stylesheet" href="pp.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">ThirstTrap privacy policy</h1>
+</header>
+<h1 id="thirsttrap-privacy-policy">ThirstTrap privacy policy</h1>
+<p>Last updated 9 October 2026.</p>
+<p>ThirstTrap is a plant-care diary for Android, written and published
+by Dheirav Prakash as an individual rather than a company. This page
+says what the app does with your information. It is short because the
+app does very little with it.</p>
+<h2 id="the-short-version">The short version</h2>
+<p>There is no account, no server of mine, and no analytics. Your
+plants, your diary entries, your weights, your reminders and your photos
+stay on your phone. I cannot see any of it, and neither can anyone else,
+because none of it is sent anywhere.</p>
+<p>One feature is an exception and it is off until you turn it on. That
+is the whole policy. The rest of this page is the detail behind it.</p>
+<h2 id="what-stays-on-your-phone">What stays on your phone</h2>
+<p>Everything you put into the app:</p>
+<ul>
+<li>The plants you add, with their names, species, pot sizes, locations
+and notes</li>
+<li>Every diary entry: waterings, checks, feeds, repottings,
+observations</li>
+<li>Every weight reading and everything derived from it, including the
+predictions</li>
+<li>Your reminder times</li>
+<li>Your photos</li>
+</ul>
+<p>All of it lives in the app’s own private storage on the device.
+Photos in particular are kept inside the app rather than in your
+gallery, which is deliberate: a plant diary should not scatter dozens of
+near-identical pot photos through the camera roll you share with other
+people.</p>
+<p>I have no copy of any of it. There is nothing for me to have a copy
+of.</p>
+<h2 id="the-one-thing-that-leaves-the-phone">The one thing that leaves
+the phone</h2>
+<p>The app can look up a plant you have named, to fill in care notes it
+does not already hold. <strong>This is switched off by default.</strong>
+You turn it on in Settings, under Network, and you can turn it off again
+at any time. Nothing happens automatically: a lookup only runs when you
+ask for one on a specific plant.</p>
+<p>When you do ask, two services are contacted, in this order:</p>
+<ol type="1">
+<li><strong>GBIF</strong>, the Global Biodiversity Information Facility,
+at <code>api.gbif.org</code>, to turn the name you typed into a
+recognised plant species. The name you typed is sent, along with a note
+that it should be matched against plants rather than animals or
+fungi.</li>
+<li><strong>Wikipedia</strong>, at <code>en.wikipedia.org</code>, to
+fetch a short summary for whichever species GBIF matched. The matched
+scientific name is sent.</li>
+</ol>
+<p>What is sent is the plant name and nothing else. No identifier, no
+device information, nothing from your diary, no photos, no weights, no
+location. The app identifies itself to both services as “ThirstTrap/1.0
+(offline plant diary)”.</p>
+<p>As with any request your phone makes to any website, those two
+services can see the IP address the request came from, which usually
+indicates roughly where in the world you are. That is a property of how
+the internet works rather than something the app chooses to send, but
+you should know it happens. Each service handles what it receives under
+its own privacy policy, and neither of them is mine.</p>
+<p>Everything else in the app, the predictions, the reminders, the
+bundled plant catalogue, your whole diary, works with no network
+connection at all and always will.</p>
+<h2 id="what-the-permissions-are-for">What the permissions are for</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Permission</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Camera</td>
+<td>Taking a photo of a plant. The photo is saved in the app and nowhere
+else</td>
+</tr>
+<tr class="even">
+<td>Internet</td>
+<td>Only the species lookup described above, and only when you ask for
+one</td>
+</tr>
+<tr class="odd">
+<td>Network state</td>
+<td>Checking whether you are online before attempting a lookup, so it
+can say “offline” instead of hanging</td>
+</tr>
+<tr class="even">
+<td>Notifications</td>
+<td>Showing your reminders. Composed and shown on the device</td>
+</tr>
+<tr class="odd">
+<td>Vibrate</td>
+<td>A short buzz when you log something, so you know it registered</td>
+</tr>
+</tbody>
+</table>
+<h2 id="analytics-advertising-and-tracking">Analytics, advertising and
+tracking</h2>
+<p>None. There is no analytics library in the app, no crash reporting,
+no advertising, and no third-party tracking of any kind. Nothing
+measures how you use it, because nothing in the app sends anything about
+how you use it.</p>
+<h2 id="backups-and-what-they-mean-for-your-privacy">Backups, and what
+they mean for your privacy</h2>
+<p>You can export everything to a single zip file from Settings. That
+file is yours, it goes wherever you tell your phone to put it, and the
+app does not upload it or keep a second copy. Once it leaves the app it
+is as private as the place you put it, so if you store it in a cloud
+drive, that drive’s privacy terms apply to it and not this policy.</p>
+<p>Worth knowing for a different reason: photos are not recoverable
+without a backup. They live in the app’s private storage, so
+uninstalling the app deletes them permanently and no backup you took
+earlier will bring back ones taken since.</p>
+<h2 id="children">Children</h2>
+<p>The app is not directed at children and collects nothing from
+anybody, so there is nothing specific to say here beyond that.</p>
+<h2 id="deleting-your-data">Deleting your data</h2>
+<p>Uninstall the app. Because nothing is stored anywhere else,
+uninstalling removes all of it, and there is no request to make of me
+and no account to close. If you want to keep any of it first, export a
+backup before you uninstall.</p>
+<h2 id="changes-to-this-policy">Changes to this policy</h2>
+<p>If the app ever does something new with your information, this page
+changes first and the date at the top changes with it. If a change ever
+meant information leaving your phone that does not leave it today, it
+would be off by default and ask you, the same way the species lookup
+does.</p>
+<h2 id="contact">Contact</h2>
+<p>Questions about this policy, or about the app:
+dheirav2005@gmail.com</p>
+</body>
+</html>
