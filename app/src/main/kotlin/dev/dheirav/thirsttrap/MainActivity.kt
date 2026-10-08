@@ -83,6 +83,13 @@ import dev.dheirav.thirsttrap.navigation.Routes
 import dev.dheirav.thirsttrap.ui.ThirstTrapTheme
 import dev.dheirav.thirsttrap.ui.grain
 import dev.dheirav.thirsttrap.ui.Space
+import dev.dheirav.thirsttrap.ui.tourTarget
+import dev.dheirav.thirsttrap.ui.TourTarget
+import androidx.compose.runtime.CompositionLocalProvider
+import dev.dheirav.thirsttrap.ui.TourController
+import dev.dheirav.thirsttrap.ui.TourScreen
+import dev.dheirav.thirsttrap.ui.LocalTour
+import dev.dheirav.thirsttrap.ui.TourOverlay
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -148,6 +155,21 @@ class MainActivity : ComponentActivity() {
                 val showBar = route == Routes.DASHBOARD || route == Routes.DUE ||
                     route == Routes.SETTINGS
 
+                // The guided tour. Null in LocalTour until it is running, so
+                // every tourTarget on every screen costs nothing the rest of
+                // the time.
+                val tour = remember { TourController() }
+                LaunchedEffect(route) {
+                    when {
+                        route == Routes.DASHBOARD -> tour.onScreen(TourScreen.DASHBOARD)
+                        route == Routes.DUE -> tour.onScreen(TourScreen.DUE)
+                        route == Routes.MORE -> tour.onScreen(TourScreen.MORE)
+                        route?.startsWith(Routes.PLANT_DETAIL) == true ->
+                            tour.onScreen(TourScreen.PLANT)
+                    }
+                }
+
+                CompositionLocalProvider(LocalTour provides (if (tour.active) tour else null)) {
                 Scaffold(
                     // No top bar here, but a Scaffold still hands its content
                     // the status-bar inset - and every screen inside has its own
@@ -200,6 +222,7 @@ class MainActivity : ComponentActivity() {
                                         icon = { TabMark(route == Routes.DASHBOARD) { Icon(AppIcons.yard, contentDescription = null) } },
                                         label = { Text(MenuLabels.Tab.PLANTS) },
                                         colors = flatTabColors(),
+                                        modifier = Modifier.tourTarget(TourTarget.PLANTS_TAB),
                                     )
                                     NavigationBarItem(
                                         selected = route == Routes.DUE,
@@ -207,6 +230,7 @@ class MainActivity : ComponentActivity() {
                                         icon = { TabMark(route == Routes.DUE) { Icon(AppIcons.notifications, contentDescription = null) } },
                                         label = { Text(MenuLabels.Tab.DUE) },
                                         colors = flatTabColors(),
+                                        modifier = Modifier.tourTarget(TourTarget.DUE_TAB),
                                     )
                                     NavigationBarItem(
                                         selected = route == Routes.SETTINGS,
@@ -281,6 +305,16 @@ class MainActivity : ComponentActivity() {
                         composable(Routes.HOW_IT_WORKS) {
                             HowItWorksScreen(
                                 onBack = { nav.popBackStack() },
+                                onStartTour = {
+                                    tour.start()
+                                    nav.navigate(Routes.DASHBOARD) {
+                                        popUpTo(nav.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
                                 onOpenIntro = { nav.navigate(Routes.INTRO) },
                                 onOpenWayfinding = { nav.navigate(Routes.WAYFINDING) },
                                 onOpenBackupHelp = { nav.navigate(Routes.BACKUP_HELP) },
@@ -472,6 +506,12 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     }
+                }
+                if (tour.active) {
+                    // Over everything, including the bottom bar, because two of
+                    // the steps ask for a tab.
+                    TourOverlay(tour, onMissing = { tour.next() })
+                }
                 }
                 // Not on launch. The first time anything is actually
                 // scheduled, which is the trigger this function's own docstring

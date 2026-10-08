@@ -43,6 +43,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.ui.Space
+import dev.dheirav.thirsttrap.ui.tourTarget
+import dev.dheirav.thirsttrap.ui.TourTarget
 
 /**
  * The in-app due list. It exists because HyperOS may kill the notification
@@ -88,7 +90,7 @@ fun DueScreen(
         }
 
         LazyColumn(
-            Modifier.fillMaxSize().padding(padding),
+            Modifier.fillMaxSize().padding(padding).tourTarget(TourTarget.DUE_LIST),
             contentPadding = PaddingValues(Space.Block),
             verticalArrangement = Arrangement.spacedBy(Space.Section),
         ) {

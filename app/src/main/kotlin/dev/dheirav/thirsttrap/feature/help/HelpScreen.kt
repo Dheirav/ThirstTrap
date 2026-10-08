@@ -47,6 +47,7 @@ import dev.dheirav.thirsttrap.feature.weight.ScaleHelpSheet
 @Composable
 fun HowItWorksScreen(
     onBack: () -> Unit,
+    onStartTour: () -> Unit,
     onOpenIntro: () -> Unit,
     onOpenWayfinding: () -> Unit,
     onOpenBackupHelp: () -> Unit,
@@ -59,6 +60,17 @@ fun HowItWorksScreen(
         // Reading order rather than alphabetical: why it exists, the one
         // mechanic it rests on, where things are, and then the thing you only
         // care about once you have data worth keeping.
+        // First, and before the reading. The app it was ported from replaced
+        // four pages of explanation with this, and "Finding your way around"
+        // below is still those four pages: a text index of what is on each tab
+        // and what is behind the two dots menus. Somebody who taps the weighing
+        // round has found it; somebody who read that it exists has not.
+        Entry(
+            title = "Show me around",
+            body = "A short walk through the app, pointing at the real thing each " +
+                "time. Nothing is logged on the way.",
+            onClick = onStartTour,
+        )
         Entry(
             title = "What this app is for",
             body = "The first-run page again: why it weighs pots, and why there are no " +

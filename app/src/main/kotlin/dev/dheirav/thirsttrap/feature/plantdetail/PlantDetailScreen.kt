@@ -85,6 +85,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.withLink
+import dev.dheirav.thirsttrap.ui.tourTarget
+import dev.dheirav.thirsttrap.ui.TourTarget
 
 /**
  * The per-plant timeline. Requirements item 3.
@@ -142,7 +144,8 @@ fun PlantDetailScreen(
                         TopAppBarDefaults.topAppBarColors()
                     },
                     navigationIcon = {
-                        IconButton(onClick = onBack) {
+                        IconButton(onClick = onBack,
+                                   modifier = Modifier.tourTarget(TourTarget.BACK)) {
                             Icon(AppIcons.arrowBack, contentDescription = "Back")
                         }
                     },
@@ -158,7 +161,8 @@ fun PlantDetailScreen(
                         }
                         Box {
                             IconButton(onClick = { menuOpen = true }) {
-                                Icon(AppIcons.moreVert, contentDescription = "More actions")
+                                Icon(AppIcons.moreVert, contentDescription = "More actions",
+                                     modifier = Modifier.tourTarget(TourTarget.PLANT_MENU))
                             }
                             AlmanacMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
                                 plant?.let { p ->

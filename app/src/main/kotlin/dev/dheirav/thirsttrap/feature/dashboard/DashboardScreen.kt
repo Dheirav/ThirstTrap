@@ -114,6 +114,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import dev.dheirav.thirsttrap.domain.Confidence
 import dev.dheirav.thirsttrap.ui.AlmanacTitle
+import dev.dheirav.thirsttrap.ui.tourTarget
+import dev.dheirav.thirsttrap.ui.TourTarget
 
 /**
  * The dashboard, now on real data.
@@ -209,7 +211,8 @@ fun DashboardScreen(
                     // reason the app exists, so it gets the bar; everything else
                     // gets a word, because a glyph nobody can read is worse than
                     // a menu. docs/NAVIGATION.md.
-                    IconButton(onClick = onOpenWeighing) {
+                    IconButton(onClick = onOpenWeighing,
+                               modifier = Modifier.tourTarget(TourTarget.WEIGH_ROUND)) {
                         Icon(AppIcons.weight, contentDescription = "Weigh the plants")
                     }
                     // Opens a page, not a menu. Six bare words in a dropdown
@@ -217,7 +220,8 @@ fun DashboardScreen(
                     // and a menu is somewhere you look only once you know what
                     // is in it. Same two taps, and now the first one explains
                     // the choice. docs/NAVIGATION.md section 9.
-                    IconButton(onClick = onOpenMore) {
+                    IconButton(onClick = onOpenMore,
+                               modifier = Modifier.tourTarget(TourTarget.MORE_DOTS)) {
                         Icon(AppIcons.moreVert, contentDescription = "More")
                     }
                 },
@@ -379,6 +383,7 @@ private fun PlantCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .tourTarget(TourTarget.PLANT_CARD)
             // Tapping a plant opens the plant. It used to open the quick-log
             // sheet, with the plant's own page behind a long press, which is
             // backwards from what every list on the phone does and made the
@@ -537,12 +542,14 @@ private fun PlantCard(
             // but offering to water it is the same mistake as predicting a
             // date for it.
             if (!plant.status.isGone) {
-                LogAction(
-                    icon = AppIcons.stillWet,
-                    label = "Log checked, still wet for ${plant.name}",
-                    justLogged = item.lastCheckedMillis,
-                    onClick = onQuickCheck,
-                )
+                Box(Modifier.tourTarget(TourTarget.STILL_WET_BUTTON)) {
+                    LogAction(
+                        icon = AppIcons.stillWet,
+                        label = "Log checked, still wet for ${plant.name}",
+                        justLogged = item.lastCheckedMillis,
+                        onClick = onQuickCheck,
+                    )
+                }
 
                 // Dead space between two targets that mean opposite things.
                 // Fitts's Law is usually quoted as "big and close"; its other
@@ -558,13 +565,15 @@ private fun PlantCard(
                 // an invisible boundary between them, so holding the row and
                 // holding the droplet did different things. The sheet's "More"
                 // calls onLogMore with the same plant id, so nothing is lost.
-                LogAction(
-                    icon = AppIcons.waterDrop,
-                    loggedIcon = AppIcons.waterDropFilled,
-                    label = "Log watering for ${plant.name}",
-                    justLogged = item.lastWateredMillis,
-                    onClick = onQuickWater,
-                )
+                Box(Modifier.tourTarget(TourTarget.WATER_BUTTON)) {
+                    LogAction(
+                        icon = AppIcons.waterDrop,
+                        loggedIcon = AppIcons.waterDropFilled,
+                        label = "Log watering for ${plant.name}",
+                        justLogged = item.lastWateredMillis,
+                        onClick = onQuickWater,
+                    )
+                }
             }
         }
         Rule()
