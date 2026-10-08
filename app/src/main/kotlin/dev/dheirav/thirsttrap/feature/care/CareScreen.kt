@@ -101,7 +101,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
             if (care.detail == CareDetail.BUNDLED) {
                 Text(
                     "Basic notes, from the bundled plant dataset.",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = Space.Line),
                 )
@@ -132,7 +132,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
             Text(
                 "Sets watering at ${(care.depletionTrigger * 100).roundToInt()}% dry, " +
                     "along with the light and watering notes above.",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(vertical = Space.Line),
             )
@@ -153,7 +153,7 @@ fun CareScreen(onBack: () -> Unit, viewModel: CareViewModel = hiltViewModel()) {
             Text(
                 "General guidance for the species, not for your pot. Once you have " +
                     "weighed this one a few times, its own drying curve is the better answer.",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = Space.Section),
             )
@@ -199,7 +199,7 @@ private fun LookupSection(
     if (!enabled) {
         Text(
             "Looking the name up online is switched off. Settings has a toggle for it.",
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = Space.Section),
@@ -248,7 +248,7 @@ private fun LookupSection(
                 Text(
                     "Still no care notes for this one. This says what the plant is, not " +
                         "how to water it.",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(top = Space.Block),
@@ -265,7 +265,7 @@ private fun LookupSection(
                 LookupFailure.SERVICE_ERROR -> "The lookup service did not answer. " +
                     "Nothing lost - try again whenever."
             },
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = Space.Section),

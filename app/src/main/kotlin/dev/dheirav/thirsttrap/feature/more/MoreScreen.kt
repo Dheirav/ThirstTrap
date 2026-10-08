@@ -119,7 +119,7 @@ fun MoreScreen(
                     "Two more, the pot sticker scanner and the experiment board, are " +
                         "off until you turn on specialist tools in Settings. They need a " +
                         "few plants to be worth it.",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.outline,
                 )
             }
@@ -137,7 +137,7 @@ private fun Job(title: String, what: String, onClick: () -> Unit) {
         Text(title, style = MaterialTheme.typography.titleMedium)
         Text(
             what,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = Space.Tight),
         )

@@ -102,7 +102,7 @@ fun AmbientScreen(onBack: () -> Unit, viewModel: AmbientViewModel = hiltViewMode
                 )
                 Text(
                     "Nothing here changes a prediction. It only explains one.",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = Space.Line),
                 )
@@ -162,7 +162,7 @@ fun AmbientScreen(onBack: () -> Unit, viewModel: AmbientViewModel = hiltViewMode
                 }
                 Text(
                     "Either one on its own is useful. Both is better.",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = Space.Line),
                 )
@@ -238,7 +238,7 @@ private fun AmbientRow(reading: AmbientReading, onDelete: () -> Unit) {
                 reading.note?.let {
                     Text(
                         it,
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = Space.Hair),
                     )

@@ -110,7 +110,7 @@ fun PlantEditScreen(
             if (state.isNew) {
                 Text(
                     "Only the name is needed. The rest can stay empty.",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -234,7 +234,7 @@ fun PlantEditScreen(
                             }
                         } ?: Text(
                             "Pick the plant it shares with.",
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
@@ -345,10 +345,14 @@ fun PlantEditScreen(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Column(Modifier.weight(1f)) {
-                            Text("Weigh this pot", style = MaterialTheme.typography.bodyMedium)
+                            // Unstyled, so it takes bodyLarge like the title of
+                            // a row in Settings. Its explanation below is
+                            // bodyMedium; both at bodyMedium left a switch whose
+                            // label and whose reason were the same size.
+                            Text("Weigh this pot")
                             Text(
                                 "Off for pots where weight says nothing, like a closed terrarium.",
-                                style = MaterialTheme.typography.bodySmall,
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
@@ -376,7 +380,7 @@ fun PlantEditScreen(
                         // in the help screen.
                         "How much of the pot's water range is used before watering. " +
                             "50% suits most foliage plants.",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Slider(
@@ -403,7 +407,7 @@ fun PlantEditScreen(
                     }
                     Text(
                         state.weighingMethod.hint,
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     OutlinedTextField(
@@ -418,7 +422,7 @@ fun PlantEditScreen(
                     )
                     Text(
                         "Losses smaller than one step are rounding, not drying.",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     // Said before saving, not discovered afterwards. Same reasoning
@@ -437,7 +441,7 @@ fun PlantEditScreen(
                                     // a worse warning for being shorter.
                                     "Changing this clears the full and dry marks. " +
                                         "Weigh once after watering to set them again.",
-                                    style = MaterialTheme.typography.bodySmall,
+                                    style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.padding(top = Space.Tight),
                                 )
@@ -451,7 +455,7 @@ fun PlantEditScreen(
                 FieldLabel("When did you last water it?")
                 Text(
                     "Starts the first reminder from the right day.",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Space.Line)) {

@@ -156,7 +156,7 @@ private fun StageHead(label: String, count: Int, hint: String) {
         Rule()
         Text(
             hint,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = Space.Line),
         )

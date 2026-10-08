@@ -96,7 +96,7 @@ fun StickerScreen(onBack: () -> Unit, viewModel: StickerViewModel = hiltViewMode
             Text(
                 "The code holds nothing but this plant's id - no data leaves the phone, " +
                     "and it only means anything to this app.",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = Space.Section),

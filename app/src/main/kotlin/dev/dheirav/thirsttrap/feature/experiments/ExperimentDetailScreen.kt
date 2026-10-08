@@ -105,7 +105,7 @@ fun ExperimentDetailScreen(
                 Text(
                     "No subjects yet. Each subject is a plant, and its arm says what " +
                         "it gets - \"banana water\", \"control\".",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -157,7 +157,7 @@ fun ExperimentDetailScreen(
                     "One way, on purpose: a conclusion that can be rewritten later is a " +
                         "lab notebook in pencil. Getting it wrong is what the next " +
                         "experiment is for.",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 OutlinedTextField(

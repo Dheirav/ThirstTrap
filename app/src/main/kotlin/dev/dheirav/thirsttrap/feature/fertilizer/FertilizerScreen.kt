@@ -153,7 +153,7 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
                             "Keep it and it becomes a button here."
                         else -> "Tap a size to switch to it."
                     },
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.outline,
                     modifier = Modifier.padding(top = Space.Line, bottom = Space.Entry),
                 )
@@ -229,7 +229,7 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
                         is DoseAdvice.TooSmall -> Text(
                             "That is ${d.concentrateMl.ml()} ml, too little to measure. Mix " +
                                 "${(d.suggestedWaterMl / 1000).toInt()} L and keep what is left over.",
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = Space.Tight),
                         )
@@ -237,7 +237,7 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
                             Text(
                                 "The dilution is not in a form this can work with. Try 1:200 " +
                                     "or 5 ml/L.",
-                                style = MaterialTheme.typography.bodySmall,
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(top = Space.Tight),
                             )
@@ -247,7 +247,7 @@ fun FertilizerScreen(onBack: () -> Unit, viewModel: FertilizerViewModel = hiltVi
                     row.fertilizer.note?.takeIf { it.isNotBlank() }?.let {
                         Text(
                             it,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = Space.Tight),
                         )

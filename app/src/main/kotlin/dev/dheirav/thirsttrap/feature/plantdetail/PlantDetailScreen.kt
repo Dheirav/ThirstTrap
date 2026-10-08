@@ -423,7 +423,7 @@ fun PlantDetailScreen(
                         Text(
                             "No photos yet. The camera button above starts a record you can " +
                                 "compare against later.",
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(bottom = Space.Block),
                         )
@@ -458,7 +458,7 @@ fun PlantDetailScreen(
                         Text(
                             "One more photo and you can put them side by side, or play " +
                                 "them in order.",
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.outline,
                             modifier = Modifier.padding(bottom = Space.Block),
                         )
@@ -610,7 +610,7 @@ private fun EventRow(
                 details(event)?.let {
                     Text(
                         it,
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
@@ -853,7 +853,7 @@ private fun LinkedNote(
     }
     Text(
         text,
-        style = MaterialTheme.typography.bodySmall,
+        style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
     )
 }

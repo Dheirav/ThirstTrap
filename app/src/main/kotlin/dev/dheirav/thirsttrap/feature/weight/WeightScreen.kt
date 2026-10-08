@@ -191,7 +191,7 @@ fun WeightScreen(
                     Text(
                         "Grams over time. Once you weigh it just after watering, this becomes " +
                             "a percentage and a prediction.",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.outline,
                         modifier = Modifier.padding(top = Space.Line),
                     )
@@ -222,7 +222,7 @@ fun WeightScreen(
                     Text(
                         "One reading so far. Weigh it again in a day or two and the curve " +
                             "starts here.",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 } else {
@@ -243,7 +243,7 @@ fun WeightScreen(
                     }
                     Text(
                         "The drying curve. Each drop is one cycle between waterings.",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.outline,
                         modifier = Modifier.padding(top = Space.Line),
                     )
@@ -311,7 +311,7 @@ fun WeightScreen(
                             "it. Excluding keeps the weigh-in in the record but out of the " +
                             "curve; deleting is for something that never happened."
                     },
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.outline,
                     modifier = Modifier.padding(top = Space.Line),
                 )
@@ -356,7 +356,7 @@ fun WeightScreen(
                 hint?.let {
                     Text(
                         it,
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(bottom = Space.Entry),
                     )
@@ -378,7 +378,7 @@ fun WeightScreen(
                     Text(
                         "You watered this one ${wateredAgo(anchorMoment)}, so this reading " +
                             "becomes the new full mark.",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(bottom = Space.Entry),
                     )
@@ -422,7 +422,7 @@ fun WeightScreen(
                         "Not set up yet: pick \"just watered\" on a weigh taken after " +
                             "watering and draining, and that reading becomes this pot's full " +
                             "mark. Anything else is still recorded.",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.outline,
                         modifier = Modifier.padding(top = Space.Line),
                     )
@@ -563,7 +563,7 @@ private fun DiagnosticCard(
                         "The roots may have stopped drinking. Worth a look for rot, or a " +
                             "spell somewhere colder and darker than usual."
                 },
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = Space.Tight),
             )
@@ -814,7 +814,7 @@ private fun chartSummary(s: WeightState): String = buildString {
 private fun AmbientWaiting(gap: AmbientGap) {
     Text(
         wordingFor(gap),
-        style = MaterialTheme.typography.bodySmall,
+        style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.outline,
         modifier = Modifier.fillMaxWidth().padding(bottom = Space.Block),
     )
@@ -876,7 +876,7 @@ private fun AmbientCard(e: AmbientExplanation) {
                         "Drying about $pct% $pace than usual, but the room is $room - which " +
                             "would push it the other way. Worth a closer look at the pot."
                 },
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = Space.Tight),
             )

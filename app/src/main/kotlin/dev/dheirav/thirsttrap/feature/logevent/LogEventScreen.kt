@@ -101,7 +101,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
                 Text(
                     "Backdated entries are filed at midday, so they cannot sort ahead of " +
                         "something you logged that morning.",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
@@ -155,7 +155,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
                             "The pot itself now weighs something different, so every reading " +
                                 "so far is measured against the wrong thing. Water it in and " +
                                 "weigh it once afterwards, and the full mark sets itself again.",
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = Space.Tight),
                         )
@@ -239,7 +239,7 @@ fun LogEventScreen(onDone: () -> Unit, viewModel: LogEventViewModel = hiltViewMo
                 Text(
                     "This clears the full and dry marks - the pot itself changed " +
                         "weight, so every earlier reading now measures something else.",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(Space.Line)) {

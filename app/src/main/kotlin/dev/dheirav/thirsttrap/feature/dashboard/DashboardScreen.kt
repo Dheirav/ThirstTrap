@@ -528,6 +528,11 @@ private fun PlantCard(
                         }
                     }
                 }
+                // Smaller than the line above it on purpose. That line is the
+                // answer, "Water in about 3 days"; this one is the footnote
+                // under it, where it lives and when it was last checked. Both
+                // at bodyMedium made the card two equal sentences with no
+                // answer in it.
                 Text(
                     context,
                     style = MaterialTheme.typography.bodySmall,

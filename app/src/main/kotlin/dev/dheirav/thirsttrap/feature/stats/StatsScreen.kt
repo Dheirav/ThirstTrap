@@ -90,7 +90,7 @@ fun StatsScreen(onBack: () -> Unit, viewModel: StatsViewModel = hiltViewModel())
             Text(
                 "Counts, not scores. Nothing here goes up because you opened the app, and " +
                     "a quiet month is a quiet month rather than a gap in a run.",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.outline,
                 modifier = Modifier.padding(top = Space.Page),
             )
@@ -177,7 +177,7 @@ private fun OutcomeTable(o: Outcomes) {
                     "else and ${o.died} died: ${(rate * 100).roundToInt()}% passed on rather " +
                     "than lost."
             },
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = Space.Line),
         )
@@ -269,7 +269,7 @@ private fun PredictionTable(p: dev.dheirav.thirsttrap.domain.PredictionScore) {
                     }
                 }
             },
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = Space.Line),
         )
@@ -311,7 +311,7 @@ private fun RootingTable(r: RootingStat) {
                     append(" left out rather than guessed at.")
                 }
             },
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = Space.Line),
         )

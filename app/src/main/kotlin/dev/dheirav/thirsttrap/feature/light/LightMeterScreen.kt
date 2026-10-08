@@ -198,7 +198,7 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
             if (placeMode && state.here.isEmpty() && state.lux != null) {
                 Text(
                     "Nothing lives here yet, which is usually why you are measuring it.",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(top = Space.Section),
@@ -209,7 +209,7 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
                 Text(
                     "Note what this plant wants in its details, and this screen will say " +
                         "whether the spot suits it.",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(top = Space.Section),
@@ -230,7 +230,7 @@ fun LightMeterScreen(onBack: () -> Unit, viewModel: LightMeterViewModel = hiltVi
             Text(
                 "Phone light sensors are not calibrated and differ between handsets, so " +
                     "treat the band as the answer and the number as a hint.",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = Space.Section),

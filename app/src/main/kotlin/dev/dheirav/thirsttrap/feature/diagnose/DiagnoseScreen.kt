@@ -93,7 +93,7 @@ fun DiagnoseScreen(onBack: () -> Unit, onLogEvent: (() -> Unit)? = null) {
                             Text(t.title, fontWeight = FontWeight.SemiBold)
                             Text(
                                 t.opener,
-                                style = MaterialTheme.typography.bodySmall,
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(top = Space.Tight),
                             )

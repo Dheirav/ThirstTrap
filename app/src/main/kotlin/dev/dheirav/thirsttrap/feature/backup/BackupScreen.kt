@@ -90,7 +90,7 @@ fun BackupScreen(
                 "Photos live inside the app rather than in your gallery, so " +
                     "uninstalling ThirstTrap deletes them. Export before you " +
                     "uninstall, change phone, or move to a different build.",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
@@ -106,7 +106,7 @@ fun BackupScreen(
             Text(
                 "Importing merges a backup into what is already here. Entries are matched " +
                     "by their id, so importing the same file twice changes nothing.",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             OutlinedButton(
@@ -146,7 +146,7 @@ fun BackupScreen(
                         fontWeight = FontWeight.Medium,
                     )
                     s.result.warnings.forEach {
-                        Text(it, style = MaterialTheme.typography.bodySmall,
+                        Text(it, style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.tertiary)
                     }
                 }

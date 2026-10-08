@@ -90,7 +90,7 @@ fun SettingsScreen(
             Text(
                 "Everything else - the catalogue, the predictions, the reminders, your whole " +
                     "diary - works with no network at all, and always will.",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
@@ -115,7 +115,7 @@ fun SettingsScreen(
             Text(
                 "Reminders are not timed to the minute, so a 9:00 one may arrive at " +
                     "9:15. That keeps battery use tiny.",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             // "Remind me at a precise time" used to sit here. D30a left it open
@@ -133,7 +133,7 @@ fun SettingsScreen(
             Text(
                 "How dry a new plant should get before watering. Succulents more, " +
                     "ferns less. Each plant can have its own.",
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Row(
@@ -195,7 +195,7 @@ fun SettingsScreen(
                         }
                     }
                 },
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = Space.Tight),
             )
@@ -281,7 +281,7 @@ private fun SettingRow(title: String, subtitle: String, control: @Composable () 
             Text(title)
             Text(
                 subtitle,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }

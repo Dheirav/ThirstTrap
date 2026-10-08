@@ -156,7 +156,7 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
             item {
                 Text(
                     row2Hint(state.rows.count { it.last != null }, state.rows.size),
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.outline,
                     modifier = Modifier.padding(top = Space.Entry),
                 )
@@ -202,7 +202,7 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                 Rule()
                 Text(
                     "Each reading moves that plant's prediction. Nothing else to do.",
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.outline,
                     modifier = Modifier.padding(top = Space.Entry),
                 )
@@ -244,7 +244,7 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                     Text(
                         "Watered and not weighed since, so this reading becomes the " +
                             "new full mark.",
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(bottom = Space.Entry),
                     )
