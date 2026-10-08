@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.dheirav.thirsttrap.ui.Space
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -35,6 +36,7 @@ fun DebugScreen(onBack: () -> Unit, viewModel: DebugViewModel = hiltViewModel())
     val context = LocalContext.current
     val settings by viewModel.appSettings.collectAsStateWithLifecycle()
     val status by viewModel.status.collectAsStateWithLifecycle()
+    val friction by viewModel.friction.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -91,6 +93,57 @@ fun DebugScreen(onBack: () -> Unit, viewModel: DebugViewModel = hiltViewModel())
                 onClick = { viewModel.dumpWorkQueue(context) },
                 modifier = Modifier.fillMaxWidth(),
             ) { Text("Dump the work queue") }
+
+            Rule()
+            Text("Friction", style = MaterialTheme.typography.titleMedium)
+            // The usage table has been written since D31 and read by nothing.
+            // This is the report its own docstring promised. Counts, never a
+            // grade: the app does not score the person using it and there is no
+            // reason to score the person who wrote it either.
+            FilledTonalButton(
+                onClick = viewModel::loadFriction,
+                modifier = Modifier.fillMaxWidth(),
+            ) { Text("Read the usage rows") }
+
+            friction?.let { rows ->
+                if (rows.isEmpty()) {
+                    Text(
+                        "No usage rows yet. They are written when a logging " +
+                            "screen is opened, saved or backed out of.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                } else {
+                    rows.forEach { f ->
+                        Column(Modifier.fillMaxWidth().padding(top = Space.Line)) {
+                            Text(f.flow, style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                "opened ${f.opened} · saved ${f.completed} · " +
+                                    "gave up ${f.abandoned}" +
+                                    if (f.unresolved > 0) " · unresolved ${f.unresolved}" else "",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            Text(
+                                buildString {
+                                    append(
+                                        f.abandonRate
+                                            ?.let { "gave up on ${(it * 100).roundToInt()}% of the ones that ended" }
+                                            ?: "nothing has ended yet",
+                                    )
+                                    f.overrideRate?.let {
+                                        append(" · ")
+                                        append("%.1f".format(it))
+                                        append(" overrides per save")
+                                    }
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+            }
 
             if (status.isNotBlank()) {
                 Text(

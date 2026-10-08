@@ -20,6 +20,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import dev.dheirav.thirsttrap.domain.UsageRepository
+import dev.dheirav.thirsttrap.domain.FlowFriction
+import dev.dheirav.thirsttrap.domain.frictionReport
 import javax.inject.Inject
 
 /**
@@ -36,7 +39,26 @@ class DebugViewModel @Inject constructor(
     private val settings: SettingsRepository,
     private val scheduler: ReminderScheduler,
     private val exporter: ExportRepositoryImpl,
+    private val usage: UsageRepository,
 ) : ViewModel() {
+
+    /**
+     * The friction report, read on demand rather than collected as a flow.
+     *
+     * Nothing writes usage rows while this screen is open, and a live query
+     * would be a watcher on a table whose whole point is that nobody was
+     * watching it.
+     */
+    private val _friction = MutableStateFlow<List<FlowFriction>?>(null)
+    val friction: StateFlow<List<FlowFriction>?> = _friction
+
+    fun loadFriction() {
+        viewModelScope.launch {
+            val rows = usage.all()
+            _friction.value = frictionReport(rows)
+            _status.value = "Read ${rows.size} usage rows"
+        }
+    }
 
     /** Re-imports the debug archive, to prove importing twice changes nothing. */
     fun importFromCache() {
