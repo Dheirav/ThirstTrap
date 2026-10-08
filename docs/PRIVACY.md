@@ -88,9 +88,10 @@ keep a second copy. Once it leaves the app it is as private as the place you put
 it, so if you store it in a cloud drive, that drive's privacy terms apply to it
 and not this policy.
 
-Worth knowing for a different reason: photos are not recoverable without a
-backup. They live in the app's private storage, so uninstalling the app deletes
-them permanently and no backup you took earlier will bring back ones taken since.
+Worth knowing for a different reason: a backup does include your photos, so it
+is a complete copy rather than a partial one. But photos live only in the app's
+private storage otherwise, so uninstalling without exporting first destroys them,
+and an old export cannot return anything taken after it.
 
 ## Children
 

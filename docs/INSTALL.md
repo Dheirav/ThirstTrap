@@ -45,18 +45,18 @@ is what Android checks before allowing an update in place.
 
 **Do not uninstall the app.**
 
-Your diary, the weights and your reminders can all be written to a backup file
-from Settings, so those survive. Your photos cannot. They live inside the app's
-own private storage rather than in your gallery, which is deliberate, because a
-plant diary should not scatter dozens of near-identical pot photos through the
-camera roll you share with other people. The cost of that choice is that
-uninstalling takes every photo with it and no backup brings them back.
+Your photos live inside the app rather than in your gallery, which is
+deliberate: a plant diary should not scatter dozens of near-identical pot photos
+through the camera roll you share with other people. The cost is that
+uninstalling the app deletes them along with everything else.
 
-So if something goes wrong, tell me rather than reinstalling. Almost anything is
-fixable with the app still installed and nothing is fixable afterwards.
+A backup from Settings does include your photos, as well as the diary, the
+weights and the reminders, so an export really is a full copy. But it is only a
+copy of the moment you took it, and anything since is gone.
 
-Taking a backup from Settings now and again is still worth doing, for the same
-reason it is worth doing anywhere.
+So: take a backup before you ever uninstall, and if something goes wrong, tell me
+rather than reinstalling. Almost everything is fixable with the app still
+installed.
 
 ## What happens when it reaches the Play Store
 

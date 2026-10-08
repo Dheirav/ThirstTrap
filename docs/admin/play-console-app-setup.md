@@ -19,8 +19,9 @@ download. Android only accepts an update signed with the same certificate as the
 installed app, and there is no override. So if Google generates a fresh key, the
 Play build carries a different certificate from every APK sideloaded from
 `thirsttrap-release.jks`, Android refuses the update, and the only route across
-is to uninstall first. Photos live in the app's private storage and are not in a
-backup, so an uninstall destroys them permanently.
+is to uninstall first, which wipes the install. A backup does carry the photos,
+so it is survivable, but it means every tester has to export one first and
+actually do it.
 
 At app creation there is an option to provide your own app signing key instead.
 Take it, and upload `~/thirsttrap-release.jks`. The Play build then carries the
