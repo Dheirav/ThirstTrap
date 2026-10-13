@@ -38,7 +38,15 @@ object Routes {
     fun logEvent(plantId: String) = "$LOG_EVENT/$plantId"
 
 
-    fun weight(plantId: String) = "$WEIGHT/$plantId"
+    /**
+     * [keypad] true arrives with the weighing sheet already open.
+     *
+     * Two things lead here and they mean different things. The quick sheet's
+     * "Weigh it" is an action, so it should land on the keys; the plant menu's
+     * "How thirsty it is" is a page to read, so it should not. Same screen,
+     * different intent, and the route is where the intent belongs.
+     */
+    fun weight(plantId: String, keypad: Boolean = false) = "$WEIGHT/$plantId?keypad=$keypad"
 
 
     fun light(plantId: String) = "$LIGHT/$plantId"

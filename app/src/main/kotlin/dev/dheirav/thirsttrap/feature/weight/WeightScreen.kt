@@ -54,6 +54,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -96,6 +97,8 @@ import dev.dheirav.thirsttrap.feature.help.WhyNoPredictionSheet
 @Composable
 fun WeightScreen(
     onBack: () -> Unit,
+    /** Open the weighing sheet on arrival. See [Routes.weight]. */
+    openKeypad: Boolean = false,
     viewModel: WeightViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -104,7 +107,10 @@ fun WeightScreen(
     val hint by viewModel.hint.collectAsStateWithLifecycle()
     val ambient by viewModel.ambientInsight.collectAsStateWithLifecycle()
     val dismissed by viewModel.dismissed.collectAsStateWithLifecycle()
-    var showKeypad by remember { mutableStateOf(false) }
+    // rememberSaveable, not remember: arriving with the sheet open is a one-shot
+    // intent, and a plain remember would reopen it on every rotation after the
+    // person had closed it.
+    var showKeypad by rememberSaveable { mutableStateOf(openKeypad) }
     // This screen wrote the rule: "Weighing is an act, not a view, so it moved
     // into a sheet and the page became a page." Its own help was still a page.
     var showScaleHelp by remember { mutableStateOf(false) }
