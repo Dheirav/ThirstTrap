@@ -3,14 +3,39 @@
   updatePeriodMillis is the floor Android enforces anyway (30 minutes) and is
   the fallback, not the mechanism: the app calls updateAll when the diary
   changes, so logging a watering refreshes the widget immediately.
+
+  Both previewLayout and previewImage, because one is not enough. With neither,
+  the launcher's picker falls back to the app icon, so ThirstTrap showed a green
+  square with a droplet in it while every other app in the list showed what its
+  widget actually looks like. previewLayout is the modern one and is API 31 and
+  up; previewImage is the old drawable, and it is what a launcher uses when it
+  either predates 31 or ignores previewLayout, which HyperOS appears to.
+
+  The image is dark-scheme only. A single drawable cannot follow the system
+  theme, where the layout can, which is the reason to keep both rather than drop
+  one.
+
+  Four cells wide, two tall, and the minimums match: 250dp and 110dp, which are
+  the 70n-30 values for 4 and 2. minHeight used to be 58dp, the one-cell value,
+  while targetCellHeight said 2, so the widget called itself 2x2 and declared a
+  2x1 minimum, which let it be dragged shorter than its content fits in.
+
+  It was 2x2 and is now 4x2 because the content is a list: up to three plants,
+  each a name over a line saying why it is asking. Two cells of width is not
+  enough for "drier than you water it" at 11sp, and HyperOS also scales the
+  picker's preview in proportion to the cell span, so a 2-wide widget gets about
+  half the tile and looked tiny next to the 4-wide ones. Wider is both truer to
+  the content and better in the picker.
 -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:minWidth="110dp"
-    android:minHeight="58dp"
-    android:targetCellWidth="2"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="4"
     android:targetCellHeight="2"
     android:updatePeriodMillis="1800000"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
     android:description="@string/widget_description"
-    android:initialLayout="@layout/glance_default_loading_layout" />
+    android:initialLayout="@layout/glance_default_loading_layout"
+    android:previewLayout="@layout/widget_watering_preview"
+    android:previewImage="@drawable/widget_watering_preview_image" />

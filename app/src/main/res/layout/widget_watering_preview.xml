@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  What the launcher's widget picker shows.
+
+  The picker had nothing to show, so it fell back to the app icon: a green
+  square with a droplet in it, which says nothing about what the widget does and
+  looked poor next to pickers that render a real preview.
+
+  Glance cannot help here. previewLayout has to be a static RemoteViews layout,
+  so this is the live widget drawn by hand: the same WANTS WATER head, the same
+  two-line rows of a plant and why it is asking, the same hairline between them.
+  Two plants rather than three, because the 2x2 cell the picker draws is shorter
+  than the widget usually gets and a third row would clip.
+
+  It is a mock, which means it can drift from WateringWidget.kt. Kept in step by
+  having the same shape and the same type sizes, nothing more clever.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_preview_background"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="WANTS WATER"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.14"
+        android:textColor="@color/widget_preview_quiet" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Peperomia"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/widget_preview_on_surface" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="drier than you water it"
+        android:textSize="11sp"
+        android:textColor="@color/widget_preview_quiet" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/widget_preview_rule" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Creeping fig"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/widget_preview_on_surface" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="due for a look"
+        android:textSize="11sp"
+        android:textColor="@color/widget_preview_quiet" />
+</LinearLayout>

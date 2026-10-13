@@ -2,4 +2,15 @@
 <resources>
     <color name="leaf">#FF4C6B4F</color>
     <color name="leaf_light">#FFCFE5CE</color>
+
+    <!--
+      The widget preview shown in the launcher's picker. A static layout cannot
+      read GlanceTheme, so these mirror lightColorScheme in Theme.kt by hand and
+      have to be changed with it. Only the preview uses them; the live widget
+      still takes its colours from the theme.
+    -->
+    <color name="widget_preview_surface">#FFF5F0E2</color>
+    <color name="widget_preview_on_surface">#FF22201A</color>
+    <color name="widget_preview_quiet">#FF413B30</color>
+    <color name="widget_preview_rule">#FFC9C2AE</color>
 </resources>

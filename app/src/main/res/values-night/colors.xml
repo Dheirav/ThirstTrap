@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mirrors darkColorScheme in Theme.kt. See values/colors.xml. -->
+    <color name="widget_preview_surface">#FF14110B</color>
+    <color name="widget_preview_on_surface">#FFE9E2D0</color>
+    <color name="widget_preview_quiet">#FFCDC5B0</color>
+    <color name="widget_preview_rule">#FF3A352A</color>
+</resources>
