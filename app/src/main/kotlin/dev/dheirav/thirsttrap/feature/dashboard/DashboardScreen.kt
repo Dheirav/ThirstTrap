@@ -2,6 +2,9 @@ package dev.dheirav.thirsttrap.feature.dashboard
 
 import dev.dheirav.thirsttrap.ui.Flank
 
+import dev.dheirav.thirsttrap.ui.EventColors
+import dev.dheirav.thirsttrap.domain.CareEventType
+import androidx.compose.ui.geometry.Offset
 import dev.dheirav.thirsttrap.ui.Space
 
 import dev.dheirav.thirsttrap.ui.EmptyState
@@ -54,7 +57,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import dev.dheirav.thirsttrap.ui.FilledTonalButton
 import dev.dheirav.thirsttrap.ui.FilterChip
-import dev.dheirav.thirsttrap.ui.FloatingActionButton
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import dev.dheirav.thirsttrap.ui.IconButton
@@ -204,44 +206,66 @@ fun DashboardScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                // Everything lives in the title slot and the actions slot is
+                // empty, which looks odd and is the only way to get a truly
+                // centred action. TopAppBar lays title and actions side by side,
+                // so a button centred inside the title slot sits left of the
+                // bar's centre by half the width of the actions. Giving the
+                // title the full width and placing all three by alignment puts
+                // the middle where the eye expects it.
                 title = {
-                    AlmanacTitle("Plants")
-                },
-                actions = {
-                    // One icon, not four. Weighing is the recurring job and the
-                    // reason the app exists, so it gets the bar; everything else
-                    // gets a word, because a glyph nobody can read is worse than
-                    // a menu. docs/NAVIGATION.md.
-                    IconButton(onClick = onOpenWeighing,
-                               modifier = Modifier.tourTarget(TourTarget.WEIGH_ROUND)) {
-                        Icon(AppIcons.weight, contentDescription = "Weigh the plants")
-                    }
-                    // Opens a page, not a menu. Six bare words in a dropdown
-                    // told a reader nothing about what Figures or Places were,
-                    // and a menu is somewhere you look only once you know what
-                    // is in it. Same two taps, and now the first one explains
-                    // the choice. docs/NAVIGATION.md section 9.
-                    IconButton(onClick = onOpenMore,
-                               modifier = Modifier.tourTarget(TourTarget.MORE_DOTS)) {
-                        Icon(AppIcons.moreVert, contentDescription = "More")
+                    Box(Modifier.fillMaxWidth()) {
+                        // CenterStart, not the Box's default TopStart. Both icon
+                        // groups below are vertically centred, so a top-aligned
+                        // title sat visibly higher than them.
+                        AlmanacTitle("Plants", Modifier.align(Alignment.CenterStart))
+
+                        // Adding a plant, in the middle, as a plant rather than
+                        // a plus. It was a floating button until it was caught
+                        // covering the water-log icon on the fourth row: the
+                        // list reserves bottom padding that clears the button
+                        // once scrolled, and does nothing for a list too short
+                        // to scroll, which is the ordinary case. Nothing floats
+                        // over a row now at any list length.
+                        //
+                        // spa rather than yard, because yard is the Plants tab
+                        // and one glyph should not mean both "the list" and
+                        // "add to the list".
+                        IconButton(
+                            onClick = onAddPlant,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .tourTarget(TourTarget.ADD_PLANT),
+                        ) {
+                            Icon(AppIcons.spa, contentDescription = "Add a plant")
+                        }
+
+                        Row(Modifier.align(Alignment.CenterEnd)) {
+                            // One icon, not four. Weighing is the recurring job
+                            // and the reason the app exists, so it gets the bar;
+                            // everything else gets a word, because a glyph
+                            // nobody can read is worse than a menu.
+                            // docs/NAVIGATION.md.
+                            IconButton(onClick = onOpenWeighing,
+                                       modifier = Modifier.tourTarget(TourTarget.WEIGH_ROUND)) {
+                                Icon(AppIcons.weight, contentDescription = "Weigh the plants")
+                            }
+                            // Opens a page, not a menu. Six bare words in a
+                            // dropdown told a reader nothing about what Figures
+                            // or Places were, and a menu is somewhere you look
+                            // only once you know what is in it. Same two taps,
+                            // and now the first one explains the choice.
+                            // docs/NAVIGATION.md section 9.
+                            IconButton(onClick = onOpenMore,
+                                       modifier = Modifier.tourTarget(TourTarget.MORE_DOTS)) {
+                                Icon(AppIcons.moreVert, contentDescription = "More")
+                            }
+                        }
                     }
                 },
             )
         },
         snackbarHost = { SnackbarHost(snackbarHost) },
-        floatingActionButton = {
-            // A ruled block, not a floating one. The shadow was the last thing
-            // on the page still pretending to hover above the paper.
-            //
-            // Hidden while the list is empty. The empty state already offers
-            // "Add your first plant", and two primary actions calling the same
-            // function is the page asking one question twice.
-            if (state.items.isNotEmpty()) {
-                FloatingActionButton(onClick = onAddPlant) {
-                    Icon(AppIcons.add, contentDescription = "Add a plant")
-                }
-            }
-        },
     ) { padding ->
         when {
             // Never a spinner: an empty first frame costs half the ten-second
@@ -260,7 +284,11 @@ fun DashboardScreen(
                 modifier = Modifier.fillMaxSize().padding(padding),
                 contentPadding = PaddingValues(
                     start = 16.dp, end = 16.dp, top = 0.dp,
-                    bottom = 88.dp + WindowInsets.navigationBars.asPaddingValues()
+                    // Was 88dp, which was the floating button's footprint and
+                    // nothing else. With the button gone that is dead space at
+                    // the end of every list, so this is now an ordinary page
+                    // gap plus whatever the navigation bar needs.
+                    bottom = Space.Page + WindowInsets.navigationBars.asPaddingValues()
                         .calculateBottomPadding(),
                 ),
                 verticalArrangement = Arrangement.spacedBy(0.dp),
@@ -685,10 +713,20 @@ private fun DepletionThumbnail(
     val ringStroke = 3.dp
     val gap = 3.dp
     val photo = 88.dp
-    // Only reserve the ring's margin when there is a ring. A plant with no
-    // weight readings was paying 12dp of height for an indicator it never
-    // draws, on every card in the list.
-    val total = if (depletion != null) photo + (ringStroke + gap) * 2 else photo
+    // Always reserve the ring's margin, ring or no ring.
+    //
+    // It used to be reserved only when a ring was drawn, to save a plant with no
+    // weight readings 12dp of height it never used. That saved the height and
+    // broke the column: the photo is centred in this box, so an 88dp box put its
+    // photo flush at the start while a 100dp box inset its photo by 6dp, and the
+    // list ended up with two left edges depending on whether a plant had been
+    // weighed. A thumbnail column that does not line up reads as broken, which
+    // costs more than 12dp.
+    //
+    // And the 12dp was mostly imaginary. Every row carries a name, a prediction
+    // and a context line, which comes to more than 100dp on its own, so the text
+    // sets the row height and the thumbnail has slack either way.
+    val total = photo + (ringStroke + gap) * 2
 
     val filled by animateFloatAsState(
         targetValue = depletion?.coerceIn(0.0, 1.0)?.toFloat() ?: 0f,
@@ -697,7 +735,11 @@ private fun DepletionThumbnail(
     )
     val track = MaterialTheme.colorScheme.outlineVariant
     val fill = MaterialTheme.colorScheme.primary
-    val tick = MaterialTheme.colorScheme.onSurfaceVariant
+    // The water blue the diary already uses for a watering, rather than a new
+    // colour. EventColors' argument is that the hue names what you did, and this
+    // mark is the point at which you water, so it should be the same blue as
+    // every watering entry instead of a neutral tick that means nothing.
+    val tick = EventColors.of(CareEventType.WATERED)
 
     // Read off the photo rather than restated, because restating it is how the
     // ring and the photo came to disagree.
@@ -741,10 +783,15 @@ private fun DepletionThumbnail(
                     measure.getSegment(0f, length * filled, segment, true)
                     drawPath(segment, fill, style = Stroke(ringStroke.toPx(), cap = StrokeCap.Round))
                 }
-                val at = Path()
+                // A droplet, not a dot. The mark was a four-pixel segment of the
+                // ring stroked at 1.6x, which renders as a blob: the right
+                // position carrying no meaning. A drop says what the position is
+                // for, and it is upright rather than turned along the ring,
+                // because a drop lying on its side stops reading as a drop and
+                // the water icon on this same row is upright too.
                 val markAt = (length * trigger.toFloat()).coerceIn(0f, length)
-                measure.getSegment((markAt - 4f).coerceAtLeast(0f), markAt, at, true)
-                drawPath(at, tick, style = Stroke(ringStroke.toPx() * 1.6f, cap = StrokeCap.Round))
+                val p = measure.getPosition(markAt)
+                drawPath(dropletAt(p, width = 7.dp.toPx(), height = 9.5f.dp.toPx()), tick)
             }
         }
 
@@ -773,6 +820,30 @@ private fun DepletionThumbnail(
                 )
             }
         }
+    }
+}
+
+/**
+ * A teardrop centred on [at], tip up.
+ *
+ * Built from two cubics rather than an asset, because core/ui has no icon
+ * source: the project dropped material-icons-extended rather than ship several
+ * thousand glyphs to use sixteen, and a nine-pixel drop is not worth reversing
+ * that for.
+ */
+private fun dropletAt(at: Offset, width: Float, height: Float): Path {
+    val halfW = width / 2f
+    val halfH = height / 2f
+    val tipY = at.y - halfH
+    val baseY = at.y + halfH
+    return Path().apply {
+        moveTo(at.x, tipY)
+        // Out to the widest point just below the middle, then round into the
+        // bottom. The control points sit outside the silhouette on purpose;
+        // that overshoot is what makes the shoulders bulge instead of taper.
+        cubicTo(at.x + halfW * 1.1f, at.y - halfH * 0.1f, at.x + halfW, baseY, at.x, baseY)
+        cubicTo(at.x - halfW, baseY, at.x - halfW * 1.1f, at.y - halfH * 0.1f, at.x, tipY)
+        close()
     }
 }
 

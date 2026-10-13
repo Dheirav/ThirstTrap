@@ -32,7 +32,10 @@ class TourScriptTest {
         // The rule the whole design rests on. A tap-through step leaves the real
         // control exposed so the real tap lands, so a tour step on the droplet
         // would water somebody's plant for them.
-        val writes = setOf(TourTarget.WATER_BUTTON, TourTarget.STILL_WET_BUTTON)
+        // ADD_PLANT counts: it writes nothing on the tap itself, but it opens
+        // the new-plant form, so a tap-through step there walks somebody out of
+        // the tour and into a write flow.
+        val writes = setOf(TourTarget.WATER_BUTTON, TourTarget.STILL_WET_BUTTON, TourTarget.ADD_PLANT)
         val offenders = steps.filter { it.tapToContinue && it.target in writes }
         assertTrue("tap-through steps that would write an entry: $offenders", offenders.isEmpty())
     }

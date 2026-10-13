@@ -259,7 +259,7 @@ class MainActivity : ComponentActivity() {
                                 onLogMore = { id -> nav.navigate(Routes.logEvent(id)) },
                                 onOpenWeighing = { nav.navigate(Routes.WEIGHING) },
                                 onOpenMore = { nav.navigate(Routes.MORE) },
-                                onWeighPlant = { id -> nav.navigate(Routes.weight(id)) },
+                                onWeighPlant = { id -> nav.navigate(Routes.weight(id, keypad = true)) },
                             )
                         }
                         composable(Routes.MORE) {
@@ -336,11 +336,18 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable(
-                            route = "${Routes.WEIGHT}/{id}",
-                            arguments = listOf(navArgument("id") { type = NavType.StringType }),
-                        ) {
+                            route = "${Routes.WEIGHT}/{id}?keypad={keypad}",
+                            arguments = listOf(
+                                navArgument("id") { type = NavType.StringType },
+                                navArgument("keypad") {
+                                    type = NavType.BoolType
+                                    defaultValue = false
+                                },
+                            ),
+                        ) { entry ->
                             WeightScreen(
                                 onBack = { nav.popBackStack() },
+                                openKeypad = entry.arguments?.getBoolean("keypad") == true,
                             )
                         }
                         composable(

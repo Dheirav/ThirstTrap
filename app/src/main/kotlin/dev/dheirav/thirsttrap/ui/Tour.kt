@@ -78,7 +78,7 @@ enum class TourScreen { DASHBOARD, PLANT, DUE, MORE }
 /** The real elements it points at. Each is tagged where it is drawn with [tourTarget]. */
 enum class TourTarget {
     PLANT_CARD, WATER_BUTTON, STILL_WET_BUTTON, WEIGH_ROUND, MORE_DOTS,
-    PLANT_MENU, DUE_TAB, PLANTS_TAB, BACK, DUE_LIST,
+    PLANT_MENU, DUE_TAB, PLANTS_TAB, BACK, DUE_LIST, ADD_PLANT,
 }
 
 /**
@@ -152,7 +152,21 @@ fun tourSteps(): List<TourStep> = listOf(
     ),
     TourStep(
         TourScreen.DASHBOARD, TourTarget.MORE_DOTS,
-        "The jobs that are about several plants at once live here. That is the end of the tour.",
+        "The jobs that are about several plants at once live here.",
+    ),
+    // Last, and new, because the add button stopped being a plus.
+    //
+    // It was a floating plus, which needs no explaining, and it is now a leaf in
+    // the middle of the bar, which does. That change was made because the
+    // floating button sat on top of the fourth row's water icon and ate the tap,
+    // but a symbol nobody can read is its own problem, and the tour is where the
+    // app gets to say what its glyphs mean.
+    //
+    // Not a tap-through step: pressing it opens the new-plant form, which would
+    // drop somebody out of the tour into a write flow.
+    TourStep(
+        TourScreen.DASHBOARD, TourTarget.ADD_PLANT,
+        "The leaf in the middle adds a plant. That is the end of the tour.",
     ),
 )
 
