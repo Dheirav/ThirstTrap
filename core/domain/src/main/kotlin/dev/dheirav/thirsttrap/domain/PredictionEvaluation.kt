@@ -75,6 +75,10 @@ data class PredictionScore(
  * interpolated between the readings either side. Segments the user watered
  * before the pot ever reached the trigger have no ground truth and score
  * nothing - a censored cycle is missing data, not evidence of error.
+ *
+ * Scoring is replayed as though the plant were still on the shelf, which is
+ * why [scoringPlant] exists. See its comment: this is the difference between
+ * grading a history and forecasting a future.
  */
 fun evaluatePredictions(
     plant: Plant,
@@ -85,19 +89,21 @@ fun evaluatePredictions(
     val ordered = readings.filter { !it.excluded }.sortedBy { it.timestampMillis }
     if (ordered.size < 3) return emptyList()
 
+    val scoring = scoringPlant(plant)
+
     // The full-history state supplies the segmentation and the final anchors
     // that define ground truth. Predictions themselves are replayed with only
     // the data the model had at the time - scoring it with hindsight anchors
     // it never saw would flatter nobody but the grader.
     val full = assembleWeightState(
-        plant = plant,
+        plant = scoring,
         readings = readings,
         wateringEventsMillis = wateringEventsMillis,
         repotEventsMillis = repotEventsMillis,
         nowMillis = ordered.last().timestampMillis,
     )
     val anchors = full.plant.anchors ?: return emptyList()
-    val trigger = anchors.triggerWeight(plant.depletionTrigger)
+    val trigger = anchors.triggerWeight(scoring.depletionTrigger)
 
     val samples = mutableListOf<PredictionSample>()
     for (segment in full.segments) {
@@ -109,7 +115,7 @@ fun evaluatePredictions(
         for (r in segReadings) {
             if (r.timestampMillis >= crossingMillis) break
             val asOf = assembleWeightState(
-                plant = plant,
+                plant = scoring,
                 readings = ordered.filter { it.timestampMillis <= r.timestampMillis },
                 wateringEventsMillis = wateringEventsMillis.filter { it <= r.timestampMillis },
                 repotEventsMillis = repotEventsMillis.filter { it <= r.timestampMillis },
@@ -153,6 +159,29 @@ private fun calendarPrediction(wateringEventsMillis: List<Long>, asOfMillis: Lon
     val due = past.last() + (interval * MILLIS_PER_DAY).toLong()
     return (due - asOfMillis) / MILLIS_PER_DAY
 }
+
+/**
+ * The plant as the grader must see it: on the shelf.
+ *
+ * [predictWatering] refuses to forecast for a plant that has left, and that
+ * refusal is correct - nothing should name a watering date for a pot that is
+ * gone. But this function is not forecasting, it is grading a history that
+ * already happened, and the plant's present status is not part of the
+ * arithmetic.
+ *
+ * Reaching the forecast's refusal through [assembleWeightState] meant every
+ * dead or given-away plant returned zero samples, silently, so the error
+ * figure on the Figures screen was measured over survivors only. That is a
+ * survivorship filter on the one number that justifies weighing pots, and it
+ * sat directly beneath a comment refusing the same filter on the outcomes
+ * table next to it.
+ *
+ * The status is cleared here rather than at the call sites because both
+ * callers are scoring history: there is no caller for whom a gone plant
+ * should score nothing.
+ */
+private fun scoringPlant(plant: Plant): Plant =
+    if (plant.status.isGone) plant.copy(status = PlantStatus.ACTIVE) else plant
 
 /** Where the series first crosses [trigger], interpolated. Null if it never does. */
 private fun crossingTime(segReadings: List<WeightReading>, trigger: Double): Long? {

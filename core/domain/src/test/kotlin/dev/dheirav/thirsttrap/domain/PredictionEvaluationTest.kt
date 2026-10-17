@@ -66,6 +66,29 @@ class PredictionEvaluationTest {
     }
 
     @Test
+    fun `a plant that has left is still scored, because the history happened`() {
+        // Found by council review, 2026-10-17. predictWatering refuses to
+        // forecast for a gone plant, evaluatePredictions reached that refusal
+        // through assembleWeightState, and every dead plant therefore returned
+        // zero samples - so the Figures error figure was measured over
+        // survivors only, while the comment above it in StatsViewModel says
+        // dead plants are included on purpose.
+        val (readings, waterings) = linearCycle()
+        val alive = evaluatePredictions(plant(anchors = null, trigger = 0.5), readings, waterings, emptyList())
+        assertTrue("the live case must score, or this test proves nothing", alive.isNotEmpty())
+
+        for (status in PlantStatus.entries.filter { it.isGone }) {
+            val gone = evaluatePredictions(
+                plant(anchors = null, trigger = 0.5).copy(status = status),
+                readings,
+                waterings,
+                emptyList(),
+            )
+            assertEquals("$status should score exactly as the live plant does", alive, gone)
+        }
+    }
+
+    @Test
     fun `a cycle watered before the trigger scores nothing`() {
         // Watered at 1300 g, well above the 1200 g trigger: no ground truth,
         // so no samples - a censored cycle is missing data, not model error.
