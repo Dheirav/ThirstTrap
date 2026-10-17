@@ -921,6 +921,54 @@ by drawing the 2D scene properly. Hosting is GitHub Pages from `/site` on main,
 not yet switched on, and the page loads GSAP, Lenis and fonts from CDNs rather
 than vendoring them.
 
+### D67 — The accuracy figure was measured over survivors (2026-10-17)
+
+Found by a five-lens council review of `docs/GAMES.md`, whose actual subject was
+whether the app should teach through games. The answer to that is in
+`docs/GAMES-COUNCIL.md`. This is the defect it turned up on the way.
+
+**`evaluatePredictions` returned nothing for any plant that had left.**
+`predictWatering` refuses to forecast when `plant.status.isGone`, which is
+correct, and `evaluatePredictions` reached that refusal through
+`assembleWeightState` on every path, so a dead plant scored zero samples
+silently. Proven by probe before it was believed: identical readings and
+identical watering history gave 5 samples for an `ACTIVE` plant and 0 for `DEAD`
+or `GIVEN_AWAY`, 5 again when the status was put back.
+
+The damage is where it was pointed. `StatsViewModel` passes
+`includeArchived = true` with a comment saying dead plants are included on
+purpose, because "leaving out what died would make the outcomes table a lie",
+and on the same screen the prediction error was being computed over plants that
+were still alive. A survivorship filter on the one number that answers whether
+the premise of the app is true, sitting directly beneath a comment refusing the
+same filter on the table beside it.
+
+Fixed by replaying status-blind inside `evaluatePredictions`, with
+`scoringPlant`, rather than by loosening the guard in `predictWatering`. Scoring
+a history and forecasting a future are different speech acts, and both callers
+of the replay are scoring history: there is no caller for whom a gone plant
+should score nothing. The regression test drives every `isGone` status and
+asserts the samples equal the live plant's, and it fails if `scoringPlant` is
+mutated back to a passthrough.
+
+**The app was also praising a judgement it had not checked.** "Good call,
+checked, not thirsty yet" fired on every "still wet" tap in four places, and it
+is false exactly when the scale puts that pot past its own trigger, which is the
+one case worth saying anything about. Now `checkedMessage` in the domain, which
+says what it logged and, when there is a measurement that disagrees, states the
+figure and the mark in the same words `DepletionLine` uses on the plant's own
+page. No verdict in either branch, and it stays quiet when the user and the scale
+agree, because confirming a correct call teaches nothing. Both confirmations now
+open "Logged - ", which makes the restraint-parity rule the code comments already
+asserted literally true rather than merely intended.
+
+The Due list and the notification action pass no depletion yet, so they say only
+what they logged. `DueItem` would need one field to carry it.
+
+Verified on the device by the owner the same day. What has not been read back is
+the Figures number itself, which was measured under the old survivorship filter;
+see the caveat on it further down.
+
 ### D66 — Dressing the room to match the plates (2026-10-05)
 
 D65 got the shading right and said the set was undressed. This dresses it. Each
@@ -2998,6 +3046,12 @@ lean early or late. On the 12 of those where a plant had been watered often
 enough for a calendar to have an opinion too, weighing was off by 0.8 days and a
 calendar fitted to that plant's usual gap by 2.4, so the screen reports weighing
 ahead by 1.5 days.
+
+**Read that number again on the device.** It was measured while
+`evaluatePredictions` silently scored nothing for any plant marked dead or given
+away, so those 30 predictions came only from plants still on the shelf. D67 fixed
+that. If nothing had left by 2026-10-08 the figure is unchanged; if anything had,
+the honest figure is whatever the screen says now.
 
 That is the differentiator holding up on real data, and it is the first number
 in this project that answers "is the premise true" rather than "does the code
