@@ -9,6 +9,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.dheirav.thirsttrap.domain.CareEvent
 import dev.dheirav.thirsttrap.domain.CareEventType
 import dev.dheirav.thirsttrap.domain.CheckResult
+import dev.dheirav.thirsttrap.domain.checkedMessage
 import dev.dheirav.thirsttrap.domain.PlantRepository
 import dev.dheirav.thirsttrap.domain.ReminderRepository
 import dev.dheirav.thirsttrap.domain.newId
@@ -51,7 +52,9 @@ class ReminderActionReceiver : BroadcastReceiver() {
         // failure the weight method exists to avoid.
         val message = when (intent.action) {
             ACTION_WATERED -> "Logged - $plantName watered"
-            ACTION_STILL_WET -> "Good call - checked, not thirsty yet"
+            // No weight state in a broadcast receiver, so no claim about the
+            // pot. "Good call" also graded a judgement nothing here had checked.
+            ACTION_STILL_WET -> checkedMessage(plantName, depletion = null, depletionTrigger = 0.0)
             else -> "Snoozed $plantName for a day"
         }
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()

@@ -33,6 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import dev.dheirav.thirsttrap.domain.CareEvent
+import dev.dheirav.thirsttrap.domain.checkedMessage
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -126,7 +127,15 @@ fun DueScreen(
                             viewModel.stillWet(item) { e, due ->
                                 announce(
                                     item, e, due,
-                                    "Good call - ${item.plant.name} checked, not thirsty yet",
+                                    // DueItem carries no depletion, so this
+                                    // says only what it did. It must not claim
+                                    // "not thirsty yet" about a pot it has not
+                                    // measured, which is what it used to do.
+                                    checkedMessage(
+                                        item.plant.name,
+                                        depletion = null,
+                                        depletionTrigger = item.plant.depletionTrigger,
+                                    ),
                                 )
                             }
                         },

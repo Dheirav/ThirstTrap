@@ -110,6 +110,7 @@ import androidx.compose.ui.layout.ContentScale
 import dev.dheirav.thirsttrap.ui.PlantPhoto
 import dev.dheirav.thirsttrap.domain.CareEvent
 import dev.dheirav.thirsttrap.domain.calendarDaysAgo
+import dev.dheirav.thirsttrap.domain.checkedMessage
 import dev.dheirav.thirsttrap.domain.PlantAttention
 import dev.dheirav.thirsttrap.domain.Prediction
 import dev.dheirav.thirsttrap.domain.SuppressionReason
@@ -351,7 +352,14 @@ fun DashboardScreen(
                         },
                         onQuickCheck = {
                             viewModel.logStillWet(item.plant.id) { event ->
-                                announce(event, "Good call - ${item.plant.name} checked, not thirsty yet")
+                                announce(
+                                    event,
+                                    checkedMessage(
+                                        item.plant.name,
+                                        item.depletion,
+                                        item.plant.depletionTrigger,
+                                    ),
+                                )
                             }
                         },
                         onOpen = { onOpenPlant(item.plant.id) },
@@ -382,7 +390,16 @@ fun DashboardScreen(
                         // Identical haptic, identical snackbar treatment. If
                         // watering felt rewarding and restraint felt like a
                         // dismissal, the app would be teaching the wrong answer.
-                        announce(e, "Good call - checked, not thirsty yet")
+                        // Both now open "Logged - ", which is that parity made
+                        // literal rather than merely intended.
+                        announce(
+                            e,
+                            checkedMessage(
+                                item.plant.name,
+                                item.depletion,
+                                item.plant.depletionTrigger,
+                            ),
+                        )
                     }
                 },
                 onPhoto = {
