@@ -965,9 +965,10 @@ asserted literally true rather than merely intended.
 The Due list and the notification action pass no depletion yet, so they say only
 what they logged. `DueItem` would need one field to carry it.
 
-Verified on the device by the owner the same day. What has not been read back is
-the Figures number itself, which was measured under the old survivorship filter;
-see the caveat on it further down.
+Verified on the device by the owner the same day, and the Figures number was
+read back from the fixed build the same evening. See the re-reading further down:
+one plant in this collection has died, so the old figure was filtered in
+practice and not only in principle.
 
 ### D66 — Dressing the room to match the plates (2026-10-05)
 
@@ -3047,11 +3048,33 @@ enough for a calendar to have an opinion too, weighing was off by 0.8 days and a
 calendar fitted to that plant's usual gap by 2.4, so the screen reports weighing
 ahead by 1.5 days.
 
-**Read that number again on the device.** It was measured while
-`evaluatePredictions` silently scored nothing for any plant marked dead or given
-away, so those 30 predictions came only from plants still on the shelf. D67 fixed
-that. If nothing had left by 2026-10-08 the figure is unchanged; if anything had,
-the honest figure is whatever the screen says now.
+**Re-read on the device after D67, 2026-10-17.** The figures above were measured
+while `evaluatePredictions` silently scored nothing for a plant marked dead or
+given away, and the outcomes table says one plant has died, so those 30
+predictions came only from the four survivors. With the fix installed and 5
+plants, 178 entries:
+
+    typical prediction error     0.7 days
+    watering by the calendar     3.7 days
+    scored on                    46 predictions, no consistent lean
+    where a calendar has an opinion (21 of them):
+      weighing                   0.6 days
+      calendar                   3.7 days
+      weighing ahead by          3.0 days
+
+**What that does and does not show.** The sample went from 30 predictions to 46
+and the diary from 136 entries to 178, so nine days of new readings and the
+dead plant's newly-scored history both contributed and this reading cannot
+separate them. The claim that holds is the narrow one: the figure is now computed
+over the whole collection rather than over the survivors. Attributing the
+improvement to the fix would need the old code re-run against today's export,
+which has not been done.
+
+One inference worth recording as an inference: the calendar baseline moved much
+further than the model's own error, 2.4 days to 3.7 against 1.0 to 0.7. A plant
+that was watered erratically enough to die is exactly the history that makes a
+calendar look worst, which is consistent with it having entered the sample, but
+consistent is not measured.
 
 That is the differentiator holding up on real data, and it is the first number
 in this project that answers "is the premise true" rather than "does the code
