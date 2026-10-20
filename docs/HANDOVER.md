@@ -921,6 +921,72 @@ by drawing the 2D scene properly. Hosting is GitHub Pages from `/site` on main,
 not yet switched on, and the page loads GSAP, Lenis and fonts from CDNs rather
 than vendoring them.
 
+### D68 — Two places where the fan-out and the bookkeeping disagreed (2026-10-20)
+
+Both found by using the app, both reported as "the app is telling me the wrong
+thing", and both turned out to be the same shape: an action correctly writes the
+thing it should, and something downstream only follows for one plant.
+
+**The weigh-in could not carry the watering in the case it was written for.**
+D31 made `addReading` write the missing WATERED event, and it fired only on a
+POST_WATER reading. But `suggestReadingContext` only ever proposes POST_WATER
+when a watering is already on the log inside the window, which is the one case
+where nothing needs backfilling. Water the pot, weigh it, leave the chip alone,
+and the context is ROUTINE and the watering is lost. Nothing in that path ever
+looked at the weight.
+
+The real diary on 2026-10-19 says it plainly: Creeping fig rose 223 g to 271 g
+and Peperomia 222 g to 286 g, both stored as ROUTINE from a weighing round,
+while the dashboard kept counting from the 13th and both cards read "Needs water
+now" about pots that had just been watered. Segmentation had already treated
+both as fresh cycles through its jump rule, so the drying model was right and
+only the diary was wrong, which is exactly the split D31 set out to close.
+
+So the rule now also fires on the weight. A reading at least
+`SEGMENT_JUMP_FRACTION` of the pot's range above the previous one counts as a
+watering, which is the same 8 percent margin segmentation uses to decide a cycle
+has started. That constant is shared on purpose, with a test pinning them
+together: if they ever diverge, the model and the diary disagree about the same
+reading. It says nothing for an uncalibrated pot, because a 50 g rise means
+nothing without knowing whether the pot holds 80 g of water or 800, and it lives
+in `addReading`, the one seam both the keypad and the round pass through, which
+is why it works in the round where these readings were actually taken. The note
+on the event distinguishes the two inferences: "the post-water weigh-in" against
+"the pot gained weight", because those are different claims.
+
+**Known consequence, not yet addressed.** D31 accepted that the round is silent
+about a backfill because it has no hint surface, and that was defensible when
+the trigger was a chip the user had set deliberately. A jump-inferred watering is
+not, so the round can now write a watering the user never sees happen. The
+round's existing summary sheet is the obvious place to say so.
+
+**A shared pot shared its water but not its schedule.** `ContainerSharing` fans a
+watering out to every plant in the container, so both diaries get the event, but
+`rescheduleFromModel` was called for the tapped plant alone. Its pot-mate kept a
+due date from before the watering and sat in the Due list asking about a pot that
+had just been watered. Two fittonias in one container showed it, and which of
+them looked broken depended on which one had been tapped, which is why it read as
+random.
+
+Fixed in `rescheduleFromModel` rather than at its eleven call sites, which is the
+argument that function's own docstring already makes about the gone-plant check.
+Each mate is replanned from its own model rather than handed the first plant's
+date, because two plants in one jar have been in it for different lengths of
+time, which the interval derivation already respected.
+
+**Verified.** 31 instrumentation tests on the device plus the unit suite, and
+both fixes have a negative control: mutating the container loop fails exactly
+`wateringOnePlantInASharedPotReplansTheOthersToo`, and dropping the weight
+arguments fails exactly `aPotThatGainedWeightGetsItsWateringBack`, with the
+sibling guard tests green in both runs.
+
+**The two lost waterings were restored by hand**, one minute before each pot's
+own weigh-in rather than at the midday a backdated entry would have used, since
+midday would have sorted the watering after the 10:19 reading and split the
+curve on the wrong side of it. Both cards then moved from "Needs water now" to
+"Water in about 4 days" and "about 5 days", so the missing events had been
+distorting the forecast and not only the text.
+
 ### D67 — The accuracy figure was measured over survivors (2026-10-17)
 
 Found by a five-lens council review of `docs/GAMES.md`, whose actual subject was
