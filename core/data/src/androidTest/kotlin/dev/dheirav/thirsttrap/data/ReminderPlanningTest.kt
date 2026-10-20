@@ -90,6 +90,71 @@ class ReminderPlanningTest {
         db.reminderDao().observeForPlant(plantId).first().first().nextDueAt
 
     @Test
+    fun wateringOnePlantInASharedPotReplansTheOthersToo() = runBlocking {
+        // Found in a real diary, 2026-10-20. Two fittonias in one container:
+        // watering either one fans the event out to both, so both diaries said
+        // "watered today", but only the plant actually tapped was replanned.
+        // The other kept a due date from before the watering and sat in the Due
+        // list asking about a pot that had just been watered. Which one looked
+        // broken depended on which one you tapped, which is why it read as
+        // random.
+        val mate = "p2"
+        val container = "pot-1"
+        seedPlant(Plant(id = plantId, name = "Fittonia", containerId = container))
+        seedPlant(Plant(id = mate, name = "Fittonia v2", containerId = container))
+        seedReminder()
+        db.reminderDao().upsert(
+            Reminder(
+                id = "r2", plantId = mate, kind = ReminderKind.CHECK,
+                intervalDays = null, nextDueAtMillis = now,
+            ).toReminderEntity(now),
+        )
+        // ContainerSharing writes the event to every plant in the pot.
+        db.careEventDao().insert(
+            CareEvent(
+                id = "shared-a", plantId = plantId, timestampMillis = now,
+                tzOffsetMinutes = 330, type = CareEventType.WATERED,
+                shareGroupId = "g1",
+            ).toEntity(now, now),
+        )
+        db.careEventDao().insert(
+            CareEvent(
+                id = "shared-b", plantId = mate, timestampMillis = now,
+                tzOffsetMinutes = 330, type = CareEventType.WATERED,
+                shareGroupId = "g1",
+            ).toEntity(now, now),
+        )
+
+        // The user tapped the first plant only.
+        reminders.rescheduleFromModel(plantId, now)
+
+        val mateDue = db.reminderDao().observeForPlant(mate).first().first().nextDueAt
+        assertEquals("the plant that was tapped", 7, daysFromNow(due()))
+        assertEquals("its pot-mate, which was watered by the same tap", 7, daysFromNow(mateDue))
+    }
+
+    @Test
+    fun aPlantInItsOwnPotReplansOnlyItself() = runBlocking {
+        // The guard on the above: no container means no fan-out, and an
+        // unrelated plant must not be dragged forward by someone else's tap.
+        val other = "p3"
+        seedPlant(Plant(id = plantId, name = "Fig"))
+        seedPlant(Plant(id = other, name = "Peperomia"))
+        seedReminder()
+        db.reminderDao().upsert(
+            Reminder(
+                id = "r3", plantId = other, kind = ReminderKind.CHECK,
+                intervalDays = null, nextDueAtMillis = now,
+            ).toReminderEntity(now),
+        )
+
+        reminders.rescheduleFromModel(plantId, now)
+
+        val otherDue = db.reminderDao().observeForPlant(other).first().first().nextDueAt
+        assertEquals("untouched", 0, daysFromNow(otherDue))
+    }
+
+    @Test
     fun withNothingKnown_itFallsBackToAWeek() = runBlocking {
         seedPlant(Plant(id = plantId, name = "New"))
         seedReminder()

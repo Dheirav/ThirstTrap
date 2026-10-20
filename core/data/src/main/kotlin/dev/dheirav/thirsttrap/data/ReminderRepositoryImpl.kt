@@ -37,7 +37,31 @@ class ReminderRepositoryImpl @Inject constructor(
      * caller, because a caller that has to fetch it is a caller that can pass
      * null instead, which is how this came to behave as a weekly calendar.
      */
+    /**
+     * Replans the plant, and everything sharing its pot.
+     *
+     * A watering logged on one plant in a shared container is fanned out to its
+     * mates by [ContainerSharing], so their diaries get the event. Their
+     * reminders did not follow: only the plant the user actually tapped was
+     * replanned, so the other one kept a due date from before the watering and
+     * sat in the Due list asking to be checked on a pot that had just been
+     * watered. Found in a real diary, 2026-10-20, on two fittonias in one
+     * container watered in the same tap.
+     *
+     * Each mate is replanned from its own model rather than being handed the
+     * first plant's date. Two plants in one jar have been in it for different
+     * lengths of time, which the interval derivation below already respects.
+     */
     override suspend fun rescheduleFromModel(plantId: String, nowMillis: Long) {
+        val containerId = plantDao.containerOf(plantId)
+        val ids = containerId
+            ?.let { plantDao.inContainer(it).map { row -> row.id } }
+            ?.takeIf { plantId in it }
+            ?: listOf(plantId)
+        for (id in ids) replanOne(id, nowMillis)
+    }
+
+    private suspend fun replanOne(plantId: String, nowMillis: Long) {
         val plantRow = plantDao.observePlant(plantId).first() ?: return
         val plant = plantRow.toDomain()
         // Nothing is ever replanned for a plant that has gone. Eleven call
