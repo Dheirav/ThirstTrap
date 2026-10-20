@@ -200,6 +200,39 @@ fun impliesUnloggedWatering(
     context: ReadingContext,
     lastWateredMillis: Long?,
     nowMillis: Long,
-): Boolean =
-    context == ReadingContext.POST_WATER &&
-        (lastWateredMillis == null || nowMillis - lastWateredMillis > POST_WATER_WINDOW_MILLIS)
+    grams: Double? = null,
+    previousGrams: Double? = null,
+    rangeGrams: Double? = null,
+): Boolean {
+    // A watering already on the log inside the window explains the reading,
+    // whatever the chip says and whatever the pot weighs.
+    if (lastWateredMillis != null && nowMillis - lastWateredMillis <= POST_WATER_WINDOW_MILLIS) {
+        return false
+    }
+    if (context == ReadingContext.POST_WATER) return true
+    return grams != null && risesLikeAWatering(grams, previousGrams, rangeGrams)
+}
+
+/**
+ * A reading that sits well above the one before it.
+ *
+ * The rule above only ever saw the chip, and the chip only ever says POST_WATER
+ * when a watering is already on the log, which is the one case where nothing
+ * needs backfilling. Someone who waters and then weighs without logging gets
+ * ROUTINE, and the watering was lost. Found in a real diary, 2026-10-20: two
+ * pots rose 48 g and 64 g against thresholds near 6 g and 5 g, were stored as
+ * ROUTINE, and the dashboard went on counting from a watering a week earlier.
+ *
+ * The threshold is [SEGMENT_JUMP_FRACTION] of the pot's own range, which is the
+ * same margin [segmentReadings] uses to decide a new drying cycle has started.
+ * That is deliberate: the drying model was already treating these as waterings
+ * and healing itself, so the two halves of the app now agree about what a jump
+ * means instead of only one of them acting on it.
+ *
+ * Needs a range, so it says nothing for an uncalibrated pot. A rise of 50 g
+ * means nothing without knowing whether the pot holds 80 g of water or 800.
+ */
+fun risesLikeAWatering(grams: Double, previousGrams: Double?, rangeGrams: Double?): Boolean {
+    if (previousGrams == null || rangeGrams == null || rangeGrams <= 0.0) return false
+    return grams - previousGrams >= SEGMENT_JUMP_FRACTION * rangeGrams
+}

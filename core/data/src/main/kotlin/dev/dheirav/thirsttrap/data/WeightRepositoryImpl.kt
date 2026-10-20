@@ -69,8 +69,20 @@ class WeightRepositoryImpl @Inject constructor(
             .filter { it.type == CareEventType.WATERED.name }
             .maxOfOrNull { it.timestamp }
 
+        // The pot's own range and the reading before this one, so a rise can
+        // be judged against what this pot holds rather than against a flat
+        // number of grams. One assembly per save, which is a save, not an
+        // emission: the round's objection to assembling state per plant is
+        // about what it would cost on every list update.
+        val before = observeWeightState(plantId).first()
+        val previousGrams = before.readings
+            .filter { !it.excluded }
+            .maxByOrNull { it.timestampMillis }
+            ?.grams
+        val rangeGrams = before.plant.anchors?.takeIf { it.isUsable }?.rangeGrams
+
         var backfilled = false
-        if (impliesUnloggedWatering(context, lastWatered, now)) {
+        if (impliesUnloggedWatering(context, lastWatered, now, grams, previousGrams, rangeGrams)) {
             // The watering has to sort between the previous reading and this
             // one, or segmentation puts the boundary on the wrong side of a
             // pre-water weigh taken moments earlier.
@@ -96,7 +108,15 @@ class WeightRepositoryImpl @Inject constructor(
                 tzOffsetMinutes = tzOffsetMinutesAt(wateredAt),
                 type = CareEventType.WATERED,
                 amountMl = amount,
-                note = "Logged from the post-water weigh-in",
+                // Says which rule inferred it, because the two are different
+                // claims: one is "you told me this was a post-water reading",
+                // the other is "the pot got heavier and nothing else explains
+                // it". A reader of the diary deserves to know which.
+                note = if (context == ReadingContext.POST_WATER) {
+                    "Logged from the post-water weigh-in"
+                } else {
+                    "Logged from the weigh-in: the pot gained weight"
+                },
             )
             eventDao.insert(inferred.toEntity(createdAt = now, updatedAt = now))
             sharing.fanOut(inferred, now)
