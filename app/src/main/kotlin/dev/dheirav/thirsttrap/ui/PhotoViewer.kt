@@ -39,7 +39,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -105,6 +104,15 @@ fun PhotoViewer(
     onSaveCaption: (photoId: String, caption: String) -> Unit,
     onSetCover: (photoId: String) -> Unit,
     onDelete: (photoId: String) -> Unit,
+    /**
+     * Transient feedback, handed up rather than shown here.
+     *
+     * These two moments used to be toasts, which cannot be undone, cannot carry
+     * an action and ignore the app's own theming, so they looked and behaved
+     * unlike every other confirmation in the app. The viewer is an overlay with
+     * no snackbar host of its own, so the screen that opened it says it.
+     */
+    onMessage: (String) -> Unit,
 ) {
     if (photos.isEmpty()) return
     val frames = remember(photos) { buildTimelapse(photos) }
@@ -260,8 +268,7 @@ fun PhotoViewer(
                                 shareCaption(plantName, frame.photo),
                             )
                             if (intent == null) {
-                                Toast.makeText(context, "That photo is missing", Toast.LENGTH_SHORT)
-                                    .show()
+                                onMessage("That photo is missing")
                             } else {
                                 context.startActivity(
                                     Intent.createChooser(intent, "Share this photo"),
@@ -282,15 +289,13 @@ fun PhotoViewer(
                                 val ok = PhotoExport.saveToGallery(
                                     context, File(pathOf(frame.photo)), name,
                                 )
-                                Toast.makeText(
-                                    context,
+                                onMessage(
                                     if (ok) {
                                         "Saved to Pictures/ThirstTrap"
                                     } else {
                                         "Could not save that one"
                                     },
-                                    Toast.LENGTH_SHORT,
-                                ).show()
+                                )
                             }
                         },
                     )

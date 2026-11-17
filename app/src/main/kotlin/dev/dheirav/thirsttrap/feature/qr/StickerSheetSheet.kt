@@ -1,6 +1,5 @@
 package dev.dheirav.thirsttrap.feature.qr
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -33,7 +32,12 @@ import androidx.core.content.ContextCompat
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StickerSheetSheet(onDismiss: () -> Unit, viewModel: StickerSheetViewModel = hiltViewModel()) {
+fun StickerSheetSheet(
+    onDismiss: () -> Unit,
+    /** Said by the screen behind this sheet, which owns the snackbar host. */
+    onMessage: (String) -> Unit,
+    viewModel: StickerSheetViewModel = hiltViewModel(),
+) {
     val plants by viewModel.plants.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -64,11 +68,9 @@ fun StickerSheetSheet(onDismiss: () -> Unit, viewModel: StickerSheetViewModel = 
                     Button(
                         onClick = {
                             val ok = saveSheet(context, viewModel)
-                            Toast.makeText(
-                                context,
+                            onMessage(
                                 if (ok) "Saved to Pictures/ThirstTrap" else "Could not save the sheet",
-                                Toast.LENGTH_SHORT,
-                            ).show()
+                            )
                             if (ok) onDismiss()
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -81,7 +83,7 @@ fun StickerSheetSheet(onDismiss: () -> Unit, viewModel: StickerSheetViewModel = 
                             ContextCompat.startActivity(context, intent, null)
                             onDismiss()
                         } else {
-                            Toast.makeText(context, "Could not make the sheet", Toast.LENGTH_SHORT).show()
+                            onMessage("Could not make the sheet")
                         }
                     },
                     modifier = Modifier.fillMaxWidth().padding(top = Space.Line),

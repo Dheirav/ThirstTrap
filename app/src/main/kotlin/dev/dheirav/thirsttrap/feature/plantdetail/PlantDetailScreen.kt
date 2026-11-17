@@ -43,6 +43,10 @@ import dev.dheirav.thirsttrap.ui.OutlinedTextField
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -126,8 +130,13 @@ fun PlantDetailScreen(
     // composable body only stack because the caller happens to place them
     // in a Box, which is not a contract worth depending on for a full-screen
     // overlay.
+    // The viewer is an overlay with no snackbar host of its own, so this screen
+    // carries one and says what the viewer reports.
+    val snackbarHost = remember { SnackbarHostState() }
+    val snackScope = rememberCoroutineScope()
     Box(Modifier.fillMaxSize()) {
         Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHost) },
             // The hero runs under the status bar, so this screen draws its own
             // insets rather than being pushed below them.
             contentWindowInsets = if (hero != null) WindowInsets(0, 0, 0, 0) else ScaffoldDefaults.contentWindowInsets,
@@ -522,6 +531,7 @@ fun PlantDetailScreen(
                 onSaveCaption = viewModel::setCaption,
                 onSetCover = viewModel::setCover,
                 onDelete = viewModel::deletePhoto,
+                onMessage = { snackScope.launch { snackbarHost.showSnackbar(it) } },
             )
         }
     }

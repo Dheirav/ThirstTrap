@@ -12,6 +12,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -58,9 +62,19 @@ fun MoreScreen(
     onOpenExperiments: () -> Unit,
 ) {
     var stickerSheet by remember { mutableStateOf(false) }
-    if (stickerSheet) StickerSheetSheet(onDismiss = { stickerSheet = false })
+    // The sheet reports through here rather than raising a toast of its own, so
+    // saving a sticker sheet is confirmed in the same voice as everything else.
+    val snackbarHost = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    if (stickerSheet) {
+        StickerSheetSheet(
+            onDismiss = { stickerSheet = false },
+            onMessage = { scope.launch { snackbarHost.showSnackbar(it) } },
+        )
+    }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHost) },
         topBar = {
             TopAppBar(
                 title = { ScreenTitle("More") },
