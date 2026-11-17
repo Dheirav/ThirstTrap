@@ -33,6 +33,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.unit.Dp
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -334,7 +337,54 @@ fun DashboardScreen(
                     }
                 }
 
-                itemsIndexed(items, key = { _, item -> item.plant.id }) { index, item ->
+                // How many plants on this list share each pot. Watering or
+                // checking one of them does it for all of them, because the
+                // event fans out across the container, so three plants in one
+                // pot are one job. The list said otherwise by repeating an
+                // identical row three times, and the only place that admitted
+                // the relationship was the plant's own page.
+                val byPot = items.filter { it.plant.containerId != null }
+                    .groupBy { it.plant.containerId!! }
+                val units = buildList {
+                    val emitted = mutableSetOf<String>()
+                    items.forEach { item ->
+                        val pot = item.plant.containerId
+                        val mates = pot?.let { byPot[it] }
+                        when {
+                            mates == null || mates.size < 2 -> add(listOf(item))
+                            emitted.add(pot) -> add(mates)
+                        }
+                    }
+                }
+                itemsIndexed(units, key = { _, u -> u.first().plant.id }) { index, unit ->
+                    val item = unit.first()
+                    if (unit.size > 1) {
+                        PotCard(
+                            members = unit,
+                            nowMillis = now,
+                            isTourAnchor = index == 0,
+                            onQuickWater = {
+                                viewModel.logWatered(item.plant.id, item.suggestedWaterMl) { event ->
+                                    announce(event, wateredMessage(item.plant.name, item.suggestedWaterMl))
+                                }
+                            },
+                            onQuickCheck = {
+                                viewModel.logStillWet(item.plant.id) { event ->
+                                    announce(
+                                        event,
+                                        checkedMessage(
+                                            item.plant.name,
+                                            item.depletion,
+                                            item.plant.depletionTrigger,
+                                        ),
+                                    )
+                                }
+                            },
+                            onOpenPlant = onOpenPlant,
+                            onOpenSheet = { sheetFor = item },
+                        )
+                        return@itemsIndexed
+                    }
                     PlantCard(
                         item = item,
                         nowMillis = now,
@@ -457,7 +507,13 @@ private fun PlantCard(
     ) {
         Row(
             Modifier.padding(vertical = Space.Entry),
-            verticalAlignment = Alignment.CenterVertically,
+            // Top, not centre. A row with a four-line text block centred its
+            // photo, so the name floated above the image while three-line rows
+            // aligned the two, and the left edge of the list went ragged at a
+            // large font scale. The photo and the name are the two things the
+            // eye travels between, so they share a top edge whatever the rest
+            // of the row holds.
+            verticalAlignment = Alignment.Top,
         ) {
             // The most recent photo, falling back to an initial. A broken or
             // missing file must never crash the list - see docs/UI-SPEC.md
@@ -507,83 +563,7 @@ private fun PlantCard(
                     }
                 }
 
-                val watered = item.lastWateredMillis
-                val wateredText =
-                    if (watered == null) "Never watered"
-                    else relativeDays(nowMillis, watered, "Watered")
-                val prediction = predictionText(item.prediction)
-
-                // 2. The answer. A prediction when there is one; otherwise the
-                //    most recent fact, which is the best answer available.
-                // The row people read, so a change in it should register as a
-                // change rather than as a different card.
-                // Hoisted: transitionSpec is not a composable scope, so the
-                // reduce-motion check has to happen out here.
-                val swap = Motion.confirm<Float>()
-                AnimatedContent(
-                    targetState = prediction ?: wateredText,
-                    transitionSpec = { fadeIn(swap) togetherWith fadeOut(swap) },
-                    label = "the answer",
-                ) { answer ->
-                    Text(
-                        answer,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.padding(top = Space.Hair),
-                    )
-                }
-
-                // 4. Everything else, one line, in the dim tier - the third step
-                //    of the lightness ladder rather than a fourth thing in grey.
-                //    Cadence is not here: it lives on the detail screen, which is
-                //    where someone goes to ask that question.
-                val checked = item.lastCheckedMillis
-                val context = buildAnnotatedString {
-                    val parts = mutableListOf<Pair<String, Boolean>>()
-                    plant.location?.takeIf { it.isNotBlank() }?.let { parts += it to false }
-                    // Medium is deliberately absent. "soil" under a photograph
-                    // of soil is a caption for something already on screen, and
-                    // it was on every card in the list. It survives on the
-                    // detail screen only when it is NOT soil, where it is
-                    // actually information.
-                    // Only repeat the watering line if row 2 did not use it.
-                    if (prediction != null) parts += wateredText to false
-                    // Restraint deserves visible credit, not silence - so this
-                    // one fragment keeps its colour even in the dim row.
-                    if (checked != null && checked > (watered ?: 0L)) {
-                        // Calendar days, not elapsed hours. D38 fixed this on
-                        // the answer row and missed the line directly under it,
-                        // so a check at 22:00 still read "checked today" at
-                        // 09:00 the next morning.
-                        val tz = java.util.TimeZone.getDefault().getOffset(nowMillis) / 60_000
-                        val days = calendarDaysAgo(nowMillis, checked, tz)
-                        parts += (
-                            if (days == 0) "checked today, not thirsty"
-                            else relativeDays(nowMillis, checked, "Checked").lowercase()
-                            ) to true
-                    }
-                    parts.forEachIndexed { i, (text, credit) ->
-                        if (i > 0) append(" · ")
-                        if (credit) {
-                            withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                                append(text)
-                            }
-                        } else {
-                            append(text)
-                        }
-                    }
-                }
-                // Smaller than the line above it on purpose. That line is the
-                // answer, "Water in about 3 days"; this one is the footnote
-                // under it, where it lives and when it was last checked. Both
-                // at bodyMedium made the card two equal sentences with no
-                // answer in it.
-                Text(
-                    context,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.outline,
-                    modifier = Modifier.padding(top = Space.Hair),
-                )
+                AnswerAndContext(item, nowMillis)
             }
 
             // The two log actions. UI-SPEC section 7 requires "Still wet" to get
@@ -683,7 +663,7 @@ private fun predictionText(prediction: Prediction): String? = when (prediction) 
         }
         head + when (prediction.confidence) {
             Confidence.HIGH -> ""
-            Confidence.MEDIUM -> " - still learning"
+            Confidence.MEDIUM -> ", still learning"
             Confidence.LOW -> ", from past cycles"
         }
     }
@@ -720,16 +700,239 @@ private fun predictionText(prediction: Prediction): String? = when (prediction) 
  * The trigger is a tick on the ring rather than a number, because the number
  * was never the point: what matters is whether the pot has passed the mark.
  */
+/**
+ * The two lines under a plant's name: the answer, then the footnote.
+ *
+ * Extracted so a pot entry and a plain plant row cannot drift apart. A pot says
+ * these once for everything in it, because watering or checking any member does
+ * it for all of them, and the facts are identical by construction.
+ */
+/**
+ * One pot, with the plants growing in it.
+ *
+ * Watering or checking any member writes the event for all of them, because
+ * ContainerSharing fans it across the container, so a shared pot is one job.
+ * It used to render as one row per plant: three identical status lines and
+ * three pairs of buttons that did the same thing. That is a false choice, and a
+ * false choice is worse than no choice, because the reader has to work out what
+ * the difference is before deciding there is none.
+ *
+ * So the care sits on the pot and is stated once, while the plants keep their
+ * own rows underneath, because they are still separate things with their own
+ * photographs, observations and pages. Gestalt common region: what acts as one
+ * is drawn as one.
+ *
+ * The status comes from the first member. For the facts shown here that is not
+ * a simplification, because a shared watering gives every member the same last
+ * watered and last checked by construction.
+ */
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun PotCard(
+    members: List<PlantAttention>,
+    nowMillis: Long,
+    isTourAnchor: Boolean,
+    onQuickWater: () -> Unit,
+    onQuickCheck: () -> Unit,
+    onOpenPlant: (String) -> Unit,
+    onOpenSheet: () -> Unit,
+) {
+    val lead = members.first()
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .then(if (isTourAnchor) Modifier.tourTarget(TourTarget.PLANT_CARD) else Modifier)
+            .combinedClickable(
+                onClick = { onOpenPlant(lead.plant.id) },
+                onClickLabel = "Open ${lead.plant.name}",
+                onLongClick = onOpenSheet,
+                onLongClickLabel = "Quick log for this pot",
+            ),
+    ) {
+        Row(
+            Modifier.padding(vertical = Space.Entry),
+            verticalAlignment = Alignment.Top,
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    "${members.size} IN ONE POT",
+                    style = MaterialTheme.typography.labelSmall,
+                    letterSpacing = 0.18.em,
+                    color = MaterialTheme.colorScheme.outline,
+                )
+                AnswerAndContext(lead, nowMillis)
+            }
+
+            // Said once, because they do one thing. The labels name the pot
+            // rather than a plant, so a screen reader does not imply that this
+            // waters only the first of three.
+            if (!lead.plant.status.isGone) {
+                Box(if (isTourAnchor) Modifier.tourTarget(TourTarget.STILL_WET_BUTTON) else Modifier) {
+                    LogAction(
+                        icon = AppIcons.stillWet,
+                        label = "Log checked, still wet for this pot",
+                        justLogged = lead.lastCheckedMillis,
+                        onClick = onQuickCheck,
+                    )
+                }
+                Spacer(Modifier.width(Space.Line))
+                Box(if (isTourAnchor) Modifier.tourTarget(TourTarget.WATER_BUTTON) else Modifier) {
+                    LogAction(
+                        icon = AppIcons.waterDrop,
+                        loggedIcon = AppIcons.waterDropFilled,
+                        label = "Log watering for this pot",
+                        justLogged = lead.lastWateredMillis,
+                        onClick = onQuickWater,
+                    )
+                }
+            }
+        }
+
+        // A strip, not a stack of rows.
+        //
+        // Two attempts went the other way first. At 44dp and indented, the
+        // group had three left edges and two photo sizes and read as a
+        // different kind of object from the plant below it. At 88dp in full
+        // rows, each plant had a large photograph with nothing beside it but a
+        // name, because the three lines that normally balance that photograph
+        // are exactly the lines the pot now states once. A photograph that size
+        // needs about three lines next to it or it reads as an empty row.
+        //
+        // So the plants go side by side instead. The care keeps the list's row
+        // grammar above, and this is plainly a sub-element rather than a
+        // competing row, which is the distinction the vertical version could
+        // not make. Three pots at 88dp plus gaps fit a phone; more than that
+        // scrolls rather than shrinking, because shrinking is what made them
+        // too small the first time.
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(bottom = Space.Entry),
+            horizontalArrangement = Arrangement.spacedBy(Space.Entry),
+        ) {
+            members.forEach { m ->
+                Column(
+                    Modifier
+                        .width(88.dp)
+                        .clickable(onClickLabel = "Open ${m.plant.name}") { onOpenPlant(m.plant.id) },
+                ) {
+                    DepletionThumbnail(
+                        photoPath = m.coverPhotoPath,
+                        initial = m.plant.name.take(1).uppercase(),
+                        depletion = if (m.plant.isWeightTrackable) m.depletion else null,
+                        trigger = m.plant.depletionTrigger,
+                    )
+                    Text(
+                        m.plant.name,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        modifier = Modifier.padding(top = Space.Tight),
+                    )
+                }
+            }
+        }
+        Rule()
+    }
+}
+
+@Composable
+private fun AnswerAndContext(item: PlantAttention, nowMillis: Long) {
+    val plant = item.plant
+    val watered = item.lastWateredMillis
+    val wateredText =
+        if (watered == null) "Never watered"
+        else relativeDays(nowMillis, watered, "Watered")
+    val prediction = predictionText(item.prediction)
+
+    // 2. The answer. A prediction when there is one; otherwise the
+    //    most recent fact, which is the best answer available.
+    // The row people read, so a change in it should register as a
+    // change rather than as a different card.
+    // Hoisted: transitionSpec is not a composable scope, so the
+    // reduce-motion check has to happen out here.
+    val swap = Motion.confirm<Float>()
+    AnimatedContent(
+        targetState = prediction ?: wateredText,
+        transitionSpec = { fadeIn(swap) togetherWith fadeOut(swap) },
+        label = "the answer",
+    ) { answer ->
+        Text(
+            answer,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(top = Space.Hair),
+        )
+    }
+
+    // 4. Everything else, one line, in the dim tier - the third step
+    //    of the lightness ladder rather than a fourth thing in grey.
+    //    Cadence is not here: it lives on the detail screen, which is
+    //    where someone goes to ask that question.
+    val checked = item.lastCheckedMillis
+    val context = buildAnnotatedString {
+        val parts = mutableListOf<Pair<String, Boolean>>()
+        plant.location?.takeIf { it.isNotBlank() }?.let { parts += it to false }
+        // Medium is deliberately absent. "soil" under a photograph
+        // of soil is a caption for something already on screen, and
+        // it was on every card in the list. It survives on the
+        // detail screen only when it is NOT soil, where it is
+        // actually information.
+        // Only repeat the watering line if row 2 did not use it.
+        if (prediction != null) parts += wateredText to false
+        // Restraint deserves visible credit, not silence - so this
+        // one fragment keeps its colour even in the dim row.
+        if (checked != null && checked > (watered ?: 0L)) {
+            // Calendar days, not elapsed hours. D38 fixed this on
+            // the answer row and missed the line directly under it,
+            // so a check at 22:00 still read "checked today" at
+            // 09:00 the next morning.
+            val tz = java.util.TimeZone.getDefault().getOffset(nowMillis) / 60_000
+            val days = calendarDaysAgo(nowMillis, checked, tz)
+            parts += (
+                if (days == 0) "checked today, not thirsty"
+                else relativeDays(nowMillis, checked, "Checked").lowercase()
+                ) to true
+        }
+        parts.forEachIndexed { i, (text, credit) ->
+            // Non-breaking space before the separator: at a large
+            // font scale this line wraps, and a leading "·" reads as
+            // a bullet rather than as a join between two facts.
+            if (i > 0) append("\u00A0· ")
+            if (credit) {
+                withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                    append(text)
+                }
+            } else {
+                append(text)
+            }
+        }
+    }
+    // Smaller than the line above it on purpose. That line is the
+    // answer, "Water in about 3 days"; this one is the footnote
+    // under it, where it lives and when it was last checked. Both
+    // at bodyMedium made the card two equal sentences with no
+    // answer in it.
+    Text(
+        context,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.outline,
+        modifier = Modifier.padding(top = Space.Hair),
+    )
+}
+
 @Composable
 private fun DepletionThumbnail(
     photoPath: String?,
     initial: String,
     depletion: Double?,
     trigger: Double,
+    photoSize: Dp = 88.dp,
 ) {
     val ringStroke = 3.dp
     val gap = 3.dp
-    val photo = 88.dp
+    val photo = photoSize
     // Always reserve the ring's margin, ring or no ring.
     //
     // It used to be reserved only when a ring was drawn, to save a plant with no
