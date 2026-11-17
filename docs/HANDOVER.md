@@ -921,6 +921,71 @@ by drawing the 2D scene properly. Hosting is GitHub Pages from `/site` on main,
 not yet switched on, and the page loads GSAP, Lenis and fonts from CDNs rather
 than vendoring them.
 
+### D69 — A shared pot is one job, and the round says what it writes (2026-11-18)
+
+Three things, all from using the app rather than reading it, plus a UI audit run
+with the `impeccable` native reference (`docs/UI-AUDIT.md`, 15/20).
+
+**The round now discloses the watering it infers.** D68 let the weigh-in write
+the WATERED event a weight jump implies, and recorded that the weighing round
+had no surface to say so. It does now: the summary sheet names it under the
+plant, in the same sentence the per-plant screen uses, because one event should
+not have two names. The dash came out of that sentence on both screens.
+
+**The keypad stopped resizing mid-entry.** Reported from real use. One Text held
+a long placeholder when empty and a short number once typed, and the placeholder
+wrapped to two lines at 28sp while "286 g" did not, so the block above the keys
+lost a line height on the first keystroke and the keypad, which takes the
+remaining space, grew into the gap. The keys moved under the finger while
+somebody was holding a wet pot, which is a Fitts's law failure rather than a
+cosmetic one. The number now has a slot pinned to one line on both keypads.
+Verified on the device: every key coordinate identical between empty and typed.
+The placeholder wording went at the owner's request, and the round keeps the
+previous reading as a quiet caption.
+
+**A shared pot is now one entry.** The bigger of the two. Watering or checking
+any plant in a container fans the event across all of them, so three fittonias
+in one pot produced three identical status lines and three pairs of buttons that
+did the same thing. That is a false choice, which is worse than no choice,
+because the reader has to work out what the difference is before deciding there
+is none. The pot now owns the care and states it once, with the plants in a strip
+underneath keeping their own photographs and their own pages, which is Gestalt
+common region: what acts as one is drawn as one. The status block was extracted
+into `AnswerAndContext` so a pot entry and a plain row cannot drift apart.
+
+**Three attempts, and the two that failed are the useful part.**
+
+*Mark the rows.* Leave three rows and add "shares a pot with 2 others" to each.
+It pushed every shared row onto a second line and broke as "with 2 / others", so
+it cost more height than the duplication it was explaining, and it still left
+three pairs of buttons. Marking a problem is not removing it.
+
+*Nest them as rows.* The pot states the care, the plants sit under it as rows.
+At 44dp and indented the group had three left edges and two photo sizes, and
+read as a different kind of object from the plain row below it. Enlarged to the
+standard 88dp to fix that, each plant then had a large photograph with nothing
+beside it but a name, because the three lines that normally balance that
+photograph are exactly the lines the pot now says once. A photograph that size
+needs about three lines next to it or it reads as an empty row.
+
+*A strip.* The plants go side by side under the pot's care, full size, names
+underneath, horizontally scrollable past three. This works because it stops
+pretending to be a row: the care keeps the list's row grammar, and the strip is
+plainly a sub-element rather than a competing row, which is the distinction the
+vertical version could not make at any size. The lesson is that the nested rows
+were not too small or too large, they were the wrong element.
+
+**Also from the audit**: the thumbnail now top-aligns so rows of different
+heights share a grid, the status separator can no longer begin a line at a large
+font scale, and the four in-app toasts became snackbars. The More screen and the
+plant page each gained a snackbar host to make that possible. The fifth toast,
+in the notification receiver, stays: there is no snackbar host when no UI is on
+screen.
+
+**Still open from the audit**: no window size classes anywhere, so an unfolded
+foldable gets a stretched phone. That is a decision to take, and "phone-only,
+deliberately" is a fine answer.
+
 ### D68 — Two places where the fan-out and the bookkeeping disagreed (2026-10-20)
 
 Both found by using the app, both reported as "the app is telling me the wrong
