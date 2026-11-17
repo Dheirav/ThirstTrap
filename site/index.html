@@ -10,12 +10,48 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Hanken+Grotesk:wght@400;500;600&family=Martian+Mono:wght@400;500&family=Silkscreen&family=Caveat:wght@600&display=swap">
 <link rel="stylesheet" href="engine/story.css">
+<!--
+  Vendored, not fetched.
+
+  These used to come from jsdelivr at run time, and the loader is a full-screen
+  opaque overlay that only lifts once the module graph has run. So any visitor
+  whose network could not reach the CDN, on a restricted connection or simply on
+  a bad day for jsdelivr, sat looking at a dark screen and a spinner for ever.
+  Verified rather than assumed: blackholing cdn.jsdelivr.net leaves the loader
+  without its done class indefinitely.
+
+  The files are jsDelivr's own self-contained +esm bundles, so there is nothing
+  left to fetch. Fonts still come from Google and that is fine, because a font
+  that fails to load falls back to the next family in the stack rather than
+  hiding the page.
+-->
 <script type="importmap">
 { "imports": {
-  "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js",
-  "gsap/": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/",
-  "lenis": "https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.mjs"
+  "gsap": "./vendor/gsap.js",
+  "gsap/ScrollTrigger.js": "./vendor/scrolltrigger.js",
+  "lenis": "./vendor/lenis.js"
 } }
+</script>
+
+<!--
+  The overlay must never be able to trap a reader.
+
+  Without JavaScript it is simply not drawn. With JavaScript, if the story
+  module throws or never finishes for any reason, this lifts it anyway after a
+  few seconds: the page underneath is laid out and readable, it just will not
+  animate. A page that cannot animate is worth far more than a spinner.
+-->
+<noscript><style>.loader{display:none!important}</style></noscript>
+<script>
+  addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      const l = document.getElementById('loader');
+      if (l && !l.classList.contains('done')) {
+        l.classList.add('done');
+        document.documentElement.dataset.storyFailed = 'true';
+      }
+    }, 5000);
+  });
 </script>
 <style>
   /* The app's own palette, lifted from core/ui/Theme.kt so the handoff does not show. */
