@@ -68,6 +68,7 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
     val finished by viewModel.finished.collectAsStateWithLifecycle()
     val entry by viewModel.entry.collectAsStateWithLifecycle()
     val context by viewModel.context.collectAsStateWithLifecycle()
+    val inferredWaterings by viewModel.inferredWaterings.collectAsStateWithLifecycle()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     Scaffold(
@@ -181,22 +182,38 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                 weighed.forEach { r ->
                     val now = r.doneThisRound!!.grams
                     val before = r.last?.grams
-                    Row(Modifier.fillMaxWidth().padding(vertical = Space.Line)) {
-                        Text(r.plant.name, Modifier.weight(1f))
-                        Text(
-                            buildString {
-                                append("${now.toInt()} g")
-                                // The change is the whole reason for carrying the
-                                // pot to the scale, so it is the thing that gets
-                                // said, not the fact that a row was filled in.
-                                before?.let {
-                                    val d = (now - it).toInt()
-                                    append(if (d < 0) "     $d g" else "     +$d g")
-                                }
-                            },
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
+                    Column(Modifier.padding(vertical = Space.Line)) {
+                        Row(Modifier.fillMaxWidth()) {
+                            Text(r.plant.name, Modifier.weight(1f))
+                            Text(
+                                buildString {
+                                    append("${now.toInt()} g")
+                                    // The change is the whole reason for carrying the
+                                    // pot to the scale, so it is the thing that gets
+                                    // said, not the fact that a row was filled in.
+                                    before?.let {
+                                        val d = (now - it).toInt()
+                                        append(if (d < 0) "     $d g" else "     +$d g")
+                                    }
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                        // The round's only chance to say it. A pot that came back
+                        // heavier gets a WATERED event written for it, and without
+                        // this line the first the user knows is finding an entry on
+                        // the timeline they did not make. Same sentence as the
+                        // per-plant screen's hint, because one event should not have
+                        // two names.
+                        if (r.plant.id in inferredWaterings) {
+                            Text(
+                                "Logged the watering too. Edit it on the timeline if that's wrong.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(top = Space.Hair),
+                            )
+                        }
                     }
                 }
                 Rule()
@@ -231,12 +248,28 @@ fun WeighingScreen(onBack: () -> Unit, viewModel: WeighingViewModel = hiltViewMo
                     style = MaterialTheme.typography.titleMedium,
                     letterSpacing = 0.18.em,
                 )
+                // Same fix as the single-plant keypad, and this one was worse:
+                // the previous reading rode in the same 28sp string, so the
+                // number of wrapped lines changed as digits were added and the
+                // keys resized on nearly every keystroke rather than just the
+                // first. The number gets its own single line now.
                 Text(
-                    buildString {
-                        append(if (entry.isBlank()) "grams, pot and all" else "$entry g")
-                        row.last?.let { append("     last ${it.grams.toInt()} g, ${lastSeen.format(Date(it.timestampMillis))}") }
-                    },
+                    if (entry.isBlank()) "" else "$entry g",
                     style = MaterialTheme.typography.headlineMedium,
+                    minLines = 1,
+                    maxLines = 1,
+                )
+                // What this pot weighed last time, which is reference material
+                // rather than a headline. The line is always rendered, empty or
+                // not, so its height never changes while digits are typed.
+                Text(
+                    row.last?.let {
+                        "last ${it.grams.toInt()} g, ${lastSeen.format(Date(it.timestampMillis))}"
+                    } ?: "",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    minLines = 1,
+                    maxLines = 1,
                 )
                 DoubleRule()
 

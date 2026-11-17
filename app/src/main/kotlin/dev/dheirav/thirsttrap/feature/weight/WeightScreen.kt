@@ -352,9 +352,21 @@ fun WeightScreen(
                     style = MaterialTheme.typography.titleMedium,
                     letterSpacing = 0.18.em,
                 )
+                // The number and its caption are two lines now, each pinned to
+                // one line, because they used to be a single Text that swapped
+                // between a long placeholder and a short number. That
+                // placeholder wrapped to two lines at this size on a phone while
+                // "286 g" does not, so the block lost a line height on the first
+                // keystroke and the keypad, which takes whatever space is left,
+                // grew into the gap. The keys changed size and moved under the
+                // finger mid-entry, while somebody was standing at a scale
+                // holding a wet pot. Reported from real use, 2026-11-18.
+                //
                 Text(
-                    if (entry.isBlank()) "grams, pot and all" else "$entry g",
+                    if (entry.isBlank()) "" else "$entry g",
                     style = MaterialTheme.typography.headlineMedium,
+                    minLines = 1,
+                    maxLines = 1,
                     modifier = Modifier.padding(top = Space.Tight),
                 )
                 DoubleRule()

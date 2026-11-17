@@ -166,7 +166,7 @@ class WeightViewModel @Inject constructor(
             // user only discovers later on the timeline reads as the app
             // inventing history.
             if (backfilledWatering) {
-                _hint.value = "Logged the watering too - edit it on the timeline if that's wrong."
+                _hint.value = "Logged the watering too. Edit it on the timeline if that's wrong."
             }
             onDone()
         }

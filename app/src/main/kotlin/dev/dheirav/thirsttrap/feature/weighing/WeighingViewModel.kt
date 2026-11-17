@@ -69,6 +69,23 @@ class WeighingViewModel @Inject constructor(
     /** Whether any reading got saved this round, so leaving is not giving up. */
     private var flowCompleted = false
 
+    /**
+     * Plants whose weigh-in inferred a watering this round.
+     *
+     * The weigh-in writes the WATERED event the log is missing when a pot comes
+     * back heavier than the jump threshold. The per-plant screen says so in its
+     * hint slot the moment it happens; the round had no such surface, so it
+     * could add an entry to the diary that nobody ever saw. An event the user
+     * only discovers later on the timeline reads as the app inventing history,
+     * which is the one thing a diary cannot afford.
+     *
+     * Collected per round rather than per pot because the summary sheet is the
+     * round's only moment to speak, and it is already the place that says what
+     * the scale found.
+     */
+    private val _inferredWaterings = MutableStateFlow<Set<String>>(emptySet())
+    val inferredWaterings: StateFlow<Set<String>> = _inferredWaterings.asStateFlow()
+
     init {
         // One OPENED per round, not per plant: the round is the flow, and the
         // plants are what it walks through.
@@ -204,7 +221,9 @@ class WeighingViewModel @Inject constructor(
                 flowCompleted = true
                 usage.record(dev.dheirav.thirsttrap.domain.UsageKind.FLOW_COMPLETED, FLOW)
             }
-            weights.addReading(row.plant.id, grams, context)
+            if (weights.addReading(row.plant.id, grams, context)) {
+                _inferredWaterings.value = _inferredWaterings.value + row.plant.id
+            }
             // A reading changes the prediction, and the prediction is what the
             // reminder is made of. The per-plant weight screen already did this
             // and the round did not, so weighing everything in one sitting left
